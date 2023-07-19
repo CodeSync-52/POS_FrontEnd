@@ -1,32 +1,98 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <div class=""> 
-      <q-header  class="bg-gradient-to-r from-blue-600 to-blue-800" elevated>
+    <div class="">
+      <q-header class="bg-gradient-to-r from-blue-600 to-blue-800" elevated>
         <q-toolbar>
-          <q-btn v-if="isSmallScreen" flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+          <q-btn
+            v-if="isSmallScreen"
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="toggleLeftDrawer"
+          />
           <q-toolbar-title> POS App </q-toolbar-title>
         </q-toolbar>
       </q-header>
 
       <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-        <q-list class="bg-gradient-to-r from-blue-600 to-blue-800 gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-scroll">
+        <q-list
+          class="bg-gradient-to-r from-blue-600 to-blue-800 gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-auto"
+        >
           <q-item-label class="flex w-full justify-end" header>
-            <q-icon name="close" v-if="isSmallScreen" flat dense round @click="toggleLeftDrawer" size="25px" />
+            <q-icon
+              name="close"
+              v-if="isSmallScreen"
+              flat
+              dense
+              round
+              @click="toggleLeftDrawer"
+              size="25px"
+            />
           </q-item-label>
-
-          <div  class="px-4" v-for="link in essentialLinks" :key="link.title">
+          <div class="w-16 mx-auto">
+            <img :src="PosIcon" alt="POS Icon" class="text-white" />
+          </div>
+          <!-- <div class="px-3" v-for="link in essentialLinks" :key="link.title">
             <router-link @click="isSmallScreen ? toggleLeftDrawer : null"  :to="link.path">
-              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 p-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
+              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 py-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
                 <div>
                   <q-icon :name="link.icon" :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="group-hover:text-white text-[#80b6db]" size="25px" />
                 </div>
-                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.9rem] group-hover:text-white text-[#80b6db]">
+                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.8rem] group-hover:text-white text-[#80b6db]">
+                  {{ link.title }}
+                </div>
+                
+              </div>
+            </router-link>
+          </div> -->
+          <div v-for="link in essentialLinks" :key="link.title">
+            <q-expansion-item group="somegroup" expand-icon-class="text-white" :icon="link.icon" :label="link.title"  header-class="text-white">  
+              <q-card class="bg-gradient-to-r from-blue-600 to-blue-800">
+                  <q-card-section>
+                    <div
+                      v-for="subLinks in link?.children"
+                      :key="subLinks.title"
+                      :to="subLinks.path"
+                      class="pl-7"
+                    >
+                      <div class="text-[0.9rem] my-2 pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer">
+                        {{ subLinks.title }}
+                      </div>
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </q-expansion-item>
+            <!-- <div
+              class="flex group items-center gap-[0.6rem] py-2 px-4 cursor-pointer transition-all duration-[300ms] hover:bg-[#094166] hover:text-white rounded-[11px]"
+              @click="handleSelectedLink(link.title)"
+              :class="{
+                'bg-[#094166] text-white': selectedLinkDropdown === link.title,
+              }"
+            >
+              <div>
+                <q-icon
+                  :name="link.icon"
+                  class="group-hover:text-white text-[#80b6db]"
+                  size="25px"
+                />
+              </div>
+              <div class="text-[#80b6db] text-lg group-hover:text-white">
+                {{ link.title }}
+              </div>
+            </div> 
+             <router-link @click="isSmallScreen ? toggleLeftDrawer : null"  :to="link.path">
+              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 py-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
+                <div>
+                  <q-icon :name="link.icon" :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="group-hover:text-white text-[#80b6db]" size="25px" />
+                </div>
+                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.8rem] group-hover:text-white text-[#80b6db]">
                   {{ link.title }}
                 </div>
               </div>
-            </router-link>
+            </router-link> -->
           </div>
-
         </q-list>
       </q-drawer>
     </div>
@@ -37,113 +103,218 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount} from 'vue';
-
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import PosIcon from '../assets/Images/Pos-icon.png'
 const essentialLinks = [
   {
-    title: 'Dashboard',
-    caption: 'quasar.dev',
+    title: 'User Management',
     icon: 'dashboard',
-    path: '/dashBoard',
+    children: [
+      {
+        title: 'User Management',
+        path: '/dashBoar',
+      },
+      {
+        title: 'Role/Permission Management',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Customer Group Management',
+        path: '/customer-group',
+      },
+    ],
   },
   {
-    title: 'Bill Generation',
-    caption: 'github.com/quasarframework',
-    icon: 'receipt_long',
-    path: '/bill-generation',
-  },
-  {
-    title: 'User Managment',
-    caption: 'github.com/quasarframework',
-    icon: 'groups',
-    path: '/user',
-  },
-  {
-    title: 'Category Managment',
-    caption: 'github.com/quasarframework',
-    icon: 'category',
-    path: '/category',
-  },
-  {
-    title: 'Customers Group',
-    caption: 'chat.quasar.dev',
-    icon: 'workspaces_filled',
-    path: '/customer-group',
-  },
-  {
-    title: 'Cash in/Cash out',
-    caption: 'chat.quasar.dev',
-    icon: 'currency_exchange',
-    path: '/cashInOut',
-  },
-  {
-    title: 'Discount Managment',
-    caption: 'forum.quasar.dev',
-    icon: 'discount',
-    path: '/discount',
-  },
-  {
-    title: 'Goods Receipt Notes',
-    caption: 'forum.quasar.dev',
+    title: 'Sales Operations',
     icon: 'receipt',
-    path: '/goods-receipt',
+    children: [
+      {
+        title: 'Receipt Management',
+        icon: 'dashboard',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Bill Generation',
+        icon: 'dashboard',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Cash in/Cash out',
+        icon: 'currency_exchange',
+        path: '/cashInOut',
+      },
+      {
+        title: 'Sales Management',
+        icon: 'dashboard',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Sales Return Management',
+        icon: 'dashboard',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Shop Discounts',
+        icon: 'dashboard',
+        path: '/dashBoard',
+      },
+    ],
   },
   {
-    title: 'Inventory Management',
-    caption: 'forum.quasar.dev',
-    icon: 'inventory',
-    path: '/inventory',
-  },
-  {
-    title: 'Product Managment',
-    caption: '@quasarframework',
+    title: 'Product Management',
+    caption: 'quasar.dev',
     icon: 'local_florist',
-    path: '/product',
-  },
-  {
-    title: 'Receipt Management',
-    caption: '@QuasarFramework',
-    icon: 'print',
-    path: '/receipt',
-  },
-  {
-    title: 'Sales Management',
-    caption: 'Community Quasar projects',
-    icon: 'receipt',
-    path: '/sale',
+    children: [
+      {
+        title: 'Variant Management',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Category Management',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Article Management',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Inventory Management',
+        path: '/dashBoard',
+      },
+    ],
   },
   {
     title: 'Shop Management',
-    caption: 'forum.quasar.dev',
+    caption: 'quasar.dev',
     icon: 'store',
-    path: '/shop',
+    path: '/dashBoard',
+    children: [
+      {
+        title: 'Shop Management',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Good Receipt Notes (GRN)',
+        path: '/dashBoard',
+      },
+      {
+        title: 'Stock Transfer Requests (STR)',
+        path: '/dashBoard',
+      },
+    ],
   },
   {
-    title: 'Return Management',
-    caption: 'chat.quasar.dev',
-    icon: 'assignment_returned',
-    path: '/return'
-  },
-  {
-    title: 'Reports Management',
-    caption: 'chat.quasar.dev',
+    title: 'Reporting and Analytics',
+    caption: 'quasar.dev',
     icon: 'chat',
-    path: '/report',
+    path: '/dashBoard',
+    children: [
+      {
+        title: 'Report Management',
+        caption: 'quasar.dev',
+        icon: 'dashboard',
+        path: '/dashBoard',
+      },
+    ],
   },
-  {
-    title: 'Roles Managment',
-    caption: '@quasarframework',
-    icon: 'summarize',
-    path: '/role',
-  },
-  {
-    title: 'Variant Managment',
-    caption: '@quasarframework',
-    icon: 'palette',
-    path: '/variant',
-  },
+  // {
+  //   title: 'Bill Generation',
+  //   caption: 'github.com/quasarframework',
+  //   icon: 'receipt_long',
+  //   path: '/bill-generation',
+  // },
+  // {
+  //   title: 'User Managment',
+  //   caption: 'github.com/quasarframework',
+  //   icon: 'groups',
+  //   path: '/user',
+  // },
+  // {
+  //   title: 'Category Managment',
+  //   caption: 'github.com/quasarframework',
+  //   icon: 'category',
+  //   path: '/category',
+  // },
+  // {
+  //   title: 'Customers Group',
+  //   caption: 'chat.quasar.dev',
+  //   icon: 'workspaces_filled',
+  //   path: '/customer-group',
+  // },
+  // {
+  //   title: 'Cash in/Cash out',
+  //   caption: 'chat.quasar.dev',
+  //   icon: 'currency_exchange',
+  //   path: '/cashInOut',
+  // },
+  // {
+  //   title: 'Discount Managment',
+  //   caption: 'forum.quasar.dev',
+  //   icon: 'discount',
+  //   path: '/discount',
+  // },
+  // {
+  //   title: 'Goods Receipt Notes',
+  //   caption: 'forum.quasar.dev',
+  //   icon: 'receipt',
+  //   path: '/goods-receipt',
+  // },
+  // {
+  //   title: 'Inventory Management',
+  //   caption: 'forum.quasar.dev',
+  //   icon: 'inventory',
+  //   path: '/inventory',
+  // },
+  // {
+  //   title: 'Product Managment',
+  //   caption: '@quasarframework',
+  //   icon: 'local_florist',
+  //   path: '/product',
+  // },
+  // {
+  //   title: 'Receipt Management',
+  //   caption: '@QuasarFramework',
+  //   icon: 'print',
+  //   path: '/receipt',
+  // },
+  // {
+  //   title: 'Sales Management',
+  //   caption: 'Community Quasar projects',
+  //   icon: 'receipt',
+  //   path: '/sale',
+  // },
+  // {
+  //   title: 'Shop Management',
+  //   caption: 'forum.quasar.dev',
+  //   icon: 'store',
+  //   path: '/shop',
+  // },
+  // {
+  //   title: 'Return Management',
+  //   caption: 'chat.quasar.dev',
+  //   icon: 'assignment_returned',
+  //   path: '/return'
+  // },
+  // {
+  //   title: 'Reports Management',
+  //   caption: 'chat.quasar.dev',
+  //   icon: 'chat',
+  //   path: '/report',
+  // },
+  // {
+  //   title: 'Roles Managment',
+  //   caption: '@quasarframework',
+  //   icon: 'summarize',
+  //   path: '/role',
+  // },
+  // {
+  //   title: 'Variant Managment',
+  //   caption: '@quasarframework',
+  //   icon: 'palette',
+  //   path: '/variant',
+  // },
 ];
- 
+
 const leftDrawerOpen = ref(false);
 const isSmallScreen = ref(false);
 function toggleLeftDrawer() {
@@ -161,5 +332,4 @@ onBeforeUnmount(() => {
 function handleResize() {
   isSmallScreen.value = window.innerWidth < 992; // Adjust the breakpoint according to your needs
 }
-
 </script>
