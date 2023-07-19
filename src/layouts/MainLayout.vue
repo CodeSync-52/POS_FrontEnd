@@ -51,7 +51,7 @@
             <q-expansion-item group="somegroup" expand-icon-class="text-white" :icon="link.icon" :label="link.title"  header-class="text-white">  
               <q-card class="bg-gradient-to-r from-blue-600 to-blue-800">
                   <q-card-section>
-                    <div
+                    <router-link
                       v-for="subLinks in link?.children"
                       :key="subLinks.title"
                       :to="subLinks.path"
@@ -60,7 +60,7 @@
                       <div class="text-[0.9rem] my-2 pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer">
                         {{ subLinks.title }}
                       </div>
-                    </div>
+                    </router-link>
                   </q-card-section>
                 </q-card>
               </q-expansion-item>
@@ -112,7 +112,7 @@ const essentialLinks = [
     children: [
       {
         title: 'User Management',
-        path: '/dashBoar',
+        path: '/user',
       },
       {
         title: 'Role/Permission Management',
