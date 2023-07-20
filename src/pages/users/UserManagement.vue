@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div>
     <div class="flex justify-between items-center mb-4">
       <span class="text-3xl font-semibold">User Managment</span>
       <q-btn
@@ -22,8 +22,8 @@
         <template v-slot:body-cell-action="props">
           <q-td class="!text-right" :props="props">
             <div class="flex gap-2 justify-end md:pr-4">
-              <q-icon size="20px" name="edit" />
-              <q-icon size="20px" name="delete" />
+              <q-btn size="sm" flat unelevated icon="edit" />
+              <q-btn size="sm" flat unelevated icon="delete" />
             </div>
           </q-td>
         </template>
@@ -99,10 +99,8 @@
                 v-model="state.isPhnNumberAsUserNumber"
                 color="secondary"
                 label="Phone number as username"
-                true-value="yes"
-                false-value="no"
                 size="30px"
-              />
+                />
             </div>
             <div class="row px-2 q-col-gutter-sm">
               <div class="col-md-4 w-full col-sm-12">
@@ -167,16 +165,14 @@
                 v-model="state.isActive"
                 color="secondary"
                 label="Active"
-                true-value="yes"
-                false-value="no"
                 size="30px"
-              />
+                />
             </div>
           </div>
         </q-card-section>
         <q-card-actions class="justify-end">
           <q-btn flat label="Cancel" color="red" v-close-popup />
-          <q-btn flat label="Save" color="primary" v-close-popup />
+          <q-btn flat label="Save" color="primary" v-close-popup @click="handleAddingNewAdminRole" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -186,7 +182,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { UserColumn, UserRows } from './utils';
+import  userManagement from '../../stores/userManagement'
 const showAddNewAdminRolePopup = ref(false);
+const userManagementStore = userManagement()
+const newUser = userManagementStore.addingNewUser
 const isPwd = ref(true);
 const state = ref({
   userName: '',
@@ -207,11 +206,21 @@ const options = ref([
   { id: 4, role: 'Master' },
   { id: 5, role: 'Master' },
 ]);
-
 const handleAddNewAdminRole = (action: boolean) => {
   showAddNewAdminRolePopup.value = action;
 };
-
+const handleAddingNewAdminRole = ()=>{
+    newUser.userName = state.value.userName
+    newUser.phone = state.value.phone
+    newUser.role = state.value.role
+    newUser.assignShop = state.value.assignShop
+    newUser.outStandingBalance = state.value.outStandingBalance
+    newUser.wholeSaleDiscount = state.value.wholeSaleDiscount
+    newUser.isActive = state.value.isActive
+    newUser.password = state.value.password
+    newUser.customerGroup = state.value.customerGroup
+    newUser.isPhnNumberAsUserNumber = state.value.isPhnNumberAsUserNumber
+}
 const filter = ref('');
 </script>
 <style>

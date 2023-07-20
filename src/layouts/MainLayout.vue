@@ -18,7 +18,7 @@
 
       <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
         <q-list
-          class="bg-gradient-to-r from-blue-600 to-blue-800 gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-auto"
+          class="bg-gradient-to-r from-blue-600 to-blue-800 gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-scroll mainlayoutSidebar"
         >
           <q-item-label class="flex w-full justify-end" header>
             <q-icon
@@ -50,14 +50,14 @@
           <div v-for="link in essentialLinks" :key="link.title">
             <q-expansion-item group="somegroup" expand-icon-class="text-white" :icon="link.icon" :label="link.title"  header-class="text-white">  
               <q-card class="bg-gradient-to-r from-blue-600 to-blue-800">
-                  <q-card-section>
+                  <q-card-section class="q-py-none q-pl-lg">
                     <router-link
                       v-for="subLinks in link?.children"
                       :key="subLinks.title"
                       :to="subLinks.path"
                       class="pl-7"
                     >
-                      <div class="text-[0.9rem] my-2 pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer">
+                      <div class="text-[0.9rem] pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer">
                         {{ subLinks.title }}
                       </div>
                     </router-link>
@@ -97,7 +97,9 @@
       </q-drawer>
     </div>
     <q-page-container>
-      <router-view />
+      <div class="p-4">
+        <router-view />
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -116,7 +118,7 @@ const essentialLinks = [
       },
       {
         title: 'Role/Permission Management',
-        path: '/dashBoard',
+        path: '/role',
       },
       {
         title: 'Customer Group Management',
@@ -130,33 +132,27 @@ const essentialLinks = [
     children: [
       {
         title: 'Receipt Management',
-        icon: 'dashboard',
-        path: '/dashBoard',
+        path: '/receipt',
       },
       {
         title: 'Bill Generation',
-        icon: 'dashboard',
-        path: '/dashBoard',
+        path: '/bill-generation',
       },
       {
         title: 'Cash in/Cash out',
-        icon: 'currency_exchange',
         path: '/cashInOut',
       },
       {
         title: 'Sales Management',
-        icon: 'dashboard',
-        path: '/dashBoard',
+        path: '/sale',
       },
       {
         title: 'Sales Return Management',
-        icon: 'dashboard',
-        path: '/dashBoard',
+        path: '/return',
       },
       {
         title: 'Shop Discounts',
-        icon: 'dashboard',
-        path: '/dashBoard',
+        path: '/discount',
       },
     ],
   },
@@ -167,19 +163,19 @@ const essentialLinks = [
     children: [
       {
         title: 'Variant Management',
-        path: '/dashBoard',
+        path: '/variant',
       },
       {
         title: 'Category Management',
-        path: '/dashBoard',
+        path: '/category',
       },
       {
         title: 'Article Management',
-        path: '/dashBoard',
+        path: '/article',
       },
       {
         title: 'Inventory Management',
-        path: '/dashBoard',
+        path: '/inventory',
       },
     ],
   },
@@ -187,19 +183,18 @@ const essentialLinks = [
     title: 'Shop Management',
     caption: 'quasar.dev',
     icon: 'store',
-    path: '/dashBoard',
     children: [
       {
         title: 'Shop Management',
-        path: '/dashBoard',
+        path: '/shop',
       },
       {
         title: 'Good Receipt Notes (GRN)',
-        path: '/dashBoard',
+        path: '/goods-receipt',
       },
       {
         title: 'Stock Transfer Requests (STR)',
-        path: '/dashBoard',
+        path: '/stock-transfer',
       },
     ],
   },
@@ -207,13 +202,11 @@ const essentialLinks = [
     title: 'Reporting and Analytics',
     caption: 'quasar.dev',
     icon: 'chat',
-    path: '/dashBoard',
     children: [
       {
         title: 'Report Management',
         caption: 'quasar.dev',
-        icon: 'dashboard',
-        path: '/dashBoard',
+        path: '/report',
       },
     ],
   },

@@ -1,5 +1,5 @@
 <template>
-   <div> Product </div>
+   <div> Sales return Manangement</div>
 </template>
   
 <script setup lang="ts">  

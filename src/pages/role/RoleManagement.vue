@@ -1,25 +1,27 @@
 <template>
-   <div class="px-12 py-16">  
+   <div>  
       <div class="flex justify-between items-center mb-4">
          <span class="text-3xl font-semibold">Admin Roles</span>
          <q-btn label="Add New" icon="add" unelevated color="primary" @click="handleAddNewAdminRole" />
       </div>
-      <q-markup-table flat bordered>
-         <thead>
-            <tr>
-               <th class="text-left">#</th>
-               <th class="text-left">Role Name</th>
-               <th class="text-left"></th>
-            </tr>
-         </thead>
-         <tbody>
-            <tr v-for="(roles) in adminRolesTableData" :key="roles.id">
-               <td class="text-left text-weight-bold">{{ roles.id }}</td>
-               <td class="text-left">{{ roles.role }}</td>
-               <td class="text-center"><q-btn icon="more_horiz" color="blue-grey-4" flat unelevated /></td>
-            </tr>
-         </tbody>
-      </q-markup-table>
+      <div class="q-pa-md">
+         <q-markup-table>
+            <thead>
+               <tr>
+                  <th class="text-left">#</th>
+                  <th class="text-left">Role Name</th>
+                  <th class="text-left"></th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr v-for="(roles) in adminRolesTableData" :key="roles.id">
+                  <td class="text-left text-weight-bold">{{ roles.id }}</td>
+                  <td class="text-left">{{ roles.role }}</td>
+                  <td class="text-center"><q-btn icon="more_horiz" color="blue-grey-4" flat unelevated /></td>
+               </tr>
+            </tbody>
+         </q-markup-table>
+      </div>
       <q-dialog v-model="showAddNewAdminRolePopup">
          <q-card>
            <q-card-section>
@@ -117,7 +119,7 @@
 </template>
   
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import {ref} from 'vue'
 const adminRolesTableData = ref([
    {id:1, role:'admin roles 22'},
    {id:2, role:'test update'},
@@ -198,5 +200,11 @@ const handleSingleDeleteToggle =()=>{
 const handleAddNewAdminRole = ()=>{
    showAddNewAdminRolePopup.value = true
 }
+// const handleSelectAllRoles =()=>{
+//    editAllRoles.value= createAllRoles.value=deleteAllRoles.value = viewAllRoles.value = selectAllRoles.value 
+//    addAdminRoleTableData.value.forEach(role=>{role.edit = selectAllRoles.value
+//    role.create = selectAllRoles.value 
+//    role.view = selectAllRoles.value 
+//    role.delete = selectAllRoles.value})
+// }
 </script>
-  

@@ -3,7 +3,11 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,vue}'],
   // prefix: 'tw-',
   theme: {
-    extend: {},
+    extend: {
+      colors:{
+        signature:"var(--primary)"
+      }
+    },
     screens: {
       'sm': '320px',
       // => @media (min-width: 640px) { ... }
