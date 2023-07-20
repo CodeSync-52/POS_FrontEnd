@@ -1,5 +1,5 @@
 <template>
-   <div> return</div>
+   <div> shop management </div>
 </template>
   
 <script setup lang="ts">  

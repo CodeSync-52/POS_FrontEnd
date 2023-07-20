@@ -1,5 +1,5 @@
 <template>
-   <div> sale </div>
+   <div> report management </div>
 </template>
   
 <script setup lang="ts">  
