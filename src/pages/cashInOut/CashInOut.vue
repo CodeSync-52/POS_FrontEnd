@@ -1,7 +1,5 @@
 <template>
-   <div> cash in out</div>
+  <div>cash in out</div>
 </template>
-  
-<script setup lang="ts">  
-</script>
-  
+
+<script setup lang="ts"></script>

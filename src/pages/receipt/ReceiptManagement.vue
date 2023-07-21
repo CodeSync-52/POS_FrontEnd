@@ -1,7 +1,5 @@
 <template>
-   <div> receipt</div>
+  <div>receipt</div>
 </template>
-  
-<script setup lang="ts">  
-</script>
-  
+
+<script setup lang="ts"></script>

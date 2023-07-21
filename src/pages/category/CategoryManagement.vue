@@ -1,7 +1,5 @@
 <template>
-   <div> category </div>
+  <div>category</div>
 </template>
-  
-<script setup lang="ts">  
-</script>
-  
+
+<script setup lang="ts"></script>

@@ -48,22 +48,30 @@
             </router-link>
           </div> -->
           <div v-for="link in essentialLinks" :key="link.title">
-            <q-expansion-item group="somegroup" expand-icon-class="text-white" :icon="link.icon" :label="link.title"  header-class="text-white">  
+            <q-expansion-item
+              group="somegroup"
+              expand-icon-class="text-white"
+              :icon="link.icon"
+              :label="link.title"
+              header-class="text-white"
+            >
               <q-card class="bg-gradient-to-r from-blue-600 to-blue-800">
-                  <q-card-section class="q-py-none q-pl-lg">
-                    <router-link
-                      v-for="subLinks in link?.children"
-                      :key="subLinks.title"
-                      :to="subLinks.path"
-                      class="pl-7"
+                <q-card-section class="q-py-none q-pl-lg">
+                  <router-link
+                    v-for="subLinks in link?.children"
+                    :key="subLinks.title"
+                    :to="subLinks.path"
+                    class="pl-7"
+                  >
+                    <div
+                      class="text-[0.9rem] pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer"
                     >
-                      <div class="text-[0.9rem] pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer">
-                        {{ subLinks.title }}
-                      </div>
-                    </router-link>
-                  </q-card-section>
-                </q-card>
-              </q-expansion-item>
+                      {{ subLinks.title }}
+                    </div>
+                  </router-link>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
             <!-- <div
               class="flex group items-center gap-[0.6rem] py-2 px-4 cursor-pointer transition-all duration-[300ms] hover:bg-[#094166] hover:text-white rounded-[11px]"
               @click="handleSelectedLink(link.title)"
@@ -106,7 +114,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import PosIcon from '../assets/Images/Pos-icon.png'
+import PosIcon from '../assets/Images/Pos-icon.png';
 const essentialLinks = [
   {
     title: 'User Management',

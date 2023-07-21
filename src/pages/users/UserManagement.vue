@@ -100,7 +100,7 @@
                 color="secondary"
                 label="Phone number as username"
                 size="30px"
-                />
+              />
             </div>
             <div class="row px-2 q-col-gutter-sm">
               <div class="col-md-4 w-full col-sm-12">
@@ -166,13 +166,19 @@
                 color="secondary"
                 label="Active"
                 size="30px"
-                />
+              />
             </div>
           </div>
         </q-card-section>
         <q-card-actions class="justify-end">
           <q-btn flat label="Cancel" color="red" v-close-popup />
-          <q-btn flat label="Save" color="primary" v-close-popup @click="handleAddingNewAdminRole" />
+          <q-btn
+            flat
+            label="Save"
+            color="primary"
+            v-close-popup
+            @click="handleAddingNewAdminRole"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -182,10 +188,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { UserColumn, UserRows } from './utils';
-import  userManagement from '../../stores/userManagement'
+import userManagement from '../../stores/userManagement';
 const showAddNewAdminRolePopup = ref(false);
-const userManagementStore = userManagement()
-const newUser = userManagementStore.addingNewUser
+const userManagementStore = userManagement();
+const newUser = userManagementStore.addingNewUser;
 const isPwd = ref(true);
 const state = ref({
   userName: '',
@@ -209,18 +215,18 @@ const options = ref([
 const handleAddNewAdminRole = (action: boolean) => {
   showAddNewAdminRolePopup.value = action;
 };
-const handleAddingNewAdminRole = ()=>{
-    newUser.userName = state.value.userName
-    newUser.phone = state.value.phone
-    newUser.role = state.value.role
-    newUser.assignShop = state.value.assignShop
-    newUser.outStandingBalance = state.value.outStandingBalance
-    newUser.wholeSaleDiscount = state.value.wholeSaleDiscount
-    newUser.isActive = state.value.isActive
-    newUser.password = state.value.password
-    newUser.customerGroup = state.value.customerGroup
-    newUser.isPhnNumberAsUserNumber = state.value.isPhnNumberAsUserNumber
-}
+const handleAddingNewAdminRole = () => {
+  newUser.userName = state.value.userName;
+  newUser.phone = state.value.phone;
+  newUser.role = state.value.role;
+  newUser.assignShop = state.value.assignShop;
+  newUser.outStandingBalance = state.value.outStandingBalance;
+  newUser.wholeSaleDiscount = state.value.wholeSaleDiscount;
+  newUser.isActive = state.value.isActive;
+  newUser.password = state.value.password;
+  newUser.customerGroup = state.value.customerGroup;
+  newUser.isPhnNumberAsUserNumber = state.value.isPhnNumberAsUserNumber;
+};
 const filter = ref('');
 </script>
 <style>
