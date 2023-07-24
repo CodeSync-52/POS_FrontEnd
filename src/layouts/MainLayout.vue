@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <div class="">
-      <q-header class="bg-gradient-to-r from-blue-600 to-blue-800" elevated>
+      <q-header class="bg-signature" elevated>
         <q-toolbar>
           <q-btn
             v-if="isSmallScreen"
@@ -12,13 +12,13 @@
             aria-label="Menu"
             @click="toggleLeftDrawer"
           />
-          <q-toolbar-title> POS App </q-toolbar-title>
+          <q-toolbar-title>Point of Sale</q-toolbar-title>
         </q-toolbar>
       </q-header>
 
       <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
         <q-list
-          class="bg-gradient-to-r from-blue-600 to-blue-800 gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-scroll mainlayoutSidebar"
+          class="bg-signature gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-scroll mainlayoutSidebar"
         >
           <q-item-label class="flex w-full justify-end" header>
             <q-icon
@@ -55,7 +55,7 @@
               :label="link.title"
               header-class="text-white"
             >
-              <q-card class="bg-gradient-to-r from-blue-600 to-blue-800">
+              <q-card class="bg-signature">
                 <q-card-section class="q-py-none q-pl-lg">
                   <router-link
                     v-for="subLinks in link?.children"
@@ -64,7 +64,7 @@
                     class="pl-7"
                   >
                     <div
-                      class="text-[0.9rem] pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer"
+                      class="text-[0.9rem] pl-2 py-2 text-white transition-all hover:bg-[#2599f5] rounded-md cursor-pointer"
                     >
                       {{ subLinks.title }}
                     </div>
