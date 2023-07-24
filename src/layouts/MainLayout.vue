@@ -315,7 +315,6 @@ const essentialLinks = [
   //   path: '/variant',
   // },
 ];
-
 const leftDrawerOpen = ref(false);
 const isSmallScreen = ref(false);
 function toggleLeftDrawer() {
