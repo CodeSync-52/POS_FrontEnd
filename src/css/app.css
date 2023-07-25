@@ -1,7 +1,7 @@
 /* app global css */
-.mainlayoutSidebar::-webkit-scrollbar{
-    width: 5px;
+.mainlayoutSidebar::-webkit-scrollbar {
+  width: 5px;
 }
-.mainlayoutSidebar::-webkit-scrollbar-thumb{
-    background-color: rgb(93, 146, 245);
+.mainlayoutSidebar::-webkit-scrollbar-thumb {
+  background-color: rgb(93, 146, 245);
 }

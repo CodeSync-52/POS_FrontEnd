@@ -1,3 +1,3 @@
 <template>
-    <div>stock transfer</div>
+  <div>stock transfer</div>
 </template>

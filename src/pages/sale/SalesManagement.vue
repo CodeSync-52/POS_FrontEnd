@@ -1,7 +1,5 @@
 <template>
-   <div> sale Manangement </div>
+  <div>sale Manangement</div>
 </template>
-  
-<script setup lang="ts">  
-</script>
-  
+
+<script setup lang="ts"></script>

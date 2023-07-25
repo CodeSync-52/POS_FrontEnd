@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref } from 'vue';
 import PosIcon from '../assets/Images/Pos-icon.png';
 const essentialLinks = [
   {

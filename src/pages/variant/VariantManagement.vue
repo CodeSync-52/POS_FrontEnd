@@ -1,7 +1,5 @@
 <template>
-   <div> variant </div>
+  <div>variant</div>
 </template>
-  
-<script setup lang="ts">  
-</script>
-  
+
+<script setup lang="ts"></script>

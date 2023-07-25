@@ -1,5 +1,4 @@
 <template>
-<div> article management</div>
+  <div>article management</div>
 </template>
-<script lang="ts" setup>
-</script>
+<script lang="ts" setup></script>

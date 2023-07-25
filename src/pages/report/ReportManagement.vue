@@ -1,7 +1,5 @@
 <template>
-   <div> report management </div>
+  <div>report management</div>
 </template>
-  
-<script setup lang="ts">  
-</script>
-  
+
+<script setup lang="ts"></script>

@@ -1,7 +1,5 @@
 <template>
-   <div> shop management </div>
+  <div>shop management</div>
 </template>
-  
-<script setup lang="ts">  
-</script>
-  
+
+<script setup lang="ts"></script>
