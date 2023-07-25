@@ -6,12 +6,16 @@ export default defineStore('user-management', () => {
     customerGroup: '',
     isActive: true,
     isPhnNumberAsUserNumber: false,
-    outStandingBalance: '',
+
+    outStandingBalance: 0,
+
     password: '',
     phone: '',
     role: '',
     userName: '',
-    wholeSaleDiscount: '',
+
+    wholeSaleDiscount: 0,
+
   });
   return {
     addingNewUser,

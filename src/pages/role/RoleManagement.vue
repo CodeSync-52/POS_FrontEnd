@@ -14,12 +14,14 @@
       <q-markup-table>
         <thead>
           <tr>
+ 
             <th class="text-left">Role Name</th>
             <th class="text-left"></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="roles in adminRolesTableData" :key="roles.id">
+ 
             <td class="text-left">{{ roles.role }}</td>
             <td class="text-center">
               <q-btn icon="more_horiz" color="blue-grey-4" flat unelevated />
@@ -31,10 +33,12 @@
     <q-dialog v-model="showAddNewAdminRolePopup">
       <q-card>
         <q-card-section>
+ 
           <div class="row justify-end items-center mb-2">
             <span><q-btn flat unelevated dense size="md" icon="close" /></span>
           </div>
           <div class="row px-2 q-col-gutter-y-md">
+ 
             <div class="col-12">
               <div class="row items-center q-gutter-x-md">
                 <span>Permissions:</span>
@@ -210,10 +214,12 @@ const addAdminRoleTableData = ref([
   },
 ]);
 const showAddNewAdminRolePopup = ref(false);
+ 
 const viewAllRoles = ref(false);
 const createAllRoles = ref(false);
 const editAllRoles = ref(false);
 const deleteAllRoles = ref(false);
+ 
 const selectAllRoles = ref(false);
 const handleViewAllRoles = () => {
   if (!viewAllRoles.value) {

@@ -3,5 +3,7 @@
   width: 5px;
 }
 .mainlayoutSidebar::-webkit-scrollbar-thumb {
+
   background-color: #5d92f5;
+
 }
