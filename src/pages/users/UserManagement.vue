@@ -223,7 +223,9 @@
             label="Save"
             color="primary"
             v-close-popup
+ 
             @click="handleAddNewUser"
+ 
           />
         </q-card-actions>
       </q-card>
@@ -234,6 +236,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { UserColumn, UserRows } from './utils';
+ 
 import { customerGroup, role, status } from '../../constants/utils';
 import userManagement from '../../stores/userManagement';
 import { IuserManagementTableRow } from '../../interfaces/users/userManagment';
@@ -245,6 +248,7 @@ type filterSearch = {
   role: null | string | number;
   status: null | string | number;
 };
+ 
 const isPwd = ref(true);
 const filterSearch = ref({
   customerGroup: {
@@ -294,7 +298,9 @@ function handleChange(e: any, name: keyof filterSearch) {
 const showAddUserModal = (action: boolean) => {
   showAddNewAdminRolePopup.value = action;
 };
+
 const handleAddNewUser = () => {
+
   newUser.userName = state.value.userName;
   newUser.phone = state.value.phone;
   newUser.role = state.value.role;
