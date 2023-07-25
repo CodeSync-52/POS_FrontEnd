@@ -32,21 +32,8 @@
             />
           </q-item-label>
           <div class="w-16 mx-auto">
-            <img :src="PosIcon" alt="POS Icon" class="text-white" />
+            <img src="/assets/Pos-icon.png" alt="POS Icon" class="text-white" />
           </div>
-          <!-- <div class="px-3" v-for="link in essentialLinks" :key="link.title">
-            <router-link @click="isSmallScreen ? toggleLeftDrawer : null"  :to="link.path">
-              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 py-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
-                <div>
-                  <q-icon :name="link.icon" :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="group-hover:text-white text-[#80b6db]" size="25px" />
-                </div>
-                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.8rem] group-hover:text-white text-[#80b6db]">
-                  {{ link.title }}
-                </div>
-                
-              </div>
-            </router-link>
-          </div> -->
           <div v-for="link in essentialLinks" :key="link.title">
             <q-expansion-item
               group="somegroup"
@@ -72,34 +59,6 @@
                 </q-card-section>
               </q-card>
             </q-expansion-item>
-            <!-- <div
-              class="flex group items-center gap-[0.6rem] py-2 px-4 cursor-pointer transition-all duration-[300ms] hover:bg-[#094166] hover:text-white rounded-[11px]"
-              @click="handleSelectedLink(link.title)"
-              :class="{
-                'bg-[#094166] text-white': selectedLinkDropdown === link.title,
-              }"
-            >
-              <div>
-                <q-icon
-                  :name="link.icon"
-                  class="group-hover:text-white text-[#80b6db]"
-                  size="25px"
-                />
-              </div>
-              <div class="text-[#80b6db] text-lg group-hover:text-white">
-                {{ link.title }}
-              </div>
-            </div> 
-             <router-link @click="isSmallScreen ? toggleLeftDrawer : null"  :to="link.path">
-              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 py-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
-                <div>
-                  <q-icon :name="link.icon" :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="group-hover:text-white text-[#80b6db]" size="25px" />
-                </div>
-                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.8rem] group-hover:text-white text-[#80b6db]">
-                  {{ link.title }}
-                </div>
-              </div>
-            </router-link> -->
           </div>
         </q-list>
       </q-drawer>
@@ -114,7 +73,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import PosIcon from '../assets/Images/Pos-icon.png';
 const essentialLinks = [
   {
     title: 'User Management',
