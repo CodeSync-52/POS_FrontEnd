@@ -7,27 +7,73 @@
         icon="add"
         unelevated
         color="primary"
-        @click="handleAddNewAdminRole(true)"
+        @click="showAddUserModal(true)"
       />
+    </div>
+    <div class="row flex justify-end w-full gap-8">
+      <q-select
+        style="min-width: 200px"
+        outlined
+        v-model="filterSearch.customerGroup.label"
+        :options="customerGroup"
+        label="Customer Group"
+        @update:model-value="
+          (e : any) => {
+            handleChange(e, 'customerGroup');
+          }
+        "
+      />
+
+      <q-select
+        style="min-width: 200px"
+        outlined
+        v-model="filterSearch.role.label"
+        :options="role"
+        label="Role"
+        @update:model-value="
+          (e : any) => {
+            handleChange(e, 'role');
+          }
+        "
+      />
+      <q-select
+        style="min-width: 200px"
+        outlined
+        v-model="filterSearch.status.label"
+        :options="status"
+        label="Status"
+        @update:model-value="
+          (e: any) => {
+            handleChange(e, 'status');
+          }
+        "
+      />
+      <q-btn color="red" class="rounded-sm" icon="search" label="Search" />
     </div>
     <div class="q-pa-md">
       <q-table
         tabindex="0"
-        title="Users"
         :rows="UserRows"
         :column="UserColumn"
         :filter="filter"
+        :visible-columns="['userName', 'phone', 'role', 'assignShop', 'action']"
         row-key="name"
       >
         <template v-slot:body-cell-action="props">
-          <q-td class="!text-right" :props="props">
-            <div class="flex gap-2 justify-end md:pr-4">
-              <q-btn size="sm" flat unelevated icon="edit" />
+          <q-td class="" :props="props">
+            <div class="flex">
+              <q-btn
+                size="sm"
+                flat
+                unelevated
+                icon="edit"
+                @click="onEditButtonClick(props.row)"
+              />
               <q-btn size="sm" flat unelevated icon="delete" />
             </div>
           </q-td>
         </template>
-        <template v-slot:top-right>
+        <!-- <template v-slot:top-right>
           <q-input
             borderless
             dense
@@ -39,7 +85,7 @@
               <q-icon name="search" />
             </template>
           </q-input>
-        </template>
+        </template> -->
       </q-table>
     </div>
     <q-dialog v-model="showAddNewAdminRolePopup">
@@ -49,7 +95,7 @@
             <span class="text-2xl font-medium">Add new user</span>
             <span
               ><q-btn
-                @click="handleAddNewAdminRole(false)"
+                @click="showAddUserModal(false)"
                 flat
                 unelevated
                 dense
@@ -177,7 +223,7 @@
             label="Save"
             color="primary"
             v-close-popup
-            @click="handleAddingNewAdminRole"
+            @click="handleAddNewUser"
           />
         </q-card-actions>
       </q-card>
@@ -188,23 +234,55 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { UserColumn, UserRows } from './utils';
+
+import { customerGroup, role, status } from '../../constants/utils';
 import userManagement from '../../stores/userManagement';
+import { IuserManagementTableRow } from '../../interfaces/users/userManagment';
 const showAddNewAdminRolePopup = ref(false);
 const userManagementStore = userManagement();
 const newUser = userManagementStore.addingNewUser;
+type filterSearch = {
+  customerGroup: null | string | number;
+  role: null | string | number;
+  status: null | string | number;
+};
+
 const isPwd = ref(true);
+const filterSearch = ref({
+  customerGroup: {
+    label: null,
+    value: null,
+  },
+  role: {
+    label: null,
+    value: null,
+  },
+  status: {
+    label: null,
+    value: null,
+  },
+});
+
 const state = ref({
   userName: '',
   phone: '',
   role: '',
   assignShop: '',
-  outStandingBalance: '',
-  wholeSaleDiscount: '',
+  outStandingBalance: 0,
+  wholeSaleDiscount: 0,
   isActive: true,
   password: '12345678',
   customerGroup: '',
   isPhnNumberAsUserNumber: false,
 });
+const onEditButtonClick = (row: IuserManagementTableRow) => {
+  console.log('Clicked Edit button on row:', row);
+  state.value = {
+    ...row,
+    phone: row.phone ? row.phone.toString() : '',
+  };
+  showAddUserModal(true);
+};
 const options = ref([
   { id: 1, role: 'Super admin' },
   { id: 2, role: 'Admin' },
@@ -212,10 +290,14 @@ const options = ref([
   { id: 4, role: 'Master' },
   { id: 5, role: 'Master' },
 ]);
-const handleAddNewAdminRole = (action: boolean) => {
+function handleChange(e: any, name: keyof filterSearch) {
+  filterSearch.value[name] = e;
+}
+const showAddUserModal = (action: boolean) => {
   showAddNewAdminRolePopup.value = action;
 };
-const handleAddingNewAdminRole = () => {
+
+const handleAddNewUser = () => {
   newUser.userName = state.value.userName;
   newUser.phone = state.value.phone;
   newUser.role = state.value.role;
@@ -230,7 +312,7 @@ const handleAddingNewAdminRole = () => {
 const filter = ref('');
 </script>
 <style>
-.q-table th.sortable:last-child {
+/* .q-table th.sortable:last-child {
   text-align: right !important;
-}
+} */
 </style>

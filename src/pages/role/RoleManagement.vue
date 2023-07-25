@@ -210,10 +210,12 @@ const addAdminRoleTableData = ref([
   },
 ]);
 const showAddNewAdminRolePopup = ref(false);
+
 const viewAllRoles = ref(false);
 const createAllRoles = ref(false);
 const editAllRoles = ref(false);
 const deleteAllRoles = ref(false);
+
 const selectAllRoles = ref(false);
 const handleViewAllRoles = () => {
   if (!viewAllRoles.value) {
