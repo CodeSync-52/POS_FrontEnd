@@ -15,7 +15,6 @@ export default defineStore('user-management', () => {
     userName: '',
 
     wholeSaleDiscount: 0,
-
   });
   return {
     addingNewUser,

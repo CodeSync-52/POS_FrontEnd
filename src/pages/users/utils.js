@@ -9,7 +9,6 @@ export const UserColumn = [
     sortable: true,
   },
   {
-
     name: 'phone',
     align: 'center',
     label: 'Phone',
@@ -19,7 +18,6 @@ export const UserColumn = [
   { name: 'role', label: 'Role', field: 'role', sortable: true },
   { name: 'assignShop', label: 'Shop', field: 'assignShop', sortable: true },
   { name: 'action', label: 'Action', field: 'action' },
-
 ];
 
 export const UserRows = [

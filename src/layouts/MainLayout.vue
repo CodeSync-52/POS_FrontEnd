@@ -42,9 +42,7 @@
               :label="link.title"
               header-class="text-white"
             >
- 
               <q-card class="bg-signature">
- 
                 <q-card-section class="q-py-none q-pl-lg">
                   <router-link
                     v-for="subLinks in link?.children"
@@ -53,9 +51,7 @@
                     class="pl-7"
                   >
                     <div
- 
                       class="text-[0.9rem] pl-2 py-2 text-white transition-all hover:bg-[#2599f5] rounded-md cursor-pointer"
- 
                     >
                       {{ subLinks.title }}
                     </div>
@@ -63,7 +59,7 @@
                 </q-card-section>
               </q-card>
             </q-expansion-item>
- 
+
             <!-- <div
               class="flex group items-center gap-[0.6rem] py-2 px-4 cursor-pointer transition-all duration-[300ms] hover:bg-[#094166] hover:text-white rounded-[11px]"
               @click="handleSelectedLink(link.title)"
@@ -92,7 +88,6 @@
                 </div>
               </div>
             </router-link> -->
- 
           </div>
         </q-list>
       </q-drawer>
@@ -106,9 +101,8 @@
 </template>
 
 <script setup lang="ts">
- 
 import { ref } from 'vue';
- 
+
 import PosIcon from '../assets/Images/Pos-icon.png';
 const essentialLinks = [
   {

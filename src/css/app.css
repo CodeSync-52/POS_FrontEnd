@@ -1,9 +1,9 @@
 /* app global css */
-.mainlayoutSidebar::-webkit-scrollbar {
+.mainlayoutSidebar::-webkit-scrollbar,
+.adminRoleEditTable::-webkit-scrollbar {
   width: 5px;
 }
-.mainlayoutSidebar::-webkit-scrollbar-thumb {
-
+.mainlayoutSidebar::-webkit-scrollbar-thumb,
+.adminRoleEditTable::-webkit-scrollbar-thumb {
   background-color: #5d92f5;
-
 }
