@@ -4,7 +4,6 @@
       <q-header class="bg-gradient-to-r from-blue-600 to-blue-800" elevated>
         <q-toolbar>
           <q-btn
-            v-if="isSmallScreen"
             flat
             dense
             round
@@ -23,75 +22,43 @@
           <q-item-label class="flex w-full justify-end" header>
             <q-icon
               name="close"
-              v-if="isSmallScreen"
               flat
               dense
               round
               @click="toggleLeftDrawer"
               size="25px"
+              class="lg:hidden"
             />
           </q-item-label>
           <div class="w-16 mx-auto">
             <img :src="PosIcon" alt="POS Icon" class="text-white" />
           </div>
-          <!-- <div class="px-3" v-for="link in essentialLinks" :key="link.title">
-            <router-link @click="isSmallScreen ? toggleLeftDrawer : null"  :to="link.path">
-              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 py-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
-                <div>
-                  <q-icon :name="link.icon" :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="group-hover:text-white text-[#80b6db]" size="25px" />
-                </div>
-                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.8rem] group-hover:text-white text-[#80b6db]">
-                  {{ link.title }}
-                </div>
-                
-              </div>
-            </router-link>
-          </div> -->
+
           <div v-for="link in essentialLinks" :key="link.title">
-            <q-expansion-item group="somegroup" expand-icon-class="text-white" :icon="link.icon" :label="link.title"  header-class="text-white">  
-              <q-card class="bg-gradient-to-r from-blue-600 to-blue-800">
-                  <q-card-section class="q-py-none q-pl-lg">
-                    <router-link
-                      v-for="subLinks in link?.children"
-                      :key="subLinks.title"
-                      :to="subLinks.path"
-                      class="pl-7"
-                    >
-                      <div class="text-[0.9rem] pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer">
-                        {{ subLinks.title }}
-                      </div>
-                    </router-link>
-                  </q-card-section>
-                </q-card>
-              </q-expansion-item>
-            <!-- <div
-              class="flex group items-center gap-[0.6rem] py-2 px-4 cursor-pointer transition-all duration-[300ms] hover:bg-[#094166] hover:text-white rounded-[11px]"
-              @click="handleSelectedLink(link.title)"
-              :class="{
-                'bg-[#094166] text-white': selectedLinkDropdown === link.title,
-              }"
+            <q-expansion-item
+              group="somegroup"
+              expand-icon-class="text-white"
+              :icon="link.icon"
+              :label="link.title"
+              header-class="text-white"
             >
-              <div>
-                <q-icon
-                  :name="link.icon"
-                  class="group-hover:text-white text-[#80b6db]"
-                  size="25px"
-                />
-              </div>
-              <div class="text-[#80b6db] text-lg group-hover:text-white">
-                {{ link.title }}
-              </div>
-            </div> 
-             <router-link @click="isSmallScreen ? toggleLeftDrawer : null"  :to="link.path">
-              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 py-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
-                <div>
-                  <q-icon :name="link.icon" :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="group-hover:text-white text-[#80b6db]" size="25px" />
-                </div>
-                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.8rem] group-hover:text-white text-[#80b6db]">
-                  {{ link.title }}
-                </div>
-              </div>
-            </router-link> -->
+              <q-card class="bg-gradient-to-r from-blue-600 to-blue-800">
+                <q-card-section class="q-py-none q-pl-lg">
+                  <router-link
+                    v-for="subLinks in link?.children"
+                    :key="subLinks.title"
+                    :to="subLinks.path"
+                    class="pl-7"
+                  >
+                    <div
+                      class="text-[0.9rem] pl-2 py-2 text-white hover:bg-[#6097EA] rounded-md cursor-pointer"
+                    >
+                      {{ subLinks.title }}
+                    </div>
+                  </router-link>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
           </div>
         </q-list>
       </q-drawer>
@@ -106,7 +73,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import PosIcon from '../assets/Images/Pos-icon.png'
+import PosIcon from '../assets/Images/Pos-icon.png';
 const essentialLinks = [
   {
     title: 'User Management',
@@ -210,119 +177,11 @@ const essentialLinks = [
       },
     ],
   },
-  // {
-  //   title: 'Bill Generation',
-  //   caption: 'github.com/quasarframework',
-  //   icon: 'receipt_long',
-  //   path: '/bill-generation',
-  // },
-  // {
-  //   title: 'User Managment',
-  //   caption: 'github.com/quasarframework',
-  //   icon: 'groups',
-  //   path: '/user',
-  // },
-  // {
-  //   title: 'Category Managment',
-  //   caption: 'github.com/quasarframework',
-  //   icon: 'category',
-  //   path: '/category',
-  // },
-  // {
-  //   title: 'Customers Group',
-  //   caption: 'chat.quasar.dev',
-  //   icon: 'workspaces_filled',
-  //   path: '/customer-group',
-  // },
-  // {
-  //   title: 'Cash in/Cash out',
-  //   caption: 'chat.quasar.dev',
-  //   icon: 'currency_exchange',
-  //   path: '/cashInOut',
-  // },
-  // {
-  //   title: 'Discount Managment',
-  //   caption: 'forum.quasar.dev',
-  //   icon: 'discount',
-  //   path: '/discount',
-  // },
-  // {
-  //   title: 'Goods Receipt Notes',
-  //   caption: 'forum.quasar.dev',
-  //   icon: 'receipt',
-  //   path: '/goods-receipt',
-  // },
-  // {
-  //   title: 'Inventory Management',
-  //   caption: 'forum.quasar.dev',
-  //   icon: 'inventory',
-  //   path: '/inventory',
-  // },
-  // {
-  //   title: 'Product Managment',
-  //   caption: '@quasarframework',
-  //   icon: 'local_florist',
-  //   path: '/product',
-  // },
-  // {
-  //   title: 'Receipt Management',
-  //   caption: '@QuasarFramework',
-  //   icon: 'print',
-  //   path: '/receipt',
-  // },
-  // {
-  //   title: 'Sales Management',
-  //   caption: 'Community Quasar projects',
-  //   icon: 'receipt',
-  //   path: '/sale',
-  // },
-  // {
-  //   title: 'Shop Management',
-  //   caption: 'forum.quasar.dev',
-  //   icon: 'store',
-  //   path: '/shop',
-  // },
-  // {
-  //   title: 'Return Management',
-  //   caption: 'chat.quasar.dev',
-  //   icon: 'assignment_returned',
-  //   path: '/return'
-  // },
-  // {
-  //   title: 'Reports Management',
-  //   caption: 'chat.quasar.dev',
-  //   icon: 'chat',
-  //   path: '/report',
-  // },
-  // {
-  //   title: 'Roles Managment',
-  //   caption: '@quasarframework',
-  //   icon: 'summarize',
-  //   path: '/role',
-  // },
-  // {
-  //   title: 'Variant Managment',
-  //   caption: '@quasarframework',
-  //   icon: 'palette',
-  //   path: '/variant',
-  // },
 ];
 
 const leftDrawerOpen = ref(false);
-const isSmallScreen = ref(false);
+
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
-}
-onMounted(() => {
-  handleResize(); // Initial call to set the initial value
-  window.addEventListener('resize', handleResize);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
-});
-
-function handleResize() {
-  isSmallScreen.value = window.innerWidth < 992; // Adjust the breakpoint according to your needs
 }
 </script>
