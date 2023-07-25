@@ -477,6 +477,7 @@ const addAdminRoleTableData = ref([
     delete: false,
   },
 ]);
+
 const showPreviewAdminRolePopup = ref(false);
 const showEditAdminRolePopup = ref(false);
 const viewAllRoles = ref(false);
