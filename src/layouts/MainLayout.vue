@@ -31,7 +31,7 @@
             />
           </q-item-label>
           <div class="w-16 mx-auto">
-            <img :src="PosIcon" alt="POS Icon" class="text-white" />
+            <img src="/assets/Pos-icon.png" alt="POS Icon" class="text-white" />
           </div>
 
           <div v-for="link in essentialLinks" :key="link.title">
@@ -102,8 +102,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
-import PosIcon from '../assets/Images/Pos-icon.png';
 const essentialLinks = [
   {
     title: 'User Management',
