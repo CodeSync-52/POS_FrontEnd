@@ -4,12 +4,8 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     component: () => import('src/pages/auth/LoginPage.vue'),
+    name: 'Login',
   },
-  // {
-  //   path: '/',
-  //   component: () => import('layouts/MainLayout.vue'),
-  //   children: [{ path: '', component: () => import('src/pages/MainPage.vue') }],
-  // },
   {
     path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),
@@ -197,7 +193,8 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    // component: () => import('pages/ErrorNotFound.vue'),
+    redirect: '/dashboard',
   },
 ];
 

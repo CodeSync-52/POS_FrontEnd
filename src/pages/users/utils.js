@@ -1,12 +1,15 @@
 export const UserColumn = [
   {
+    name: 'FullName',
+    required: true,
+    label: 'Full name',
+    align: 'left',
+    sortable: true,
+  },
+  {
     name: 'userName',
     required: true,
-    label: 'Name',
-    align: 'left',
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true,
+    label: 'UserName',
   },
   {
     name: 'phone',
@@ -16,18 +19,33 @@ export const UserColumn = [
     sortable: true,
   },
   { name: 'role', label: 'Role', field: 'role', sortable: true },
-  { name: 'assignShop', label: 'Shop', field: 'assignShop', sortable: true },
+  { name: 'assignShop', label: 'Shop', field: 'assignShop' },
+
+  {
+    name: 'customerGroup',
+    label: 'Customer Group',
+    field: 'customerGroup',
+    sortable: true,
+  },
+  { name: 'status', label: 'Status', field: 'status' },
+  { name: 'discount', label: 'Discount', field: 'discount', sortable: true },
+  {
+    name: 'outStandingBalance',
+    label: 'Outstanding Balance',
+    field: 'outStandingBalance',
+  },
   { name: 'action', label: 'Action', field: 'action' },
 ];
 
 export const UserRows = [
   {
+    fullName: 'Ahmed Ali',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
     assignShop: 'Shop 1',
     outStandingBalance: 0,
-    wholeSaleDiscount: 0,
+    discount: 0,
     isActive: true,
     password: '12345678',
     customerGroup: 'group 1',
