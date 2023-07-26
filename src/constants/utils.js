@@ -22,3 +22,34 @@ export const status = [
   { label: 'Active', value: 1 },
   { label: 'In Active', value: 0 },
 ];
+export const statusFilter = {
+  label: null,
+  value: null,
+};
+export const roleFilter = {
+  label: null,
+  value: null,
+};
+export const customerGroupFilter = {
+  label: null,
+  value: null,
+};
+export const userManagementFilter = {
+  customerGroup: customerGroupFilter,
+  role: roleFilter,
+  status: statusFilter,
+};
+
+export const addUserStateManagement = {
+  fullName: '',
+  userName: '',
+  phone: '',
+  role: '',
+  assignShop: '',
+  outStandingBalance: 0,
+  wholeSaleDiscount: 0,
+  isActive: true,
+  password: '12345678',
+  customerGroup: '',
+  isPhnNumberAsUserNumber: false,
+};
