@@ -1,4 +1,6 @@
-export const customerGroup = [
+import { IUserData } from 'src/interfaces';
+
+export const customerGroupOptions = [
   { value: 1, label: 'Group 1' },
   { value: 2, label: 'Group 2' },
   { value: 3, label: 'Group 3' },
@@ -8,7 +10,7 @@ export const customerGroup = [
   { value: 7, label: 'Group 7' },
 ];
 
-export const role = [
+export const roleOptions = [
   { label: 'Super Admin', value: 'supper_admin' },
   { label: 'Admin', value: 'admin' },
   { label: 'Shop Manager', value: 'shop_manager' },
@@ -17,39 +19,19 @@ export const role = [
   { label: 'Customer/Vendor', value: 'customer_vendor' },
 ];
 
-export const status = [
+export const statusOptions = [
   { label: 'All', value: -1 },
   { label: 'Active', value: 1 },
   { label: 'In Active', value: 0 },
 ];
-export const statusFilter = {
-  label: null,
-  value: null,
-};
-export const roleFilter = {
-  label: null,
-  value: null,
-};
-export const customerGroupFilter = {
-  label: null,
-  value: null,
-};
-export const userManagementFilter = {
-  customerGroup: customerGroupFilter,
-  role: roleFilter,
-  status: statusFilter,
-};
 
-export const addUserStateManagement = {
+export const addUserDefaultState: IUserData = {
   fullName: '',
   userName: '',
   phone: '',
-  role: '',
-  assignShop: '',
   outStandingBalance: 0,
   wholeSaleDiscount: 0,
   isActive: true,
   password: '12345678',
-  customerGroup: '',
   isPhnNumberAsUserNumber: false,
 };

@@ -219,7 +219,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { IAdminRole } from '../../interfaces/admin-role/AdminRole';
+import { IAdminRole } from '../../interfaces/admin-role/admin-role';
 const hasAllViewRoles = computed(() => {
   return addAdminRoleTableData.value.every((role) => role.view);
 });
@@ -1337,3 +1337,4 @@ const handleSingleDeleteToggle = () => {
 //    role.delete = selectAllRoles.value})
 // }
 </script>
+../../interfaces/admin-role/admin-role ../../interfaces/admin-role
