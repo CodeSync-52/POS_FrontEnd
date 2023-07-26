@@ -50,11 +50,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { rolesMock } from './roleMock';
-import RoleManagementModal from 'components/role/RoleManagementModal.vue';
-const selectedRow = ref(0);
+<script setup lang="ts"> 
+import { ref, computed } from 'vue';
+import { IAdminRole } from '../../interfaces/admin-role/admin-role';
+const hasAllViewRoles = computed(() => {
+  return addAdminRoleTableData.value.every((role) => role.view);
+});
+const selectedAdminRoleRowIndex = ref(0);
+const selectedAdminRoleAction = ref('');
+ 
 const rolesManagementTableColumns = ref([
   {
     name: 'name',
@@ -77,3 +81,4 @@ const showEditPopup = (shouldEdit: boolean, rowIndex: number) => {
   isEdit.value = shouldEdit;
 };
 </script>
+../../interfaces/admin-role/admin-role ../../interfaces/admin-role
