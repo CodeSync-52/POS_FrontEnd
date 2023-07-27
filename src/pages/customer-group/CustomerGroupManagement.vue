@@ -91,7 +91,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { QTableColumn, useQuasar } from 'quasar';
-import AddUserModal from 'src/components/customer-group-management/AddUserModal.vue';
+import AddUserModal from 'components/customer-group-management/AddCustomerModal.vue';
 import { customerGroupMockRows } from './customer-group-mocks';
 import { ICustomerData } from 'src/interfaces';
 const $q = useQuasar();
