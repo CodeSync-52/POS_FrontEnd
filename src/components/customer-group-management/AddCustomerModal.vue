@@ -3,9 +3,7 @@
     <q-card-section>
       <div class="text-h6 q-mb-md">
         <span>
-          {{
-            props.isEditCustomer ? 'Edit New Customer' : 'Add Customer Name'
-          }}</span
+          {{ isEditCustomer ? 'Edit New Customer' : 'Add Customer Name' }}</span
         >
       </div>
       <q-input dense v-model="customerName" outlined label="Name" />
