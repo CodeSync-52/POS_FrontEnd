@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <span class="text-3xl font-semibold">Customer Managment</span>
+      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
@@ -79,6 +79,10 @@ import CustomerStatusModal from 'components/customer-group-management/CustomerSt
 import AddUserModal from 'components/customer-group-management/AddCustomerModal.vue';
 import { customerGroupMockRows } from './customer-group-mocks';
 import { ICustomerData } from 'src/interfaces';
+import { EUserModules, getRoleModuleDisplayName } from 'src/interfaces';
+const pageTitle = getRoleModuleDisplayName(
+  EUserModules.CustomerGroupManagement
+);
 const $q = useQuasar();
 const updateOrAddCustomer = async (newName: string, callback: () => void) => {
   if (selectedRowData.value) {
@@ -103,7 +107,7 @@ const updatingStatus = async (updatedStatus: string) => {
   }
   editStatusPopup.value = false;
 };
-const customerGroupColumns = ref<QTableColumn<ICustomerData>[]>([
+const customerGroupColumns: QTableColumn<ICustomerData>[] = [
   {
     name: 'name',
     required: true,
@@ -126,7 +130,7 @@ const customerGroupColumns = ref<QTableColumn<ICustomerData>[]>([
     align: 'left',
     sortable: false,
   },
-]);
+];
 const customerGroupRows = ref(customerGroupMockRows);
 const selectedRowData = ref<ICustomerData | null>(null);
 const selectedStatus = ref('');

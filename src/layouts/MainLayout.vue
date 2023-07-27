@@ -34,7 +34,7 @@
             <img src="/assets/Pos-icon.png" alt="POS Icon" class="text-white" />
           </div>
 
-          <div v-for="link in essentialLinks" :key="link.title">
+          <div v-for="link in allowedLinks" :key="link.title">
             <q-expansion-item
               group="somegroup"
               expand-icon-class="text-white"
@@ -53,41 +53,12 @@
                     <div
                       class="text-[0.9rem] pl-2 py-2 text-white transition-all hover:bg-[#2599f5] rounded-md cursor-pointer"
                     >
-                      {{ subLinks.title }}
+                      {{ getRoleModuleDisplayName(subLinks.title) }}
                     </div>
                   </router-link>
                 </q-card-section>
               </q-card>
             </q-expansion-item>
-
-            <!-- <div
-              class="flex group items-center gap-[0.6rem] py-2 px-4 cursor-pointer transition-all duration-[300ms] hover:bg-[#094166] hover:text-white rounded-[11px]"
-              @click="handleSelectedLink(link.title)"
-              :class="{
-                'bg-[#094166] text-white': selectedLinkDropdown === link.title,
-              }"
-            >
-              <div>
-                <q-icon
-                  :name="link.icon"
-                  class="group-hover:text-white text-[#80b6db]"
-                  size="25px"
-                />
-              </div>
-              <div class="text-[#80b6db] text-lg group-hover:text-white">
-                {{ link.title }}
-              </div>
-            </div> 
-             <router-link @click="isSmallScreen ? toggleLeftDrawer : null"  :to="link.path">
-              <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="flex group  items-center gap-6 py-2 px-4 hover:bg-[#094166] hover:text-white rounded-[11px]">
-                <div>
-                  <q-icon :name="link.icon" :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="group-hover:text-white text-[#80b6db]" size="25px" />
-                </div>
-                <div :class="{ 'bg-[#094166] text-white': $route.path === link.path }" class="text-[0.8rem] group-hover:text-white text-[#80b6db]">
-                  {{ link.title }}
-                </div>
-              </div>
-            </router-link> -->
           </div>
         </q-list>
       </q-drawer>
@@ -101,22 +72,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {
+  EActionPermissions,
+  EUserModules,
+  getRoleModuleDisplayName,
+} from 'src/interfaces';
+import { useAuthStore } from 'src/stores';
+import { computed, ref } from 'vue';
+const authStore = useAuthStore();
 const essentialLinks = [
   {
     title: 'User Management',
     icon: 'dashboard',
     children: [
       {
-        title: 'User Management',
+        title: EUserModules.UserManagment,
         path: '/user',
       },
       {
-        title: 'Role/Permission Management',
+        title: EUserModules.RolePermission,
         path: '/role',
       },
       {
-        title: 'Customer Group Management',
+        title: EUserModules.CustomerGroupManagement,
         path: '/customer-group',
       },
     ],
@@ -126,27 +104,27 @@ const essentialLinks = [
     icon: 'receipt',
     children: [
       {
-        title: 'Receipt Management',
+        title: EUserModules.ReceiptManagement,
         path: '/receipt',
       },
       {
-        title: 'Bill Generation',
+        title: EUserModules.BillGeneration,
         path: '/bill-generation',
       },
       {
-        title: 'Cash in/Cash out',
+        title: EUserModules.CashInCashOutManagement,
         path: '/cashInOut',
       },
       {
-        title: 'Sales Management',
+        title: EUserModules.SalesManagement,
         path: '/sale',
       },
       {
-        title: 'Sales Return Management',
+        title: EUserModules.SaleAndReturnManagement,
         path: '/return',
       },
       {
-        title: 'Shop Discounts',
+        title: EUserModules.ShopDiscountsModule,
         path: '/discount',
       },
     ],
@@ -157,19 +135,19 @@ const essentialLinks = [
     icon: 'local_florist',
     children: [
       {
-        title: 'Variant Management',
+        title: EUserModules.VariantManagement,
         path: '/variant',
       },
       {
-        title: 'Category Management',
+        title: EUserModules.CategoryManagement,
         path: '/category',
       },
       {
-        title: 'Article Management',
+        title: EUserModules.ArticleManagement,
         path: '/article',
       },
       {
-        title: 'Inventory Management',
+        title: EUserModules.InventoryManagement,
         path: '/inventory',
       },
     ],
@@ -180,15 +158,15 @@ const essentialLinks = [
     icon: 'store',
     children: [
       {
-        title: 'Shop Management',
+        title: EUserModules.ShopManagement,
         path: '/shop',
       },
       {
-        title: 'Good Receipt Notes (GRN)',
+        title: EUserModules.GoodsReceiptNotes,
         path: '/goods-receipt',
       },
       {
-        title: 'Stock Transfer Requests (STR)',
+        title: EUserModules.StockTransferRequests,
         path: '/stock-transfer',
       },
     ],
@@ -199,13 +177,25 @@ const essentialLinks = [
     icon: 'chat',
     children: [
       {
-        title: 'Report Management',
+        title: EUserModules.Report,
         caption: 'quasar.dev',
         path: '/report',
       },
     ],
   },
 ];
+const allowedLinks = computed(() => {
+  if (authStore) {
+    console.log('s');
+  }
+  const allowedList = essentialLinks.map((linkGroup) => ({
+    ...linkGroup,
+    children: linkGroup.children.filter((link) =>
+      authStore.checkUserHasPermission(link.title, EActionPermissions.View)
+    ),
+  }));
+  return allowedList.filter((linkGroup) => linkGroup.children.length > 0);
+});
 const leftDrawerOpen = ref(false);
 
 function toggleLeftDrawer() {

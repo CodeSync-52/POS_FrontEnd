@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex mb-4">
-      <span class="text-3xl font-semibold">Admin Roles</span>
+      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
     </div>
     <div class="q-pa-md">
       <q-table
@@ -54,8 +54,10 @@
 import { ref } from 'vue';
 import { rolesMock } from './roleMock';
 import RoleManagementModal from 'components/role/RoleManagementModal.vue';
+import { getRoleModuleDisplayName, EUserModules } from 'src/interfaces';
+const pageTitle = getRoleModuleDisplayName(EUserModules.RolePermission);
 const selectedRow = ref(0);
-const rolesManagementTableColumns = ref([
+const rolesManagementTableColumns = [
   {
     name: 'name',
     required: true,
@@ -66,8 +68,9 @@ const rolesManagementTableColumns = ref([
     name: 'action',
     label: '',
     align: 'right',
+    sortable: false,
   },
-]);
+];
 const rolesManagementTableRows = ref(rolesMock);
 const isRoleModalVisible = ref(false);
 const isEdit = ref(false);

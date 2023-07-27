@@ -84,7 +84,7 @@ const roleModuleList: Record<EUserModules, string> = {
   [EUserModules.Report]: 'Report',
 };
 
-export function getRoleModuleName(key: EUserModules) {
+export function getRoleModuleDisplayName(key: EUserModules) {
   return roleModuleList[key];
 }
 
@@ -112,6 +112,9 @@ export interface LoginTokenResponseDTO {
 }
 export interface RolePermissions {
   roleId: string;
-  roleName: string;
+  roleName: EUserRoles;
   permissionModuleActions: IRoleModule[];
 }
+
+export const checkNameIsModule = (e: any): e is EUserModules =>
+  Object.values(EUserModules).includes(e);
