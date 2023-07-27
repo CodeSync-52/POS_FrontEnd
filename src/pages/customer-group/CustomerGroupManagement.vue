@@ -94,7 +94,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Swal from 'sweetalert2';
 const customerGroupColumns = ref([
   {
     name: 'name',
@@ -211,19 +210,7 @@ const handleDeleteCustomerGroupRow = (selectedRow: {
   const selectedRowIndex = customerGroupRows.value.findIndex(
     (row) => selectedRow.id === row.id
   );
-  Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire('Deleted!', 'Your row has been deleted.', 'success');
-      return customerGroupRows.value.splice(selectedRowIndex, 1);
-    }
-  });
+  return customerGroupRows.value.splice(selectedRowIndex, 1);
 };
 const handleEditCustomerGroupNamePopup = (selectedRow: {
   id: number;
