@@ -94,7 +94,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Swal from 'sweetalert2';
 import { EUserModules, getRoleModuleDisplayName } from 'src/interfaces';
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CustomerGroupManagement
