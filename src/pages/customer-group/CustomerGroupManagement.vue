@@ -7,14 +7,13 @@
         icon="add"
         unelevated
         color="primary"
-        @click="handleAddNewCustomerPopup"
+        @click="showAddNewUserPopup"
       />
     </div>
     <div class="q-pa-md">
       <q-table
         :rows="customerGroupRows"
         :columns="customerGroupColumns"
-        :visible-columns="['name', 'status', 'action']"
         :rows-per-page-options="['50', '5', '10', '15', '20']"
         row-key="name"
       >
@@ -76,50 +75,40 @@
         </div>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="addCustomerGroupNamePopup">
-      <q-card class="q-pa-md full-width">
-        <q-card-section>
-          <div class="text-h6 q-mb-md">
-            <span>
-              {{
-                isEditCustomer ? 'Edit New Customer' : 'Add Customer Name'
-              }}</span
-            >
-          </div>
-          <q-input dense v-model="newCustomerName" outlined label="Name" />
-        </q-card-section>
-        <div class="row justify-end">
-          <q-btn label="Cancel" flat unelevated color="red" v-close-popup />
-          <q-btn
-            v-if="isEditCustomer"
-            label="Save"
-            flat
-            unelevated
-            color="signature"
-            v-close-popup
-            @click="handleSaveEditedCustomerGroupName"
-          />
-          <q-btn
-            v-else
-            label="Add"
-            flat
-            unelevated
-            color="signature"
-            v-close-popup
-            @click="handleSaveNewCustomer"
-          />
-        </div>
-      </q-card>
+    <q-dialog
+      @update:model-value="selectedRowData = null"
+      v-model="isAddCustomerModalVisible"
+    >
+      <add-user-modal
+        :user-name="selectedRowData?.name"
+        :is-edit-customer="!!selectedRowData"
+        @name-changed="updateOrAddCustomer"
+      />
     </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { customerGroupMockRows } from './customerGroupMocks';
-import { ICustomerData } from '../../interfaces/users/customerGroupManagement';
 import { QTableColumn, useQuasar } from 'quasar';
+import AddUserModal from 'src/components/customer-group-management/AddUserModal.vue';
+import { customerGroupMockRows } from './customer-group-mocks';
+import { ICustomerData } from 'src/interfaces';
 const $q = useQuasar();
+const updateOrAddCustomer = async (newName: string, callback: () => void) => {
+  if (selectedRowData.value) {
+    await new Promise((res) => {
+      setTimeout(() => res(newName), 3000);
+    });
+  } else {
+    await new Promise((res) => {
+      setTimeout(() => res(newName), 3000);
+    });
+  }
+  selectedRowData.value = null;
+  isAddCustomerModalVisible.value = false;
+  callback();
+};
 const customerGroupColumns = ref<QTableColumn<ICustomerData>[]>([
   {
     name: 'name',
@@ -145,34 +134,14 @@ const customerGroupColumns = ref<QTableColumn<ICustomerData>[]>([
   },
 ]);
 const customerGroupRows = ref(customerGroupMockRows);
-const selectedRowData = ref<ICustomerData>({
-  id: 0,
-  name: '',
-  status: '',
-  action: '',
-});
+const selectedRowData = ref<ICustomerData | null>(null);
 const selectedStatus = ref('');
 const editStatusPopup = ref(false);
-const addCustomerGroupNamePopup = ref(false);
-const isEditCustomer = ref(false);
+const isAddCustomerModalVisible = ref(false);
 const newCustomerName = ref('');
-const handleAddNewCustomerPopup = () => {
-  isEditCustomer.value = false;
+const showAddNewUserPopup = () => {
   newCustomerName.value = '';
-  addCustomerGroupNamePopup.value = true;
-};
-const handleSaveNewCustomer = () => {
-  const highestId =
-    Math.max(...customerGroupRows.value.map((customer) => customer.id)) + 1;
-  customerGroupRows.value = [
-    ...customerGroupRows.value,
-    {
-      id: highestId,
-      name: newCustomerName.value,
-      status: '1',
-      action: 'edit',
-    },
-  ];
+  isAddCustomerModalVisible.value = true;
 };
 const handleEditStatusPopup = (selectedRow: ICustomerData) => {
   selectedRowData.value = selectedRow;
@@ -184,7 +153,9 @@ const handleEditStatusPopup = (selectedRow: ICustomerData) => {
   editStatusPopup.value = true;
 };
 const handleSaveEditedStatus = () => {
-  selectedRowData.value.status = selectedStatus.value;
+  if (selectedRowData.value) {
+    selectedRowData.value.status = selectedStatus.value;
+  }
 };
 const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
   $q.notify({
@@ -210,17 +181,8 @@ const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
   });
 };
 const handleEditCustomerGroupNamePopup = (selectedRow: ICustomerData) => {
-  isEditCustomer.value = true;
   newCustomerName.value = selectedRow.name;
-  addCustomerGroupNamePopup.value = true;
+  isAddCustomerModalVisible.value = true;
   selectedRowData.value = selectedRow;
-};
-const handleSaveEditedCustomerGroupName = () => {
-  const filteredSelectedRecord = customerGroupRows.value.find(
-    (row) => selectedRowData.value.id === row.id
-  );
-  if (filteredSelectedRecord) {
-    filteredSelectedRecord.name = newCustomerName.value;
-  }
 };
 </script>

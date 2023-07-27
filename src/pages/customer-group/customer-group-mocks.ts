@@ -1,4 +1,4 @@
-import { ICustomerData } from './../../interfaces/users/customerGroupManagement';
+import { ICustomerData } from '../../interfaces/customer-group-management';
 export const customerGroupMockRows: ICustomerData[] = [
   {
     id: 0,
