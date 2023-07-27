@@ -22,6 +22,9 @@ declare module 'pinia' {
  * with the Store instance.
  */
 
+export * from './auth';
+export * from './user-management';
+
 export default store((/* { ssrContext } */) => {
   const pinia = createPinia();
 
