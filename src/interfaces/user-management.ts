@@ -1,16 +1,16 @@
-import { assignShop, customerGroup, role } from '../general';
+import { IOption } from './general';
 
-export interface IuserManagementTableRow {
+export interface IUserData {
   fullName: string;
   userName: string;
   phone: string;
-  role: role; // roleId, enum of role
-  assignShop: assignShop; //number, api
+  role?: IOption; // roleId, enum of role
+  assignShop?: IOption; //number, api
   outStandingBalance?: number; // do not post
   wholeSaleDiscount?: number; //discountAmount
   isActive: boolean;
   password?: string;
-  customerGroup: customerGroup; // number , customerGroupID, api neened
+  customerGroup?: IOption; // number , customerGroupID, api neened
   isPhnNumberAsUserNumber?: boolean; // do not post
   action?: any;
 }
