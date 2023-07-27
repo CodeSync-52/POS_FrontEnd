@@ -115,7 +115,6 @@ export const useAuthStore = defineStore('login', () => {
   };
   return {
     loggedInUser,
-    loginCred,
     storingLoginCredentials,
     checkUserHasPermission,
     logoutUser,
