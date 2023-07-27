@@ -54,26 +54,10 @@
     </div>
 
     <q-dialog v-model="editStatusPopup">
-      <q-card class="q-pa-md full-width">
-        <q-card-section>
-          <div class="text-h6 q-mb-md"><span> Edit Customer Status </span></div>
-          <div class="column">
-            <q-radio v-model="selectedStatus" val="1" label="Active" />
-            <q-radio v-model="selectedStatus" val="0" label="InActive" />
-          </div>
-        </q-card-section>
-        <div class="row justify-end">
-          <q-btn label="Cancel" flat unelevated color="red" v-close-popup />
-          <q-btn
-            label="Save"
-            flat
-            unelevated
-            color="signature"
-            v-close-popup
-            @click="handleSaveEditedStatus"
-          />
-        </div>
-      </q-card>
+      <customer-status-modal
+        :selected-status="selectedStatus"
+        @updated-status="updatingStatus"
+      />
     </q-dialog>
     <q-dialog
       @update:model-value="selectedRowData = null"
@@ -91,6 +75,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { QTableColumn, useQuasar } from 'quasar';
+import CustomerStatusModal from 'components/customer-group-management/CustomerStatusModal.vue';
 import AddUserModal from 'components/customer-group-management/AddCustomerModal.vue';
 import { customerGroupMockRows } from './customer-group-mocks';
 import { ICustomerData } from 'src/interfaces';
@@ -108,6 +93,15 @@ const updateOrAddCustomer = async (newName: string, callback: () => void) => {
   selectedRowData.value = null;
   isAddCustomerModalVisible.value = false;
   callback();
+};
+const updatingStatus = async (updatedStatus: string) => {
+  await new Promise((res) => {
+    setTimeout(() => res(updatedStatus), 3000);
+  });
+  if (selectedRowData.value) {
+    selectedRowData.value.status = updatedStatus;
+  }
+  editStatusPopup.value = false;
 };
 const customerGroupColumns = ref<QTableColumn<ICustomerData>[]>([
   {
@@ -151,11 +145,6 @@ const handleEditStatusPopup = (selectedRow: ICustomerData) => {
     selectedStatus.value = '0';
   }
   editStatusPopup.value = true;
-};
-const handleSaveEditedStatus = () => {
-  if (selectedRowData.value) {
-    selectedRowData.value.status = selectedStatus.value;
-  }
 };
 const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
   $q.notify({
