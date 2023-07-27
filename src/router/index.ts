@@ -6,18 +6,15 @@ import {
   createWebHistory,
 } from 'vue-router';
 
-import routes from './routes';
+import routes, { routeList } from './routes';
+import { useAuthStore } from 'src/stores';
+import {
+  EActionPermissions,
+  EUserModules,
+  checkNameIsModule,
+} from 'src/interfaces';
 
-/*
- * If not building with SSR mode, you can
- * directly export the Router instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Router instance.
- */
-
-export default route(function (/* { store, ssrContext } */) {
+export default route(function () {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
@@ -27,20 +24,44 @@ export default route(function (/* { store, ssrContext } */) {
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
-
-    // Leave this as is and make changes in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
   Router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore();
     const isAuthorized = true;
     if (!isAuthorized && to.name !== 'Login') {
       next('/login');
       return;
     }
+    const meta = to.meta.module;
     if (isAuthorized && to.name === 'Login') {
-      next('/dashboard');
+      const index = routeList.findIndex((route) => {
+        const meta = route.meta?.module as EUserModules;
+        return authStore.checkUserHasPermission(meta, EActionPermissions.View);
+      });
+      if (index < 0) {
+        authStore.logoutUser();
+        next('/login');
+        return;
+      }
+      next(routeList[index].path);
+      return;
+    }
+    if (!checkNameIsModule(meta)) {
+      next('/login');
+      return;
+    }
+    if (!authStore.checkUserHasPermission(meta, EActionPermissions.View)) {
+      const index = routeList.findIndex((route) => {
+        const meta = route.meta?.module as EUserModules;
+        return authStore.checkUserHasPermission(meta, EActionPermissions.View);
+      });
+      if (index < 0) {
+        authStore.logoutUser();
+        next('/login');
+        return;
+      }
+      next(routeList[index].path);
       return;
     }
     next();

@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia';
-import { EActionPermissions, EUserModules, IUser } from 'src/interfaces';
+import {
+  EActionPermissions,
+  EUserModules,
+  EUserRoles,
+  IUser,
+} from 'src/interfaces';
 import { ref } from 'vue';
 export const useAuthStore = defineStore('login', () => {
   const loginCred = ref({
@@ -7,7 +12,7 @@ export const useAuthStore = defineStore('login', () => {
     password: '',
   });
 
-  const loggedInUser = ref<IUser>({
+  const loggedInUser = ref<IUser | null>({
     aspNetUserId: '0032611b-2592-49d7-b98f-9331709fa68f',
     fullName: 'Jhon',
     userId: 1,
@@ -25,7 +30,7 @@ export const useAuthStore = defineStore('login', () => {
     },
     rolePermissions: {
       roleId: '39709840-76e6-4c61-9455-8571f6f65b1b',
-      roleName: 'Admin',
+      roleName: EUserRoles.SuperAdmin,
       permissionModuleActions: [
         {
           module: {
@@ -84,6 +89,10 @@ export const useAuthStore = defineStore('login', () => {
     moduleId: EUserModules,
     permissionId: EActionPermissions
   ) {
+    if (!loggedInUser.value) return false;
+    if (loggedInUser.value.rolePermissions.roleName === EUserRoles.SuperAdmin) {
+      return true;
+    }
     const moduleIndex =
       loggedInUser.value.rolePermissions.permissionModuleActions.findIndex(
         (module) => module.module.moduleId === moduleId
@@ -102,9 +111,14 @@ export const useAuthStore = defineStore('login', () => {
     loginCred.value.email = email;
     loginCred.value.password = password;
   };
+  const logoutUser = () => {
+    loggedInUser.value = null;
+  };
   return {
+    loggedInUser,
     loginCred,
     storingLoginCredentials,
     checkUserHasPermission,
+    logoutUser,
   };
 });

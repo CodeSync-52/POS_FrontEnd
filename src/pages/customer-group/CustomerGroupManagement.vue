@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <span class="text-3xl font-semibold">Customer Managment</span>
+      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
       <q-btn label="Add New" icon="add" unelevated color="primary" />
     </div>
     <div class="q-pa-md">
@@ -95,7 +95,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Swal from 'sweetalert2';
-const customerGroupColumns = ref([
+import { EUserModules, getRoleModuleDisplayName } from 'src/interfaces';
+const pageTitle = getRoleModuleDisplayName(
+  EUserModules.CustomerGroupManagement
+);
+const customerGroupColumns = [
   {
     name: 'name',
     required: true,
@@ -110,7 +114,8 @@ const customerGroupColumns = ref([
     align: 'center',
     sortable: true,
   },
-]);
+];
+
 const filter = ref('');
 const selectedEditStatusRowIndex = ref(0);
 const selectedEditNameRowIndex = ref(0);
