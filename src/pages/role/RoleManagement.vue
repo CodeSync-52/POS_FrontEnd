@@ -50,7 +50,7 @@
   </div>
 </template>
 
-<script setup lang="ts"> 
+<script setup lang="ts">
 import { ref, computed } from 'vue';
 import { IAdminRole } from '../../interfaces/admin-role/admin-role';
 const hasAllViewRoles = computed(() => {
@@ -58,7 +58,7 @@ const hasAllViewRoles = computed(() => {
 });
 const selectedAdminRoleRowIndex = ref(0);
 const selectedAdminRoleAction = ref('');
- 
+
 const rolesManagementTableColumns = ref([
   {
     name: 'name',
