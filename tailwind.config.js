@@ -6,6 +6,8 @@ module.exports = {
     extend: {
       colors: {
         signature: 'var(--primary)',
+        'btn-primary': 'var(--btn-primary)',
+        'btn-primary-hover': 'var(--btn-primary-hover)',
       },
     },
     screens: {

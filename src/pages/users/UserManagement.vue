@@ -1,19 +1,22 @@
 <template>
   <div>
-
-    <div class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4">
+    <div
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+    >
       <span class="text-3xl font-semibold">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
-        class="rounded-lg bg-[#1976d2]"
+        class="rounded-lg bg-btn-primary"
         unelevated
         color=" "
         @click="showAddUserModal(true)"
       />
     </div>
 
-    <div class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8">
+    <div
+      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
+    >
       <q-select
         dense
         style="min-width: 200px"
@@ -41,7 +44,7 @@
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
         <q-btn
           color=""
-          class="rounded-lg h-2 border bg-[#1976d2] hover:bg-blue-600"
+          class="rounded-lg h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
           @click="
@@ -52,13 +55,13 @@
         />
         <q-btn
           color=""
-          class="rounded-lg h-2 bg-[#1976d2] hover:bg-blue-600"
+          class="rounded-lg h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="resetFilter"
         />
         <q-btn
           color=""
-          class="rounded-lg h-2 bg-[#1976d2] hover:bg-blue-600"
+          class="rounded-lg h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Export as CSV"
         />
       </div>
