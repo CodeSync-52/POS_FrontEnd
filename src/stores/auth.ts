@@ -7,11 +7,6 @@ import {
 } from 'src/interfaces';
 import { ref } from 'vue';
 export const useAuthStore = defineStore('login', () => {
-  // const loginCred = ref({
-  //   email: '',
-  //   password: '',
-  // });
-
   const loggedInUser = ref<IUser | null>({
     aspNetUserId: '0032611b-2592-49d7-b98f-9331709fa68f',
     fullName: 'Jhon',
