@@ -7,11 +7,6 @@ import {
 } from 'src/interfaces';
 import { ref } from 'vue';
 export const useAuthStore = defineStore('login', () => {
-  const loginCred = ref({
-    email: '',
-    password: '',
-  });
-
   const loggedInUser = ref<IUser | null>({
     aspNetUserId: '0032611b-2592-49d7-b98f-9331709fa68f',
     fullName: 'Jhon',
@@ -108,15 +103,13 @@ export const useAuthStore = defineStore('login', () => {
   }
 
   const storingLoginCredentials = (email: string, password: string) => {
-    loginCred.value.email = email;
-    loginCred.value.password = password;
+    console.log('email : ', email, 'and password : ', password);
   };
   const logoutUser = () => {
     loggedInUser.value = null;
   };
   return {
     loggedInUser,
-    loginCred,
     storingLoginCredentials,
     checkUserHasPermission,
     logoutUser,
