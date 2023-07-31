@@ -1,9 +1,8 @@
 <template>
   <div>
-    <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
-    >
-      <span class="text-3xl font-semibold">User Management</span>
+
+    <div class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4">
+      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
@@ -13,10 +12,10 @@
         @click="showAddUserModal(true)"
       />
     </div>
-    <div
-      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
-    >
+
+    <div class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8">
       <q-select
+        dense
         style="min-width: 200px"
         outlined
         v-model="filterSearch.customerGroup"
@@ -24,6 +23,7 @@
         label="Customer Group"
       />
       <q-select
+        dense
         style="min-width: 200px"
         outlined
         v-model="filterSearch.role"
@@ -31,6 +31,7 @@
         label="Role"
       />
       <q-select
+        dense
         style="min-width: 200px"
         outlined
         v-model="filterSearch.status"
@@ -115,7 +116,12 @@ import {
   statusOptions,
 } from 'src/constants/utils';
 import { useUserManagementStore } from 'src/stores';
-import { IUserData } from 'src/interfaces';
+import {
+  EUserModules,
+  IUserData,
+  getRoleModuleDisplayName,
+} from 'src/interfaces';
+const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
 const userManagementStore = useUserManagementStore();
 const defaultFilterValues = {
