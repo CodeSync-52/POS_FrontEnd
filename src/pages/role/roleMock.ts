@@ -1,4 +1,4 @@
-import { IUserRole } from 'src/interfaces/roles/roles';
+import { IUserRole } from 'src/interfaces';
 
 export const rolesMock: IUserRole[] = [
   {
