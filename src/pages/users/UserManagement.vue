@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 justify-between sm:flex-col sm:gap-4 items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
       <span class="text-3xl font-semibold">User Management</span>
       <q-btn
@@ -62,7 +62,7 @@
         />
       </div>
     </div>
-    <div class="q-pa-md">
+    <div class="py-4">
       <q-table
         tabindex="0"
         :rows="UserRows"
