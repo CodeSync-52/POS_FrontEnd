@@ -50,15 +50,8 @@
   </div>
 </template>
 
-<script setup lang="ts"> 
-import { ref, computed } from 'vue';
-import { IAdminRole } from '../../interfaces/admin-role/admin-role';
-const hasAllViewRoles = computed(() => {
-  return addAdminRoleTableData.value.every((role) => role.view);
-});
-const selectedAdminRoleRowIndex = ref(0);
-const selectedAdminRoleAction = ref('');
- 
+<script setup lang="ts">
+import { ref } from 'vue';
 const rolesManagementTableColumns = ref([
   {
     name: 'name',

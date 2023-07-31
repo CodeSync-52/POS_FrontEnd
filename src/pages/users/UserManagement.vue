@@ -1,17 +1,21 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-4">
+    <div
+      class="flex md:flex-row md:gap-0 justify-between sm:flex-col sm:gap-4 items-center mb-4"
+    >
       <span class="text-3xl font-semibold">User Management</span>
       <q-btn
         label="Add New"
         icon="add"
-        class="rounded-lg"
+        class="rounded-lg bg-[#1976d2]"
         unelevated
-        color="primary"
+        color=" "
         @click="showAddUserModal(true)"
       />
     </div>
-    <div class="row flex justify-end items-center w-full h-[3.5rem] gap-8">
+    <div
+      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
+    >
       <q-select
         style="min-width: 200px"
         outlined
@@ -33,10 +37,10 @@
         :options="statusOptions"
         label="Status"
       />
-      <div class="flex justify-end items-end h-full gap-4">
+      <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
         <q-btn
-          color="primary"
-          class="rounded-lg h-2"
+          color=""
+          class="rounded-lg h-2 border bg-[#1976d2] hover:bg-blue-600"
           icon="search"
           label="Search"
           @click="
@@ -46,12 +50,16 @@
           "
         />
         <q-btn
-          color="red"
-          class="rounded-lg h-2"
+          color=""
+          class="rounded-lg h-2 bg-[#1976d2] hover:bg-blue-600"
           label="Clear"
           @click="resetFilter"
         />
-        <q-btn color="green" class="rounded-lg h-2" label="Export as CSV" />
+        <q-btn
+          color=""
+          class="rounded-lg h-2 bg-[#1976d2] hover:bg-blue-600"
+          label="Export as CSV"
+        />
       </div>
     </div>
     <div class="q-pa-md">
