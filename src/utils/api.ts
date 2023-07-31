@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-
 interface basicParams extends AxiosRequestConfig {
   url: string;
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';

@@ -144,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import { IUserRolePermissions } from 'src/interfaces/roles/roles';
+import { IUserRolePermissions } from 'src/interfaces';
 import { computed, onMounted, ref } from 'vue';
 interface IProps {
   roleDataProp: IUserRolePermissions[];
