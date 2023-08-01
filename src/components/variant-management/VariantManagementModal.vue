@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { IVariantGroup } from 'src/interfaces';
+import { IVariantData } from '../../interfaces';
 import { onMounted, ref } from 'vue';
 
 interface IProps {
-  variantManagementTableRows: IVariantGroup;
+  variantManagementTableRows: IVariantData;
 }
-const variantData = ref<IVariantGroup>();
+const variantData = ref<IVariantData>();
 onMounted(() => {
   variantData.value = props.variantManagementTableRows;
   console.log(props.variantManagementTableRows);
