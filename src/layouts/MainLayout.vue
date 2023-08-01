@@ -10,8 +10,11 @@
             icon="menu"
             aria-label="Menu"
             @click="toggleLeftDrawer"
+            class="text-btn-primary hover:text-btn-primary-hover hover:bg-[#fff7f0] bg-[#fff7f0]"
           />
-          <q-toolbar-title>Point of Sale</q-toolbar-title>
+          <q-toolbar-title class="text-text_primary"
+            >Point of Sale</q-toolbar-title
+          >
         </q-toolbar>
       </q-header>
 
@@ -34,13 +37,17 @@
             <img src="/assets/Pos-icon.png" alt="POS Icon" class="text-white" />
           </div>
 
-          <div v-for="link in allowedLinks" :key="link.title">
+          <div
+            v-for="link in allowedLinks"
+            :key="link.title"
+            class="text-text_primary"
+          >
             <q-expansion-item
               group="somegroup"
-              expand-icon-class="text-white"
+              expand-icon-class="text-text_primary hover:text-btn-primary"
               :icon="link.icon"
               :label="link.title"
-              header-class="text-white"
+              header-class=""
             >
               <q-card class="bg-signature">
                 <q-card-section class="q-py-none q-pl-lg">
@@ -51,7 +58,7 @@
                     class="pl-7"
                   >
                     <div
-                      class="text-[0.9rem] pl-2 py-2 text-white transition-all hover:bg-[#2599f5] rounded-md cursor-pointer"
+                      class="text-text_primary hover:text-btn-primary text-[0.9rem] pl-2 py-2 transition-all hover:bg-[#fff7f0] rounded-md cursor-pointer"
                     >
                       {{ getRoleModuleDisplayName(subLinks.title) }}
                     </div>

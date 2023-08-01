@@ -6,7 +6,8 @@
         label="Add New"
         icon="add"
         unelevated
-        color="primary"
+        color=""
+        class="bg-btn-primary hover:bg-btn-primary-hover"
         @click="showAddNewUserPopup"
       />
     </div>

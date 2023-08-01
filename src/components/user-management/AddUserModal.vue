@@ -95,7 +95,7 @@
       </div>
     </q-card-section>
     <q-card-actions class="justify-end">
-      <q-btn flat label="Cancel" color="red" v-close-popup />
+      <q-btn flat label="Cancel" color="red" v-close-popup class="" />
       <q-btn
         flat
         label="Save"

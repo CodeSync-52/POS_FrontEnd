@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --primary: #0071bd;
-  --btn-primary: #1976d2;
-  --btn-primary-hover: #2563eb;
+  --primary: #ffffff;
+  --btn-primary: #ff9f43;
+  --btn-primary-hover: #fd7e14;
+  --text-POS: #000000;
+  --text-hover: #fff7f0;
 }

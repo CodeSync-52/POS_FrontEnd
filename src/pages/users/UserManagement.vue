@@ -7,7 +7,7 @@
       <q-btn
         label="Add New"
         icon="add"
-        class="rounded-lg bg-btn-primary"
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-primary-hover"
         unelevated
         color=" "
         @click="showAddUserModal(true)"
@@ -43,8 +43,9 @@
       />
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
         <q-btn
+          unelevated
           color=""
-          class="rounded-lg h-2 border bg-btn-primary hover:bg-btn-primary-hover"
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
           @click="
@@ -54,14 +55,16 @@
           "
         />
         <q-btn
+          unelevated
           color=""
-          class="rounded-lg h-2 bg-btn-primary hover:bg-btn-primary-hover"
+          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="resetFilter"
         />
         <q-btn
+          unelevated
           color=""
-          class="rounded-lg h-2 bg-btn-primary hover:bg-btn-primary-hover"
+          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Export as CSV"
         />
       </div>
