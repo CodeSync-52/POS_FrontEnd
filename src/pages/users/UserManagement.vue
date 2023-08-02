@@ -7,7 +7,7 @@
       <q-btn
         label="Add New"
         icon="add"
-        class="rounded-[4px] bg-btn-primary hover:bg-btn-primary-hover"
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         unelevated
         color=" "
         @click="showAddUserModal(true)"
@@ -24,6 +24,7 @@
         v-model="filterSearch.customerGroup"
         :options="customerGroupOptions"
         label="Customer Group"
+        color="btn-primary"
       />
       <q-select
         dense
@@ -32,6 +33,7 @@
         v-model="filterSearch.role"
         :options="roleOptions"
         label="Role"
+        color="btn-primary"
       />
       <q-select
         dense
@@ -40,6 +42,7 @@
         v-model="filterSearch.status"
         :options="statusOptions"
         label="Status"
+        color="btn-primary"
       />
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
         <q-btn

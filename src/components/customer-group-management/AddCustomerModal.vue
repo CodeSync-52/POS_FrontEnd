@@ -6,10 +6,23 @@
           {{ isEditCustomer ? 'Edit New Customer' : 'Add Customer Name' }}</span
         >
       </div>
-      <q-input dense v-model="customerName" outlined label="Name" />
+      <q-input
+        dense
+        v-model="customerName"
+        outlined
+        label="Name"
+        color="btn-primary"
+      />
     </q-card-section>
     <div class="row justify-end">
-      <q-btn label="Cancel" flat unelevated color="red" v-close-popup />
+      <q-btn
+        label="Cancel"
+        flat
+        unelevated
+        color="white"
+        v-close-popup
+        class="bg-btn-primary hover:bg-btn-secondary"
+      />
       <q-btn
         v-if="isEditCustomer"
         label="Save"

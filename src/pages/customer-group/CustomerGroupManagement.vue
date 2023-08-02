@@ -157,11 +157,12 @@ const handleEditStatusPopup = (selectedRow: ICustomerData) => {
 const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
   $q.notify({
     message: 'Are you sure you want to delete this record?',
-    color: 'signature',
+    color: '',
     actions: [
       {
         label: 'Delete',
-        color: 'yellow',
+        color: 'white bg-btn-primary hover:bg-btn-secondary',
+
         handler: () => {
           const selectedRowIndex = customerGroupRows.value.findIndex(
             (row) => selectedRow.id === row.id
@@ -173,7 +174,7 @@ const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
           });
         },
       },
-      { label: 'Cancel', color: 'white' },
+      { label: 'Cancel', color: 'white bg-btn-primary hover:bg-btn-secondary' },
     ],
   });
 };
@@ -183,3 +184,11 @@ const handleEditCustomerGroupNamePopup = (selectedRow: ICustomerData) => {
   selectedRowData.value = selectedRow;
 };
 </script>
+<style>
+.q-notification__actions {
+  gap: 1rem !important;
+}
+.q-notification__message {
+  color: white;
+}
+</style>

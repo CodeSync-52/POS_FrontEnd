@@ -11,12 +11,22 @@
         <div class="row px-2 q-col-gutter-sm">
           <div class="col-md-4 w-full col-sm-12">
             <div>
-              <q-input outlined v-model="userData.fullName" label="Full Name" />
+              <q-input
+                outlined
+                v-model="userData.fullName"
+                label="Full Name"
+                color="btn-primary"
+              />
             </div>
           </div>
           <div class="col-md-4 w-full col-sm-12">
             <div>
-              <q-input outlined v-model="userData.userName" label="User Name" />
+              <q-input
+                outlined
+                v-model="userData.userName"
+                label="User Name"
+                color="btn-primary"
+              />
             </div>
           </div>
           <div class="col-md-4 w-full col-sm-12">
@@ -24,6 +34,7 @@
               outlined
               v-model="userData.phone"
               type="tel"
+              color="btn-primary"
               mask="(####) #######"
               label="Phone Number"
             />
@@ -37,6 +48,7 @@
                 outlined
                 v-model="userData.role"
                 label="Role"
+                color="btn-primary"
               />
             </div>
           </div>
@@ -87,7 +99,7 @@
         <div class="col-12">
           <q-checkbox
             v-model="userData.isActive"
-            color="secondary"
+            color="btn-primary"
             label="Active"
             size="30px"
           />
@@ -95,13 +107,20 @@
       </div>
     </q-card-section>
     <q-card-actions class="justify-end">
-      <q-btn flat label="Cancel" color="red" v-close-popup class="" />
+      <q-btn
+        flat
+        label="Cancel"
+        color="white"
+        v-close-popup
+        class="bg-btn-primary hover:bg-btn-secondary"
+      />
       <q-btn
         flat
         label="Save"
-        color="primary"
+        color="white"
         v-close-popup
         @click="handleAddNewUser"
+        class="bg-btn-primary hover:bg-btn-primary-hover"
       />
     </q-card-actions>
   </q-card>
