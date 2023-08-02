@@ -7,7 +7,10 @@ module.exports = {
       colors: {
         signature: 'var(--primary)',
         'btn-primary': 'var(--btn-primary)',
+        'btn-secondary': 'var(--btn-secondary)',
         'btn-primary-hover': 'var(--btn-primary-hover)',
+        text_primary: 'var(--text-POS)',
+        text_hover: 'var(--text-hover)',
       },
     },
     screens: {
