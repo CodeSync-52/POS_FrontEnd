@@ -22,7 +22,7 @@
         <q-list
           class="bg-signature gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-scroll mainlayoutSidebar"
         >
-          <q-item-label class="flex w-full justify-end" header>
+          <q-item-label class="flex w-full justify-end !p-0" header>
             <q-icon
               name="close"
               flat
@@ -33,7 +33,7 @@
               class="lg:hidden"
             />
           </q-item-label>
-          <div class="w-16 mx-auto">
+          <div class="w-[140px] h-[43px] mx-auto">
             <img src="/assets/Pos-icon.png" alt="POS Icon" class="text-white" />
           </div>
 
@@ -58,7 +58,7 @@
                     class="pl-7"
                   >
                     <div
-                      class="text-text_primary hover:text-btn-primary text-[0.9rem] pl-2 py-2 transition-all hover:bg-[#fff7f0] rounded-md cursor-pointer"
+                      class="text-text_primary hover:text-btn-primary text-[0.9rem] pl-2 py-2 transition-all hover:bg-[#fff7f0] rounded-[4px] cursor-pointer"
                     >
                       {{ getRoleModuleDisplayName(subLinks.title) }}
                     </div>
@@ -206,3 +206,8 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 </script>
+<style>
+.q-item:hover {
+  color: #ff9f43 !important;
+}
+</style>
