@@ -8,31 +8,16 @@
         label="Add New"
         icon="add"
         class="rounded-lg bg-btn-primary text-white"
-        unelevated
+        @click="AddNewVariant"
       />
     </div>
     <div class="py-4">
       <q-table
         tabindex="0"
-        :rows="variantRows"
+        :rows="variantData"
         :columns="variantColumn"
         row-key="name"
-        binary-state-sort
       >
-        <template v-slot:body-cell-group="props">
-          <q-td :props="props">
-            {{ props.row.group }}
-            <q-popup-edit v-model="props.row.group" v-slot="scope">
-              <q-input
-                v-model="scope.value"
-                dense
-                autofocus
-                counter
-                @keyup.enter="scope.set"
-              />
-            </q-popup-edit>
-          </q-td>
-        </template>
         <template v-slot:body-cell-variant="props">
           <q-td :props="props">
             <q-btn
@@ -45,7 +30,6 @@
             />
           </q-td>
         </template>
-
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
             <q-btn size="sm" dense flat unelevated :label="props.row.status" />
@@ -55,7 +39,22 @@
               buttons
               v-slot="scope"
             >
-              <q-input v-model="scope.value" dense autofocus />
+              <div class="flex column gap-2">
+                <q-radio
+                  v-model="scope.value"
+                  val="Active"
+                  label="Active"
+                  dense
+                  autofocus
+                />
+                <q-radio
+                  v-model="scope.value"
+                  val="InActive"
+                  dense
+                  label="InActive"
+                  autofocus
+                />
+              </div>
             </q-popup-edit>
           </q-td>
         </template>
@@ -70,53 +69,105 @@
                 icon="edit"
                 @click="onEditButtonClick(props.row)"
               />
-              <q-btn size="sm" dense flat unelevated icon="delete" />
+              <q-btn
+                size="sm"
+                dense
+                flat
+                unelevated
+                icon="delete"
+                @click="handleDeleteVariant(props.row)"
+              />
             </div>
           </q-td>
         </template>
       </q-table>
     </div>
-    <!-- <q-dialog
-      v-model="showAddVariantPopup"
-      @update:model-value="selectedGroup = undefined"
+    <q-dialog
+      @update:model-value="selectedRowData = null"
+      v-model="isVariantModalVisible"
     >
-      <add-user-modal :selected-user="selectedGroup" @user-add="handleUserAdd" />
-    </q-dialog> -->
-    <!-- <q-dialog v-model="isVariantManageModalVisible">
-      <variant-management-modal :role-data-prop="variantManagementTableRows" />
-    </q-dialog> -->
+      <variant-management-modal
+        :variant="selectedVariant"
+        :variant-action="variantAction"
+        @name-changed="updateOrAddVariant"
+        :selected-row="selectedRowData?.id"
+        @delete-record="deletingVariant"
+      />
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { variantColumn, variantRows } from 'src/pages/variant/utils';
 import { useRouter } from 'vue-router';
-// import VariantManagementModal from '../../components/variant-management/VariantManagementModal.vue';
+import { variantColumn, variantRows } from 'src/pages/variant/utils';
+import VariantManagementModal from 'src/components/variant-management/VariantManagementModal.vue';
 import {
   EUserModules,
   IVariantData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
+import { useQuasar } from 'quasar';
 const router = useRouter();
+const $q = useQuasar();
+const selectedVariant = ref<string>('');
+const selectedRowData = ref<IVariantData | null>(null);
 const pageTitle = getRoleModuleDisplayName(EUserModules.VariantManagement);
-const showAddVariantPopup = ref(false);
-// const isVariantManageModalVisible = ref(false);
-// const variantManagementTableRows = ref<IVariantData>();
-const selectedGroup = ref<IVariantData | undefined>();
+const isVariantModalVisible = ref<boolean>(false);
+const variantData = ref(variantRows);
+const variantAction = ref<string>('');
 const onEditButtonClick = (row: IVariantData) => {
-  selectedGroup.value = {
-    ...row,
-  };
-  showAddVariantModal(true);
+  selectedVariant.value = row.group;
+  variantAction.value = 'Edit';
+  isVariantModalVisible.value = true;
 };
-const showAddVariantModal = (action: boolean) => {
-  showAddVariantPopup.value = action;
+const AddNewVariant = () => {
+  selectedVariant.value = '';
+  variantAction.value = 'Add';
+  isVariantModalVisible.value = true;
 };
 const handleManageClick = (id: string) => {
   router.push(`/variant/${id}`);
 };
-// rowData: IVariantData
-// isVariantManageModalVisible.value = true;
-// variantManagementTableRows.value = rowData;
+const updateOrAddVariant = async (newName: string, callback: () => void) => {
+  if (selectedRowData.value) {
+    await new Promise((res) => {
+      setTimeout(() => res(newName), 3000);
+    });
+  } else {
+    await new Promise((res) => {
+      setTimeout(() => res(newName), 3000);
+    });
+  }
+  selectedRowData.value = null;
+  isVariantModalVisible.value = false;
+  callback();
+};
+const handleDeleteVariant = (selectedRow: IVariantData) => {
+  variantAction.value = 'Delete';
+  selectedRowData.value = selectedRow;
+  isVariantModalVisible.value = true;
+};
+
+const deletingVariant = async (id: string, callback: () => void) => {
+  if (selectedRowData.value) {
+    try {
+      await new Promise((res) => {
+        setTimeout(() => res(id), 3000);
+        selectedRowData.value = null;
+        isVariantModalVisible.value = false;
+        $q.notify({
+          message: 'The selected row is deleted successfully',
+          color: 'green',
+        });
+      });
+    } catch (e) {
+      $q.notify({
+        message: 'Unexpected Error',
+        color: 'red',
+      });
+    }
+    callback();
+  }
+};
 </script>
