@@ -14,3 +14,7 @@ export interface IUserData {
   isPhnNumberAsUserNumber?: boolean; // do not post
   action?: any;
 }
+export interface IUserTableData extends IUserData {
+  status: string;
+  discount: number;
+}
