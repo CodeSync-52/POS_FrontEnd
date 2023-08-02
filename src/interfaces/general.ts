@@ -116,5 +116,12 @@ export interface RolePermissions {
   permissionModuleActions: IRoleModule[];
 }
 
+export interface ILoginResponse {
+  httpStatusCode: number;
+  message: string;
+  type: number;
+  data: IUser;
+}
+
 export const checkNameIsModule = (e: any): e is EUserModules =>
   Object.values(EUserModules).includes(e);
