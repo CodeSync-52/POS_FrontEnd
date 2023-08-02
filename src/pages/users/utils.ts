@@ -1,58 +1,93 @@
-export const UserColumn = [
+import { QTableColumn } from 'quasar';
+import { IUserTableData } from 'src/interfaces';
+export const UserColumn: QTableColumn<IUserTableData>[] = [
   {
-    name: 'FullName',
+    name: 'fullname',
     required: true,
     label: 'Full name',
     align: 'left',
     sortable: true,
+    field: (row) => row.fullName,
   },
   {
     name: 'userName',
     required: true,
-    label: 'UserName',
+    align: 'left',
+    label: 'User Name',
+    field: (row) => row.userName,
   },
   {
     name: 'phone',
-    align: 'center',
+    align: 'left',
     label: 'Phone',
-    field: 'rhone',
     sortable: true,
+    field: (row) => row.phone,
   },
-  { name: 'role', label: 'Role', field: 'role', sortable: true },
-  { name: 'assignShop', label: 'Shop', field: 'assignShop' },
-
+  {
+    name: 'role',
+    label: 'Role',
+    field: (row) => row.role,
+    sortable: true,
+    align: 'left',
+  },
+  {
+    name: 'assignShop',
+    label: 'Shop',
+    field: (row) => row.assignShop,
+    align: 'left',
+  },
   {
     name: 'customerGroup',
     label: 'Customer Group',
-    field: 'customerGroup',
     sortable: true,
+    field: (row) => row.customerGroup,
+    align: 'left',
   },
-  { name: 'status', label: 'Status', field: 'status' },
-  { name: 'discount', label: 'Discount', field: 'discount', sortable: true },
+  {
+    name: 'status',
+    label: 'Status',
+    field: (row) => row.status,
+    align: 'left',
+  },
+  {
+    name: 'discount',
+    label: 'Discount',
+    field: (row) => row.discount,
+    sortable: true,
+    align: 'left',
+  },
   {
     name: 'outStandingBalance',
     label: 'Outstanding Balance',
-    field: 'outStandingBalance',
+    field: (row) => row.outStandingBalance,
+    align: 'left',
   },
-  { name: 'action', label: 'Action', field: 'action' },
+  {
+    name: 'action',
+    label: 'Action',
+    field: (row) => row.action,
+    align: 'center',
+  },
 ];
 
 export const UserRows = [
   {
-    fullName: 'Ahmed Ali',
+    fullname: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
     assignShop: 'Shop 1',
+    customerGroup: 'group 1',
     outStandingBalance: 0,
+    status: '',
     discount: 0,
     isActive: true,
     password: '12345678',
-    customerGroup: 'group 1',
     isPhnNumberAsUserNumber: false,
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -66,6 +101,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -79,6 +115,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -92,6 +129,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -105,6 +143,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -118,6 +157,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -131,6 +171,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -144,6 +185,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -157,6 +199,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',
@@ -170,6 +213,7 @@ export const UserRows = [
     action: 'edit',
   },
   {
+    fullName: 'Ahmad',
     userName: 'Ali',
     phone: '+923086647777',
     role: 'admin',

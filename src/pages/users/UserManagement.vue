@@ -73,31 +73,22 @@
       <q-table
         tabindex="0"
         :rows="UserRows"
-        :column="UserColumn"
-        :visible-columns="[
-          'fullName',
-          'userName',
-          'phone',
-          'role',
-          'assignShop',
-          'customerGroup',
-          'discount',
-          'outStandingBalance',
-          'action',
-        ]"
+        align="left"
+        :columns="UserColumn"
         row-key="name"
       >
         <template v-slot:body-cell-action="props">
-          <q-td class="" :props="props">
-            <div class="flex flex-nowrap">
+          <q-td :props="props">
+            <div class="flex gap-2 flex-nowrap">
               <q-btn
                 size="sm"
                 flat
+                dense
                 unelevated
                 icon="edit"
                 @click="onEditButtonClick(props.row)"
               />
-              <q-btn size="sm" flat unelevated icon="delete" />
+              <q-btn size="sm" dense flat unelevated icon="delete" />
             </div>
           </q-td>
         </template>
