@@ -32,7 +32,7 @@
           <div class="col-md-4 w-full col-sm-12">
             <q-input
               outlined
-              v-model="userData.phone"
+              v-model="userData.phoneNumber"
               type="tel"
               color="btn-primary"
               mask="(####) #######"
@@ -130,6 +130,7 @@
 import { onMounted, ref } from 'vue';
 import { addUserDefaultState, roleOptions } from 'src/constants';
 import { IUserData } from 'src/interfaces';
+import { createUserApi } from 'src/services/userManagement';
 interface IProps {
   selectedUser?: IUserData;
 }
@@ -141,7 +142,15 @@ const props = withDefaults(defineProps<IProps>(), {
   selectedUser: () => addUserDefaultState,
 });
 
-function handleAddNewUser() {
+async function handleAddNewUser() {
+  const payload = {
+    fullName: userData.value.fullName,
+    phoneNumber: userData.value.phoneNumber,
+    flatDiscount: 0,
+    userName: userData.value.userName,
+    userRoleName: userData.value.role?.value ?? '',
+  };
+  const res = await createUserApi({ payload: payload });
   emit('user-add', userData.value);
 }
 onMounted(() => {

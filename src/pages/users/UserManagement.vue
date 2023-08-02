@@ -107,8 +107,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { UserColumn, UserRows } from './utils';
+import { onMounted, ref } from 'vue';
+import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
 import {
   customerGroupOptions,
@@ -120,7 +120,10 @@ import {
   EUserModules,
   IUserData,
   getRoleModuleDisplayName,
+  apiResponse,
 } from 'src/interfaces';
+import { getUserApi } from '../../services/userManagement';
+
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
 const userManagementStore = useUserManagementStore();
@@ -131,10 +134,11 @@ const defaultFilterValues = {
 };
 const selectedUser = ref<IUserData | undefined>();
 let filterSearch = ref(defaultFilterValues);
+
 const onEditButtonClick = (row: IUserData) => {
   selectedUser.value = {
     ...row,
-    phone: row.phone?.toString() || '',
+    phoneNumber: row.phoneNumber?.toString() || '',
   };
   showAddUserModal(true);
 };
@@ -142,7 +146,10 @@ const onEditButtonClick = (row: IUserData) => {
 const showAddUserModal = (action: boolean) => {
   showAddNewAdminRolePopup.value = action;
 };
-
+const querryParams = ref({
+  pageNumber: 1,
+  pageSize: 50,
+});
 const resetFilter = () => {
   filterSearch.value = {
     customerGroup: null,
@@ -150,6 +157,19 @@ const resetFilter = () => {
     status: null,
   };
 };
+const UserRows = ref<IUserData[]>([]);
+const totalItemCount = ref<number>(0);
+onMounted(async () => {
+  const data = await getUserApi({
+    pageNumber: querryParams.value.pageNumber,
+    pageSize: querryParams.value.pageSize,
+  });
+  if (data) {
+    UserRows.value = data.items;
+    totalItemCount.value = data.totalItemCount;
+  }
+});
+
 function handleUserAdd(data: IUserData) {
   userManagementStore.addNewUser(data);
 }
