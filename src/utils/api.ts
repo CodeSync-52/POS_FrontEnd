@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { IGenericResponse } from 'src/interfaces';
 import { useAuthStore } from 'src/stores';
 interface basicParams extends AxiosRequestConfig {
   url: string;
@@ -25,9 +26,11 @@ class PosError extends Error {
 }
 function makeApiCall<T>(
   params: paramsWithConfig
-): Promise<AxiosResponse<T, any>>;
+): Promise<AxiosResponse<IGenericResponse<T>, any>>;
 
-function makeApiCall<T>(params: paramsWithoutConfig): Promise<T>;
+function makeApiCall<T>(
+  params: paramsWithoutConfig
+): Promise<T>;
 
 async function makeApiCall<T>({
   url,
@@ -46,7 +49,7 @@ async function makeApiCall<T>({
   }
 
   try {
-    const response = await axios<T>({
+    const response = await axios<IGenericResponse<T>>({
       method,
       data,
       url: `${import.meta.env.VITE_API_URL}/${url}`,
@@ -56,7 +59,7 @@ async function makeApiCall<T>({
     if (sendConfig) {
       return response;
     }
-    return response.data;
+    return response.data.data;
   } catch (e) {
     if (axios.isAxiosError(e)) {
       throw new PosError(

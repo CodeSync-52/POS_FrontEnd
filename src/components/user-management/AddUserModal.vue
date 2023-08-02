@@ -22,7 +22,7 @@
           <div class="col-md-4 w-full col-sm-12">
             <q-input
               outlined
-              v-model="userData.phone"
+              v-model="userData.phoneNumber"
               type="tel"
               mask="(####) #######"
               label="Phone Number"
@@ -35,15 +35,17 @@
               <q-select
                 :options="roleOptions"
                 outlined
-                v-model="userData.role"
+                v-model="userData.userRoleName"
+                map-options
+                @update:model-value="userData.userRoleName = $event.value"
                 label="Role"
               />
             </div>
           </div>
           <div
             v-if="
-              userData.role?.value === 'shop_sale_officer' ||
-              userData.role?.value === 'shop_manager'
+              userData.userRoleName === EUserRoles.ShopOfficer ||
+              userData.userRoleName === EUserRoles.ShopManager
             "
             class="col-md-6 w-full col-sm-12"
           >
@@ -58,7 +60,7 @@
           </div>
         </div>
         <div
-          v-if="userData.role?.value === 'customer_vendor'"
+          v-if="userData.userRoleName === EUserRoles.Customer"
           class="row px-2 q-col-gutter-sm"
         >
           <div class="col-md-4 w-full col-sm-12">
@@ -66,7 +68,7 @@
               <q-select
                 :options="roleOptions"
                 outlined
-                v-model="userData.customerGroup"
+                v-model="userData.customerGroupId"
                 label="Customer Group"
               />
             </div>
@@ -75,7 +77,7 @@
             <div>
               <q-input
                 outlined
-                v-model="userData.wholeSaleDiscount"
+                v-model="userData.flatDiscount"
                 fill-mask="0"
                 reverse-fill-mask
                 input-class="text-right"
@@ -109,23 +111,37 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { addUserDefaultState, roleOptions } from 'src/constants';
-import { IUserData } from 'src/interfaces';
-interface IProps {
-  selectedUser?: IUserData;
-}
-const userData = ref<IUserData>(addUserDefaultState);
-const emit = defineEmits<{
-  (event: 'user-add', data: IUserData): void;
-}>();
-const props = withDefaults(defineProps<IProps>(), {
-  selectedUser: () => addUserDefaultState,
+import { roleOptions } from 'src/constants';
+import { EUserRoles, ICreateUserPayload } from 'src/interfaces';
+type PropType = {
+  selectedUser?: ICreateUserPayload;
+};
+const userData = ref<ICreateUserPayload>({
+  fullName: '',
+  phoneNumber: '',
+  userRoleName: EUserRoles.Customer,
+  userName: '',
+  assignShop: 0,
+  isActive: false,
+  flatDiscount: 0,
+  customerGroupId: 0,
 });
+const emit = defineEmits<{
+  (event: 'user-add', data: ICreateUserPayload): void;
+}>();
+const props = defineProps<PropType>();
 
 function handleAddNewUser() {
+  if (userData.value.userRoleName !== EUserRoles.Customer) {
+    delete userData.value.assignShop;
+    delete userData.value.customerGroupId;
+    delete userData.value.isActive;
+  }
   emit('user-add', userData.value);
 }
 onMounted(() => {
-  userData.value = props.selectedUser;
+  if (props.selectedUser !== undefined) {
+    userData.value = props.selectedUser;
+  }
 });
 </script>
