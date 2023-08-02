@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="flex justify-between gap-2 items-center mb-4">
+    <div
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
+    >
       <span class="text-3xl font-semibold">{{ pageTitle }}</span>
       <q-btn
         label="Add New"

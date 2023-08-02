@@ -14,28 +14,22 @@
           <template v-slot:body-cell-action="props">
             <q-td class="!text-right" :props="props">
               <div class="flex justify-end gap-2 md:pr-4">
-                <q-btn-dropdown color="signature" flat unelevated size="md">
-                  <q-list>
-                    <q-item
-                      clickable
-                      v-close-popup
-                      @click="showEditPopup(false, props.rowIndex)"
-                    >
-                      <q-item-section>
-                        <q-item-label>Preview</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                    <q-item
-                      clickable
-                      v-close-popup
-                      @click="showEditPopup(true, props.rowIndex)"
-                    >
-                      <q-item-section>
-                        <q-item-label>Edit</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-btn-dropdown>
+                <q-btn
+                  icon="visibility"
+                  size="sm"
+                  flat
+                  unelevated
+                  dense
+                  @click="showEditPopup(false, props.rowIndex)"
+                />
+                <q-btn
+                  icon="edit"
+                  size="sm"
+                  flat
+                  unelevated
+                  dense
+                  @click="showEditPopup(true, props.rowIndex)"
+                />
               </div>
             </q-td>
           </template>
