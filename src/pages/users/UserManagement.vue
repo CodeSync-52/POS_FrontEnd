@@ -120,7 +120,6 @@ import {
   EUserModules,
   IUserData,
   getRoleModuleDisplayName,
-  apiResponse,
 } from 'src/interfaces';
 import { getUserApi } from '../../services/userManagement';
 

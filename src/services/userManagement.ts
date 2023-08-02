@@ -33,7 +33,7 @@ export const createUserApi = async ({
 }) => {
   try {
     const response = await makeApiCall({
-      url: `api/User/create`,
+      url: 'api/User/create',
       method: 'POST',
       data: payload,
     });

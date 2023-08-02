@@ -13,6 +13,8 @@ export interface IUserData {
   customerGroup?: IOption; // number , customerGroupID, api neened
   isPhnNumberAsUserNumber?: boolean; // do not post
   action?: any;
+  status?: number;
+  discount?: number;
 }
 
 export interface apiResponse {

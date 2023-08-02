@@ -150,7 +150,7 @@ async function handleAddNewUser() {
     userName: userData.value.userName,
     userRoleName: userData.value.role?.value ?? '',
   };
-  const res = await createUserApi({ payload: payload });
+  await createUserApi({ payload: payload });
   emit('user-add', userData.value);
 }
 onMounted(() => {

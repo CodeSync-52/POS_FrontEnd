@@ -28,7 +28,7 @@ export const statusOptions = [
 export const addUserDefaultState: IUserData = {
   fullName: '',
   userName: '',
-  phone: '',
+  phoneNumber: '',
   outStandingBalance: 0,
   wholeSaleDiscount: 0,
   isActive: true,

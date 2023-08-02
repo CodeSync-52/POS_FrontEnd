@@ -1,6 +1,6 @@
 import { QTableColumn } from 'quasar';
-import { IUserTableData } from 'src/interfaces';
-export const UserColumn: QTableColumn<IUserTableData>[] = [
+import { IUserData } from 'src/interfaces';
+export const UserColumn: QTableColumn<IUserData>[] = [
   {
     name: 'fullname',
     required: true,

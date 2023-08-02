@@ -7,7 +7,7 @@ export const useUserManagementStore = defineStore('user-management', () => {
     isPhnNumberAsUserNumber: false,
     outStandingBalance: 0,
     password: '',
-    phone: '',
+    phoneNumber: '',
     userName: '',
     wholeSaleDiscount: 0,
     fullName: '',
