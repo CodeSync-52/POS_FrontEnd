@@ -11,18 +11,15 @@
           <img src="/assets/Pos-icon.png" alt="logo" />
         </div>
         <h3 class="text-3xl text-center mb-8 font-medium">Welcome to POS</h3>
-        <q-form @onSubmit="handleLogin" class="q-gutter-sm">
+        <q-form @submit="handleLogin" class="q-gutter-sm">
           <q-input
-            v-model="loginCredentials.email"
+            v-model="loginCredentials.userName"
             label="Username"
             dense
             outlined
             lazy-rules
             :rules="[
-              (val) =>
-                val === ''
-                  ? 'This field is mandatory'
-                  : isValidEmail(val) || 'Your Username is Invalid',
+              (val) => (val && val.length > 0) || 'This field is mandatory',
             ]"
           />
           <q-input
@@ -36,29 +33,25 @@
               (val) => (val && val.length > 0) || 'This field is mandatory',
             ]"
           />
-        </q-form>
 
-        <div class="mb-10 text-subtitle2 text-signature flex justify-end">
-          <span class="cursor-pointer hover:text-blue-400"
-            >Forgot Password?</span
+          <div class="mb-10 text-subtitle2 text-signature flex justify-end">
+            <span class="cursor-pointer hover:text-blue-400"
+              >Forgot Password?</span
+            >
+          </div>
+          <q-btn
+            type="submit"
+            color="primary"
+            class="full-width"
+            :loading="isFetching"
+            :disabled="
+              loginCredentials.userName === '' ||
+              loginCredentials.password === ''
+            "
           >
-        </div>
-        <button
-          v-if="
-            loginCredentials.email === '' || loginCredentials.password === ''
-          "
-          class="bg-blue-600 text-white rounded-lg py-3 w-full hover:bg-blue-500"
-          disabled
-        >
-          Login
-        </button>
-        <button
-          v-else
-          class="bg-blue-600 text-white rounded-lg py-3 w-full hover:bg-blue-500"
-          @click="handleLogin"
-        >
-          Login
-        </button>
+            Login
+          </q-btn>
+        </q-form>
       </div>
     </div>
   </div>
@@ -67,22 +60,33 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
+import { isPosError } from 'src/utils';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
 const router = useRouter();
 const authStore = useAuthStore();
+const isFetching = ref(false);
 const loginCredentials = ref({
-  email: '',
+  userName: '',
   password: '',
 });
-const isValidEmail = (email: string) => {
-  return /^[^@]+@\w+(\.\w+)+\w$/.test(email);
-};
-const handleLogin = () => {
-  if (isValidEmail(loginCredentials.value.email)) {
-    authStore.storingLoginCredentials(
-      loginCredentials.value.email,
-      loginCredentials.value.password
-    );
+const handleLogin = async () => {
+  if (isFetching.value) return;
+  isFetching.value = true;
+  try {
+    await authStore.loginUser(loginCredentials.value);
     router.push('/dashboard');
+  } catch (e) {
+    let message = 'Unexpected Error Fetching Api';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message: message,
+      color: 'red',
+      icon: 'error',
+    });
   }
+  isFetching.value = false;
 };
 </script>
