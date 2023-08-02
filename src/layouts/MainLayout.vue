@@ -185,9 +185,6 @@ const essentialLinks = [
   },
 ];
 const allowedLinks = computed(() => {
-  if (authStore) {
-    console.log('s');
-  }
   const allowedList = essentialLinks.map((linkGroup) => ({
     ...linkGroup,
     children: linkGroup.children.filter((link) =>
