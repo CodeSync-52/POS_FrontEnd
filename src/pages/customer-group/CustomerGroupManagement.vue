@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between gap-2 items-center mb-4">
       <span class="text-3xl font-semibold">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
-        unelevated
         color="primary"
+        class="rounded-lg"
         @click="showAddNewUserPopup"
       />
     </div>
@@ -24,6 +24,7 @@
                 size="sm"
                 flat
                 unelevated
+                dense
                 :label="props.row.status === '1' ? 'Active' : 'InActive'"
                 @click="handleEditStatusPopup(props.row)"
               />
@@ -36,6 +37,7 @@
               <q-btn
                 size="sm"
                 flat
+                dense
                 unelevated
                 icon="edit"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
@@ -43,6 +45,7 @@
               <q-btn
                 size="sm"
                 flat
+                dense
                 unelevated
                 icon="delete"
                 @click="handleDeleteCustomerGroupRow(props.row)"
