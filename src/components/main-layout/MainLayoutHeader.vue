@@ -11,16 +11,20 @@
           @click="toggleLeftDrawer"
           class="text-btn-primary hover:text-btn-primary-hover bg-text_hover"
         />
-        <q-toolbar-title class="text-text_primary">Point of Sale</q-toolbar-title>
-        <outside-click-container @outside-click="showAccountInfoDropdown = false">
-        <div class="accountInfoIcon relative">
-          <q-icon
-            name="account_circle"
-            size="lg"
-            color="grey"
-            class="cursor-pointer"
-            @click="handleShowAccountInfoDropdown"
-          />
+        <q-toolbar-title class="text-text_primary"
+          >Point of Sale</q-toolbar-title
+        >
+        <outside-click-container
+          @outside-click="showAccountInfoDropdown = false"
+        >
+          <div class="accountInfoIcon relative">
+            <q-icon
+              name="account_circle"
+              size="lg"
+              color="grey"
+              class="cursor-pointer"
+              @click="handleShowAccountInfoDropdown"
+            />
             <q-card
               v-if="showAccountInfoDropdown"
               class="absolute right-[1rem] z-10 top-[100%] rounded-md"

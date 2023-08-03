@@ -8,23 +8,7 @@ import {
 import { makeApiCall } from 'src/utils';
 import { ref } from 'vue';
 export const useAuthStore = defineStore('login', () => {
-  const loggedInUser = ref<IUser | null>({
-    aspNetUserId: '',
-    fullName: '',
-    loginTokenResponseDTO: {
-      access_Token: '',
-      access_Token_Expires_In: 0,
-      refresh_Token_Expires_In: 1,
-      token_Type: '',
-      userId: '',
-    },
-    rolePermissions: {
-      permissionModuleActions: [],
-      roleId: '0',
-      roleName: EUserRoles.SuperAdmin,
-    },
-    userId: 1,
-  });
+  const loggedInUser = ref<IUser | null>(null);
 
   function checkUserHasPermission(
     moduleId: EUserModules,

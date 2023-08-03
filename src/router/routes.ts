@@ -25,12 +25,20 @@ export const routeList = [
     },
   },
   {
+    path: '/variant/:id',
+    component: () => import('src/pages/variant/SelectedVariantDetails.vue'),
+    meta: {
+      module: EUserModules.VariantManagement,
+    },
+  },
+  {
     path: '/variant',
     component: () => import('src/pages/variant/VariantManagement.vue'),
     meta: {
       module: EUserModules.VariantManagement,
     },
   },
+
   {
     path: '/category',
     component: () => import('src/pages/category/CategoryManagement.vue'),

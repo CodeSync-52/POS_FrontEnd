@@ -30,7 +30,7 @@
             expand-icon-class="text-text_primary hover:text-btn-primary"
             :icon="link.icon"
             :label="link.title"
-            >
+          >
             <q-card class="bg-signature">
               <q-card-section class="q-py-none q-pl-lg">
                 <router-link
