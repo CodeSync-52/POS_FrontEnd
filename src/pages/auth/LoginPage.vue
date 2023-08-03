@@ -21,10 +21,12 @@
           Please login to your account
         </h4>
         <q-form @submit="handleLogin" class="q-gutter-sm">
-          <label class="text-text_primary text-[14px] font-medium">Email</label>
+          <label class="text-text_primary text-[14px] font-medium"
+            >Username</label
+          >
           <q-input
             v-model="loginCredentials.userName"
-            label="Enter your email address"
+            label="Enter your username"
             dense
             outlined
             color="btn-primary"

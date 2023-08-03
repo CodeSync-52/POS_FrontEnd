@@ -77,20 +77,30 @@
     </q-header>
   </div>
   <q-dialog v-model="isAccountInfoModalVisible">
-    <account-info-modal :isViewProfile="isViewProfile" />
+    <account-info-modal
+      :isViewProfile="isViewProfile"
+      @close-modal="handleCloseModal"
+    />
   </q-dialog>
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 import AccountInfoModal from '../../components/header/AccountInfoModal.vue';
 import OutsideClickContainer from '../common/OutsideClickContainer.vue';
+import { logoutUser } from 'src/services';
+import { isPosError } from 'src/utils';
 const isAccountInfoModalVisible = ref<boolean>(false);
 const showAccountInfoDropdown = ref<boolean>(false);
 const authStore = useAuthStore();
+const $q = useQuasar();
 const emit = defineEmits(['toggleLeftDrawer', 'showAccountInfoModal']);
 const isLeftDrawerVisible = ref<boolean>(true);
 const isViewProfile = ref<boolean>(false);
+const handleCloseModal = (closeModal: boolean) => {
+  isAccountInfoModalVisible.value = closeModal;
+};
 const toggleLeftDrawer = () => {
   isLeftDrawerVisible.value = !isLeftDrawerVisible.value;
   emit('toggleLeftDrawer', isLeftDrawerVisible.value);
@@ -103,8 +113,21 @@ const handleViewProfile = (isView: boolean) => {
   isAccountInfoModalVisible.value = true;
   showAccountInfoDropdown.value = false;
 };
-const handleLogout = () => {
-  showAccountInfoDropdown.value = false;
-  authStore.logoutUser();
-};
+
+async function handleLogout() {
+  try {
+    const response = await logoutUser();
+    showAccountInfoDropdown.value = false;
+    if (response.type === 'Success') {
+      authStore.logoutUser();
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message || 'Unexpected Error Occurred',
+        color: 'red',
+      });
+    }
+  }
+}
 </script>
