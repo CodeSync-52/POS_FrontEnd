@@ -1,64 +1,73 @@
 <template>
-  <div
-    class="grid items-center grid-cols-1 lg:grid-cols-[5fr_4fr] bg-[url('/src/assets/Images/loginBg.jpg')] h-screen"
-  >
-    <div class="hidden lg:!inline-block"></div>
+  <!-- bg-[url('/src/assets/Images/login-POS.jpg')] -->
+  <!-- lg:grid-cols-[5fr_4fr] -->
+  <div class="grid lg:grid-cols-[6fr_6fr]">
+    <div class="hidden lg:!inline-block">
+      <img
+        src="/assets/login-POS.jpg"
+        class="h-[100vh] object-fit"
+        alt="logo"
+      />
+    </div>
     <div
-      class="flex flex-col min-w-[320px] w-full max-w-[400px] mx-auto justify-center q-pa-md"
+      class="flex flex-col min-w-[320px] w-full max-w-[550px] mx-auto justify-center q-pa-md"
     >
-      <div class="bg-white px-6 py-8 rounded-md q-gutter-y-md">
-        <div class="w-12 mx-auto">
+      <div class="bg-white px-6 py-8 rounded-md q-gutter-y-sm">
+        <div class="w-[150px] h-[48px] text-[24px]">
           <img src="/assets/Pos-icon.png" alt="logo" />
         </div>
-        <h3 class="text-3xl text-center mb-8 font-medium">Welcome to POS</h3>
-        <q-form @onSubmit="handleLogin" class="q-gutter-sm">
+        <h3 class="text-[24px] font-semibold">Sign In</h3>
+        <h4 class="text-[14px] font-normal text-text_primary">
+          Please login to your account
+        </h4>
+        <q-form @submit="handleLogin" class="q-gutter-sm">
+          <label class="text-text_primary text-[14px] font-medium">Email</label>
           <q-input
-            v-model="loginCredentials.email"
-            label="Username"
+            v-model="loginCredentials.userName"
+            label="Enter your email address"
             dense
             outlined
+            color="btn-primary"
             lazy-rules
             :rules="[
-              (val) =>
-                val === ''
-                  ? 'This field is mandatory'
-                  : isValidEmail(val) || 'Your Username is Invalid',
+              (val) => (val && val.length > 0) || 'This field is mandatory',
             ]"
           />
+          <label class="text-text_primary text-[14px] font-medium"
+            >Password</label
+          >
           <q-input
             type="password"
             v-model="loginCredentials.password"
-            label="Password"
+            label="Enter your password"
             dense
+            color="btn-primary"
             outlined
             lazy-rules
             :rules="[
               (val) => (val && val.length > 0) || 'This field is mandatory',
             ]"
           />
-        </q-form>
 
-        <div class="mb-10 text-subtitle2 text-signature flex justify-end">
-          <span class="cursor-pointer hover:text-blue-400"
-            >Forgot Password?</span
+          <div class="mb-6 text-subtitle2 text-signature flex justify-end">
+            <span
+              class="cursor-pointer text-btn-primary hover:border-b-2 hover:border-btn-primary"
+              >Forgot Password?</span
+            >
+          </div>
+          <q-btn
+            type="submit"
+            color=" "
+            class="bg-btn-primary full-width hover:bg-signature hover:!text-btn-primary"
+            :loading="isFetching"
+            :disabled="
+              loginCredentials.userName === '' ||
+              loginCredentials.password === ''
+            "
           >
-        </div>
-        <button
-          v-if="
-            loginCredentials.email === '' || loginCredentials.password === ''
-          "
-          class="bg-blue-600 text-white rounded-lg py-3 w-full hover:bg-blue-500"
-          disabled
-        >
-          Login
-        </button>
-        <button
-          v-else
-          class="bg-blue-600 text-white rounded-lg py-3 w-full hover:bg-blue-500"
-          @click="handleLogin"
-        >
-          Login
-        </button>
+            Login
+          </q-btn>
+        </q-form>
       </div>
     </div>
   </div>
@@ -67,22 +76,33 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
+import { isPosError } from 'src/utils';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
 const router = useRouter();
 const authStore = useAuthStore();
+const isFetching = ref(false);
 const loginCredentials = ref({
-  email: '',
+  userName: '',
   password: '',
 });
-const isValidEmail = (email: string) => {
-  return /^[^@]+@\w+(\.\w+)+\w$/.test(email);
-};
-const handleLogin = () => {
-  if (isValidEmail(loginCredentials.value.email)) {
-    authStore.storingLoginCredentials(
-      loginCredentials.value.email,
-      loginCredentials.value.password
-    );
+const handleLogin = async () => {
+  if (isFetching.value) return;
+  isFetching.value = true;
+  try {
+    await authStore.loginUser(loginCredentials.value);
     router.push('/dashboard');
+  } catch (e) {
+    let message = 'Unexpected Error Fetching Api';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message: message,
+      color: 'red',
+      icon: 'error',
+    });
   }
+  isFetching.value = false;
 };
 </script>

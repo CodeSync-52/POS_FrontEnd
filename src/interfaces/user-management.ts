@@ -1,16 +1,35 @@
-import { IOption } from './general';
+import { EUserRoles } from './general';
 
-export interface IUserData {
+interface IUserCustomer {
+  userRoleName: EUserRoles.Customer;
+  assignShop: number;
+  flatDiscount: number;
+  customerGroupId: number;
+  isActive: boolean;
+}
+
+interface IUserNonCustomer {
+  userRoleName: Exclude<EUserRoles, EUserRoles.Customer>;
+  assignShop: never;
+  flatDiscount: never;
+  customerGroupId: never;
+  isActive: never;
+}
+type ICreateUserPayloadCommon = {
   fullName: string;
   userName: string;
-  phone: string;
-  role?: IOption; // roleId, enum of role
-  assignShop?: IOption; //number, api
+  phoneNumber: string;
+};
+
+export type ICreateUserPayload =
+  | (ICreateUserPayloadCommon & IUserCustomer)
+  | (ICreateUserPayloadCommon & IUserNonCustomer);
+
+export type IUserData = {
   outStandingBalance?: number; // do not post
-  wholeSaleDiscount?: number; //discountAmount
-  isActive: boolean;
   password?: string;
-  customerGroup?: IOption; // number , customerGroupID, api neened
   isPhnNumberAsUserNumber?: boolean; // do not post
   action?: any;
-}
+  status: string;
+  discount: number;
+} & ICreateUserPayload;

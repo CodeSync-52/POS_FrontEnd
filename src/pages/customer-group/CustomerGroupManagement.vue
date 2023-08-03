@@ -1,12 +1,15 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-4">
+    <div
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
+    >
       <span class="text-3xl font-semibold">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
         unelevated
-        color="primary"
+        color=""
+        class="bg-btn-primary hover:bg-btn-primary-hover"
         @click="showAddNewUserPopup"
       />
     </div>
@@ -24,6 +27,7 @@
                 size="sm"
                 flat
                 unelevated
+                dense
                 :label="props.row.status === '1' ? 'Active' : 'InActive'"
                 @click="handleEditStatusPopup(props.row)"
               />
@@ -36,6 +40,7 @@
               <q-btn
                 size="sm"
                 flat
+                dense
                 unelevated
                 icon="edit"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
@@ -43,6 +48,7 @@
               <q-btn
                 size="sm"
                 flat
+                dense
                 unelevated
                 icon="delete"
                 @click="handleDeleteCustomerGroupRow(props.row)"
@@ -153,11 +159,12 @@ const handleEditStatusPopup = (selectedRow: ICustomerData) => {
 const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
   $q.notify({
     message: 'Are you sure you want to delete this record?',
-    color: 'signature',
+    color: '',
     actions: [
       {
         label: 'Delete',
-        color: 'yellow',
+        color: 'white bg-btn-primary hover:bg-btn-secondary',
+
         handler: () => {
           const selectedRowIndex = customerGroupRows.value.findIndex(
             (row) => selectedRow.id === row.id
@@ -169,7 +176,7 @@ const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
           });
         },
       },
-      { label: 'Cancel', color: 'white' },
+      { label: 'Cancel', color: 'white bg-btn-primary hover:bg-btn-secondary' },
     ],
   });
 };
@@ -179,3 +186,11 @@ const handleEditCustomerGroupNamePopup = (selectedRow: ICustomerData) => {
   selectedRowData.value = selectedRow;
 };
 </script>
+<style>
+.q-notification__actions {
+  gap: 1rem !important;
+}
+.q-notification__message {
+  color: white;
+}
+</style>

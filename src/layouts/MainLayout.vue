@@ -1,10 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <div>
-      <main-layout-header
-        @toggle-left-drawer="handleToggleLeftDrawer"
-        :isLeftDrawerOpen="leftDrawerOpen"
-      />
+      <main-layout-header @toggle-left-drawer="handleToggleLeftDrawer" />
       <main-layout-sidebar
         v-model="leftDrawerOpen"
         @update:model-value="leftDrawerOpen = $event"
@@ -22,8 +19,13 @@
 import MainLayoutSidebar from 'src/components/main-layout/MainLayoutSidebar.vue';
 import MainLayoutHeader from 'src/components/main-layout/MainLayoutHeader.vue';
 import { ref } from 'vue';
-const handleToggleLeftDrawer = (isLeftDrawerVisible: boolean) => {
-  leftDrawerOpen.value = isLeftDrawerVisible;
+const handleToggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
 };
-const leftDrawerOpen = ref(true);
+const leftDrawerOpen = ref(false);
 </script>
+<style lang="scss" scoped>
+:deep(.q-item:hover) {
+  color: #ff9f43 !important;
+}
+</style>

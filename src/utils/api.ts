@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { IGenericResponse } from 'src/interfaces';
+import { useAuthStore } from 'src/stores';
 interface basicParams extends AxiosRequestConfig {
   url: string;
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
@@ -12,9 +14,19 @@ interface paramsWithoutConfig extends basicParams {
   sendConfig?: never;
 }
 
+class PosError extends Error {
+  code: number;
+
+  constructor(message: string, code: number) {
+    super(message);
+    this.code = code;
+    // Set the prototype explicitly to avoid issues with inheritance in ES5
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
 function makeApiCall<T>(
   params: paramsWithConfig
-): Promise<AxiosResponse<T, any>>;
+): Promise<AxiosResponse<IGenericResponse<T>, any>>;
 
 function makeApiCall<T>(params: paramsWithoutConfig): Promise<T>;
 
@@ -27,22 +39,33 @@ async function makeApiCall<T>({
   ...config
 }: paramsWithConfig | paramsWithoutConfig) {
   const headers: Record<string, string> = {};
-  const token = localStorage.getItem('token');
+  const authStore = useAuthStore();
+  const token = authStore.loggedInUser?.loginTokenResponseDTO.access_Token;
 
-  if (token !== null && !noAuth) {
-    headers.Authorization = `JWT ${token}`;
+  if (token && !noAuth) {
+    headers.Authorization = `Bearer ${token}`;
   }
-  const response = await axios<T>({
-    method,
-    data,
-    url: `${import.meta.env.VITE_API_URL}/${url}`,
-    headers,
-    ...config,
-  }).then((res) => res);
-  if (sendConfig) {
-    return response;
+
+  try {
+    const response = await axios<IGenericResponse<T>>({
+      method,
+      data,
+      url: `${import.meta.env.VITE_API_URL}/${url}`,
+      headers,
+      ...config,
+    }).then((res) => res);
+    if (sendConfig) {
+      return response;
+    }
+    return response.data.data;
+  } catch (e) {
+    if (axios.isAxiosError(e)) {
+      throw new PosError(
+        e.response?.data.message || 'Unexpected Error Fetching Data',
+        e.response?.status || 500
+      );
+    }
   }
-  return response.data;
 }
 
 export interface errType {
@@ -51,8 +74,9 @@ export interface errType {
   err?: any;
 }
 
-function checkErrorHasMessage(err: any): err is errType {
-  return err?.message !== undefined;
+// Type guard for CustomError
+function isPosError(error: any): error is PosError {
+  return error instanceof PosError;
 }
 
-export { makeApiCall, checkErrorHasMessage };
+export { makeApiCall, isPosError };

@@ -28,7 +28,7 @@ export default route(function () {
   });
   Router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
-    const isAuthorized = true;
+    const isAuthorized = authStore.loggedInUser !== null;
     if (!isAuthorized && to.name !== 'Login') {
       next('/login');
       return;
@@ -45,6 +45,10 @@ export default route(function () {
         return;
       }
       next(routeList[index].path);
+      return;
+    }
+    if (!isAuthorized && to.name === 'Login') {
+      next();
       return;
     }
     if (!checkNameIsModule(meta)) {

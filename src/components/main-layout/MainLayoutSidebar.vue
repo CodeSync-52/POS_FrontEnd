@@ -27,11 +27,10 @@
         <div v-for="link in allowedLinks" :key="link.title">
           <q-expansion-item
             group="somegroup"
-            expand-icon-class="text-white"
+            expand-icon-class="text-text_primary hover:text-btn-primary"
             :icon="link.icon"
             :label="link.title"
-            header-class="text-white"
-          >
+            >
             <q-card class="bg-signature">
               <q-card-section class="q-py-none q-pl-lg">
                 <router-link
@@ -41,7 +40,7 @@
                   class="pl-7"
                 >
                   <div
-                    class="text-[0.9rem] pl-2 py-2 text-white transition-all hover:bg-[#2599f5] rounded-md cursor-pointer"
+                    class="text-[0.9rem] pl-2 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
                   >
                     {{ getRoleModuleDisplayName(subLinks.title) }}
                   </div>
@@ -55,13 +54,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useAuthStore } from '../../stores';
+import { useAuthStore } from 'src/stores';
 import { computed } from 'vue';
 import {
   EActionPermissions,
   EUserModules,
   getRoleModuleDisplayName,
-} from '../../interfaces';
+} from 'src/interfaces';
 interface IProps {
   modelValue: boolean;
 }

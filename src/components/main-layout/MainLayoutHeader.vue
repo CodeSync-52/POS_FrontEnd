@@ -9,16 +9,18 @@
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
+          class="text-btn-primary hover:text-btn-primary-hover bg-text_hover"
         />
-        <q-toolbar-title>Point of Sale</q-toolbar-title>
-        <div ref="dropdownRef" class="accountInfoIcon relative">
+        <q-toolbar-title class="text-text_primary">Point of Sale</q-toolbar-title>
+        <outside-click-container @outside-click="showAccountInfoDropdown = false">
+        <div class="accountInfoIcon relative">
           <q-icon
             name="account_circle"
             size="lg"
+            color="grey"
             class="cursor-pointer"
             @click="handleShowAccountInfoDropdown"
           />
-          <div ref="dropdownContainerRef">
             <q-card
               v-if="showAccountInfoDropdown"
               class="absolute right-[1rem] z-10 top-[100%] rounded-md"
@@ -44,8 +46,8 @@
                 >
                   <q-item-section>
                     <q-item-label class="row items-center q-gutter-x-sm"
-                      ><q-icon name="lock" size="xs" color="signature" />
-                      <span class="text-signature"
+                      ><q-icon name="lock" size="xs" color="btn-primary" />
+                      <span class="text-btn-primary"
                         >Change Password</span
                       ></q-item-label
                     >
@@ -66,7 +68,7 @@
               </q-card-section>
             </q-card>
           </div>
-        </div>
+        </outside-click-container>
       </q-toolbar>
     </q-header>
   </div>
@@ -75,36 +77,20 @@
   </q-dialog>
 </template>
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useAuthStore } from 'src/stores';
 import AccountInfoModal from '../../components/header/AccountInfoModal.vue';
+import OutsideClickContainer from '../common/OutsideClickContainer.vue';
 const isAccountInfoModalVisible = ref<boolean>(false);
 const showAccountInfoDropdown = ref<boolean>(false);
 const authStore = useAuthStore();
 const emit = defineEmits(['toggleLeftDrawer', 'showAccountInfoModal']);
 const isLeftDrawerVisible = ref<boolean>(true);
 const isViewProfile = ref<boolean>(false);
-const dropdownContainerRef = ref<HTMLElement | null>(null);
-const dropdownRef = ref<HTMLElement | null>(null);
 const toggleLeftDrawer = () => {
   isLeftDrawerVisible.value = !isLeftDrawerVisible.value;
   emit('toggleLeftDrawer', isLeftDrawerVisible.value);
 };
-const handleClickOutside = (event: Event) => {
-  if (
-    dropdownRef.value &&
-    dropdownContainerRef.value &&
-    !dropdownRef.value.contains(event.target as Node)
-  ) {
-    showAccountInfoDropdown.value = false;
-  }
-};
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
 const handleShowAccountInfoDropdown = () => {
   showAccountInfoDropdown.value = !showAccountInfoDropdown.value;
 };

@@ -10,7 +10,7 @@
           v-if="isViewProfile"
           label="edit"
           unelevated
-          color="signature"
+          color="btn-primary"
           @click="canUpdateProfile = true"
         />
       </div>
@@ -86,7 +86,7 @@
     <q-card-actions class="row q-gutter-m-md justify-end">
       <q-btn
         label="Close"
-        :color="isViewProfile && !canUpdateProfile ? 'signature' : 'red'"
+        :color="isViewProfile && !canUpdateProfile ? 'btn-primary' : 'red'"
         flat
         unelevated
         v-close-popup
@@ -94,7 +94,7 @@
       <q-btn
         v-if="!isViewProfile || canUpdateProfile"
         label="Save"
-        color="signature"
+        color="btn-primary"
         flat
         unelevated
         :disable="
