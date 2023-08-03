@@ -123,6 +123,5 @@ export interface IGenericResponse<T = unknown> {
   data: T;
 }
 
-
 export const checkNameIsModule = (e: any): e is EUserModules =>
   Object.values(EUserModules).includes(e);

@@ -6,7 +6,6 @@ interface IUserCustomer {
   flatDiscount: number;
   customerGroupId: number;
   isActive: boolean;
-
 }
 
 interface IUserNonCustomer {
@@ -15,7 +14,6 @@ interface IUserNonCustomer {
   flatDiscount: never;
   customerGroupId: never;
   isActive: never;
-
 }
 type ICreateUserPayloadCommon = {
   fullName: string;

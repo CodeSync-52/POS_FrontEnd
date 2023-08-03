@@ -28,9 +28,7 @@ function makeApiCall<T>(
   params: paramsWithConfig
 ): Promise<AxiosResponse<IGenericResponse<T>, any>>;
 
-function makeApiCall<T>(
-  params: paramsWithoutConfig
-): Promise<T>;
+function makeApiCall<T>(params: paramsWithoutConfig): Promise<T>;
 
 async function makeApiCall<T>({
   url,
