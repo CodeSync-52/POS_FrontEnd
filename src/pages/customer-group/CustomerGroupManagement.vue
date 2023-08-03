@@ -9,7 +9,7 @@
         icon="add"
         unelevated
         color=""
-        class="bg-btn-primary hover:bg-btn-primary-hover"
+        class="bg-btn-primary hover:bg-btn-secondary"
         @click="showAddNewUserPopup"
       />
     </div>
@@ -163,7 +163,7 @@ const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
     actions: [
       {
         label: 'Delete',
-        color: 'white bg-btn-primary hover:bg-btn-secondary',
+        color: 'signature bg-btn-primary hover:bg-btn-secondary',
 
         handler: () => {
           const selectedRowIndex = customerGroupRows.value.findIndex(

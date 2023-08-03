@@ -9,7 +9,7 @@
       <q-btn
         label="Add New"
         icon="add"
-        class="rounded-lg bg-btn-primary text-white"
+        class="rounded-lg bg-btn-primary text-signature"
         @click="addNewVariant"
       />
     </div>

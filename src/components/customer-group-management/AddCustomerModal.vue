@@ -19,9 +19,9 @@
         label="Cancel"
         flat
         unelevated
-        color="white"
+        color="signature"
         v-close-popup
-        class="bg-btn-primary hover:bg-btn-secondary"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
       />
       <q-btn
         v-if="isEditCustomer"

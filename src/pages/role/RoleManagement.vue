@@ -21,6 +21,8 @@
                   unelevated
                   dense
                   @click="showEditPopup(false, props.rowIndex)"
+                  class="bg-btn-primary hover:bg-btn-secondary"
+                  color="signature"
                 />
                 <q-btn
                   icon="edit"
@@ -29,6 +31,8 @@
                   unelevated
                   dense
                   @click="showEditPopup(true, props.rowIndex)"
+                  class="bg-btn-primary hover:bg-btn-secondary"
+                  color="signature"
                 />
               </div>
             </q-td>

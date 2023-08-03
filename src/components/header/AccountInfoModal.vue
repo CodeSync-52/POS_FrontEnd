@@ -46,6 +46,7 @@
               v-model="passwordConfirmation.oldPass"
               type="password"
               label="Old Password"
+              color="btn-primary"
               outlined
               dense
             />
@@ -56,6 +57,7 @@
             <q-input
               v-model="passwordConfirmation.newPass"
               label="New Password"
+              color="btn-primary"
               outlined
               dense
               lazy-rules
@@ -70,6 +72,7 @@
             <q-input
               v-model="passwordConfirmation.confirmPass"
               label="Confirm Password"
+              color="btn-primary"
               outlined
               dense
               lazy-rules
@@ -86,7 +89,8 @@
     <q-card-actions class="row q-gutter-m-md justify-end">
       <q-btn
         label="Close"
-        :color="isViewProfile && !canUpdateProfile ? 'btn-primary' : 'red'"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        :color="isViewProfile && !canUpdateProfile ? 'signature' : 'signature'"
         flat
         unelevated
         v-close-popup
@@ -94,7 +98,8 @@
       <q-btn
         v-if="!isViewProfile || canUpdateProfile"
         label="Save"
-        color="btn-primary"
+        color="signature"
+        class="bg-btn-primary"
         flat
         unelevated
         :disable="

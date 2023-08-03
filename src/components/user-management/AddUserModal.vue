@@ -82,6 +82,7 @@
                 outlined
                 v-model="userData.customerGroupId"
                 label="Customer Group"
+                color="btn-primary"
               />
             </div>
           </div>
@@ -94,6 +95,7 @@
                 reverse-fill-mask
                 input-class="text-right"
                 label="Discount"
+                color="btn-primary"
               />
             </div>
           </div>
@@ -112,14 +114,14 @@
       <q-btn
         flat
         label="Cancel"
-        color="white"
+        color="signature"
         v-close-popup
         class="bg-btn-primary hover:bg-btn-secondary"
       />
       <q-btn
         flat
         label="Save"
-        color="white"
+        color="signature"
         v-close-popup
         @click="handleAddNewUser"
         class="bg-btn-primary hover:bg-btn-primary-hover"

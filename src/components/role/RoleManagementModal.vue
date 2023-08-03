@@ -13,7 +13,7 @@
               <q-toggle
                 @update:model-value="handleSelectAll"
                 v-model="groupedPermissions.isAll"
-                color="signature"
+                color="btn-primary"
                 :disable="!isEdit"
             /></span>
           </div>
@@ -29,7 +29,7 @@
                     @update:model-value="
                       updateGroupedPermissions($event, 'view')
                     "
-                    color="signature"
+                    color="btn-primary"
                     :disable="!isEdit"
                   />
                 </div>
@@ -44,7 +44,7 @@
                     @update:model-value="
                       updateGroupedPermissions($event, 'create')
                     "
-                    color="signature"
+                    color="btn-primary"
                     :disable="!isEdit || !groupedPermissions.isView"
                   />
                 </div>
@@ -59,7 +59,7 @@
                     @update:model-value="
                       updateGroupedPermissions($event, 'edit')
                     "
-                    color="signature"
+                    color="btn-primary"
                     :disable="!isEdit || !groupedPermissions.isView"
                   />
                 </div>
@@ -74,7 +74,7 @@
                     @update:model-value="
                       updateGroupedPermissions($event, 'delete')
                     "
-                    color="signature"
+                    color="btn-primary"
                     :disable="!isEdit || !groupedPermissions.isView"
                   />
                 </div>
@@ -84,7 +84,7 @@
         </div>
         <q-markup-table
           flat
-          bordesignature
+          bordebtn-primary
           class="full-width max-h-[380px] overflow-y-auto adminRoleEditTable"
         >
           <thead>
@@ -103,28 +103,28 @@
                 <q-toggle
                   v-model="roles.view"
                   @update:model-value="toggleAllPermission($event, roleIndex)"
-                  color="signature"
+                  color="btn-primary"
                   :disable="!isEdit"
                 />
               </td>
               <td class="text-left">
                 <q-toggle
                   v-model="roles.create"
-                  color="signature"
+                  color="btn-primary"
                   :disable="!isEdit ? true : !roles.view"
                 />
               </td>
               <td class="text-left">
                 <q-toggle
                   v-model="roles.edit"
-                  color="signature"
+                  color="btn-primary"
                   :disable="!isEdit ? true : !roles.view"
                 />
               </td>
               <td class="text-left">
                 <q-toggle
                   v-model="roles.delete"
-                  color="signature"
+                  color="btn-primary"
                   :disable="!isEdit ? true : !roles.view"
                 />
               </td>
@@ -134,11 +134,30 @@
       </div>
     </q-card-section>
     <q-card-actions v-if="isEdit" class="justify-end">
-      <q-btn flat label="Cancel" color="red" v-close-popup />
-      <q-btn flat label="Save" color="signature" v-close-popup />
+      <q-btn
+        flat
+        label="Cancel"
+        color="signature"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        v-close-popup
+      />
+      <q-btn
+        flat
+        label="Save"
+        color="signature"
+        class="bg-btn-primary hover:bg-btn-primary-hover"
+        v-close-popup
+      />
     </q-card-actions>
     <q-card-actions v-else class="justify-end">
-      <q-btn label="close" color="signature" flat unelevated v-close-popup />
+      <q-btn
+        label="close"
+        color="signature"
+        flat
+        unelevated
+        v-close-popup
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+      />
     </q-card-actions>
   </q-card>
 </template>

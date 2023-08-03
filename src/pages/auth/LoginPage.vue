@@ -12,7 +12,7 @@
     <div
       class="flex flex-col min-w-[320px] w-full max-w-[550px] mx-auto justify-center q-pa-md"
     >
-      <div class="bg-white px-6 py-8 rounded-md q-gutter-y-sm">
+      <div class="bg-signature px-6 py-8 rounded-md q-gutter-y-sm">
         <div class="w-[150px] h-[48px] text-[24px]">
           <img src="/assets/Pos-icon.png" alt="logo" />
         </div>
