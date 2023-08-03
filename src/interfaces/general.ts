@@ -116,11 +116,11 @@ export interface RolePermissions {
   permissionModuleActions: IRoleModule[];
 }
 
-export interface ILoginResponse {
+export interface IGenericResponse<T = unknown> {
   httpStatusCode: number;
   message: string;
   type: number;
-  data: IUser;
+  data: T;
 }
 
 export const checkNameIsModule = (e: any): e is EUserModules =>

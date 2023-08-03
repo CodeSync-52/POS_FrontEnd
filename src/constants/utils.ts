@@ -1,4 +1,4 @@
-import { IUserData } from 'src/interfaces';
+import { EUserRoles } from 'src/interfaces';
 
 export const customerGroupOptions = [
   { value: 1, label: 'Group 1' },
@@ -11,12 +11,12 @@ export const customerGroupOptions = [
 ];
 
 export const roleOptions = [
-  { label: 'Super Admin', value: 'supper_admin' },
-  { label: 'Admin', value: 'admin' },
-  { label: 'Shop Manager', value: 'shop_manager' },
-  { label: 'Office Boy', value: 'office_boy' },
-  { label: 'Shop Sale Officer', value: 'shop_sale_officer' },
-  { label: 'Customer/Vendor', value: 'customer_vendor' },
+  { label: 'Super Admin', value: EUserRoles.SuperAdmin },
+  { label: 'Admin', value: EUserRoles.Admin },
+  { label: 'Shop Manager', value: EUserRoles.ShopManager },
+  { label: 'Office Boy', value: EUserRoles.OfficeManager },
+  { label: 'Shop Sale Officer', value: EUserRoles.ShopOfficer },
+  { label: 'Customer/Vendor', value: EUserRoles.Customer },
 ];
 
 export const statusOptions = [
@@ -24,14 +24,3 @@ export const statusOptions = [
   { label: 'Active', value: 1 },
   { label: 'In Active', value: 0 },
 ];
-
-export const addUserDefaultState: IUserData = {
-  fullName: '',
-  userName: '',
-  phone: '',
-  outStandingBalance: 0,
-  wholeSaleDiscount: 0,
-  isActive: true,
-  password: '12345678',
-  isPhnNumberAsUserNumber: false,
-};

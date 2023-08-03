@@ -74,11 +74,14 @@
     </div>
     <div class="py-4">
       <q-table
+        :loading="false"
         tabindex="0"
+        v-model:pagination="pagination"
         :rows="UserRows"
         align="left"
         :columns="UserColumn"
         row-key="name"
+        @request="getUserList"
       >
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
@@ -107,34 +110,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { UserColumn, UserRows } from './utils';
+import { onMounted, ref } from 'vue';
+import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
 import {
   customerGroupOptions,
   roleOptions,
   statusOptions,
 } from 'src/constants/utils';
-import { useUserManagementStore } from 'src/stores';
 import {
   EUserModules,
+  ICreateUserPayload,
   IUserData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
+import { isPosError, makeApiCall } from 'src/utils';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
-const userManagementStore = useUserManagementStore();
 const defaultFilterValues = {
   customerGroup: null,
   role: null,
   status: null,
 };
+const UserRows = ref<IUserData[]>([]);
+const isFetching = ref(false);
 const selectedUser = ref<IUserData | undefined>();
+const pagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 0,
+});
+
 let filterSearch = ref(defaultFilterValues);
 const onEditButtonClick = (row: IUserData) => {
   selectedUser.value = {
     ...row,
-    phone: row.phone?.toString() || '',
+    phoneNumber: row.phoneNumber?.toString() || '',
   };
   showAddUserModal(true);
 };
@@ -150,7 +165,48 @@ const resetFilter = () => {
     status: null,
   };
 };
-function handleUserAdd(data: IUserData) {
-  userManagementStore.addNewUser(data);
+async function getUserList(data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
+}) {
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
+  }
+
+  if (isFetching.value) return;
+  isFetching.value = true;
+  try {
+    await makeApiCall<{
+      totalItemCount: number;
+      items: IUserData[];
+    }>({
+      url: `api/User/list?PageNumber=${pagination.value.page}&PageSize=${pagination.value.rowsPerPage}`,
+    }).then((res) => {
+      UserRows.value = res.items;
+      pagination.value.rowsNumber = res.totalItemCount;
+    });
+  } catch (e) {
+    let message = 'There was an error fetching user list';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isFetching.value = false;
+}
+onMounted(() => {
+  getUserList();
+});
+async function handleUserAdd(userData: ICreateUserPayload) {
+  try {
+    await makeApiCall({
+      url: 'api/User/create',
+      method: 'POST',
+      data: userData,
+    });
+  } catch (e) {}
 }
 </script>
