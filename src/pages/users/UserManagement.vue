@@ -58,11 +58,7 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="
-            () => {
-              console.log(filterSearch);
-            }
-          "
+          @click="() => {}"
         />
         <q-btn
           unelevated

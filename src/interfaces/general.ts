@@ -119,7 +119,7 @@ export interface IGenericResponse<T = unknown> {
   httpStatusCode: number;
   message: string;
   type: string;
-  data?: T;
+  data: T;
 }
 
 export const checkNameIsModule = (e: any): e is EUserModules =>
