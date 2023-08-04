@@ -8,9 +8,11 @@ import {
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 export const useAuthStore = defineStore('login', () => {
   const loggedInUser = ref<IUser | null>(null);
-
+  const router = useRouter();
   function checkUserHasPermission(
     moduleId: EUserModules,
     permissionId: EActionPermissions
@@ -44,6 +46,7 @@ export const useAuthStore = defineStore('login', () => {
 
   const logoutUser = () => {
     loggedInUser.value = null;
+    router.push("/login")   
   };
   return {
     loggedInUser,
