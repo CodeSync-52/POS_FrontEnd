@@ -16,7 +16,8 @@
         tabindex="0"
         :rows="variantData"
         :columns="variantColumn"
-        row-key="name" >
+        row-key="name"
+      >
         <template v-slot:body-cell-variant="props">
           <q-td :props="props">
             <q-btn
@@ -173,5 +174,3 @@ const deletingVariant = async (id: string, callback: () => void) => {
   }
 };
 </script>
-
-
