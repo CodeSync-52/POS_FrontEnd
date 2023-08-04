@@ -240,3 +240,9 @@ const handleSelectAll = (newValue: boolean) => {
   }));
 };
 </script>
+<style scoped>
+:deep(.q-icon) {
+  color: white;
+  background-color: red;
+}
+</style>

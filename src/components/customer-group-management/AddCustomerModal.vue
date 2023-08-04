@@ -14,7 +14,7 @@
         color="btn-primary"
       />
     </q-card-section>
-    <div class="row justify-end">
+    <div class="row justify-end gap-4">
       <q-btn
         label="Cancel"
         flat
@@ -30,6 +30,7 @@
         :loading="isLoading"
         unelevated
         color="signature"
+        class="bg-btn-primary hover:bg-btn-primary-hover"
         @click="saveNewCustomer"
       />
       <q-btn
@@ -39,6 +40,7 @@
         unelevated
         :disable="!customerName"
         color="signature"
+        class="bg-btn-primary hover:bg-btn-primary-hover"
         :loading="isLoading"
         @click="saveNewCustomer"
       />

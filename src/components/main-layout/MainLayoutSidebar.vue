@@ -46,7 +46,7 @@
                   :class="{ active: isActiveRoute(subLinks.path) }"
                 >
                   <div
-                    class="text-[0.9rem] pl-2 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
+                    class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
                   >
                     {{ getRoleModuleDisplayName(subLinks.title) }}
                   </div>
@@ -199,8 +199,8 @@ const handleChange = (newVal: boolean) => {
 const isOpen = computed(() => props.modelValue);
 const props = withDefaults(defineProps<IProps>(), { modelValue: true });
 </script>
-<style>
-.router-link-active {
+<style scoped>
+:deep(.router-link-active) {
   color: #ff9f43;
 }
 </style>

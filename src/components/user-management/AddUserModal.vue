@@ -4,7 +4,14 @@
       <div class="row justify-between items-center mb-2">
         <span class="text-2xl font-medium">Add new user</span>
         <span
-          ><q-btn v-close-popup flat unelevated dense size="md" icon="close"
+          ><q-btn
+            class="close-modal"
+            v-close-popup
+            flat
+            unelevated
+            dense
+            size="md"
+            icon="close"
         /></span>
       </div>
       <div class="flex flex-col gap-2">
@@ -12,6 +19,7 @@
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
+                dense
                 outlined
                 v-model="userData.fullName"
                 label="Full Name"
@@ -22,6 +30,7 @@
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
+                dense
                 outlined
                 v-model="userData.userName"
                 label="User Name"
@@ -31,6 +40,7 @@
           </div>
           <div class="col-md-4 w-full col-sm-12">
             <q-input
+              dense
               outlined
               v-model="userData.phoneNumber"
               type="tel"
@@ -44,6 +54,7 @@
           <div class="col-md-6 w-full col-sm-12">
             <div>
               <q-select
+                dense
                 :options="roleOptions"
                 outlined
                 v-model="userData.userRoleName"
@@ -79,6 +90,7 @@
             <div>
               <q-select
                 :options="roleOptions"
+                dense
                 outlined
                 v-model="userData.customerGroupId"
                 label="Customer Group"
@@ -89,6 +101,7 @@
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
+                dense
                 outlined
                 v-model="userData.flatDiscount"
                 fill-mask="0"
@@ -116,7 +129,7 @@
         label="Cancel"
         color="signature"
         v-close-popup
-        class="bg-btn-primary hover:bg-btn-secondary"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
       />
       <q-btn
         flat
@@ -166,3 +179,13 @@ onMounted(() => {
   }
 });
 </script>
+<style>
+.close-modal {
+  color: white;
+  background-color: rgba(255, 0, 0, 0.706);
+  border: 2px solid !important;
+  border-radius: 9999px;
+  width: 2rem;
+  height: 2rem;
+}
+</style>

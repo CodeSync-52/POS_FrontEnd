@@ -10,7 +10,13 @@
       <div v-if="variantAction !== 'Delete'" class="row q-col-gutter-x-md">
         <div class="col-6">
           <div>
-            <q-input v-model="variantData.label" dense label="Label" outlined />
+            <q-input
+              v-model="variantData.label"
+              dense
+              label="Label"
+              color="btn-primary"
+              outlined
+            />
           </div>
         </div>
         <div class="col-6">
@@ -18,6 +24,7 @@
             <q-input
               v-model="variantData.fullName"
               label="Full Name"
+              color="btn-primary"
               dense
               outlined
             />
@@ -29,8 +36,15 @@
       </div>
     </q-card-section>
     <q-card-actions class="q-pb-none q-px-none" align="right">
-      <div v-if="variantAction !== 'Delete'" class="row justify-end">
-        <q-btn label="Cancel" flat unelevated color="red" v-close-popup />
+      <div v-if="variantAction !== 'Delete'" class="row justify-end gap-4">
+        <q-btn
+          label="Cancel"
+          flat
+          unelevated
+          color="signature"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+          v-close-popup
+        />
         <q-btn
           :label="variantAction === 'Edit' ? 'Save' : 'Add'"
           flat
@@ -38,6 +52,7 @@
           :disable="!variantData.label || !variantData.fullName"
           unelevated
           color="signature"
+          class="bg-btn-primary hover:bg-btn-primary-hover"
           @click="saveNewVariant"
         />
       </div>
@@ -47,7 +62,8 @@
           label="Delete"
           flat
           unelevated
-          color="red"
+          color="signature"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
           :loading="isLoading"
           @click="deleteVariant"
         />
@@ -114,3 +130,11 @@ async function deleteVariant() {
   );
 }
 </script>
+<style scoped>
+:deep(.q-icon) {
+  background-color: rgba(255, 0, 0, 0.706);
+  color: white;
+  border: 2px solid !important;
+  border-radius: 9999px !important;
+}
+</style>

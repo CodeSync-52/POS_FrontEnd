@@ -10,7 +10,7 @@
           v-if="isViewProfile"
           label="edit"
           unelevated
-          color="btn-primary"
+          color="btn-primary "
           @click="canUpdateProfile = true"
         />
       </div>
@@ -113,7 +113,6 @@
         class="bg-btn-primary"
         :loading="isLoading"
         :disable="!isViewProfile || canUpdateProfile ? false : isButtonDisabled"
-
         flat
         unelevated
         @click="

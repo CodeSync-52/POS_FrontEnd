@@ -11,7 +11,6 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export const useAuthStore = defineStore('login', () => {
-
   const loggedInUser = ref<IUser | null>(null);
   const router = useRouter();
   function checkUserHasPermission(

@@ -3,13 +3,13 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
-      <span class="text-3xl font-semibold"
+      <span class="text-xl font-medium"
         >{{ pageTitle }} : {{ selectedGroupName }}</span
       >
       <q-btn
         label="Add New"
         icon="add"
-        class="rounded-lg bg-btn-primary text-signature"
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary text-signature"
         @click="addNewVariant"
       />
     </div>
@@ -38,6 +38,7 @@
                 flat
                 unelevated
                 icon="delete"
+                color="red"
                 @click="handleDeleteVariant(props.row)"
               />
             </div>

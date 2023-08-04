@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex mb-4">
-      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
+      <span class="text-xl font-medium">{{ pageTitle }}</span>
     </div>
     <div class="q-pa-md">
       <div class="roleManagementTable">
@@ -21,8 +21,7 @@
                   unelevated
                   dense
                   @click="showEditPopup(false, props.rowIndex)"
-                  class="bg-btn-primary hover:bg-btn-secondary"
-                  color="signature"
+                  color="bg-btn-secondary"
                 />
                 <q-btn
                   icon="edit"
@@ -31,8 +30,7 @@
                   unelevated
                   dense
                   @click="showEditPopup(true, props.rowIndex)"
-                  class="bg-btn-primary hover:bg-btn-secondary"
-                  color="signature"
+                  color="bg-btn-secondary"
                 />
               </div>
             </q-td>

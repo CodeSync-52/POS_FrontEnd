@@ -3,11 +3,11 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
-      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
+      <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
-        class="rounded-lg bg-btn-primary text-signature"
+        class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
         @click="AddNewVariant"
       />
     </div>
@@ -16,8 +16,7 @@
         tabindex="0"
         :rows="variantData"
         :columns="variantColumn"
-        row-key="name"
-      >
+        row-key="name" >
         <template v-slot:body-cell-variant="props">
           <q-td :props="props">
             <q-btn
@@ -44,6 +43,7 @@
                   v-model="scope.value"
                   val="Active"
                   label="Active"
+                  color="btn-primary"
                   dense
                   autofocus
                 />
@@ -53,6 +53,7 @@
                   dense
                   label="InActive"
                   autofocus
+                  color="btn-primary"
                 />
               </div>
             </q-popup-edit>
@@ -75,6 +76,7 @@
                 flat
                 unelevated
                 icon="delete"
+                color="red"
                 @click="handleDeleteVariant(props.row)"
               />
             </div>
@@ -171,3 +173,5 @@ const deletingVariant = async (id: string, callback: () => void) => {
   }
 };
 </script>
+
+
