@@ -179,13 +179,3 @@ onMounted(() => {
   }
 });
 </script>
-<style>
-.close-modal {
-  color: white;
-  background-color: rgba(255, 0, 0, 0.706);
-  border: 2px solid !important;
-  border-radius: 9999px;
-  width: 2rem;
-  height: 2rem;
-}
-</style>

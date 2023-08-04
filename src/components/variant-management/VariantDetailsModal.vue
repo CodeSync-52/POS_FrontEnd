@@ -130,11 +130,3 @@ async function deleteVariant() {
   );
 }
 </script>
-<style scoped>
-:deep(.q-icon) {
-  background-color: rgba(255, 0, 0, 0.706);
-  color: white;
-  border: 2px solid !important;
-  border-radius: 9999px !important;
-}
-</style>

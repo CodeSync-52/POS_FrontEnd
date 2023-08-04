@@ -199,8 +199,3 @@ const handleChange = (newVal: boolean) => {
 const isOpen = computed(() => props.modelValue);
 const props = withDefaults(defineProps<IProps>(), { modelValue: true });
 </script>
-<style scoped>
-:deep(.router-link-active) {
-  color: #ff9f43;
-}
-</style>
