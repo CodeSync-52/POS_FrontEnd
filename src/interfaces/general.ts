@@ -46,7 +46,8 @@ export enum EUserModules {
 }
 
 export interface IRoleModule {
-  module: { moduleId: EUserModules; moduleName: string; moduleGroup: string };
+  moduleId: EUserModules;
+  moduleName: string;
   actions: IRoleActionResponse[];
 }
 
@@ -113,13 +114,13 @@ export interface LoginTokenResponseDTO {
 export interface RolePermissions {
   roleId: string;
   roleName: EUserRoles;
-  permissionModuleActions: IRoleModule[];
+  modules: IRoleModule[];
 }
 
 export interface IGenericResponse<T = unknown> {
   httpStatusCode: number;
   message: string;
-  type: number;
+  type: string;
   data: T;
 }
 

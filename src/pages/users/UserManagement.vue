@@ -121,6 +121,7 @@ import {
 import {
   EUserModules,
   ICreateUserPayload,
+  IGenericResponse,
   IUserData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
@@ -175,14 +176,16 @@ async function getUserList(data?: {
   if (isFetching.value) return;
   isFetching.value = true;
   try {
-    await makeApiCall<{
-      totalItemCount: number;
-      items: IUserData[];
-    }>({
+    await makeApiCall<
+      IGenericResponse<{
+        totalItemCount: number;
+        items: IUserData[];
+      }>
+    >({
       url: `api/User/list?PageNumber=${pagination.value.page}&PageSize=${pagination.value.rowsPerPage}`,
     }).then((res) => {
-      UserRows.value = res.items;
-      pagination.value.rowsNumber = res.totalItemCount;
+      UserRows.value = res.data.items;
+      pagination.value.rowsNumber = res.data.totalItemCount;
     });
   } catch (e) {
     let message = 'There was an error fetching user list';

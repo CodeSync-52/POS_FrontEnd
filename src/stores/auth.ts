@@ -3,6 +3,7 @@ import {
   EActionPermissions,
   EUserModules,
   EUserRoles,
+  IGenericResponse,
   IUser,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
@@ -18,27 +19,25 @@ export const useAuthStore = defineStore('login', () => {
     if (loggedInUser.value.rolePermissions.roleName === EUserRoles.SuperAdmin) {
       return true;
     }
-    const moduleIndex =
-      loggedInUser.value.rolePermissions.permissionModuleActions.findIndex(
-        (module) => module.module.moduleId === moduleId
-      );
+    console.log(loggedInUser.value.rolePermissions);
+    const moduleIndex = loggedInUser.value.rolePermissions.modules.findIndex(
+      (module) => module.moduleId === moduleId
+    );
     if (moduleIndex < 0) {
       return false;
     }
-    return loggedInUser.value.rolePermissions.permissionModuleActions[
-      moduleIndex
-    ].actions
+    return loggedInUser.value.rolePermissions.modules[moduleIndex].actions
       .map((action) => action.actionId)
       .includes(permissionId);
   }
 
   async function loginUser(params: { userName: string; password: string }) {
-    return await makeApiCall<IUser>({
+    return await makeApiCall<IGenericResponse<IUser>>({
       url: 'api/Account/login',
       method: 'POST',
       data: params,
     }).then((res) => {
-      loggedInUser.value = res;
+      loggedInUser.value = res.data;
       return res;
     });
   }
