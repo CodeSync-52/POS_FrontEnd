@@ -25,12 +25,3 @@ export const logoutUser = async () => {
   });
   return res;
 };
-export const viewUserProfile = async () => {
-  const res = await makeApiCall<
-    IGenericResponse<{ fullName: string; phoneNumber: string }>
-  >({
-    method: 'GET',
-    url: 'api/Account/user/profile',
-  });
-  return res;
-};

@@ -107,17 +107,29 @@
         label="Save"
         color="btn-primary"
         :loading="isLoading"
+        :disable="!isViewProfile || canUpdateProfile ? false : isButtonDisabled"
         flat
         unelevated
-        :disable="isButtonDisabled"
-        @click="callingSaveNewPasswordApi"
+        @click="
+          () => {
+            if (!isViewProfile || canUpdateProfile) {
+              updateProfile();
+            } else {
+              callingSaveNewPasswordApi();
+            }
+          }
+        "
       />
     </q-card-actions>
   </q-card>
 </template>
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
-import { changeUserPassword, viewUserProfile } from 'src/services/auth';
+import {
+  changeUserPassword,
+  viewUserProfile,
+  editUserProfile,
+} from 'src/services';
 import { useQuasar } from 'quasar';
 import { IGenericResponse } from 'src/interfaces';
 import { isPosError } from 'src/utils';
@@ -128,6 +140,29 @@ interface IProps {
 onMounted(() => {
   callingViewUserProfileApi();
 });
+const updateProfile = async () => {
+  try {
+    isLoading.value = true;
+    const res: IGenericResponse = await editUserProfile({
+      payload: userInfo.value,
+    });
+    isLoading.value = false;
+    $q.notify({
+      message: res.message,
+      color: 'green',
+    });
+  } catch (e) {
+    if (isPosError(e)) {
+      isLoading.value = false;
+      $q.notify({
+        message: e.message,
+        color: 'red',
+      });
+    }
+  }
+  closeModal.value = false;
+  emit('close-modal', closeModal.value);
+};
 async function callingViewUserProfileApi() {
   try {
     const response: IGenericResponse<{

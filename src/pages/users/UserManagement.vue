@@ -4,7 +4,14 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
       <span class="text-3xl font-semibold">{{ pageTitle }}</span>
+
       <q-btn
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.UserManagment,
+            EActionPermissions.Create
+          )
+        "
         label="Add New"
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
@@ -83,10 +90,28 @@
         row-key="name"
         @request="getUserList"
       >
-        <template v-slot:body-cell-action="props">
+        <template
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Update
+            ) ||
+            authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:body-cell-action="props"
+        >
           <q-td :props="props">
             <div class="flex gap-2 flex-nowrap">
               <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.UserManagment,
+                    EActionPermissions.Update
+                  )
+                "
                 size="sm"
                 flat
                 dense
@@ -94,7 +119,19 @@
                 icon="edit"
                 @click="onEditButtonClick(props.row)"
               />
-              <q-btn size="sm" dense flat unelevated icon="delete" />
+              <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.UserManagment,
+                    EActionPermissions.Delete
+                  )
+                "
+                size="sm"
+                dense
+                flat
+                unelevated
+                icon="delete"
+              />
             </div>
           </q-td>
         </template>
@@ -111,6 +148,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+
+import { useAuthStore } from 'src/stores';
 import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
 import {
@@ -119,6 +158,7 @@ import {
   statusOptions,
 } from 'src/constants/utils';
 import {
+  EActionPermissions,
   EUserModules,
   ICreateUserPayload,
   IGenericResponse,
@@ -126,8 +166,11 @@ import {
   getRoleModuleDisplayName,
 } from 'src/interfaces';
 import { isPosError, makeApiCall } from 'src/utils';
+import { getUserListApi } from 'src/services';
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
+
+const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
 const defaultFilterValues = {
@@ -142,7 +185,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 10,
+  rowsPerPage: 50,
   rowsNumber: 0,
 });
 
@@ -166,29 +209,27 @@ const resetFilter = () => {
     status: null,
   };
 };
-async function getUserList(data?: {
+
+const getUserList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
-}) {
+}) => {
+  if (isFetching.value) return;
+  isFetching.value = true;
+
   if (data) {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
-
-  if (isFetching.value) return;
-  isFetching.value = true;
   try {
-    await makeApiCall<
-      IGenericResponse<{
-        totalItemCount: number;
-        items: IUserData[];
-      }>
-    >({
-      url: `api/User/list?PageNumber=${pagination.value.page}&PageSize=${pagination.value.rowsPerPage}`,
-    }).then((res) => {
+    const res = await getUserListApi({
+      pageNumber: pagination.value.page,
+      pageSize: pagination.value.rowsPerPage,
+    });
+    if (res?.data) {
       UserRows.value = res.data.items;
       pagination.value.rowsNumber = res.data.totalItemCount;
-    });
+    }
   } catch (e) {
-    let message = 'There was an error fetching user list';
+    let message = 'There was an error fetching the user list';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -199,17 +240,25 @@ async function getUserList(data?: {
     });
   }
   isFetching.value = false;
-}
+};
 onMounted(() => {
   getUserList();
 });
 async function handleUserAdd(userData: ICreateUserPayload) {
   try {
-    await makeApiCall({
+    const res: IGenericResponse = await makeApiCall({
       url: 'api/User/create',
       method: 'POST',
       data: userData,
     });
+
+    if (res.type === 'Success') {
+      getUserList();
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+    }
   } catch (e) {}
 }
 </script>

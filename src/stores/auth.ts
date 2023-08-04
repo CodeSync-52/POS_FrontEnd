@@ -22,15 +22,18 @@ export const useAuthStore = defineStore('login', () => {
       return true;
     }
     console.log(loggedInUser.value.rolePermissions);
-    const moduleIndex = loggedInUser.value.rolePermissions.modules.findIndex(
-      (module) => module.moduleId === moduleId
-    );
+    const moduleIndex =
+      loggedInUser.value.rolePermissions.permissionModuleActions.findIndex(
+        (module) => module.moduleId === moduleId
+      );
     if (moduleIndex < 0) {
       return false;
     }
-    return loggedInUser.value.rolePermissions.modules[moduleIndex].actions
-      .map((action) => action.actionId)
-      .includes(permissionId);
+    return (
+      loggedInUser.value.rolePermissions.permissionModuleActions
+        .map((action) => action.actionIds)
+        .filter((y) => y.includes(permissionId)).length > 0
+    );
   }
 
   async function loginUser(params: { userName: string; password: string }) {
@@ -39,7 +42,10 @@ export const useAuthStore = defineStore('login', () => {
       method: 'POST',
       data: params,
     }).then((res) => {
-      loggedInUser.value = res.data;
+      console.log(res);
+      if (res?.data) {
+        loggedInUser.value = res.data;
+      }
       return res;
     });
   }

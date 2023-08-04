@@ -48,12 +48,11 @@ export enum EUserModules {
 export interface IRoleModule {
   moduleId: EUserModules;
   moduleName: string;
-  actions: IRoleActionResponse[];
+  actionIds: EActionPermissions[];
 }
 
 export interface IRoleActionResponse {
   actionId: EActionPermissions;
-  actionName: string;
 }
 
 const roleDisplayList: Record<EUserRoles, string> = {
@@ -112,16 +111,15 @@ export interface LoginTokenResponseDTO {
   message?: null;
 }
 export interface RolePermissions {
-  roleId: string;
+  permissionModuleActions: IRoleModule[];
   roleName: EUserRoles;
-  modules: IRoleModule[];
 }
 
 export interface IGenericResponse<T = unknown> {
   httpStatusCode: number;
   message: string;
   type: string;
-  data: T;
+  data?: T;
 }
 
 export const checkNameIsModule = (e: any): e is EUserModules =>

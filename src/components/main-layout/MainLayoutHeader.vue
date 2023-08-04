@@ -89,7 +89,7 @@ import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 import AccountInfoModal from '../../components/header/AccountInfoModal.vue';
 import OutsideClickContainer from '../common/OutsideClickContainer.vue';
-import { logoutUser } from 'src/services/auth';
+import { logoutUser } from 'src/services';
 import { isPosError } from 'src/utils';
 const isAccountInfoModalVisible = ref<boolean>(false);
 const showAccountInfoDropdown = ref<boolean>(false);
