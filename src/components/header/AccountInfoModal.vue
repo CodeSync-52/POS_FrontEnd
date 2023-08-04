@@ -111,13 +111,9 @@
         flat
         unelevated
         @click="
-          () => {
-            if (!isViewProfile || canUpdateProfile) {
-              updateProfile();
-            } else {
-              callingSaveNewPasswordApi();
-            }
-          }
+          !isViewProfile || canUpdateProfile
+            ? updateProfile()
+            : callingSaveNewPasswordApi()
         "
       />
     </q-card-actions>
@@ -169,9 +165,7 @@ async function callingViewUserProfileApi() {
       fullName: string;
       phoneNumber: string;
     }> = await viewUserProfile();
-    userInfo.value.fullName = response.data.fullName;
-    userInfo.value.phoneNumber = response.data.phoneNumber;
-    console.log(response.data.phoneNumber);
+    if (response && response.data) userInfo.value = response.data;
   } catch (e) {
     if (isPosError(e)) {
       $q.notify({
