@@ -76,12 +76,11 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
+
 const $q = useQuasar();
-const router = useRouter();
 const authStore = useAuthStore();
 const isFetching = ref(false);
 const loginCredentials = ref({
@@ -93,7 +92,6 @@ const handleLogin = async () => {
   isFetching.value = true;
   try {
     await authStore.loginUser(loginCredentials.value);
-    router.push('/dashboard');
   } catch (e) {
     let message = 'Unexpected Error Fetching Api';
     if (isPosError(e)) {
