@@ -43,7 +43,6 @@ export default store((/* { ssrContext } */) => {
     {
       deep: true,
     }
-    
   );
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
