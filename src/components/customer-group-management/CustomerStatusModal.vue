@@ -3,8 +3,8 @@
     <q-card-section>
       <div class="text-h6 q-mb-md"><span> Edit Customer Status </span></div>
       <div class="column">
-        <q-radio v-model="statusVal" val="1" label="Active" />
-        <q-radio v-model="statusVal" val="0" label="InActive" />
+        <q-radio v-model="statusVal" :val="1" label="Active" />
+        <q-radio v-model="statusVal" :val="0" label="InActive" />
       </div>
     </q-card-section>
     <div class="row justify-end">
@@ -23,18 +23,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 interface IProps {
-  selectedStatus: string;
+  selectedStatus: number;
 }
 const isLoading = ref<boolean>(false);
-const emit = defineEmits(['updated-status']);
-const statusVal = ref<string>('');
+const emit = defineEmits<{
+  (e: 'updated-status', newVal: number, callback: () => void): void;
+}>();
+const statusVal = ref<number>(-1);
 const props = withDefaults(defineProps<IProps>(), {
-  selectedStatus: '',
+  selectedStatus: -1,
 });
-async function savingEditedStatus() {
+function savingEditedStatus() {
   isLoading.value = true;
-  await emit('updated-status', statusVal.value);
-  isLoading.value = false;
+  emit('updated-status', statusVal.value, () => {
+    isLoading.value = false;
+  });
 }
 onMounted(() => {
   statusVal.value = props.selectedStatus;
