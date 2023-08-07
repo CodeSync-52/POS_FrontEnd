@@ -88,6 +88,21 @@
       >
         <template
           v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:header-cell-action
+        >
+          <q-th></q-th>
+        </template>
+        <template
+          v-if="
             authStore.checkUserHasPermission(
               EUserModules.UserManagment,
               EActionPermissions.Update

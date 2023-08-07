@@ -45,8 +45,13 @@
               v-model="userData.phoneNumber"
               type="tel"
               color="btn-primary"
-              mask="(####) #######"
+              mask="####-#######"
               label="Phone Number"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  val.length === 12 || 'This entered number is not valid',
+              ]"
             />
           </div>
         </div>
@@ -135,6 +140,7 @@
         flat
         :label="action === 'Add New User' ? 'Add' : 'Save'"
         color="signature"
+        :disable="isButtonDisabled"
         v-close-popup
         @click="handleAddNewUser"
         class="bg-btn-primary hover:bg-btn-primary-hover"
@@ -144,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, computed, ref } from 'vue';
 import { roleOptions } from 'src/constants';
 import { EUserRoles, ICreateUserPayload } from 'src/interfaces';
 type PropType = {
@@ -160,6 +166,44 @@ const userData = ref<ICreateUserPayload>({
   isActive: false,
   flatDiscount: 0,
   customerGroupId: 0,
+});
+const isButtonDisabled = computed(() => {
+  const {
+    fullName,
+    phoneNumber,
+    userRoleName,
+    userName,
+    assignShop,
+    customerGroupId,
+  } = userData.value;
+  const validations = ref<boolean[]>([]);
+  if (
+    userRoleName === EUserRoles.Admin ||
+    userRoleName === EUserRoles.SuperAdmin ||
+    userRoleName === EUserRoles.OfficeManager
+  ) {
+    validations.value = [!fullName, phoneNumber.length !== 12];
+  } else if (
+    userRoleName === EUserRoles.ShopManager ||
+    userRoleName === EUserRoles.ShopOfficer
+  ) {
+    const shopValidation = [
+      !fullName,
+      phoneNumber.length !== 12,
+      !userName,
+      assignShop === 0,
+    ];
+    validations.value = shopValidation;
+  } else if (userRoleName === EUserRoles.Customer) {
+    const customerValidation = [
+      !fullName,
+      phoneNumber.length !== 12,
+      !userName,
+      customerGroupId === 0,
+    ];
+    validations.value = customerValidation;
+  }
+  return validations.value.some((validation) => validation);
 });
 const emit = defineEmits<{
   (event: 'user-add', data: ICreateUserPayload): void;

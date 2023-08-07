@@ -16,9 +16,10 @@
     <div class="q-pa-md">
       <q-table
         :rows="customerGroupRows"
+        v-model:pagination="pagination"
         :columns="customerGroupColumns"
-        :rows-per-page-options="['50', '5', '10', '15', '20']"
         row-key="name"
+        @request="fetchingCustomerGroupList"
       >
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
@@ -63,21 +64,6 @@
                 icon="edit"
                 color="bg-btn-secondary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
-              />
-              <q-btn
-                v-if="
-                  authStore.checkUserHasPermission(
-                    EUserModules.CustomerGroupManagement,
-                    EActionPermissions.Delete
-                  )
-                "
-                size="sm"
-                flat
-                dense
-                unelevated
-                icon="delete"
-                color="red"
-                @click="handleDeleteCustomerGroupRow(props.row)"
               />
             </div>
           </q-td>
@@ -128,6 +114,13 @@ const pageTitle = getRoleModuleDisplayName(
 );
 const $q = useQuasar();
 const authStore = useAuthStore();
+const pagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
+});
 const updateOrAddCustomer = async (
   newName: string,
   action: string,
@@ -237,35 +230,6 @@ const handleEditStatusPopup = (selectedRow: ICustomerListResponse) => {
   }
   editStatusPopup.value = true;
 };
-const handleDeleteCustomerGroupRow = (selectedRow: ICustomerListResponse) => {
-  $q.notify({
-    message: 'Are you sure you want to delete this record?',
-    color: '',
-    actions: [
-      {
-        label: 'Delete',
-        color: 'signature bg-btn-primary hover:bg-btn-primary-hover',
-
-        handler: () => {
-          if (customerGroupRows.value) {
-            const selectedRowIndex = customerGroupRows.value.findIndex(
-              (row) => selectedRow.customerGroupId === row.customerGroupId
-            );
-            customerGroupRows.value.splice(selectedRowIndex, 1);
-          }
-          $q.notify({
-            type: 'positive',
-            message: 'Your Selected Record is deleted.',
-          });
-        },
-      },
-      {
-        label: 'Cancel',
-        color: 'white bg-btn-primary hover:bg-btn-primary-hover',
-      },
-    ],
-  });
-};
 const handleEditCustomerGroupNamePopup = (
   selectedRow: ICustomerListResponse
 ) => {
@@ -273,16 +237,26 @@ const handleEditCustomerGroupNamePopup = (
   isAddCustomerModalVisible.value = true;
   selectedRowData.value = selectedRow;
 };
-const pageSize = 50;
-const pageNumber = 1;
+const isLoading = ref(false);
 onMounted(() => {
   fetchingCustomerGroupList();
 });
-async function fetchingCustomerGroupList() {
+async function fetchingCustomerGroupList(data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
+}) {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
+  }
   try {
-    const res = await getCustomerGroupList({ pageNumber, pageSize });
+    const res = await getCustomerGroupList({
+      pageNumber: pagination.value.page,
+      pageSize: pagination.value.rowsPerPage,
+    });
     if (res?.data) {
       customerGroupRows.value = res?.data.items;
+      pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {
     if (isPosError(e)) {
@@ -292,6 +266,7 @@ async function fetchingCustomerGroupList() {
       });
     }
   }
+  isLoading.value = false;
 }
 </script>
 <style>

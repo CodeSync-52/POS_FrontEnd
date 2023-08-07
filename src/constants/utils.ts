@@ -14,9 +14,9 @@ export const roleOptions = [
   { label: 'Super Admin', value: EUserRoles.SuperAdmin },
   { label: 'Admin', value: EUserRoles.Admin },
   { label: 'Shop Manager', value: EUserRoles.ShopManager },
-  { label: 'Office Boy', value: EUserRoles.OfficeManager },
+  { label: 'Office Manager', value: EUserRoles.OfficeManager },
   { label: 'Shop Sale Officer', value: EUserRoles.ShopOfficer },
-  { label: 'Customer/Vendor', value: EUserRoles.Customer },
+  { label: 'Customer', value: EUserRoles.Customer },
 ];
 
 export const statusOptions = [
