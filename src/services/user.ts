@@ -44,3 +44,17 @@ export const getUserListApi = async ({
   });
   return res;
 };
+export const resetUserPassword = async (customerId: number) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: `api/User/password/reset?userId=${customerId}`,
+  });
+  return res;
+};
+export const changeUserStatus = async (customerId: number) => {
+  const res = await makeApiCall<IGenericResponse>({
+    method: 'PUT',
+    url: `api/User/change/status?userId=${customerId}`,
+  });
+  return res;
+};

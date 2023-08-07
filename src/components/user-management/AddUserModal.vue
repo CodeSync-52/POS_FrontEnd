@@ -1,13 +1,13 @@
 <template>
-  <q-card>
+  <q-card class="min-w-[400px]">
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-2xl font-medium">Add new user</span>
+        <span class="text-2xl font-medium"> {{ action }}</span>
         <span
           ><q-btn v-close-popup flat unelevated dense size="md" icon="close"
         /></span>
       </div>
-      <div class="flex flex-col gap-2">
+      <div v-if="action !== 'Edit User'" class="flex flex-col gap-2">
         <div class="row px-2 q-col-gutter-sm">
           <div class="col-md-4 w-full col-sm-12">
             <div>
@@ -46,9 +46,9 @@
               <q-select
                 :options="roleOptions"
                 outlined
-                v-model="userData.userRoleName"
+                v-model="userData.roleName"
                 map-options
-                @update:model-value="userData.userRoleName = $event.value"
+                @update:model-value="userData.roleName = $event.value"
                 label="Role"
                 color="btn-primary"
               />
@@ -56,8 +56,8 @@
           </div>
           <div
             v-if="
-              userData.userRoleName === EUserRoles.ShopOfficer ||
-              userData.userRoleName === EUserRoles.ShopManager
+              userData.roleName === EUserRoles.ShopOfficer ||
+              userData.roleName === EUserRoles.ShopManager
             "
             class="col-md-6 w-full col-sm-12"
           >
@@ -72,7 +72,7 @@
           </div>
         </div>
         <div
-          v-if="userData.userRoleName === EUserRoles.Customer"
+          v-if="userData.roleName === EUserRoles.Customer"
           class="row px-2 q-col-gutter-sm"
         >
           <div class="col-md-4 w-full col-sm-12">
@@ -118,7 +118,7 @@
       />
       <q-btn
         flat
-        label="Save"
+        :label="action === 'Add New User' ? 'Add' : 'Save'"
         color="white"
         v-close-popup
         @click="handleAddNewUser"
@@ -134,11 +134,12 @@ import { roleOptions } from 'src/constants';
 import { EUserRoles, ICreateUserPayload } from 'src/interfaces';
 type PropType = {
   selectedUser?: ICreateUserPayload;
+  action: string;
 };
 const userData = ref<ICreateUserPayload>({
   fullName: '',
   phoneNumber: '',
-  userRoleName: EUserRoles.Customer,
+  roleName: EUserRoles.Customer,
   userName: '',
   assignShop: 0,
   isActive: false,
@@ -151,7 +152,7 @@ const emit = defineEmits<{
 const props = defineProps<PropType>();
 
 function handleAddNewUser() {
-  if (userData.value.userRoleName !== EUserRoles.Customer) {
+  if (userData.value.roleName !== EUserRoles.Customer) {
     delete userData.value.assignShop;
     delete userData.value.customerGroupId;
     delete userData.value.isActive;

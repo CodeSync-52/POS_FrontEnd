@@ -135,23 +135,82 @@
             </div>
           </q-td>
         </template>
+        <template v-slot:body-cell-discount="props">
+          <q-td :props="props">
+            {{ props.row.discount ?? 'Null' }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-customerGroup="props">
+          <q-td :props="props">
+            {{ props.row.customerGroup ?? 'Null' }}
+          </q-td>
+        </template>
+        <template
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Update
+            ) ||
+            authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:body-cell-reset="props"
+        >
+          <q-td :props="props">
+            <q-btn
+              flat
+              unelevated
+              dense
+              color="red"
+              no-caps
+              label="Reset"
+              @click="handleResetPasswordPopup(props.row)"
+            />
+          </q-td>
+        </template>
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            <q-btn
+              flat
+              unelevated
+              dense
+              no-caps
+              :label="props.row.status"
+              @click="handleChangeStatusPopup(props.row)"
+            />
+          </q-td>
+        </template>
       </q-table>
     </div>
     <q-dialog
       v-model="showAddNewAdminRolePopup"
       @update:model-value="selectedUser = undefined"
     >
-      <add-user-modal :selected-user="selectedUser" @user-add="handleUserAdd" />
+      <add-user-modal
+        :action="action"
+        :selected-user="selectedUser"
+        @user-add="handleUserAdd"
+      />
+    </q-dialog>
+    <q-dialog v-model="isChangeStatusModalVisible">
+      <change-status-modal
+        :action="action"
+        :selected-data="selectedRowData"
+        @reset-password="handleResetPassword"
+        @change-status="handleChangeStatus"
+      />
     </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-
 import { useAuthStore } from 'src/stores';
 import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
+import ChangeStatusModal from 'src/components/user-management/ChangeStatusModal.vue';
 import {
   customerGroupOptions,
   roleOptions,
@@ -164,21 +223,31 @@ import {
   IGenericResponse,
   IUserData,
   getRoleModuleDisplayName,
+  IUserResponse,
 } from 'src/interfaces';
 import { isPosError, makeApiCall } from 'src/utils';
-import { getUserListApi } from 'src/services';
+import {
+  getUserListApi,
+  resetUserPassword,
+  changeUserStatus,
+} from 'src/services';
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
-
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
+const isChangeStatusModalVisible = ref(false);
+const selectedRowData = ref<{ customerId: number; status: string }>({
+  customerId: -1,
+  status: '',
+});
 const defaultFilterValues = {
   customerGroup: null,
   role: null,
   status: null,
 };
 const UserRows = ref<IUserData[]>([]);
+const action = ref('');
 const isFetching = ref(false);
 const selectedUser = ref<IUserData | undefined>();
 const pagination = ref({
@@ -188,20 +257,32 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-
 let filterSearch = ref(defaultFilterValues);
+const handleChangeStatusPopup = (selectedRow: IUserResponse) => {
+  selectedRowData.value.customerId = selectedRow.userId;
+  selectedRowData.value.status = selectedRow.status;
+  action.value = 'Change Status';
+  isChangeStatusModalVisible.value = true;
+};
 const onEditButtonClick = (row: IUserData) => {
   selectedUser.value = {
     ...row,
     phoneNumber: row.phoneNumber?.toString() || '',
   };
+  action.value = 'Edit User';
   showAddUserModal(true);
 };
-
-const showAddUserModal = (action: boolean) => {
-  showAddNewAdminRolePopup.value = action;
+const handleChangeStatus = (id: number, updatedStatus: string) => {
+  callingChangeStatusApi(id, updatedStatus);
+  isChangeStatusModalVisible.value = false;
 };
-
+const handleResetPassword = (customerGroupId: number) => {
+  callingResetPasswordApi(customerGroupId);
+};
+const showAddUserModal = (isVisible: boolean) => {
+  action.value = 'Add New User';
+  showAddNewAdminRolePopup.value = isVisible;
+};
 const resetFilter = () => {
   filterSearch.value = {
     customerGroup: null,
@@ -209,7 +290,11 @@ const resetFilter = () => {
     status: null,
   };
 };
-
+const handleResetPasswordPopup = (selectedRow: IUserResponse) => {
+  action.value = 'Reset Password';
+  selectedRowData.value.customerId = selectedRow.userId;
+  isChangeStatusModalVisible.value = true;
+};
 const getUserList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
@@ -244,6 +329,37 @@ const getUserList = async (data?: {
 onMounted(() => {
   getUserList();
 });
+async function callingChangeStatusApi(id: number, updatedStatus: string) {
+  try {
+    const res = await changeUserStatus(id);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.status = updatedStatus;
+        if (UserRows.value) {
+          const matchingRow = UserRows.value.findIndex(
+            (row) => id === row.customerGroupId
+          );
+          if (matchingRow !== -1) {
+            const newList = [...UserRows.value];
+            newList[matchingRow].status = updatedStatus;
+            UserRows.value = newList;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message,
+        color: 'red',
+      });
+    }
+  }
+}
 async function handleUserAdd(userData: ICreateUserPayload) {
   try {
     const res: IGenericResponse = await makeApiCall({
@@ -260,5 +376,23 @@ async function handleUserAdd(userData: ICreateUserPayload) {
       });
     }
   } catch (e) {}
+}
+async function callingResetPasswordApi(customerId: number) {
+  try {
+    const res = await resetUserPassword(customerId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message,
+        color: 'red',
+      });
+    }
+  }
 }
 </script>

@@ -26,7 +26,7 @@ export const UserColumn: QTableColumn<IUserData>[] = [
   {
     name: 'role',
     label: 'Role',
-    field: (row) => row.userRoleName,
+    field: (row) => row.roleName,
     sortable: true,
     align: 'left',
   },
@@ -40,7 +40,7 @@ export const UserColumn: QTableColumn<IUserData>[] = [
     name: 'customerGroup',
     label: 'Customer Group',
     sortable: true,
-    field: (row) => row.customerGroupId,
+    field: (row) => row.customerGroup,
     align: 'left',
   },
   {
@@ -60,6 +60,12 @@ export const UserColumn: QTableColumn<IUserData>[] = [
     name: 'outStandingBalance',
     label: 'Outstanding Balance',
     field: (row) => row.outStandingBalance,
+    align: 'left',
+  },
+  {
+    name: 'reset',
+    label: 'Reset Password',
+    field: (row) => row.password,
     align: 'left',
   },
   {

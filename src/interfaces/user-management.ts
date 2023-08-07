@@ -1,7 +1,7 @@
 import { EUserRoles } from './general';
 
 interface IUserCustomer {
-  userRoleName: EUserRoles.Customer;
+  roleName: EUserRoles.Customer;
   assignShop: number;
   flatDiscount: number;
   customerGroupId: number;
@@ -9,7 +9,7 @@ interface IUserCustomer {
 }
 
 interface IUserNonCustomer {
-  userRoleName: Exclude<EUserRoles, EUserRoles.Customer>;
+  roleName: Exclude<EUserRoles, EUserRoles.Customer>;
   assignShop: never;
   flatDiscount: never;
   customerGroupId: never;
@@ -32,4 +32,15 @@ export type IUserData = {
   action?: any;
   status: string;
   discount: number;
+  customerGroup: null | any;
 } & ICreateUserPayload;
+export interface IUserResponse {
+  customerGroup: null;
+  discount: null;
+  fullName: string;
+  phoneNumber: string;
+  roleName: string;
+  status: string;
+  userId: number;
+  username: string;
+}
