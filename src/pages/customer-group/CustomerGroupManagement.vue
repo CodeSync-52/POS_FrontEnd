@@ -3,13 +3,13 @@
     <div
       class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
     >
-      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
+      <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
         unelevated
         color=""
-        class="bg-btn-primary hover:bg-btn-primary-hover"
+        class="bg-btn-primary hover:bg-btn-secondary"
         @click="showAddNewUserPopup"
       />
     </div>
@@ -43,6 +43,7 @@
                 dense
                 unelevated
                 icon="edit"
+                color="bg-btn-secondary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
               />
               <q-btn
@@ -51,6 +52,7 @@
                 dense
                 unelevated
                 icon="delete"
+                color="red"
                 @click="handleDeleteCustomerGroupRow(props.row)"
               />
             </div>
@@ -163,7 +165,7 @@ const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
     actions: [
       {
         label: 'Delete',
-        color: 'white bg-btn-primary hover:bg-btn-secondary',
+        color: 'signature bg-btn-primary hover:bg-btn-primary-hover',
 
         handler: () => {
           const selectedRowIndex = customerGroupRows.value.findIndex(
@@ -176,7 +178,10 @@ const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
           });
         },
       },
-      { label: 'Cancel', color: 'white bg-btn-primary hover:bg-btn-secondary' },
+      {
+        label: 'Cancel',
+        color: 'white bg-btn-primary hover:bg-btn-primary-hover',
+      },
     ],
   });
 };
@@ -189,8 +194,5 @@ const handleEditCustomerGroupNamePopup = (selectedRow: ICustomerData) => {
 <style>
 .q-notification__actions {
   gap: 1rem !important;
-}
-.q-notification__message {
-  color: white;
 }
 </style>

@@ -24,8 +24,3 @@ const handleToggleLeftDrawer = () => {
 };
 const leftDrawerOpen = ref(false);
 </script>
-<style lang="scss" scoped>
-:deep(.q-item:hover) {
-  color: #ff9f43 !important;
-}
-</style>

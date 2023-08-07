@@ -9,7 +9,7 @@
       <q-list
         class="bg-signature gap-4 flex-nowrap flex flex-col max-h-[100vh] h-full overflow-y-scroll mainlayoutSidebar"
       >
-        <q-item-label class="flex w-full justify-end" header>
+        <q-item-label class="flex w-full justify-end !p-0" header>
           <q-icon
             name="close"
             flat
@@ -20,13 +20,18 @@
             class="lg:hidden"
           />
         </q-item-label>
-        <div class="w-16 mx-auto">
-          <img src="/assets/Pos-icon.png" alt="POS Icon" class="text-white" />
+        <div class="w-[140px] h-[42px] mx-auto">
+          <img
+            src="/assets/Pos-icon.png"
+            alt="POS Icon"
+            class="text-signature"
+          />
         </div>
 
         <div v-for="link in allowedLinks" :key="link.title">
           <q-expansion-item
             group="somegroup"
+            :default-opened="true"
             expand-icon-class="text-text_primary hover:text-btn-primary"
             :icon="link.icon"
             :label="link.title"
@@ -38,9 +43,10 @@
                   :key="subLinks.title"
                   :to="subLinks.path"
                   class="pl-7"
+                  :class="{ active: isActiveRoute(subLinks.path) }"
                 >
                   <div
-                    class="text-[0.9rem] pl-2 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
+                    class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
                   >
                     {{ getRoleModuleDisplayName(subLinks.title) }}
                   </div>
@@ -61,9 +67,12 @@ import {
   EUserModules,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
+import { useRoute } from 'vue-router';
 interface IProps {
   modelValue: boolean;
 }
+const route = useRoute();
+const isActiveRoute = (path: string) => route.path === path;
 const authStore = useAuthStore();
 const essentialLinks = [
   {

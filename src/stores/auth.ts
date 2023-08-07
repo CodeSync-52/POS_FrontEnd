@@ -13,7 +13,7 @@ import { useRouter } from 'vue-router';
 
 export const useAuthStore = defineStore('login', () => {
   const localStorageData = localStorage.getItem('storeData');
-  console.log(JSON.parse(localStorageData));
+
   const loggedInUser = ref<IUser | null>(
     localStorageData ? JSON.parse(localStorageData) : null
   );

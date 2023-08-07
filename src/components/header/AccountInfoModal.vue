@@ -10,7 +10,7 @@
           v-if="isViewProfile"
           label="edit"
           unelevated
-          color="btn-primary"
+          color="btn-primary "
           @click="canUpdateProfile = true"
         />
       </div>
@@ -45,6 +45,7 @@
               v-model="passwordConfirmation.oldPass"
               type="password"
               label="Old Password"
+              color="btn-primary"
               outlined
               dense
             />
@@ -55,6 +56,7 @@
             <q-input
               v-model="passwordConfirmation.newPass"
               label="New Password"
+              color="btn-primary"
               type="password"
               outlined
               dense
@@ -81,6 +83,7 @@
               v-model="passwordConfirmation.confirmPass"
               type="password"
               label="Confirm Password"
+              color="btn-primary"
               outlined
               dense
               lazy-rules
@@ -97,7 +100,8 @@
     <q-card-actions class="row q-gutter-m-md justify-end">
       <q-btn
         label="Close"
-        :color="isViewProfile && !canUpdateProfile ? 'btn-primary' : 'red'"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        :color="isViewProfile && !canUpdateProfile ? 'signature' : 'signature'"
         flat
         unelevated
         v-close-popup
@@ -105,7 +109,8 @@
       <q-btn
         v-if="!isViewProfile || canUpdateProfile"
         label="Save"
-        color="btn-primary"
+        color="signature"
+        class="bg-btn-primary"
         :loading="isLoading"
         :disable="!isViewProfile || canUpdateProfile ? false : isButtonDisabled"
         flat
