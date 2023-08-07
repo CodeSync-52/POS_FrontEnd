@@ -1,6 +1,7 @@
 import { store } from 'quasar/wrappers';
 import { createPinia } from 'pinia';
 import { Router } from 'vue-router';
+import { watch } from 'vue';
 
 /*
  * When adding new properties to stores, you should also
@@ -27,6 +28,22 @@ export * from './auth';
 export default store((/* { ssrContext } */) => {
   const pinia = createPinia();
 
+  watch(
+    pinia.state,
+    (val) => {
+      if (val.login.loggedInUser) {
+        localStorage.setItem(
+          'storeData',
+          JSON.stringify(val.login.loggedInUser)
+        );
+      } else {
+        localStorage.removeItem('storeData');
+      }
+    },
+    {
+      deep: true,
+    }
+  );
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
 

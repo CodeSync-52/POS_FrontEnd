@@ -1,3 +1,4 @@
+import { watch } from 'vue';
 import { defineStore } from 'pinia';
 import {
   EActionPermissions,
@@ -11,7 +12,11 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export const useAuthStore = defineStore('login', () => {
-  const loggedInUser = ref<IUser | null>(null);
+  const localStorageData = localStorage.getItem('storeData');
+
+  const loggedInUser = ref<IUser | null>(
+    localStorageData ? JSON.parse(localStorageData) : null
+  );
   const router = useRouter();
   function checkUserHasPermission(
     moduleId: EUserModules,
@@ -21,7 +26,6 @@ export const useAuthStore = defineStore('login', () => {
     if (loggedInUser.value.rolePermissions.roleName === EUserRoles.SuperAdmin) {
       return true;
     }
-    console.log(loggedInUser.value.rolePermissions);
     const moduleIndex =
       loggedInUser.value.rolePermissions.permissionModuleActions.findIndex(
         (module) => module.moduleId === moduleId
@@ -37,17 +41,14 @@ export const useAuthStore = defineStore('login', () => {
   }
 
   async function loginUser(params: { userName: string; password: string }) {
-    return await makeApiCall<IGenericResponse<IUser>>({
+    const res = await makeApiCall<IGenericResponse<IUser>>({
       url: 'api/Account/login',
       method: 'POST',
       data: params,
-    }).then((res) => {
-      console.log(res);
-      if (res?.data) {
-        loggedInUser.value = res.data;
-      }
-      return res;
     });
+    loggedInUser.value = res.data;
+    router.push('/role');
+    return res;
   }
 
   const logoutUser = () => {

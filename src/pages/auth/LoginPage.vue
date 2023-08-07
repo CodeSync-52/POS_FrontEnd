@@ -12,7 +12,7 @@
     <div
       class="flex flex-col min-w-[320px] w-full max-w-[550px] mx-auto justify-center q-pa-md"
     >
-      <div class="bg-white px-6 py-8 rounded-md q-gutter-y-sm">
+      <div class="bg-signature px-6 py-8 rounded-md q-gutter-y-sm">
         <div class="w-[150px] h-[48px] text-[24px]">
           <img src="/assets/Pos-icon.png" alt="logo" />
         </div>
@@ -76,12 +76,11 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
+
 const $q = useQuasar();
-const router = useRouter();
 const authStore = useAuthStore();
 const isFetching = ref(false);
 const loginCredentials = ref({
@@ -93,7 +92,6 @@ const handleLogin = async () => {
   isFetching.value = true;
   try {
     await authStore.loginUser(loginCredentials.value);
-    router.push('/dashboard');
   } catch (e) {
     let message = 'Unexpected Error Fetching Api';
     if (isPosError(e)) {

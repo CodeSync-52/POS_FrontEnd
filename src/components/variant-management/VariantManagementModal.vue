@@ -10,14 +10,22 @@
         v-model="variantName"
         outlined
         label="Name"
+        color="btn-primary"
       />
       <div v-else class="text-center">
         <span>Are you sure you want to delete the selected Record?</span>
       </div>
     </q-card-section>
     <q-card-actions class="q-pb-none q-px-none" align="right">
-      <div v-if="variantAction !== 'Delete'" class="row justify-end">
-        <q-btn label="Cancel" flat unelevated color="red" v-close-popup />
+      <div v-if="variantAction !== 'Delete'" class="row justify-end gap-4">
+        <q-btn
+          label="Cancel"
+          flat
+          unelevated
+          color="signature"
+          v-close-popup
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        />
         <q-btn
           :label="variantAction === 'Edit' ? 'Save' : 'Add'"
           flat
@@ -25,6 +33,7 @@
           :disable="!variantName"
           unelevated
           color="signature"
+          class="bg-btn-primary"
           @click="saveNewVariant"
         />
       </div>
@@ -32,9 +41,10 @@
         <q-btn label="Cancel" flat unelevated color="signature" v-close-popup />
         <q-btn
           label="Delete"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
           flat
           unelevated
-          color="red"
+          color="signature"
           :loading="isLoading"
           @click="deleteVariant"
         />

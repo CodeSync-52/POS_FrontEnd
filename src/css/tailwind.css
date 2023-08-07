@@ -6,7 +6,8 @@
   --primary: #ffffff;
   --btn-primary: #ff9f43;
   --btn-primary-hover: #fd7e14;
-  --text-POS: #212b36;
   --text-hover: #fff7f0;
   --btn-secondary: #092c4c;
+  --btn-cancel: #637381;
+  --btn-cancel-hover: #212529;
 }

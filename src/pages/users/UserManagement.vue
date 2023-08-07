@@ -3,7 +3,7 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
-      <span class="text-3xl font-semibold">{{ pageTitle }}</span>
+      <span class="text-xl font-medium">{{ pageTitle }}</span>
 
       <q-btn
         v-if="
@@ -58,11 +58,7 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="
-            () => {
-              console.log(filterSearch);
-            }
-          "
+          @click="() => {}"
         />
         <q-btn
           unelevated
@@ -117,6 +113,7 @@
                 dense
                 unelevated
                 icon="edit"
+                color="bg-btn-secondary"
                 @click="onEditButtonClick(props.row)"
               />
               <q-btn
@@ -130,6 +127,7 @@
                 dense
                 flat
                 unelevated
+                color="red"
                 icon="delete"
               />
             </div>

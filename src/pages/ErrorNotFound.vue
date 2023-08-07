@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center"
+    class="fullscreen bg-blue text-signature text-center q-pa-md flex flex-center"
   >
     <div>
       <div style="font-size: 30vh">404</div>
@@ -9,7 +9,7 @@
 
       <q-btn
         class="q-mt-xl"
-        color="white"
+        color="signature"
         text-color="blue"
         unelevated
         to="/"

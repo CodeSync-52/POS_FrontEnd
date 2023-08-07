@@ -4,7 +4,14 @@
       <div class="row justify-between items-center mb-2">
         <span class="text-2xl font-medium"> {{ action }}</span>
         <span
-          ><q-btn v-close-popup flat unelevated dense size="md" icon="close"
+          ><q-btn
+            class="close-modal"
+            v-close-popup
+            flat
+            unelevated
+            dense
+            size="md"
+            icon="close"
         /></span>
       </div>
       <div v-if="action !== 'Edit User'" class="flex flex-col gap-2">
@@ -12,6 +19,7 @@
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
+                dense
                 outlined
                 v-model="userData.fullName"
                 label="Full Name"
@@ -22,6 +30,7 @@
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
+                dense
                 outlined
                 v-model="userData.userName"
                 label="User Name"
@@ -31,6 +40,7 @@
           </div>
           <div class="col-md-4 w-full col-sm-12">
             <q-input
+              dense
               outlined
               v-model="userData.phoneNumber"
               type="tel"
@@ -44,6 +54,7 @@
           <div class="col-md-6 w-full col-sm-12">
             <div>
               <q-select
+                dense
                 :options="roleOptions"
                 outlined
                 v-model="userData.roleName"
@@ -79,21 +90,25 @@
             <div>
               <q-select
                 :options="roleOptions"
+                dense
                 outlined
                 v-model="userData.customerGroupId"
                 label="Customer Group"
+                color="btn-primary"
               />
             </div>
           </div>
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
+                dense
                 outlined
                 v-model="userData.flatDiscount"
                 fill-mask="0"
                 reverse-fill-mask
                 input-class="text-right"
                 label="Discount"
+                color="btn-primary"
               />
             </div>
           </div>
@@ -112,14 +127,14 @@
       <q-btn
         flat
         label="Cancel"
-        color="white"
+        color="signature"
         v-close-popup
-        class="bg-btn-primary hover:bg-btn-secondary"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
       />
       <q-btn
         flat
         :label="action === 'Add New User' ? 'Add' : 'Save'"
-        color="white"
+        color="signature"
         v-close-popup
         @click="handleAddNewUser"
         class="bg-btn-primary hover:bg-btn-primary-hover"
