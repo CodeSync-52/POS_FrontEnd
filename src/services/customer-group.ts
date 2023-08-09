@@ -15,7 +15,7 @@ export const getCustomerGroupList = async ({
     }>
   >({
     method: 'GET',
-    url: `api/CustomerGroup/customergroup/list?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    url: `api/CustomerGroup/list?pageNumber=${pageNumber}&pageSize=${pageSize}`,
   });
   return res;
 };

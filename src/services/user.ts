@@ -1,4 +1,4 @@
-import { IGenericResponse, IUserData } from 'src/interfaces';
+import { IGenericResponse, IUserManagementData } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
 export const viewUserProfile = async () => {
@@ -26,24 +26,6 @@ export const editUserProfile = async ({
   });
   return res;
 };
-
-export const getUserListApi = async ({
-  pageNumber = 1,
-  pageSize = 50,
-}: {
-  pageNumber?: number;
-  pageSize?: number;
-}) => {
-  const res = await makeApiCall<
-    IGenericResponse<{
-      totalItemCount: number;
-      items: IUserData[];
-    }>
-  >({
-    url: `api/User/list?PageNumber=${pageNumber}&PageSize=${pageSize}`,
-  });
-  return res;
-};
 export const resetUserPassword = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
@@ -52,9 +34,55 @@ export const resetUserPassword = async (customerId: number) => {
   return res;
 };
 export const changeUserStatus = async (customerId: number) => {
-  const res = await makeApiCall<IGenericResponse>({
+  const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: `api/User/change/status?userId=${customerId}`,
+  });
+  return res;
+};
+export const updateUser = async ({
+  userId,
+  ...data
+}: Partial<IUserManagementData>) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: `api/User/update?userId=${userId}`,
+    data,
+  });
+  return res;
+};
+
+export const getUserListApi = async ({
+  customerGroupId,
+  role,
+  status,
+  name,
+  pageNumber = 1,
+  pageSize = 50,
+}: {
+  customerGroupId?: number | null;
+  role?: string | null;
+  status?: string | null;
+  name?: string | null;
+  pageNumber?: number;
+  pageSize?: number;
+}) => {
+  const res = await makeApiCall<
+    IGenericResponse<{
+      totalItemCount: number;
+      items: IUserManagementData[];
+    }>
+  >({
+    method: 'GET',
+    url: 'api/User/list',
+    params: {
+      RoleName: role,
+      PageSize: pageSize,
+      Status: status,
+      PageNumber: pageNumber,
+      Name: name,
+      CustomerGroupId: customerGroupId,
+    },
   });
   return res;
 };

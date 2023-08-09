@@ -31,12 +31,6 @@ export const UserColumn: QTableColumn<IUserData>[] = [
     align: 'left',
   },
   {
-    name: 'assignShop',
-    label: 'Shop',
-    field: (row) => row.assignShop,
-    align: 'left',
-  },
-  {
     name: 'customerGroup',
     label: 'Customer Group',
     sortable: true,

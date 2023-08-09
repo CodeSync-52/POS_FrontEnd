@@ -2,26 +2,26 @@ import { EUserRoles } from './general';
 
 interface IUserCustomer {
   roleName: EUserRoles.Customer;
-  assignShop: number;
+
   flatDiscount: number;
-  customerGroupId: number;
-  isActive: boolean;
+  customerGroupId: number | null;
+  status: string;
 }
 
 interface IUserNonCustomer {
   roleName: Exclude<EUserRoles, EUserRoles.Customer>;
-  assignShop: never;
-  flatDiscount: never;
-  customerGroupId: never;
-  isActive: never;
+  flatDiscount?: never;
+  customerGroupId?: never;
+  status?: 'InActive';
 }
 type ICreateUserPayloadCommon = {
   fullName: string;
   userName: string;
   phoneNumber: string;
+  userId?: number;
 };
 
-export type ICreateUserPayload =
+export type IUserManagementData =
   | (ICreateUserPayloadCommon & IUserCustomer)
   | (ICreateUserPayloadCommon & IUserNonCustomer);
 
@@ -33,7 +33,7 @@ export type IUserData = {
   status: string;
   discount: number;
   customerGroup: null | any;
-} & ICreateUserPayload;
+} & IUserManagementData;
 export interface IUserResponse {
   customerGroup: null;
   discount: null;
@@ -44,3 +44,9 @@ export interface IUserResponse {
   userId: number;
   username: string;
 }
+export interface IUserFilterList {
+  customerGroupId: number | null;
+  role: string | null;
+  status: string | null;
+}
+export type IUserPayload = Omit<IUserManagementData, 'status'>;

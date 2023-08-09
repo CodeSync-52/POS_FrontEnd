@@ -2,7 +2,7 @@
   <q-card class="min-w-[400px]">
     <q-card-section>
       <div class="flex justify-between items-center mb-2">
-        <span class="text-2xl font-medium"> {{ action }}</span>
+        <span class="text-2xl font-medium">Reset Password</span>
         <q-btn
           class="font-medium"
           icon="close"
@@ -12,19 +12,8 @@
           v-close-popup
         />
       </div>
-      <div class="column">
-        <q-radio
-          v-model="statusVal"
-          val="Active"
-          color="btn-primary"
-          label="Active"
-        />
-        <q-radio
-          v-model="statusVal"
-          color="btn-primary"
-          val="InActive"
-          label="InActive"
-        />
+      <div class="text-center">
+        <span>Are you sure you want to reset the password?</span>
       </div>
     </q-card-section>
     <q-card-actions class="row justify-end q-gutter-x-md">
@@ -37,39 +26,31 @@
       />
       <q-btn
         flat
-        label="Save"
+        label="Reset"
         color="white"
         class="bg-btn-primary hover:bg-btn-primary-hover"
-        @click="handleChangeStatus()"
+        @click="handleResetPassword"
       />
     </q-card-actions>
   </q-card>
 </template>
-<script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+<script setup lang="ts">
 interface Iprops {
-  action: string;
   selectedData: {
     customerId: number;
     status: string;
   };
 }
 const props = withDefaults(defineProps<Iprops>(), {
-  action: '',
   selectedData: () => ({
     customerId: -1,
     status: '',
   }),
 });
-onMounted(() => {
-  statusVal.value = props.selectedData.status;
-});
-const statusVal = ref<string>('');
 const emit = defineEmits<{
-  (event: 'change-status', id: number, updatedStatus: string): void;
+  (event: 'reset-password', id: number): void;
 }>();
-
-const handleChangeStatus = () => {
-  emit('change-status', props.selectedData.customerId, statusVal.value);
+const handleResetPassword = () => {
+  emit('reset-password', props.selectedData.customerId);
 };
 </script>

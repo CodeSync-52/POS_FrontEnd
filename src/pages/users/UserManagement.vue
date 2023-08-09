@@ -17,7 +17,7 @@
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         unelevated
         color=" "
-        @click="showAddUserModal(true)"
+        @click="handleAddNewUser"
       />
     </div>
 
@@ -28,17 +28,33 @@
         dense
         style="min-width: 200px"
         outlined
-        v-model="filterSearch.customerGroup"
-        :options="customerGroupOptions"
+        v-model="filterSearch.customerGroupId"
+        :options="customerGroupList"
+        map-options
+        @focus="getCustomerListOption"
+        @update:model-value="
+          filterSearch.customerGroupId = $event.customerGroupId
+        "
+        :loading="isCustomerGroupListLoading"
         label="Customer Group"
+        option-label="name"
+        option-value="customerGroupId"
         color="btn-primary"
-      />
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
       <q-select
         dense
         style="min-width: 200px"
         outlined
+        map-options
         v-model="filterSearch.role"
-        :options="roleOptions"
+        :options="roleDropdownOptions"
+        @update:model-value="filterSearch.role = $event.value"
         label="Role"
         color="btn-primary"
       />
@@ -47,6 +63,7 @@
         style="min-width: 200px"
         outlined
         v-model="filterSearch.status"
+        @update:model-value="filterSearch.status = $event.value"
         :options="statusOptions"
         label="Status"
         color="btn-primary"
@@ -54,15 +71,17 @@
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
         <q-btn
           unelevated
+          :loading="isLoading"
           color=""
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="() => {}"
+          @click="handleUserFilter"
         />
         <q-btn
           unelevated
           color=""
+          :loading="isLoading"
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="resetFilter"
@@ -77,7 +96,7 @@
     </div>
     <div class="py-4">
       <q-table
-        :loading="false"
+        :loading="isLoading"
         tabindex="0"
         v-model:pagination="pagination"
         :rows="UserRows"
@@ -86,6 +105,21 @@
         row-key="name"
         @request="getUserList"
       >
+        <template
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:header-cell-reset
+        >
+          <q-th></q-th>
+        </template>
         <template
           v-if="
             !authStore.checkUserHasPermission(
@@ -130,20 +164,6 @@
                 icon="edit"
                 color="bg-btn-secondary"
                 @click="onEditButtonClick(props.row)"
-              />
-              <q-btn
-                v-if="
-                  authStore.checkUserHasPermission(
-                    EUserModules.UserManagment,
-                    EActionPermissions.Delete
-                  )
-                "
-                size="sm"
-                dense
-                flat
-                unelevated
-                color="red"
-                icon="delete"
               />
             </div>
           </q-td>
@@ -205,6 +225,7 @@
         :action="action"
         :selected-user="selectedUser"
         @user-add="handleUserAdd"
+        @user-edit="editUserInfo"
       />
     </q-dialog>
     <q-dialog v-model="isChangeStatusModalVisible">
@@ -215,54 +236,76 @@
         @change-status="handleChangeStatus"
       />
     </q-dialog>
+    <q-dialog v-model="isResetPasswordModalVisible">
+      <reset-password-modal
+        :selected-data="selectedRowData"
+        @reset-password="handleResetPassword"
+      />
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useAuthStore } from 'src/stores';
 import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
 import ChangeStatusModal from 'src/components/user-management/ChangeStatusModal.vue';
-import {
-  customerGroupOptions,
-  roleOptions,
-  statusOptions,
-} from 'src/constants/utils';
+import ResetPasswordModal from 'src/components/user-management/ResetPasswordModal.vue';
+import { roleOptions, statusOptions } from 'src/constants/utils';
 import {
   EActionPermissions,
   EUserModules,
-  ICreateUserPayload,
   IGenericResponse,
-  IUserData,
   getRoleModuleDisplayName,
   IUserResponse,
+  IUserManagementData,
+  EUserRoles,
+  ICustomerListResponse,
+  IUserFilterList,
+  IUserPayload,
 } from 'src/interfaces';
 import { isPosError, makeApiCall } from 'src/utils';
 import {
   getUserListApi,
   resetUserPassword,
   changeUserStatus,
+  updateUser,
+  getCustomerGroupList,
 } from 'src/services';
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
 const authStore = useAuthStore();
+const customerGroupList = ref<ICustomerListResponse[]>([]);
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
 const isChangeStatusModalVisible = ref(false);
+const isLoading = ref(false);
+const isResetPasswordModalVisible = ref(false);
 const selectedRowData = ref<{ customerId: number; status: string }>({
   customerId: -1,
   status: '',
 });
 const defaultFilterValues = {
-  customerGroup: null,
+  customerGroupId: null,
   role: null,
   status: null,
 };
-const UserRows = ref<IUserData[]>([]);
-const action = ref('');
+
+const roleDropdownOptions = computed(() =>
+  roleOptions.filter(
+    (role) =>
+      role.value === EUserRoles.Customer ||
+      role.value === EUserRoles.Admin ||
+      role.value === EUserRoles.SuperAdmin
+  )
+);
+
+const UserRows = ref<IUserManagementData[]>([]);
+const action = ref<string>('');
 const isFetching = ref(false);
-const selectedUser = ref<IUserData | undefined>();
+const isCustomerGroupListLoading = ref(false);
+const selectedUser = ref<IUserManagementData | undefined>();
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -270,43 +313,78 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-let filterSearch = ref(defaultFilterValues);
+const filterSearch = ref<IUserFilterList>(defaultFilterValues);
+onMounted(() => {
+  getUserList();
+});
 const handleChangeStatusPopup = (selectedRow: IUserResponse) => {
   selectedRowData.value.customerId = selectedRow.userId;
   selectedRowData.value.status = selectedRow.status;
   action.value = 'Change Status';
   isChangeStatusModalVisible.value = true;
 };
-const onEditButtonClick = (row: IUserData) => {
+const onEditButtonClick = (row: IUserManagementData) => {
+  action.value = 'Edit User';
   selectedUser.value = {
     ...row,
     phoneNumber: row.phoneNumber?.toString() || '',
   };
-  action.value = 'Edit User';
+  showAddUserModal(true);
+};
+const handleAddNewUser = () => {
+  action.value = 'Add New User';
   showAddUserModal(true);
 };
 const handleChangeStatus = (id: number, updatedStatus: string) => {
-  callingChangeStatusApi(id, updatedStatus);
+  if (selectedRowData.value.status !== updatedStatus) {
+    callingChangeStatusApi(id, updatedStatus);
+  }
   isChangeStatusModalVisible.value = false;
 };
 const handleResetPassword = (customerGroupId: number) => {
   callingResetPasswordApi(customerGroupId);
+  isResetPasswordModalVisible.value = false;
 };
 const showAddUserModal = (isVisible: boolean) => {
-  action.value = 'Add New User';
   showAddNewAdminRolePopup.value = isVisible;
 };
 const resetFilter = () => {
   filterSearch.value = {
-    customerGroup: null,
+    customerGroupId: null,
     role: null,
     status: null,
   };
+  getUserList();
 };
 const handleResetPasswordPopup = (selectedRow: IUserResponse) => {
-  action.value = 'Reset Password';
   selectedRowData.value.customerId = selectedRow.userId;
-  isChangeStatusModalVisible.value = true;
+  isResetPasswordModalVisible.value = true;
+};
+const editUserInfo = async (userData: IUserPayload) => {
+  const { userId, fullName, phoneNumber } = userData;
+  let data: Partial<IUserManagementData> = { userId, fullName, phoneNumber };
+  try {
+    if (userData.roleName === EUserRoles.Customer) {
+      const { customerGroupId, flatDiscount } = userData;
+      data.customerGroupId = customerGroupId;
+      data.flatDiscount = flatDiscount;
+    }
+    const res = await updateUser(data);
+    if (res.type === 'Success') {
+      getUserList();
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message ?? 'Unexpected Error Occurred',
+        color: 'red',
+      });
+    }
+  }
 };
 const getUserList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -339,9 +417,6 @@ const getUserList = async (data?: {
   }
   isFetching.value = false;
 };
-onMounted(() => {
-  getUserList();
-});
 async function callingChangeStatusApi(id: number, updatedStatus: string) {
   try {
     const res = await changeUserStatus(id);
@@ -354,7 +429,7 @@ async function callingChangeStatusApi(id: number, updatedStatus: string) {
         selectedRowData.value.status = updatedStatus;
         if (UserRows.value) {
           const matchingRow = UserRows.value.findIndex(
-            (row) => id === row.customerGroupId
+            (row) => id === row.userId
           );
           if (matchingRow !== -1) {
             const newList = [...UserRows.value];
@@ -373,7 +448,7 @@ async function callingChangeStatusApi(id: number, updatedStatus: string) {
     }
   }
 }
-async function handleUserAdd(userData: ICreateUserPayload) {
+async function handleUserAdd(userData: IUserPayload) {
   try {
     const res: IGenericResponse = await makeApiCall({
       url: 'api/User/create',
@@ -388,7 +463,14 @@ async function handleUserAdd(userData: ICreateUserPayload) {
         color: 'green',
       });
     }
-  } catch (e) {}
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message,
+        color: 'red',
+      });
+    }
+  }
 }
 async function callingResetPasswordApi(customerId: number) {
   try {
@@ -405,6 +487,66 @@ async function callingResetPasswordApi(customerId: number) {
         message: e.message,
         color: 'red',
       });
+    }
+  }
+}
+async function getCustomerListOption() {
+  if (isCustomerGroupListLoading.value) return;
+  isCustomerGroupListLoading.value = true;
+  try {
+    const res = await getCustomerGroupList({
+      pageNumber: 1,
+      pageSize: 200,
+    });
+    if (res?.data) {
+      customerGroupList.value = res?.data.items;
+    }
+    isCustomerGroupListLoading.value = false;
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message ?? 'Unexpected Error Occurred',
+        color: 'red',
+      });
+    }
+    isCustomerGroupListLoading.value = false;
+  }
+}
+const handleUserFilter = () => {
+  const { customerGroupId, role, status } = filterSearch.value;
+  callingfilterUserApi({ customerGroupId, role, status });
+};
+async function callingfilterUserApi({
+  customerGroupId,
+  role,
+  status,
+}: {
+  customerGroupId: number | null;
+  role: string | null;
+  status: string | null;
+}) {
+  try {
+    if (isLoading.value) return;
+    isLoading.value = true;
+    const res = await getUserListApi({ customerGroupId, role, status });
+    if (res?.data) {
+      UserRows.value = res.data.items;
+      pagination.value.rowsNumber = res.data.totalItemCount;
+    }
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      isLoading.value = false;
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message,
+        color: 'red',
+      });
+      isLoading.value = false;
     }
   }
 }
