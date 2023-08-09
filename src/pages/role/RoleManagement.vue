@@ -24,6 +24,7 @@
                   color="bg-btn-secondary"
                 />
                 <q-btn
+                  :class="{ hidden: props.row.name === 'Super Admin' }"
                   icon="edit"
                   size="sm"
                   flat
@@ -55,6 +56,7 @@ import {
   getRoleModuleDisplayName,
   EUserModules,
   IUserRole,
+  EUserRoles,
 } from 'src/interfaces';
 import { QTableColumn } from 'quasar';
 const pageTitle = getRoleModuleDisplayName(EUserModules.RolePermission);

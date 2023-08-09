@@ -6,10 +6,7 @@ export interface IUserRole {
 }
 
 export interface IUserRolePermissions {
-  create: boolean;
-  delete: boolean;
-  edit: boolean;
-  id: number;
-  role: string;
-  view: boolean;
+  moduleId: number;
+  moduleName: string;
+  actionIds: number[];
 }

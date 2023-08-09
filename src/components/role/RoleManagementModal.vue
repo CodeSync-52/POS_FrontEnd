@@ -27,7 +27,7 @@
                   <q-toggle
                     v-model="groupedPermissions.isView"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'view')
+                      updateGroupedPermissions($event, 'isView')
                     "
                     color="btn-primary"
                     :disable="!isEdit"
@@ -42,10 +42,10 @@
                   <q-toggle
                     v-model="groupedPermissions.isCreate"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'create')
+                      updateGroupedPermissions($event, 'isCreate')
                     "
                     color="btn-primary"
-                    :disable="!isEdit || !groupedPermissions.isView"
+                    :disable="!isEdit"
                   />
                 </div>
               </div>
@@ -55,12 +55,12 @@
                 <div class="row q-gutter-x-md items-center">
                   <span>Edit All:</span>
                   <q-toggle
-                    v-model="groupedPermissions.isEdit"
+                    v-model="groupedPermissions.isUpdate"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'edit')
+                      updateGroupedPermissions($event, 'isUpdate')
                     "
                     color="btn-primary"
-                    :disable="!isEdit || !groupedPermissions.isView"
+                    :disable="!isEdit"
                   />
                 </div>
               </div>
@@ -72,10 +72,10 @@
                   <q-toggle
                     v-model="groupedPermissions.isDelete"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'delete')
+                      updateGroupedPermissions($event, 'isDelete')
                     "
                     color="btn-primary"
-                    :disable="!isEdit || !groupedPermissions.isView"
+                    :disable="!isEdit"
                   />
                 </div>
               </div>
@@ -97,35 +97,56 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(roles, roleIndex) in roleData" :key="roles.role">
-              <td class="text-left">{{ roles.role }}</td>
+            <tr v-for="(roles, roleIndex) in roleData" :key="roles.moduleName">
+              <td class="text-left">{{ roles.moduleName }}</td>
               <td class="text-left">
                 <q-toggle
-                  v-model="roles.view"
-                  @update:model-value="toggleAllPermission($event, roleIndex)"
+                  v-model="permissions[roleIndex].view"
+                  @update:model-value="
+                    (e) =>
+                      handleUpdateToggle(e, EActionPermissions.View, roleIndex)
+                  "
                   color="btn-primary"
                   :disable="!isEdit"
                 />
               </td>
               <td class="text-left">
                 <q-toggle
-                  v-model="roles.create"
+                  v-model="permissions[roleIndex].create"
+                  @update:model-value="
+                    (e) =>
+                      handleUpdateToggle(
+                        e,
+                        EActionPermissions.Create,
+                        roleIndex
+                      )
+                  "
                   color="btn-primary"
-                  :disable="!isEdit ? true : !roles.view"
+                  :disable="
+                    !isEdit
+                      ? true
+                      : !roles.actionIds.includes(EActionPermissions.View)
+                  "
                 />
               </td>
               <td class="text-left">
                 <q-toggle
-                  v-model="roles.edit"
+                  v-model="permissions[roleIndex].update"
+                  @update:model-value="
+                    (e) => handleUpdateToggle(e, 3, roleIndex)
+                  "
                   color="btn-primary"
-                  :disable="!isEdit ? true : !roles.view"
+                  :disable="!isEdit ? true : !roles.actionIds.includes(1)"
                 />
               </td>
               <td class="text-left">
                 <q-toggle
-                  v-model="roles.delete"
+                  v-model="permissions[roleIndex].delete"
+                  @update:model-value="
+                    (e) => handleUpdateToggle(e, 4, roleIndex)
+                  "
                   color="btn-primary"
-                  :disable="!isEdit ? true : !roles.view"
+                  :disable="!isEdit ? true : !roles.actionIds.includes(1)"
                 />
               </td>
             </tr>
@@ -163,7 +184,7 @@
 </template>
 
 <script setup lang="ts">
-import { IUserRolePermissions } from 'src/interfaces';
+import { EActionPermissions, IUserRolePermissions } from 'src/interfaces';
 import { computed, onMounted, ref } from 'vue';
 interface IProps {
   roleDataProp: IUserRolePermissions[];
@@ -173,63 +194,97 @@ const roleData = ref<IUserRolePermissions[]>([]);
 onMounted(() => {
   roleData.value = props.roleDataProp;
 });
+
 const props = defineProps<IProps>();
+const permissions = computed(() => {
+  return roleData.value.map((roles) => ({
+    view: roles.actionIds.includes(1),
+    create: roles.actionIds.includes(2),
+    update: roles.actionIds.includes(3),
+    delete: roles.actionIds.includes(4),
+  }));
+});
 const groupedPermissions = computed(() => {
-  let permissionData = {
+  const permissions = {
     isView: true,
-    isEdit: true,
     isCreate: true,
+    isUpdate: true,
     isDelete: true,
-    isAll: true,
   };
-  roleData.value.forEach((item) => {
-    if (item.create === false) {
-      permissionData.isCreate = false;
-    }
-    if (item.view === false) {
-      permissionData.isView = false;
-    }
-    if (item.delete === false) {
-      permissionData.isDelete = false;
-    }
-    if (item.edit === false) {
-      permissionData.isEdit = false;
+
+  roleData.value.forEach((module) => {
+    if (!module.actionIds.includes(1)) {
+      permissions.isView = false;
+      permissions.isCreate = false;
+      permissions.isUpdate = false;
+      permissions.isDelete = false;
+    } else {
+      permissions.isCreate =
+        permissions.isCreate && module.actionIds.includes(2);
+      permissions.isUpdate =
+        permissions.isUpdate && module.actionIds.includes(3);
+      permissions.isDelete =
+        permissions.isDelete && module.actionIds.includes(4);
     }
   });
-  permissionData.isAll = Object.values(permissionData).every(
-    (permission) => permission
-  );
-  return permissionData;
+
+  return permissions;
 });
-const toggleAllPermission = (newVal: boolean, roleIndex: number) => {
-  if (!newVal) {
-    roleData.value[roleIndex] = {
-      ...roleData.value[roleIndex],
-      create: false,
-      delete: false,
-      edit: false,
-    };
-  }
+const updateGroupedPermissions = (newVal: boolean, permissionType: string) => {
+  const permissionMap: { [key: string]: number } = {
+    isView: 1,
+    isCreate: 2,
+    isUpdate: 3,
+    isDelete: 4,
+  };
+
+  roleData.value.forEach((module) => {
+    if (newVal) {
+      module.actionIds.push(permissionMap[permissionType]);
+    } else {
+      const index = module.actionIds.indexOf(permissionMap[permissionType]);
+      if (index !== -1) {
+        module.actionIds.splice(index, 1);
+      }
+    }
+  });
 };
-const updateGroupedPermissions = (
-  newValue: boolean,
-  key: keyof IUserRolePermissions
+
+const handleUpdateToggle = (
+  newVal: boolean,
+  type: EActionPermissions,
+  roleIndex: number
 ) => {
-  if (key === 'view' && !newValue) {
-    roleData.value = roleData.value.map((permission) => ({
-      ...permission,
-      create: false,
-      delete: false,
-      edit: false,
-      view: false,
-    }));
-    return;
+  let tempArr = [...roleData.value[roleIndex].actionIds];
+  const typeIndex = tempArr.indexOf(type);
+  const viewIndex = tempArr.indexOf(1); // Index of View permission
+
+  if (type === EActionPermissions.View) {
+    // Toggling View permission
+    if (!newVal) {
+      // Turning off View permission, turn off other permissions
+      tempArr = []; // Remove all permissions except View
+    } else {
+      // Turning on View permission, ensure it's the only permission
+      if (viewIndex === -1) {
+        tempArr.push(1); // Add View permission if not already present
+      }
+      tempArr.splice(2); // Remove other permissions if present
+    }
+  } else if (newVal && typeIndex === -1 && viewIndex !== -1) {
+    // Enabling other permissions and View is on
+    tempArr.push(type);
+  } else if (!newVal && typeIndex !== -1 && viewIndex !== -1) {
+    // Disabling other permissions and View is on
+    tempArr.splice(typeIndex, 1);
   }
-  roleData.value = roleData.value.map((permission) => ({
-    ...permission,
-    [key]: newValue,
-  }));
+
+  roleData.value[roleIndex] = {
+    ...roleData.value[roleIndex],
+    actionIds: tempArr,
+  };
 };
+
 const handleSelectAll = (newValue: boolean) => {
   roleData.value = roleData.value.map((permission) => ({
     ...permission,
@@ -239,4 +294,5 @@ const handleSelectAll = (newValue: boolean) => {
     view: newValue,
   }));
 };
+console.log(roleData);
 </script>
