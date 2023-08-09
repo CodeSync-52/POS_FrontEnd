@@ -1,4 +1,4 @@
-import { EUserRoles } from 'src/interfaces';
+import { EUserRoles, getRoleDisplayName } from 'src/interfaces';
 
 export const customerGroupOptions = [
   { value: 1, label: 'Group 1' },
@@ -10,17 +10,13 @@ export const customerGroupOptions = [
   { value: 7, label: 'Group 7' },
 ];
 
-export const roleOptions = [
-  { label: 'Super Admin', value: EUserRoles.SuperAdmin },
-  { label: 'Admin', value: EUserRoles.Admin },
-  { label: 'Shop Manager', value: EUserRoles.ShopManager },
-  { label: 'Office Boy', value: EUserRoles.OfficeManager },
-  { label: 'Shop Sale Officer', value: EUserRoles.ShopOfficer },
-  { label: 'Customer/Vendor', value: EUserRoles.Customer },
-];
+export const roleOptions = Object.values(EUserRoles).map((role) => ({
+  label: getRoleDisplayName(role),
+  value: role,
+}));
 
 export const statusOptions = [
-  { label: 'All', value: -1 },
-  { label: 'Active', value: 1 },
-  { label: 'In Active', value: 0 },
+  { label: 'All', value: '' },
+  { label: 'Active', value: 'Active' },
+  { label: 'In Active', value: 'InActive' },
 ];
