@@ -14,7 +14,7 @@
                 @update:model-value="handleSelectAll"
                 v-model="groupedPermissions.isAll"
                 color="btn-primary"
-                :disable="!isEdit"
+                :disable="isFetching || !isEdit"
             /></span>
           </div>
         </div>
@@ -27,10 +27,10 @@
                   <q-toggle
                     v-model="groupedPermissions.isView"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'isView')
+                      updateGroupedPermissions($event, EActionPermissions.View)
                     "
                     color="btn-primary"
-                    :disable="!isEdit"
+                    :disable="isFetching || !isEdit"
                   />
                 </div>
               </div>
@@ -42,10 +42,15 @@
                   <q-toggle
                     v-model="groupedPermissions.isCreate"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'isCreate')
+                      updateGroupedPermissions(
+                        $event,
+                        EActionPermissions.Create
+                      )
                     "
                     color="btn-primary"
-                    :disable="!isEdit"
+                    :disable="
+                      isFetching || !isEdit || !groupedPermissions.isView
+                    "
                   />
                 </div>
               </div>
@@ -57,10 +62,15 @@
                   <q-toggle
                     v-model="groupedPermissions.isUpdate"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'isUpdate')
+                      updateGroupedPermissions(
+                        $event,
+                        EActionPermissions.Update
+                      )
                     "
                     color="btn-primary"
-                    :disable="!isEdit"
+                    :disable="
+                      isFetching || !isEdit || !groupedPermissions.isView
+                    "
                   />
                 </div>
               </div>
@@ -72,10 +82,15 @@
                   <q-toggle
                     v-model="groupedPermissions.isDelete"
                     @update:model-value="
-                      updateGroupedPermissions($event, 'isDelete')
+                      updateGroupedPermissions(
+                        $event,
+                        EActionPermissions.Delete
+                      )
                     "
                     color="btn-primary"
-                    :disable="!isEdit"
+                    :disable="
+                      isFetching || !isEdit || !groupedPermissions.isView
+                    "
                   />
                 </div>
               </div>
@@ -97,8 +112,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(roles, roleIndex) in roleData" :key="roles.moduleName">
-              <td class="text-left">{{ roles.moduleName }}</td>
+            <tr v-for="(roles, roleIndex) in roleData" :key="roles.moduleId">
+              <td class="text-left">
+                {{ getRoleModuleDisplayName(roles.moduleId) }}
+              </td>
               <td class="text-left">
                 <q-toggle
                   v-model="permissions[roleIndex].view"
@@ -107,7 +124,7 @@
                       handleUpdateToggle(e, EActionPermissions.View, roleIndex)
                   "
                   color="btn-primary"
-                  :disable="!isEdit"
+                  :disable="isFetching || !isEdit"
                 />
               </td>
               <td class="text-left">
@@ -123,7 +140,7 @@
                   "
                   color="btn-primary"
                   :disable="
-                    !isEdit
+                    isFetching || !isEdit
                       ? true
                       : !roles.actionIds.includes(EActionPermissions.View)
                   "
@@ -133,20 +150,38 @@
                 <q-toggle
                   v-model="permissions[roleIndex].update"
                   @update:model-value="
-                    (e) => handleUpdateToggle(e, 3, roleIndex)
+                    (e) =>
+                      handleUpdateToggle(
+                        e,
+                        EActionPermissions.Update,
+                        roleIndex
+                      )
                   "
                   color="btn-primary"
-                  :disable="!isEdit ? true : !roles.actionIds.includes(1)"
+                  :disable="
+                    isFetching || !isEdit
+                      ? true
+                      : !roles.actionIds.includes(EActionPermissions.View)
+                  "
                 />
               </td>
               <td class="text-left">
                 <q-toggle
                   v-model="permissions[roleIndex].delete"
                   @update:model-value="
-                    (e) => handleUpdateToggle(e, 4, roleIndex)
+                    (e) =>
+                      handleUpdateToggle(
+                        e,
+                        EActionPermissions.Delete,
+                        roleIndex
+                      )
                   "
                   color="btn-primary"
-                  :disable="!isEdit ? true : !roles.actionIds.includes(1)"
+                  :disable="
+                    isFetching || !isEdit
+                      ? true
+                      : !roles.actionIds.includes(EActionPermissions.View)
+                  "
                 />
               </td>
             </tr>
@@ -154,62 +189,78 @@
         </q-markup-table>
       </div>
     </q-card-section>
-    <q-card-actions v-if="isEdit" class="justify-end">
+    <q-card-actions class="justify-end">
+      <div v-if="isFetching">
+        <q-spinner size="sm" class="text-btn-primary mr-2" />
+      </div>
       <q-btn
         flat
-        label="Cancel"
+        :label="isEdit ? 'Cancel' : 'Close'"
         color="signature"
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
         v-close-popup
       />
       <q-btn
+        v-if="isEdit"
         flat
         label="Save"
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
         v-close-popup
-      />
-    </q-card-actions>
-    <q-card-actions v-else class="justify-end">
-      <q-btn
-        label="close"
-        color="signature"
-        flat
-        unelevated
-        v-close-popup
-        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        :disable="isFetching"
       />
     </q-card-actions>
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { EActionPermissions, IUserRolePermissions } from 'src/interfaces';
-import { computed, onMounted, ref } from 'vue';
+import {
+  EActionPermissions,
+  IUserRolePermissions,
+  getRoleModuleDisplayName,
+} from 'src/interfaces';
+import { computed, onMounted, ref, watch } from 'vue';
 interface IProps {
   roleDataProp: IUserRolePermissions[];
   isEdit: boolean;
+  isFetching: boolean;
 }
 const roleData = ref<IUserRolePermissions[]>([]);
+
+const props = withDefaults(defineProps<IProps>(), {
+  isEdit: false,
+  isFetching: false,
+  roleDataProp: () => [],
+});
 onMounted(() => {
   roleData.value = props.roleDataProp;
 });
 
-const props = defineProps<IProps>();
-const permissions = computed(() => {
-  return roleData.value.map((roles) => ({
-    view: roles.actionIds.includes(1),
-    create: roles.actionIds.includes(2),
-    update: roles.actionIds.includes(3),
-    delete: roles.actionIds.includes(4),
-  }));
-});
+watch(
+  props.roleDataProp,
+  (newVal) => {
+    roleData.value = [...newVal];
+  },
+  {
+    deep: true,
+  }
+);
+
+const permissions = computed(() =>
+  roleData.value.map((roles) => ({
+    view: roles.actionIds.includes(EActionPermissions.View),
+    create: roles.actionIds.includes(EActionPermissions.Create),
+    update: roles.actionIds.includes(EActionPermissions.Update),
+    delete: roles.actionIds.includes(EActionPermissions.Delete),
+  }))
+);
 const groupedPermissions = computed(() => {
   const permissions = {
     isView: true,
     isCreate: true,
     isUpdate: true,
     isDelete: true,
+    isAll: true,
   };
 
   roleData.value.forEach((module) => {
@@ -227,22 +278,23 @@ const groupedPermissions = computed(() => {
         permissions.isDelete && module.actionIds.includes(4);
     }
   });
+  permissions.isAll = Object.values(permissions).every((item) => item);
 
   return permissions;
 });
-const updateGroupedPermissions = (newVal: boolean, permissionType: string) => {
-  const permissionMap: { [key: string]: number } = {
-    isView: 1,
-    isCreate: 2,
-    isUpdate: 3,
-    isDelete: 4,
-  };
-
+const updateGroupedPermissions = (
+  newVal: boolean,
+  permissionType: EActionPermissions
+) => {
   roleData.value.forEach((module) => {
-    if (newVal) {
-      module.actionIds.push(permissionMap[permissionType]);
-    } else {
-      const index = module.actionIds.indexOf(permissionMap[permissionType]);
+    if (permissionType === EActionPermissions.View && !newVal) {
+      module.actionIds = [];
+      return;
+    }
+    if (newVal && !module.actionIds.includes(permissionType)) {
+      module.actionIds.push(permissionType);
+    } else if (!newVal) {
+      const index = module.actionIds.indexOf(permissionType);
       if (index !== -1) {
         module.actionIds.splice(index, 1);
       }
@@ -257,7 +309,7 @@ const handleUpdateToggle = (
 ) => {
   let tempArr = [...roleData.value[roleIndex].actionIds];
   const typeIndex = tempArr.indexOf(type);
-  const viewIndex = tempArr.indexOf(1); // Index of View permission
+  const viewIndex = tempArr.indexOf(EActionPermissions.View); // Index of View permission
 
   if (type === EActionPermissions.View) {
     // Toggling View permission
@@ -267,7 +319,7 @@ const handleUpdateToggle = (
     } else {
       // Turning on View permission, ensure it's the only permission
       if (viewIndex === -1) {
-        tempArr.push(1); // Add View permission if not already present
+        tempArr.push(EActionPermissions.View); // Add View permission if not already present
       }
       tempArr.splice(2); // Remove other permissions if present
     }
@@ -284,15 +336,22 @@ const handleUpdateToggle = (
     actionIds: tempArr,
   };
 };
-
 const handleSelectAll = (newValue: boolean) => {
-  roleData.value = roleData.value.map((permission) => ({
-    ...permission,
-    create: newValue,
-    delete: newValue,
-    edit: newValue,
-    view: newValue,
-  }));
+  if (!newValue) {
+    roleData.value = roleData.value.map((module) => ({
+      ...module,
+      actionIds: [],
+    }));
+  } else {
+    roleData.value = roleData.value.map((module) => ({
+      ...module,
+      actionIds: [
+        EActionPermissions.View,
+        EActionPermissions.Create,
+        EActionPermissions.Delete,
+        EActionPermissions.Update,
+      ],
+    }));
+  }
 };
-console.log(roleData);
 </script>

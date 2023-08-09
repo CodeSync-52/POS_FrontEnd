@@ -1,12 +1,13 @@
+import { EActionPermissions, EUserModules } from './general';
+
 export interface IUserRole {
-  action: string;
   id: number;
   name: string;
-  roles: IUserRolePermissions[];
+  permissionModuleActions: IUserRolePermissions[];
 }
 
 export interface IUserRolePermissions {
-  moduleId: number;
+  moduleId: EUserModules;
   moduleName: string;
-  actionIds: number[];
+  actionIds: EActionPermissions[];
 }
