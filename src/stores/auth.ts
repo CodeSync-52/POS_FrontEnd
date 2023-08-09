@@ -1,9 +1,7 @@
-import { watch } from 'vue';
 import { defineStore } from 'pinia';
 import {
   EActionPermissions,
   EUserModules,
-  EUserRoles,
   IGenericResponse,
   IUser,
 } from 'src/interfaces';
@@ -23,9 +21,9 @@ export const useAuthStore = defineStore('login', () => {
     permissionId: EActionPermissions
   ) {
     if (!loggedInUser.value) return false;
-    if (loggedInUser.value.rolePermissions.roleName === EUserRoles.SuperAdmin) {
-      return true;
-    }
+    // if (loggedInUser.value.rolePermissions.roleName === EUserRoles.SuperAdmin) {
+    //   return true;
+    // }
     const moduleIndex =
       loggedInUser.value.rolePermissions.permissionModuleActions.findIndex(
         (module) => module.moduleId === moduleId

@@ -116,11 +116,8 @@ const handleViewProfile = (isView: boolean) => {
 
 async function handleLogout() {
   try {
-    const response = await logoutUser();
+    await logoutUser();
     showAccountInfoDropdown.value = false;
-    if (response.type === 'Success') {
-      authStore.logoutUser();
-    }
   } catch (e) {
     if (isPosError(e)) {
       $q.notify({
@@ -129,5 +126,6 @@ async function handleLogout() {
       });
     }
   }
+  authStore.logoutUser();
 }
 </script>
