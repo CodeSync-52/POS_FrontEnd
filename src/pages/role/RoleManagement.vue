@@ -20,16 +20,18 @@
                   flat
                   unelevated
                   dense
-                  @click="showEditPopup(false, props.rowIndex)"
+                  @click="showEditPopup(false, props.row.role)"
                   color="bg-btn-secondary"
                 />
+
+                <!-- v-if="props.row.role !== EUserRoles.SuperAdmin" -->
                 <q-btn
                   icon="edit"
                   size="sm"
                   flat
                   unelevated
                   dense
-                  @click="showEditPopup(true, props.rowIndex)"
+                  @click="showEditPopup(true, props.row.role)"
                   color="bg-btn-secondary"
                 />
               </div>
@@ -38,27 +40,37 @@
         </q-table>
       </div>
     </div>
-    <q-dialog v-model="isRoleModalVisible">
+    <q-dialog
+      v-model="isRoleModalVisible"
+      @update:model-value="setInitialModuleValue"
+    >
       <role-management-modal
         :is-edit="isEdit"
-        :role-data-prop="rolesManagementTableRows[selectedRow].roles"
+        :is-fetching="isFetchingPermissions"
+        :role-data-prop="selectedModulePermissions"
       />
     </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { rolesMock } from './roleMock';
+import { onMounted, onUnmounted, ref } from 'vue';
 import RoleManagementModal from 'components/role/RoleManagementModal.vue';
 import {
   getRoleModuleDisplayName,
   EUserModules,
   IUserRole,
+  EUserRoles,
+  IUserRolePermissions,
+  getRoleDisplayName,
 } from 'src/interfaces';
-import { QTableColumn } from 'quasar';
+import { QTableColumn, useQuasar } from 'quasar';
+import { fetchUserRoles } from 'src/services';
+import { isPosError } from 'src/utils';
+import { CanceledError } from 'axios';
+const $q = useQuasar();
 const pageTitle = getRoleModuleDisplayName(EUserModules.RolePermission);
-const selectedRow = ref(0);
+
 const rolesManagementTableColumns: QTableColumn<IUserRole>[] = [
   {
     name: 'name',
@@ -73,15 +85,77 @@ const rolesManagementTableColumns: QTableColumn<IUserRole>[] = [
     label: 'Action',
     align: 'right',
     sortable: false,
-    field: (row) => row.action,
+    field: () => '',
   },
 ];
-const rolesManagementTableRows = ref(rolesMock);
+const apiController = ref<AbortController | null>(null);
+
+const selectedModulePermissions = ref<IUserRolePermissions[]>([]);
+const rolesManagementTableRows = ref(
+  Object.values(EUserRoles).map((role) => {
+    return {
+      name: getRoleDisplayName(role),
+      role,
+    };
+  })
+);
 const isRoleModalVisible = ref(false);
 const isEdit = ref(false);
-const showEditPopup = (shouldEdit: boolean, rowIndex: number) => {
-  selectedRow.value = rowIndex;
+const isFetchingPermissions = ref(false);
+const showEditPopup = async (shouldEdit: boolean, role: EUserRoles) => {
+  if (isFetchingPermissions.value && apiController.value) {
+    apiController.value.abort();
+    apiController.value = null;
+  }
+  apiController.value = new AbortController();
+  isFetchingPermissions.value = true;
   isRoleModalVisible.value = true;
   isEdit.value = shouldEdit;
+  await fetchUserRoles(role, apiController.value)
+    .then((res) => {
+      selectedModulePermissions.value.forEach((moduleBase) => {
+        const selectedModule = res.data.permissionModuleActions.find(
+          (moduleItem) => moduleItem.moduleId === moduleBase.moduleId
+        );
+        if (selectedModule) {
+          moduleBase.actionIds = selectedModule.actionIds;
+        } else {
+          moduleBase.actionIds = [];
+        }
+      });
+    })
+    .catch((e) => {
+      if (e instanceof CanceledError) {
+        return;
+      }
+      console.error(e);
+      let message = 'There was an error fetching permissions for this role';
+      if (isPosError(e)) {
+        message = e.message;
+      }
+      $q.notify({
+        type: 'negative',
+        message,
+      });
+    });
+  isFetchingPermissions.value = false;
 };
+
+function setInitialModuleValue() {
+  selectedModulePermissions.value = Object.values(EUserModules)
+    .filter((moduleId) => typeof moduleId === 'number')
+    .map((moduleId) => ({
+      actionIds: [],
+      moduleName: '',
+      moduleId: moduleId as EUserModules,
+    }));
+}
+onMounted(() => {
+  setInitialModuleValue();
+});
+onUnmounted(() => {
+  if (apiController.value) {
+    apiController.value.abort();
+  }
+});
 </script>

@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
 interface basicParams extends AxiosRequestConfig {
   url: string;
@@ -58,6 +58,9 @@ async function makeApiCall<T>({
     }
     return response.data;
   } catch (e) {
+    if (e instanceof CanceledError) {
+      throw e;
+    }
     if (axios.isAxiosError(e)) {
       throw new PosError(
         e.response?.data.message || 'Unexpected Error Fetching Data',

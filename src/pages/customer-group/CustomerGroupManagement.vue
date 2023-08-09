@@ -16,9 +16,10 @@
     <div class="q-pa-md">
       <q-table
         :rows="customerGroupRows"
+        v-model:pagination="pagination"
         :columns="customerGroupColumns"
-        :rows-per-page-options="['50', '5', '10', '15', '20']"
         row-key="name"
+        @request="fetchingCustomerGroupList"
       >
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
@@ -35,10 +36,28 @@
             </div>
           </q-td>
         </template>
-        <template v-slot:body-cell-action="props">
+        <template
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.CustomerGroupManagement,
+              EActionPermissions.Delete
+            ) ||
+            authStore.checkUserHasPermission(
+              EUserModules.CustomerGroupManagement,
+              EActionPermissions.Update
+            )
+          "
+          v-slot:body-cell-action="props"
+        >
           <q-td class="!text-right" :props="props">
             <div class="flex gap-2 md:pr-4">
               <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.CustomerGroupManagement,
+                    EActionPermissions.Update
+                  )
+                "
                 size="sm"
                 flat
                 dense
@@ -46,15 +65,6 @@
                 icon="edit"
                 color="bg-btn-secondary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
-              />
-              <q-btn
-                size="sm"
-                flat
-                dense
-                unelevated
-                icon="delete"
-                color="red"
-                @click="handleDeleteCustomerGroupRow(props.row)"
               />
             </div>
           </q-td>
@@ -82,38 +92,100 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { QTableColumn, useQuasar } from 'quasar';
 import CustomerStatusModal from 'components/customer-group-management/CustomerStatusModal.vue';
 import AddUserModal from 'components/customer-group-management/AddCustomerModal.vue';
-import { customerGroupMockRows } from './customer-group-mocks';
-import { ICustomerData } from 'src/interfaces';
+import {
+  EActionPermissions,
+  ICustomerData,
+  ICustomerListResponse,
+} from 'src/interfaces';
 import { EUserModules, getRoleModuleDisplayName } from 'src/interfaces';
+import {
+  getCustomerGroupList,
+  changeCustomerStatus,
+  addNewCustomerGroup,
+  updateCustomerGroup,
+} from 'src/services';
+import { useAuthStore } from 'src/stores';
+import { isPosError } from 'src/utils';
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CustomerGroupManagement
 );
 const $q = useQuasar();
-const updateOrAddCustomer = async (newName: string, callback: () => void) => {
-  if (selectedRowData.value) {
-    await new Promise((res) => {
-      setTimeout(() => res(newName), 3000);
-    });
-  } else {
-    await new Promise((res) => {
-      setTimeout(() => res(newName), 3000);
-    });
+const authStore = useAuthStore();
+const pagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
+});
+const updateOrAddCustomer = async (
+  newName: string,
+  action: string,
+  callback: () => void
+) => {
+  try {
+    const customerId = selectedRowData.value?.customerGroupId ?? -1;
+    const status = selectedRowData.value?.status ?? -1;
+    const res = await (action === 'add'
+      ? addNewCustomerGroup(newName)
+      : updateCustomerGroup({ newName, customerId, status }));
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message,
+        color: 'red',
+      });
+    }
   }
   selectedRowData.value = null;
   isAddCustomerModalVisible.value = false;
+  fetchingCustomerGroupList();
   callback();
 };
-const updatingStatus = async (updatedStatus: string) => {
-  await new Promise((res) => {
-    setTimeout(() => res(updatedStatus), 3000);
-  });
-  if (selectedRowData.value) {
-    selectedRowData.value.status = updatedStatus;
+const updatingStatus = async (updatedStatus: number, callback: () => void) => {
+  try {
+    const res = await changeCustomerStatus(
+      selectedRowData.value?.customerGroupId ?? -1
+    );
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.status = updatedStatus;
+        if (customerGroupRows.value) {
+          const matchingRow = customerGroupRows.value.findIndex(
+            (row) =>
+              selectedRowData.value?.customerGroupId === row.customerGroupId
+          );
+          if (matchingRow !== -1) {
+            const newList = [...customerGroupRows.value];
+            newList[matchingRow].status = updatedStatus;
+            customerGroupRows.value = newList;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message,
+        color: 'red',
+      });
+    }
   }
+  callback();
   editStatusPopup.value = false;
 };
 const customerGroupColumns: QTableColumn<ICustomerData>[] = [
@@ -135,14 +207,14 @@ const customerGroupColumns: QTableColumn<ICustomerData>[] = [
   {
     name: 'action',
     label: 'Action',
-    field: 'action',
+    field: 'name',
     align: 'left',
     sortable: false,
   },
 ];
-const customerGroupRows = ref(customerGroupMockRows);
-const selectedRowData = ref<ICustomerData | null>(null);
-const selectedStatus = ref('');
+const customerGroupRows = ref<ICustomerListResponse[]>([]);
+const selectedRowData = ref<ICustomerListResponse | null>(null);
+const selectedStatus = ref<number>(-1);
 const editStatusPopup = ref(false);
 const isAddCustomerModalVisible = ref(false);
 const newCustomerName = ref('');
@@ -150,47 +222,53 @@ const showAddNewUserPopup = () => {
   newCustomerName.value = '';
   isAddCustomerModalVisible.value = true;
 };
-const handleEditStatusPopup = (selectedRow: ICustomerData) => {
+const handleEditStatusPopup = (selectedRow: ICustomerListResponse) => {
   selectedRowData.value = selectedRow;
-  if (selectedRowData.value.status === '1') {
-    selectedStatus.value = '1';
+  if (selectedRowData.value?.status === 1) {
+    selectedStatus.value = 1;
   } else {
-    selectedStatus.value = '0';
+    selectedStatus.value = 0;
   }
   editStatusPopup.value = true;
 };
-const handleDeleteCustomerGroupRow = (selectedRow: ICustomerData) => {
-  $q.notify({
-    message: 'Are you sure you want to delete this record?',
-    color: '',
-    actions: [
-      {
-        label: 'Delete',
-        color: 'signature bg-btn-primary hover:bg-btn-primary-hover',
-
-        handler: () => {
-          const selectedRowIndex = customerGroupRows.value.findIndex(
-            (row) => selectedRow.id === row.id
-          );
-          customerGroupRows.value.splice(selectedRowIndex, 1);
-          $q.notify({
-            type: 'positive',
-            message: 'Your Selected Record is deleted.',
-          });
-        },
-      },
-      {
-        label: 'Cancel',
-        color: 'white bg-btn-primary hover:bg-btn-primary-hover',
-      },
-    ],
-  });
-};
-const handleEditCustomerGroupNamePopup = (selectedRow: ICustomerData) => {
+const handleEditCustomerGroupNamePopup = (
+  selectedRow: ICustomerListResponse
+) => {
   newCustomerName.value = selectedRow.name;
   isAddCustomerModalVisible.value = true;
   selectedRowData.value = selectedRow;
 };
+const isLoading = ref(false);
+onMounted(() => {
+  fetchingCustomerGroupList();
+});
+async function fetchingCustomerGroupList(data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
+}) {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
+  }
+  try {
+    const res = await getCustomerGroupList({
+      pageNumber: pagination.value.page,
+      pageSize: pagination.value.rowsPerPage,
+    });
+    if (res?.data) {
+      customerGroupRows.value = res?.data.items;
+      pagination.value.rowsNumber = res.data.totalItemCount;
+    }
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message ?? 'Unexpected Error Occurred',
+        color: 'red',
+      });
+    }
+  }
+  isLoading.value = false;
+}
 </script>
 <style>
 .q-notification__actions {
