@@ -99,7 +99,7 @@
         </div>
         <q-markup-table
           flat
-          bordebtn-primary
+          bordered
           class="full-width max-h-[380px] overflow-y-auto adminRoleEditTable"
         >
           <thead>

@@ -27,12 +27,20 @@
               size="sm"
               @click="handleManageClick(props.row.group)"
               label="Manage"
+              class="hover:text-btn-primary"
             />
           </q-td>
         </template>
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
-            <q-btn size="sm" dense flat unelevated :label="props.row.status" />
+            <q-btn
+              size="sm"
+              dense
+              flat
+              unelevated
+              :label="props.row.status"
+              class="hover:text-btn-primary"
+            />
             <q-popup-edit
               v-model="props.row.status"
               title="Update Status"

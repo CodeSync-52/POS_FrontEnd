@@ -29,7 +29,8 @@
                 flat
                 unelevated
                 dense
-                :label="props.row.status === 1 ? 'Active' : 'InActive'"
+                class="hover:text-btn-primary"
+                :label="props.row.status === '1' ? 'Active' : 'InActive'"
                 @click="handleEditStatusPopup(props.row)"
               />
             </div>
