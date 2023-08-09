@@ -1,8 +1,8 @@
 <template>
-  <q-card>
+  <q-card class="min-w-[400px]">
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-2xl font-medium">Add new user</span>
+        <span class="text-2xl font-medium"> {{ action }}</span>
         <span
           ><q-btn
             class="close-modal"
@@ -15,7 +15,7 @@
         /></span>
       </div>
       <div class="flex flex-col gap-2">
-        <div class="row px-2 q-col-gutter-sm">
+        <div class="row px-2 q-col-gutter-x-sm">
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
@@ -23,6 +23,8 @@
                 outlined
                 v-model="userData.fullName"
                 label="Full Name"
+                lazy-rules
+                :rules="[(val) => val.length || 'This field is mandatory']"
                 color="btn-primary"
               />
             </div>
@@ -35,6 +37,8 @@
                 v-model="userData.userName"
                 label="User Name"
                 color="btn-primary"
+                lazy-rules
+                :rules="[(val) => val.length || 'This field is mandatory']"
               />
             </div>
           </div>
@@ -45,62 +49,67 @@
               v-model="userData.phoneNumber"
               type="tel"
               color="btn-primary"
-              mask="(####) #######"
+              mask="####-#######"
               label="Phone Number"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  val.length === 12 || 'This entered number is not valid',
+              ]"
             />
           </div>
         </div>
-        <div class="row px-2 q-col-gutter-sm">
+        <div v-if="action === 'Add New User'" class="row px-2 q-col-gutter-xs">
           <div class="col-md-6 w-full col-sm-12">
             <div>
               <q-select
                 dense
-                :options="roleOptions"
+                :options="roleDropdownOptions"
                 outlined
-                v-model="userData.userRoleName"
+                v-model="userData.roleName"
                 map-options
-                @update:model-value="userData.userRoleName = $event.value"
+                @update:model-value="userData.roleName = $event.value"
                 label="Role"
                 color="btn-primary"
               />
             </div>
           </div>
-          <div
-            v-if="
-              userData.userRoleName === EUserRoles.ShopOfficer ||
-              userData.userRoleName === EUserRoles.ShopManager
-            "
-            class="col-md-6 w-full col-sm-12"
-          >
-            <div>
-              <q-select
-                :options="roleOptions"
-                outlined
-                v-model="userData.assignShop"
-                label="Assigned Shop"
-              />
-            </div>
-          </div>
         </div>
         <div
-          v-if="userData.userRoleName === EUserRoles.Customer"
+          v-if="userData.roleName === EUserRoles.Customer"
           class="row px-2 q-col-gutter-sm"
         >
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-select
-                :options="roleOptions"
+                :options="customerGroupList"
+                :loading="isLoading"
                 dense
+                map-options
                 outlined
+                @focus="getCustomerListOption"
                 v-model="userData.customerGroupId"
+                @update:model-value="
+                  userData.customerGroupId = $event.customerGroupId
+                "
                 label="Customer Group"
                 color="btn-primary"
-              />
+                option-label="name"
+                option-value="customerGroupId"
+                ><template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template></q-select
+              >
             </div>
           </div>
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
+                type="number"
                 dense
                 outlined
                 v-model="userData.flatDiscount"
@@ -112,14 +121,6 @@
               />
             </div>
           </div>
-        </div>
-        <div class="col-12">
-          <q-checkbox
-            v-model="userData.isActive"
-            color="btn-primary"
-            label="Active"
-            size="30px"
-          />
         </div>
       </div>
     </q-card-section>
@@ -133,10 +134,13 @@
       />
       <q-btn
         flat
-        label="Save"
+        :label="action === 'Add New User' ? 'Add' : 'Save'"
         color="signature"
+        :disable="isButtonDisabled"
         v-close-popup
-        @click="handleAddNewUser"
+        @click="
+          action === 'Add New User' ? handleAddNewUser() : handleEditUser()
+        "
         class="bg-btn-primary hover:bg-btn-primary-hover"
       />
     </q-card-actions>
@@ -144,38 +148,120 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, computed, ref } from 'vue';
+import { useQuasar } from 'quasar';
 import { roleOptions } from 'src/constants';
-import { EUserRoles, ICreateUserPayload } from 'src/interfaces';
+import {
+  EUserRoles,
+  ICustomerListResponse,
+  IUserManagementData,
+  IUserPayload,
+} from 'src/interfaces';
+import { getCustomerGroupList } from 'src/services';
+import { isPosError } from 'src/utils';
 type PropType = {
-  selectedUser?: ICreateUserPayload;
+  selectedUser?: IUserManagementData;
+  action: string;
 };
-const userData = ref<ICreateUserPayload>({
-  fullName: '',
-  phoneNumber: '',
-  userRoleName: EUserRoles.Customer,
-  userName: '',
-  assignShop: 0,
-  isActive: false,
-  flatDiscount: 0,
-  customerGroupId: 0,
-});
-const emit = defineEmits<{
-  (event: 'user-add', data: ICreateUserPayload): void;
-}>();
-const props = defineProps<PropType>();
-
-function handleAddNewUser() {
-  if (userData.value.userRoleName !== EUserRoles.Customer) {
-    delete userData.value.assignShop;
-    delete userData.value.customerGroupId;
-    delete userData.value.isActive;
-  }
-  emit('user-add', userData.value);
-}
 onMounted(() => {
   if (props.selectedUser !== undefined) {
     userData.value = props.selectedUser;
   }
 });
+const $q = useQuasar();
+const isLoading = ref(false);
+const customerGroupList = ref<ICustomerListResponse[]>([]);
+const userData = ref<IUserManagementData>({
+  roleName: EUserRoles.Customer,
+  flatDiscount: 0,
+  customerGroupId: null,
+  fullName: '',
+  status: '',
+  phoneNumber: '',
+  userName: '',
+});
+const roleDropdownOptions = computed(() =>
+  roleOptions.filter(
+    (role) =>
+      role.value === EUserRoles.Customer ||
+      role.value === EUserRoles.Admin ||
+      role.value === EUserRoles.SuperAdmin
+  )
+);
+
+function removeStatusFromPayload(
+  param: IUserManagementData & { status?: string }
+): IUserPayload {
+  const data = { ...param };
+  delete data.status;
+  return data;
+}
+
+const isButtonDisabled = computed(() => {
+  const { fullName, phoneNumber, roleName, userName, customerGroupId } =
+    userData.value;
+  const validations = ref<boolean[]>([]);
+  if (
+    roleName === EUserRoles.Admin ||
+    roleName === EUserRoles.SuperAdmin ||
+    roleName === EUserRoles.OfficeManager
+  ) {
+    validations.value = [!fullName, phoneNumber.length !== 12];
+  } else if (
+    roleName === EUserRoles.ShopManager ||
+    roleName === EUserRoles.ShopOfficer
+  ) {
+    const shopValidation = [!fullName, phoneNumber.length !== 12, !userName];
+    validations.value = shopValidation;
+  } else if (roleName === EUserRoles.Customer) {
+    const customerValidation = [
+      !fullName,
+      phoneNumber.length !== 12,
+      !userName,
+      !customerGroupId,
+    ];
+    validations.value = customerValidation;
+  }
+  return validations.value.some((validation) => validation);
+});
+const emit = defineEmits<{
+  (event: 'user-add', data: IUserPayload): void;
+  (event: 'user-edit', data: IUserPayload): void;
+}>();
+const props = defineProps<PropType>();
+const handleEditUser = () => {
+  const payload = removeStatusFromPayload(userData.value);
+  emit('user-edit', payload);
+};
+function handleAddNewUser() {
+  if (userData.value.roleName !== EUserRoles.Customer) {
+    delete userData.value.customerGroupId;
+    delete userData.value.flatDiscount;
+    delete userData.value.customerGroupId;
+  }
+  const payload = removeStatusFromPayload(userData.value);
+  emit('user-add', payload);
+}
+async function getCustomerListOption() {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await getCustomerGroupList({
+      pageNumber: 1,
+      pageSize: 200,
+    });
+    if (res?.data) {
+      customerGroupList.value = res?.data.items;
+    }
+    isLoading.value = false;
+  } catch (e) {
+    if (isPosError(e)) {
+      $q.notify({
+        message: e.message ?? 'Unexpected Error Occurred',
+        color: 'red',
+      });
+    }
+    isLoading.value = false;
+  }
+}
 </script>

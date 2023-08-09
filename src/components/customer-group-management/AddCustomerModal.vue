@@ -31,7 +31,7 @@
         unelevated
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
-        @click="saveNewCustomer"
+        @click="saveNewCustomer('edit')"
       />
       <q-btn
         v-else
@@ -42,7 +42,7 @@
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
         :loading="isLoading"
-        @click="saveNewCustomer"
+        @click="saveNewCustomer('add')"
       />
     </div>
   </q-card>
@@ -61,18 +61,24 @@ const props = withDefaults(defineProps<IProps>(), {
   isEditCustomer: false,
 });
 const emit = defineEmits<{
-  (event: 'name-changed', newName: string, callback: () => void): Promise<void>;
+  (
+    event: 'name-changed',
+    action: string,
+    newName: string,
+    callback: () => void
+  ): Promise<void>;
 }>();
 onMounted(() => {
   customerName.value = props.userName;
 });
 
-async function saveNewCustomer() {
+async function saveNewCustomer(action: string) {
   if (isLoading.value) return;
   isLoading.value = true;
   await emit(
     'name-changed',
     customerName.value,
+    action,
     () => (isLoading.value = false)
   );
 }
