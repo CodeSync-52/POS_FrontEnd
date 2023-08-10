@@ -24,8 +24,13 @@
                   color="bg-btn-secondary"
                 />
 
-                <!-- v-if="props.row.role !== EUserRoles.SuperAdmin" -->
                 <q-btn
+                  v-if="
+                    authStore.checkUserHasPermission(
+                      EUserModules.RolePermission,
+                      EActionPermissions.Update
+                    ) && props.row.role !== EUserRoles.SuperAdmin
+                  "
                   icon="edit"
                   size="sm"
                   flat
@@ -63,14 +68,16 @@ import {
   EUserRoles,
   IUserRolePermissions,
   getRoleDisplayName,
+  EActionPermissions,
 } from 'src/interfaces';
 import { QTableColumn, useQuasar } from 'quasar';
 import { fetchUserRoles } from 'src/services';
 import { isPosError } from 'src/utils';
 import { CanceledError } from 'axios';
+import { useAuthStore } from 'src/stores';
 const $q = useQuasar();
 const pageTitle = getRoleModuleDisplayName(EUserModules.RolePermission);
-
+const authStore = useAuthStore();
 const rolesManagementTableColumns: QTableColumn<IUserRole>[] = [
   {
     name: 'name',
