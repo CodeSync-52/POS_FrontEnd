@@ -11,6 +11,6 @@ export interface ICategoryDetailsData {
   name: string;
   status: string;
   description: string;
-  parentCategory: number;
+  parentCategoryId: number;
   action: string;
 }

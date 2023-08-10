@@ -15,30 +15,22 @@ export const changeCategoryStatus = async (categoryId: number) => {
   });
   return res;
 };
-export const createCategory = async ({
-  name,
-  description,
-}: {
-  name: string;
-  description?: string;
-}) => {
+export const createCategory = async (name: string) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
     url: 'api/Category/create',
     data: {
       name,
-      description,
+      description: '',
     },
   });
   return res;
 };
 export const createSubcategory = async ({
   name,
-  description,
   parentCategoryId,
 }: {
   name: string;
-  description?: string;
   parentCategoryId: number;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
@@ -46,20 +38,19 @@ export const createSubcategory = async ({
     url: 'api/Category/subcategory/create',
     data: {
       name,
-      description,
+      description: '',
       parentCategoryId,
     },
   });
   return res;
 };
 export const categoryListApi = async ({
-  pageNumber,
-  pageSize,
+  pageNumber = 1,
+  pageSize = 50,
 }: {
   pageNumber: number;
   pageSize: number;
 }) => {
-  (pageNumber = 1), (pageSize = 50);
   const res = await makeApiCall<
     IGenericResponse<{ items: ICategoryData[]; totalItemCount: number }>
   >({
@@ -74,23 +65,43 @@ export const categoryListApi = async ({
 };
 export const subcategoryListApi = async ({
   parentCategory,
-  pageNumber,
-  pageSize,
+  pageNumber = 1,
+  pageSize = 50,
 }: {
   parentCategory: number;
   pageNumber: number;
   pageSize: number;
 }) => {
-  (pageNumber = 1), (pageSize = 50);
   const res = await makeApiCall<
     IGenericResponse<{ items: ICategoryDetailsData[]; totalItemCount: number }>
   >({
     method: 'GET',
     url: 'api/Category/subcategory/list',
     params: {
-      parentCategory,
+      parentCategoryId: parentCategory,
       pageNumber,
       pageSize,
+    },
+  });
+  return res;
+};
+export const updateCategory = async ({
+  categoryId,
+  name,
+}: {
+  categoryId: number;
+  name: string;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: 'api/Category/update',
+    params: {
+      categoryId,
+    },
+    data: {
+      name,
+      description: '',
+      status: 0,
     },
   });
   return res;

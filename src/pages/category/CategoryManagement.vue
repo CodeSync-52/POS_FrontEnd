@@ -1,10 +1,16 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.CategoryManagement,
+            EActionPermissions.Create
+          )
+        "
         label="Add New"
         icon="add"
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
@@ -45,7 +51,34 @@
             />
           </q-td>
         </template>
-        <template v-slot:body-cell-action="props">
+        <template
+          v-slot:header-cell-action
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Delete
+            )
+          "
+        >
+          <q-th></q-th>
+        </template>
+        <template
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.UserManagment,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:body-cell-action="props"
+        >
           <q-td class="flex justify-start" :props="props">
             <div class="flex gap-2 flex-nowrap">
               <q-btn
@@ -70,7 +103,6 @@
         :category-action="CategoryAction"
         @name-changed="updateOrAddCategory"
         :selected-row="selectedRowData?.categoryId"
-        @delete-record="deletingCategory"
       />
     </q-dialog>
     <q-dialog v-model="isCategoryStatusModalVisible">
@@ -85,19 +117,26 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
 import CategoryManagementModal from 'src/components/category-management/CategoryManagementModal.vue';
 import CategoryStatusModal from 'src/components/category-management/CategoryStatusModal.vue';
 import { categoryColumn } from 'src/pages/category/utils';
 import {
+  EActionPermissions,
   EUserModules,
   ICategoryData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { useQuasar } from 'quasar';
 import { isPosError } from 'src/utils';
-import { changeCategoryStatus, categoryListApi } from 'src/services';
+import {
+  changeCategoryStatus,
+  categoryListApi,
+  createCategory,
+} from 'src/services';
+import { useAuthStore } from 'src/stores';
 const router = useRouter();
 const $q = useQuasar();
+const authStore = useAuthStore();
 const selectedCategory = ref<string>('');
 const selectedRowData = ref<ICategoryData | null>(null);
 const isCategoryStatusModalVisible = ref(false);
@@ -117,6 +156,88 @@ const pagination = ref({
 onMounted(() => {
   getCategoryList();
 });
+const onEditButtonClick = (row: ICategoryData) => {
+  selectedCategory.value = row.name;
+  CategoryAction.value = 'Edit';
+  isCategoryModalVisible.value = true;
+};
+const handleShowEditStatusPopup = (row: ICategoryData) => {
+  selectedStatus.value = row.status;
+  selectedRowData.value = row;
+  isCategoryStatusModalVisible.value = true;
+};
+const AddNewCategory = () => {
+  selectedCategory.value = '';
+  CategoryAction.value = 'Add';
+  isCategoryModalVisible.value = true;
+};
+const handleManageClick = (id: number) => {
+  router.push(`/category/${id}`);
+};
+const updateOrAddCategory = async (
+  newName: string,
+  action: string,
+  callback: () => void
+) => {
+  if (action === 'Edit') return;
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await createCategory(newName);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isLoading.value = false;
+  callback();
+  isCategoryModalVisible.value = false;
+  getCategoryList();
+  selectedRowData.value = null;
+};
+const updatingStatus = async (updatedStatus: string) => {
+  if (updatedStatus === selectedStatus.value) {
+    isCategoryStatusModalVisible.value = false;
+    return;
+  }
+  if (isLoading.value) return;
+  isLoading.value = true;
+  const categoryId = 1;
+  try {
+    const res = await changeCategoryStatus(categoryId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      getCategoryList();
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isLoading.value = false;
+  isCategoryStatusModalVisible.value = false;
+};
 const getCategoryList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
@@ -147,86 +268,5 @@ const getCategoryList = async (data?: {
     });
   }
   isLoading.value = false;
-};
-const onEditButtonClick = (row: ICategoryData) => {
-  selectedCategory.value = row.name;
-  CategoryAction.value = 'Edit';
-  isCategoryModalVisible.value = true;
-};
-const handleShowEditStatusPopup = (row: ICategoryData) => {
-  selectedStatus.value = row.status;
-  selectedRowData.value = row;
-  isCategoryStatusModalVisible.value = true;
-};
-const AddNewCategory = () => {
-  selectedCategory.value = '';
-  CategoryAction.value = 'Add';
-  isCategoryModalVisible.value = true;
-};
-const handleManageClick = (id: number) => {
-  router.push(`/category/${id}`);
-};
-const updateOrAddCategory = async (newName: string, callback: () => void) => {
-  if (selectedRowData.value) {
-    await new Promise((res) => {
-      setTimeout(() => res(newName), 3000);
-    });
-  } else {
-    await new Promise((res) => {
-      setTimeout(() => res(newName), 3000);
-    });
-  }
-  selectedRowData.value = null;
-  isCategoryModalVisible.value = false;
-  callback();
-};
-const deletingCategory = async (id: string, callback: () => void) => {
-  if (selectedRowData.value) {
-    try {
-      await new Promise((res) => {
-        setTimeout(() => res(id), 3000);
-        selectedRowData.value = null;
-        isCategoryModalVisible.value = false;
-        $q.notify({
-          message: 'The selected row is deleted successfully',
-          color: 'green',
-        });
-      });
-    } catch (e) {
-      $q.notify({
-        message: 'Unexpected Error',
-        color: 'red',
-      });
-    }
-    callback();
-  }
-};
-const updatingStatus = async (updatedStatus: string) => {
-  if (updatedStatus === selectedStatus.value) {
-    isCategoryStatusModalVisible.value = false;
-    return;
-  }
-  if (isLoading.value) return;
-  isLoading.value = true;
-  const categoryId = 1;
-  try {
-    const res = await changeCategoryStatus(categoryId);
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        color: 'green',
-      });
-      getCategoryList();
-    }
-  } catch (e) {
-    if (isPosError(e)) {
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
-    }
-  }
-  isLoading.value = false;
-  isCategoryStatusModalVisible.value = false;
 };
 </script>
