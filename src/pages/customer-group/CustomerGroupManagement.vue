@@ -140,12 +140,15 @@ const updateOrAddCustomer = async (
       });
     }
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
   selectedRowData.value = null;
   isAddCustomerModalVisible.value = false;
@@ -178,12 +181,15 @@ const updatingStatus = async (updatedStatus: number, callback: () => void) => {
       }
     }
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
   callback();
   editStatusPopup.value = false;
@@ -260,12 +266,15 @@ async function fetchingCustomerGroupList(data?: {
       pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message ?? 'Unexpected Error Occurred',
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
   isLoading.value = false;
 }

@@ -1,13 +1,16 @@
 export interface ICategoryData {
-  group: string;
-  id: string;
-  category: string;
+  categoryId: number;
+  description: string;
+  name: string;
+  parentCategory: null | number;
   status: string;
-  action?: any;
+  action?: string;
 }
 export interface ICategoryDetailsData {
-  id: string;
-  label: string;
-  fullName: string;
+  categoryId: string;
+  name: string;
+  status: string;
+  description: string;
+  parentCategoryId: number;
   action: string;
 }

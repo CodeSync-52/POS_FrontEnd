@@ -153,13 +153,15 @@ const updateProfile = async () => {
       color: 'green',
     });
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      isLoading.value = false;
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
   closeModal.value = false;
   emit('close-modal', closeModal.value);
@@ -172,12 +174,15 @@ async function callingViewUserProfileApi() {
     }> = await viewUserProfile();
     if (response && response.data) userInfo.value = response.data;
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message || 'Unexpected Error Occurred',
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
 }
 const canUpdateProfile = ref(false);
@@ -230,13 +235,15 @@ async function callingSaveNewPasswordApi() {
     passwordConfirmation.value.newPass = '';
     passwordConfirmation.value.oldPass = '';
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      isLoading.value = false;
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
   closeModal.value = false;
   emit('close-modal', closeModal.value);

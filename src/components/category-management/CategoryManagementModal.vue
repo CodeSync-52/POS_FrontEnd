@@ -5,19 +5,15 @@
         <span> {{ categoryAction }} Category</span>
       </div>
       <q-input
-        v-if="categoryAction !== 'Delete'"
         dense
-        v-model="variantName"
+        v-model="categoryName"
         outlined
         label="Name"
         color="btn-primary"
       />
-      <div v-else class="text-center">
-        <span>Are you sure you want to delete the selected Record?</span>
-      </div>
     </q-card-section>
     <q-card-actions class="q-pb-none q-px-none" align="right">
-      <div v-if="categoryAction !== 'Delete'" class="row justify-end gap-4">
+      <div class="row justify-end gap-4">
         <q-btn
           label="Cancel"
           flat
@@ -30,23 +26,11 @@
           :label="categoryAction === 'Edit' ? 'Save' : 'Add'"
           flat
           :loading="isLoading"
-          :disable="!variantName"
+          :disable="!categoryName"
           unelevated
           color="signature"
           class="bg-btn-primary"
-          @click="saveNewVariant"
-        />
-      </div>
-      <div v-else class="row justify-end">
-        <q-btn label="Cancel" flat unelevated color="signature" v-close-popup />
-        <q-btn
-          label="Delete"
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-          flat
-          unelevated
-          color="signature"
-          :loading="isLoading"
-          @click="deleteVariant"
+          @click="saveNewCategory"
         />
       </div>
     </q-card-actions>
@@ -54,7 +38,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-const variantName = ref('');
+const categoryName = ref('');
 const isLoading = ref(false);
 interface IProps {
   category?: string;
@@ -68,28 +52,24 @@ const props = withDefaults(defineProps<IProps>(), {
   selectedRowId: '-1',
 });
 const emit = defineEmits<{
-  (event: 'name-changed', newName: string, callback: () => void): Promise<void>;
-  (event: 'delete-record', id: string, callback: () => void): Promise<void>;
+  (
+    event: 'name-changed',
+    newName: string,
+    action: string,
+    callback: () => void
+  ): Promise<void>;
 }>();
 onMounted(() => {
-  variantName.value = props.category;
+  categoryName.value = props.category;
 });
 
-async function saveNewVariant() {
+async function saveNewCategory() {
   if (isLoading.value) return;
   isLoading.value = true;
   await emit(
     'name-changed',
-    variantName.value,
-    () => (isLoading.value = false)
-  );
-}
-async function deleteVariant() {
-  if (isLoading.value) return;
-  isLoading.value = true;
-  await emit(
-    'delete-record',
-    props.selectedRowId,
+    categoryName.value,
+    props.categoryAction,
     () => (isLoading.value = false)
   );
 }
