@@ -94,7 +94,7 @@ export const updateCategory = async ({
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
-    url: `api/Category/update`,
+    url: 'api/Category/update',
     params: {
       categoryId,
     },

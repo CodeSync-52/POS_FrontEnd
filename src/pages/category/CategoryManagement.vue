@@ -233,7 +233,9 @@ const updateOrAddCategory = async (
   isLoading.value = false;
   callback();
   isCategoryModalVisible.value = false;
-  getCategoryList();
+  if (action !== 'Edit') {
+    getCategoryList();
+  }
   selectedRowData.value = null;
 };
 const updatingStatus = async (updatedStatus: string) => {
