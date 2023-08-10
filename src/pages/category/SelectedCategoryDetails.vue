@@ -10,13 +10,13 @@
         label="Add New"
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary text-signature"
-        @click="addNewVariant"
+        @click="addNewCategory"
       />
     </div>
     <div class="py-4">
       <q-table
-        :rows="variantDetailsRecord"
-        :columns="variantDetailsColumn"
+        :rows="categoryDetailsRecord"
+        :columns="categoryDetailsColumn"
         row-key="name"
       >
         <template v-slot:body-cell-action="props">
@@ -28,7 +28,7 @@
                 unelevated
                 dense
                 icon="edit"
-                @click="editVariant(props.row)"
+                @click="editCategory(props.row)"
               />
               <q-btn
                 size="sm"
@@ -37,7 +37,7 @@
                 unelevated
                 icon="delete"
                 color="red"
-                @click="handleDeleteVariant(props.row)"
+                @click="handleDeleteCategory(props.row)"
               />
             </div>
           </q-td>
@@ -46,13 +46,13 @@
     </div>
     <q-dialog
       @update:model-value="selectedRowData = null"
-      v-model="isVariantDetailsModalVisible"
+      v-model="isCategoryDetailsModalVisible"
     >
-      <variant-details-modal
-        :variant="variant"
-        :variant-action="variantAction"
-        @name-changed="updateOrAddVariant"
-        @delete-record="deletingVariant"
+      <category-details-modal
+        :variant="category"
+        :category-action="categoryAction"
+        @name-changed="updateOrAddCategory"
+        @delete-record="deletingCategory"
       />
     </q-dialog>
   </div>
@@ -61,47 +61,50 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-import VariantDetailsModal from 'src/components/variant-management/VariantDetailsModal.vue';
+import CategoryDetailsModal from 'src/components/category-management/CategoryDetailsModal.vue';
 import {
   EUserModules,
-  IVariantDetailsData,
+  ICategoryDetailsData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { variantDetailsColumn, variantDetailsData } from './utils';
+import {
+  categoryDetailsColumn,
+  categoryDetailsData,
+} from 'src/pages/category/utils';
 import { useQuasar } from 'quasar';
-const pageTitle = getRoleModuleDisplayName(EUserModules.VariantManagement);
+const pageTitle = getRoleModuleDisplayName(EUserModules.CategoryManagement);
 const router = useRouter();
 const $q = useQuasar();
-const isVariantDetailsModalVisible = ref<boolean>(false);
-const variantDetailsRecord = ref<IVariantDetailsData[]>(variantDetailsData);
+const isCategoryDetailsModalVisible = ref<boolean>(false);
+const categoryDetailsRecord = ref<ICategoryDetailsData[]>(categoryDetailsData);
 const selectedGroupName = router.currentRoute.value.params.id;
-const variantAction = ref<string>('');
-const variant = ref<{ fullName: string; label: string; id: string }>({
+const categoryAction = ref<string>('');
+const category = ref<{ fullName: string; label: string; id: string }>({
   fullName: '',
   label: '',
   id: '',
 });
-const selectedRowData = ref<IVariantDetailsData | null>(null);
-const addNewVariant = () => {
-  variantAction.value = 'Add';
-  variant.value.fullName = '';
-  variant.value.label = '';
-  isVariantDetailsModalVisible.value = true;
+const selectedRowData = ref<ICategoryDetailsData | null>(null);
+const addNewCategory = () => {
+  categoryAction.value = 'Add';
+  category.value.fullName = '';
+  category.value.label = '';
+  isCategoryDetailsModalVisible.value = true;
 };
-const editVariant = (selectedRow: IVariantDetailsData) => {
+const editCategory = (selectedRow: ICategoryDetailsData) => {
   selectedRowData.value = selectedRow;
-  variant.value.fullName = selectedRow.fullName;
-  variant.value.label = selectedRow.label;
-  variantAction.value = 'Edit';
-  isVariantDetailsModalVisible.value = true;
+  category.value.fullName = selectedRow.fullName;
+  category.value.label = selectedRow.label;
+  categoryAction.value = 'Edit';
+  isCategoryDetailsModalVisible.value = true;
 };
-const handleDeleteVariant = (selectedRow: IVariantDetailsData) => {
+const handleDeleteCategory = (selectedRow: ICategoryDetailsData) => {
   selectedRowData.value = selectedRow;
-  variantAction.value = 'Delete';
-  variant.value.id = selectedRow.id;
-  isVariantDetailsModalVisible.value = true;
+  categoryAction.value = 'Delete';
+  category.value.id = selectedRow.id;
+  isCategoryDetailsModalVisible.value = true;
 };
-const updateOrAddVariant = async (
+const updateOrAddCategory = async (
   newName: string,
   newLabel: string,
   callback: () => void
@@ -116,16 +119,16 @@ const updateOrAddVariant = async (
     });
   }
   selectedRowData.value = null;
-  isVariantDetailsModalVisible.value = false;
+  isCategoryDetailsModalVisible.value = false;
   callback();
 };
-const deletingVariant = async (id: string, callback: () => void) => {
+const deletingCategory = async (id: string, callback: () => void) => {
   if (selectedRowData.value) {
     try {
       await new Promise((res) => {
         setTimeout(() => res(id), 3000);
         selectedRowData.value = null;
-        isVariantDetailsModalVisible.value = false;
+        isCategoryDetailsModalVisible.value = false;
         $q.notify({
           message: 'The selected variant is deleted successfully',
           color: 'green',
