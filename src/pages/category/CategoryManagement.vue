@@ -68,12 +68,12 @@
         </template>
         <template
           v-if="
-            !authStore.checkUserHasPermission(
-              EUserModules.UserManagment,
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
               EActionPermissions.Update
             ) &&
-            !authStore.checkUserHasPermission(
-              EUserModules.UserManagment,
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
               EActionPermissions.Delete
             )
           "
@@ -132,6 +132,7 @@ import {
   changeCategoryStatus,
   categoryListApi,
   createCategory,
+  updateCategory,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 const router = useRouter();
@@ -158,6 +159,7 @@ onMounted(() => {
 });
 const onEditButtonClick = (row: ICategoryData) => {
   selectedCategory.value = row.name;
+  selectedRowData.value = row;
   CategoryAction.value = 'Edit';
   isCategoryModalVisible.value = true;
 };
@@ -179,27 +181,54 @@ const updateOrAddCategory = async (
   action: string,
   callback: () => void
 ) => {
-  if (action === 'Edit') return;
   if (isLoading.value) return;
   isLoading.value = true;
-  try {
-    const res = await createCategory(newName);
-    if (res.type === 'Success') {
+  if (action === 'Edit' && selectedRowData.value) {
+    try {
+      const res = await updateCategory({
+        categoryId: selectedRowData.value?.categoryId,
+        name: newName,
+      });
+      if (res.type === 'Success') {
+        $q.notify({
+          message: res.message,
+          color: 'green',
+        });
+        if (selectedRowData.value) {
+          selectedRowData.value.name = newName;
+        }
+      }
+    } catch (e) {
+      let message = 'Unexpected Error Occurred';
+      if (isPosError(e)) {
+        message = e.message;
+      }
       $q.notify({
-        message: res.message,
-        color: 'green',
+        message,
+        color: 'red',
+        icon: 'error',
       });
     }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
+  } else {
+    try {
+      const res = await createCategory(newName);
+      if (res.type === 'Success') {
+        $q.notify({
+          message: res.message,
+          color: 'green',
+        });
+      }
+    } catch (e) {
+      let message = 'Unexpected Error Occurred';
+      if (isPosError(e)) {
+        message = e.message;
+      }
+      $q.notify({
+        message,
+        color: 'red',
+        icon: 'error',
+      });
     }
-    $q.notify({
-      message,
-      color: 'red',
-      icon: 'error',
-    });
   }
   isLoading.value = false;
   callback();
@@ -214,26 +243,37 @@ const updatingStatus = async (updatedStatus: string) => {
   }
   if (isLoading.value) return;
   isLoading.value = true;
-  const categoryId = 1;
-  try {
-    const res = await changeCategoryStatus(categoryId);
-    if (res.type === 'Success') {
+  if (selectedRowData?.value) {
+    try {
+      const res = await changeCategoryStatus(
+        selectedRowData?.value?.categoryId
+      );
+      if (res.type === 'Success') {
+        $q.notify({
+          message: res.message,
+          color: 'green',
+        });
+        // getCategoryList();
+        if (selectedStatus.value === 'Active' && selectedRowData.value) {
+          selectedRowData.value.status = 'InActive';
+        } else if (
+          selectedStatus.value === 'InActive' &&
+          selectedRowData.value
+        ) {
+          selectedRowData.value.status = 'Active';
+        }
+      }
+    } catch (e) {
+      let message = 'Unexpected Error Occurred';
+      if (isPosError(e)) {
+        message = e.message;
+      }
       $q.notify({
-        message: res.message,
-        color: 'green',
+        message,
+        color: 'red',
+        icon: 'error',
       });
-      getCategoryList();
     }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      color: 'red',
-      icon: 'error',
-    });
   }
   isLoading.value = false;
   isCategoryStatusModalVisible.value = false;
