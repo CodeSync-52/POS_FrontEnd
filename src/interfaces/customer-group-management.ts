@@ -9,7 +9,7 @@ export interface ICustomerListResponse {
   createdDate: string;
   customerGroupId: number;
   name: string;
-  status: number;
+  status: string;
   updatedBy: number;
   updatedDate: string;
 }
