@@ -10,7 +10,7 @@
         unelevated
         color=""
         class="bg-btn-primary hover:bg-btn-secondary"
-        @click="showAddNewUserPopup"
+        @click="showAddNewCustomerGroupPopup"
       />
     </div>
     <div class="q-pa-md">
@@ -30,7 +30,7 @@
                 unelevated
                 dense
                 class="hover:text-btn-primary"
-                :label="props.row.status === '1' ? 'Active' : 'InActive'"
+                :label="props.row.status"
                 @click="handleEditStatusPopup(props.row)"
               />
             </div>
@@ -84,7 +84,7 @@
     >
       <add-user-modal
         :user-name="selectedRowData?.name"
-        :is-edit-customer="!!selectedRowData"
+        :is-edit-customer-group="isEditCustomerGroup"
         @name-changed="updateOrAddCustomer"
       />
     </q-dialog>
@@ -129,7 +129,7 @@ const updateOrAddCustomer = async (
 ) => {
   try {
     const customerId = selectedRowData.value?.customerGroupId ?? -1;
-    const status = selectedRowData.value?.status ?? -1;
+    const status = selectedRowData.value?.status ?? '';
     const res = await (action === 'add'
       ? addNewCustomerGroup(newName)
       : updateCustomerGroup({ newName, customerId, status }));
@@ -152,7 +152,7 @@ const updateOrAddCustomer = async (
   fetchingCustomerGroupList();
   callback();
 };
-const updatingStatus = async (updatedStatus: number, callback: () => void) => {
+const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   try {
     const res = await changeCustomerStatus(
       selectedRowData.value?.customerGroupId ?? -1
@@ -214,26 +214,30 @@ const customerGroupColumns: QTableColumn<ICustomerData>[] = [
 ];
 const customerGroupRows = ref<ICustomerListResponse[]>([]);
 const selectedRowData = ref<ICustomerListResponse | null>(null);
-const selectedStatus = ref<number>(-1);
+const selectedStatus = ref<string>('');
 const editStatusPopup = ref(false);
+const isEditCustomerGroup = ref(false);
 const isAddCustomerModalVisible = ref(false);
 const newCustomerName = ref('');
-const showAddNewUserPopup = () => {
+const showAddNewCustomerGroupPopup = () => {
+  selectedRowData.value = null;
+  isEditCustomerGroup.value = false;
   newCustomerName.value = '';
   isAddCustomerModalVisible.value = true;
 };
 const handleEditStatusPopup = (selectedRow: ICustomerListResponse) => {
   selectedRowData.value = selectedRow;
-  if (selectedRowData.value?.status === 1) {
-    selectedStatus.value = 1;
+  if (selectedRowData.value?.status === 'Active') {
+    selectedStatus.value = 'Active';
   } else {
-    selectedStatus.value = 0;
+    selectedStatus.value = 'InActive';
   }
   editStatusPopup.value = true;
 };
 const handleEditCustomerGroupNamePopup = (
   selectedRow: ICustomerListResponse
 ) => {
+  isEditCustomerGroup.value = true;
   newCustomerName.value = selectedRow.name;
   isAddCustomerModalVisible.value = true;
   selectedRowData.value = selectedRow;

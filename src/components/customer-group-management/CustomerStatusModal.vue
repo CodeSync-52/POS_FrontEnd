@@ -5,13 +5,13 @@
       <div class="column">
         <q-radio
           v-model="statusVal"
-          :val="1"
+          val="Active"
           label="Active"
           color="btn-primary"
         />
         <q-radio
           v-model="statusVal"
-          :val="0"
+          val="InActive"
           label="InActive"
           color="btn-primary"
         />
@@ -41,15 +41,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 interface IProps {
-  selectedStatus: number;
+  selectedStatus: string;
 }
 const isLoading = ref<boolean>(false);
 const emit = defineEmits<{
-  (e: 'updated-status', newVal: number, callback: () => void): void;
+  (e: 'updated-status', newVal: string, callback: () => void): void;
 }>();
-const statusVal = ref<number>(-1);
+const statusVal = ref<string>('');
 const props = withDefaults(defineProps<IProps>(), {
-  selectedStatus: -1,
+  selectedStatus: '',
 });
 function savingEditedStatus() {
   isLoading.value = true;
