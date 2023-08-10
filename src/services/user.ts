@@ -6,7 +6,7 @@ export const viewUserProfile = async () => {
     IGenericResponse<{ fullName: string; phoneNumber: string }>
   >({
     method: 'GET',
-    url: 'api/Account/user/profile',
+    url: 'api/Account/profile',
   });
   return res;
 };
@@ -21,7 +21,7 @@ export const editUserProfile = async ({
 }) => {
   const res = await makeApiCall<IGenericResponse>({
     method: 'POST',
-    url: 'api/Account/user/profile/update',
+    url: 'api/Account/profile',
     data: payload,
   });
   return res;
@@ -29,7 +29,7 @@ export const editUserProfile = async ({
 export const resetUserPassword = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
-    url: `api/User/password/reset?userId=${customerId}`,
+    url: `api/password/reset?userId=${customerId}`,
   });
   return res;
 };
