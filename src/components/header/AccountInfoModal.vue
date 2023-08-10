@@ -61,19 +61,7 @@
               outlined
               dense
               lazy-rules
-              :rules="[
-                (val) =>
-                  val.length >= 6 || 'Passwords must be at least 6 characters.',
-                (val) =>
-                  /[^a-zA-Z0-9]/.test(val) ||
-                  'Passwords must have at least one non-alphanumeric character.',
-                (val) =>
-                  /\d/.test(val) ||
-                  'Passwords must have at least one digit (0-9).',
-                (val) =>
-                  /[A-Z]/.test(val) ||
-                  'Passwords must have at least one uppercase letter (A-Z).',
-              ]"
+              :rules="passwordRules"
             />
           </div>
         </div>
@@ -112,11 +100,15 @@
         color="signature"
         class="bg-btn-primary"
         :loading="isLoading"
-        :disable="!isViewProfile || canUpdateProfile ? false : isButtonDisabled"
+        :disable="
+          isViewProfile || canUpdateProfile
+            ? !userInfo.fullName || !userInfo.phoneNumber
+            : isButtonDisabled
+        "
         flat
         unelevated
         @click="
-          !isViewProfile || canUpdateProfile
+          isViewProfile || canUpdateProfile
             ? updateProfile()
             : callingSaveNewPasswordApi()
         "
@@ -139,7 +131,9 @@ interface IProps {
   isViewProfile: boolean;
 }
 onMounted(() => {
-  callingViewUserProfileApi();
+  if (props.isViewProfile) {
+    callingViewUserProfileApi();
+  }
 });
 const updateProfile = async () => {
   try {
@@ -199,7 +193,7 @@ const passwordConfirmation = ref<{
   newPass: '',
   confirmPass: '',
 });
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   isViewProfile: false,
 });
 const closeModal = ref(false);
@@ -207,17 +201,27 @@ const emit = defineEmits(['close-modal']);
 const isLoading = ref<boolean>(false);
 const $q = useQuasar();
 const isButtonDisabled = computed(() => {
-  const validations = [
-    !passwordConfirmation.value.oldPass,
-    passwordConfirmation.value.newPass.length < 6,
-    !/[^a-zA-Z0-9]/.test(passwordConfirmation.value.newPass),
-    !/\d/.test(passwordConfirmation.value.newPass),
-    !/[A-Z]/.test(passwordConfirmation.value.newPass),
-    passwordConfirmation.value.newPass !==
-      passwordConfirmation.value.confirmPass,
-  ];
+  const { oldPass, newPass, confirmPass } = passwordConfirmation.value;
+  const hasValidPassword =
+    newPass.length >= 6 &&
+    /[^a-zA-Z0-9]/.test(newPass) &&
+    /\d/.test(newPass) &&
+    /[A-Z]/.test(newPass);
+  const validations = [!oldPass, !hasValidPassword, newPass !== confirmPass];
   return validations.some((validation) => validation);
 });
+const passwordRules = [
+  (val: string) =>
+    val.length >= 6 || 'Passwords must be at least 6 characters.',
+  (val: string) =>
+    /[^a-zA-Z0-9]/.test(val) ||
+    'Passwords must have at least one non-alphanumeric character.',
+  (val: string) =>
+    /\d/.test(val) || 'Passwords must have at least one digit (0-9).',
+  (val: string) =>
+    /[A-Z]/.test(val) ||
+    'Passwords must have at least one uppercase letter (A-Z).',
+];
 async function callingSaveNewPasswordApi() {
   const { oldPass, newPass } = passwordConfirmation.value;
   try {
