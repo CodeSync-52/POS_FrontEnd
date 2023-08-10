@@ -1,27 +1,27 @@
 import { EUserRoles } from './general';
 
 interface IUserCustomer {
-  userRoleName: EUserRoles.Customer;
-  assignShop: number;
+  roleName: EUserRoles.Customer;
+
   flatDiscount: number;
-  customerGroupId: number;
-  isActive: boolean;
+  customerGroupId: number | null;
+  status: string;
 }
 
 interface IUserNonCustomer {
-  userRoleName: Exclude<EUserRoles, EUserRoles.Customer>;
-  assignShop: never;
-  flatDiscount: never;
-  customerGroupId: never;
-  isActive: never;
+  roleName: Exclude<EUserRoles, EUserRoles.Customer>;
+  flatDiscount?: never;
+  customerGroupId?: never;
+  status?: 'InActive';
 }
 type ICreateUserPayloadCommon = {
   fullName: string;
   userName: string;
   phoneNumber: string;
+  userId?: number;
 };
 
-export type ICreateUserPayload =
+export type IUserManagementData =
   | (ICreateUserPayloadCommon & IUserCustomer)
   | (ICreateUserPayloadCommon & IUserNonCustomer);
 
@@ -32,4 +32,21 @@ export type IUserData = {
   action?: any;
   status: string;
   discount: number;
-} & ICreateUserPayload;
+  customerGroup: null | any;
+} & IUserManagementData;
+export interface IUserResponse {
+  customerGroup: null;
+  discount: null;
+  fullName: string;
+  phoneNumber: string;
+  roleName: string;
+  status: string;
+  userId: number;
+  username: string;
+}
+export interface IUserFilterList {
+  customerGroupId: number | null;
+  role: string | null;
+  status: string | null;
+}
+export type IUserPayload = Omit<IUserManagementData, 'status'>;
