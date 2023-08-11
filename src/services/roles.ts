@@ -22,3 +22,18 @@ export const fetchUserRoles = async (
     signal: controller.signal,
   });
 };
+
+export const updateUserRoles = async ({
+  data,
+  roleName,
+}: {
+  data: IUserRolePermissions[];
+  roleName: EUserRoles;
+}) => {
+  return await makeApiCall({
+    url: 'api/RolePermission/save',
+    method: 'POST',
+    params: { roleName },
+    data,
+  });
+};
