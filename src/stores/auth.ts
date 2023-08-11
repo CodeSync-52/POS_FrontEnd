@@ -21,9 +21,6 @@ export const useAuthStore = defineStore('login', () => {
     permissionId: EActionPermissions
   ) {
     if (!loggedInUser.value) return false;
-    // if (loggedInUser.value.rolePermissions.roleName === EUserRoles.SuperAdmin) {
-    //   return true;
-    // }
     const moduleIndex =
       loggedInUser.value.rolePermissions.permissionModuleActions.findIndex(
         (module) => module.moduleId === moduleId
@@ -31,11 +28,9 @@ export const useAuthStore = defineStore('login', () => {
     if (moduleIndex < 0) {
       return false;
     }
-    return (
-      loggedInUser.value.rolePermissions.permissionModuleActions
-        .map((action) => action.actionIds)
-        .filter((y) => y.includes(permissionId)).length > 0
-    );
+    return loggedInUser.value.rolePermissions.permissionModuleActions[
+      moduleIndex
+    ].actionIds.includes(permissionId);
   }
 
   async function loginUser(params: { userName: string; password: string }) {
