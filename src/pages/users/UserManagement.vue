@@ -395,6 +395,7 @@ const editUserInfo = async (userData: IUserPayload) => {
       });
     }
   }
+  showAddNewAdminRolePopup.value = false;
 };
 const getUserList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -481,6 +482,7 @@ async function handleUserAdd(userData: IUserPayload) {
       });
     }
   }
+  showAddNewAdminRolePopup.value = false;
 }
 async function callingResetPasswordApi(customerId: number) {
   try {

@@ -10,12 +10,12 @@ export type userManagementSearchFilter = {
 };
 
 export enum EUserRoles {
-  SuperAdmin = 'superadmin',
-  Admin = 'admin',
-  Customer = 'customer',
-  ShopManager = 'shopmanager',
-  ShopOfficer = 'shopofficer',
-  OfficeManager = 'officemanager',
+  SuperAdmin = 'SuperAdmin',
+  Admin = 'Admin',
+  Customer = 'Customer',
+  ShopManager = 'ShopManager',
+  ShopOfficer = 'ShopOfficer',
+  OfficeManager = 'OfficeManager',
 }
 
 export enum EActionPermissions {
