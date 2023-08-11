@@ -9,6 +9,12 @@
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary text-signature"
         @click="addNewCategory"
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.CategoryManagement,
+            EActionPermissions.Create
+          )
+        "
       />
     </div>
     <div class="py-4">
@@ -21,7 +27,19 @@
         v-model:pagination="pagination"
         @request="getCategoryDetailsList"
       >
-        <template v-slot:body-cell-action="props">
+        <template
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Update
+            ) &&
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:body-cell-action="props"
+        >
           <q-td class="flex justify-start" :props="props">
             <div class="flex gap-2 flex-nowrap">
               <q-btn
@@ -35,6 +53,48 @@
             </div>
           </q-td>
         </template>
+        <template
+          v-slot:header-cell-action
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Delete
+            )
+          "
+        >
+          <q-th> </q-th>
+        </template>
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            <q-btn
+              unelevated
+              flat
+              :label="props.row.status"
+              dense
+              no-caps
+              @click="handleStatusModalPopup(props.row)"
+            />
+          </q-td>
+        </template>
+        <template
+          v-slot:header-cell-status
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Delete
+            )
+          "
+        >
+          <q-th> </q-th>
+        </template>
       </q-table>
     </div>
     <q-dialog
@@ -47,23 +107,38 @@
         @name-changed="updateOrAddCategory"
       />
     </q-dialog>
+
+    <q-dialog v-model="isCategoryDetailsStatusModalVisible">
+      <category-status-modal
+        :selected-status="selectedStatus"
+        @updated-status="updatingStatus"
+      />
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import { useQuasar } from 'quasar';
 import CategoryDetailsModal from 'src/components/category-management/CategoryDetailsModal.vue';
+import CategoryStatusModal from 'src/components/category-management/CategoryStatusModal.vue';
 import {
+  EActionPermissions,
   EUserModules,
   ICategoryDetailsData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
 import { categoryDetailsColumn } from 'src/pages/category/utils';
-import { useQuasar } from 'quasar';
-import { createSubcategory, subcategoryListApi } from 'src/services';
+import {
+  createSubcategory,
+  subcategoryListApi,
+  changeSubcategoryStatus,
+} from 'src/services';
 import { isPosError } from 'src/utils';
+import { useAuthStore } from 'src/stores';
 const pageTitle = getRoleModuleDisplayName(EUserModules.CategoryManagement);
+const authStore = useAuthStore();
 const router = useRouter();
 const $q = useQuasar();
 onMounted(() => {
@@ -77,6 +152,17 @@ const pagination = ref({
   rowsNumber: 0,
 });
 const isLoading = ref(false);
+const isCategoryDetailsStatusModalVisible = ref(false);
+const selectedStatus = ref('');
+const isCategoryDetailsModalVisible = ref<boolean>(false);
+const categoryDetailsRecord = ref<ICategoryDetailsData[]>([]);
+const selectedGroupName = router.currentRoute.value.params.id;
+const categoryAction = ref<string>('');
+const category = ref<{ name: string; id: number }>({
+  name: '',
+  id: -1,
+});
+const selectedRowData = ref<ICategoryDetailsData | null>(null);
 const getCategoryDetailsList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
@@ -108,15 +194,56 @@ const getCategoryDetailsList = async (data?: {
   }
   isLoading.value = false;
 };
-const isCategoryDetailsModalVisible = ref<boolean>(false);
-const categoryDetailsRecord = ref<ICategoryDetailsData[]>([]);
-const selectedGroupName = router.currentRoute.value.params.id;
-const categoryAction = ref<string>('');
-const category = ref<{ name: string; id: number }>({
-  name: '',
-  id: -1,
-});
-const selectedRowData = ref<ICategoryDetailsData | null>(null);
+const handleStatusModalPopup = (selectedRow: ICategoryDetailsData) => {
+  selectedRowData.value = selectedRow;
+  selectedStatus.value = selectedRow.status;
+  isCategoryDetailsStatusModalVisible.value = true;
+};
+const updatingStatus = async (updatedStatus: string, callback: () => void) => {
+  if (updatedStatus === selectedRowData.value?.status) {
+    isCategoryDetailsStatusModalVisible.value = false;
+    return;
+  }
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await changeSubcategoryStatus(
+      selectedRowData.value?.categoryId ?? -1
+    );
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.status = updatedStatus;
+        if (categoryDetailsRecord.value) {
+          const matchingRows = categoryDetailsRecord.value.findIndex(
+            (row) => selectedRowData.value?.categoryId === row.categoryId
+          );
+          if (matchingRows !== -1) {
+            const newList = [...categoryDetailsRecord.value];
+            newList[matchingRows].status = updatedStatus;
+            categoryDetailsRecord.value = newList;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message: message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  callback();
+  isLoading.value = false;
+  isCategoryDetailsStatusModalVisible.value = false;
+};
 const addNewCategory = () => {
   categoryAction.value = 'Add';
   category.value.name = '';

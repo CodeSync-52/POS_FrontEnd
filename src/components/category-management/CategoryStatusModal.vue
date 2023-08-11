@@ -52,8 +52,11 @@ const props = withDefaults(defineProps<IProps>(), {
 });
 async function savingEditedStatus() {
   isLoading.value = true;
-  await emit('updated-status', statusVal.value);
-  isLoading.value = false;
+  await emit(
+    'updated-status',
+    statusVal.value,
+    () => (isLoading.value = false)
+  );
 }
 onMounted(() => {
   statusVal.value = props.selectedStatus;

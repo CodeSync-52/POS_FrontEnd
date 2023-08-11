@@ -36,10 +36,32 @@
               size="sm"
               @click="handleManageClick(props.row.categoryId)"
               label="Manage"
+              :disable="
+                !authStore.checkUserHasPermission(
+                  EUserModules.CategoryManagement,
+                  EActionPermissions.Update
+                ) &&
+                !authStore.checkUserHasPermission(
+                  EUserModules.CategoryManagement,
+                  EActionPermissions.Delete
+                )
+              "
             />
           </q-td>
         </template>
-        <template v-slot:body-cell-status="props">
+        <template
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Update
+            ) &&
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:body-cell-status="props"
+        >
           <q-td :props="props">
             <q-btn
               size="sm"
@@ -50,6 +72,22 @@
               @click="handleShowEditStatusPopup(props.row)"
             />
           </q-td>
+        </template>
+
+        <template
+          v-slot:header-cell-status
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Delete
+            )
+          "
+        >
+          <q-th></q-th>
         </template>
         <template
           v-slot:header-cell-action
@@ -238,7 +276,7 @@ const updateOrAddCategory = async (
   }
   selectedRowData.value = null;
 };
-const updatingStatus = async (updatedStatus: string) => {
+const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   if (updatedStatus === selectedStatus.value) {
     isCategoryStatusModalVisible.value = false;
     return;
@@ -255,7 +293,6 @@ const updatingStatus = async (updatedStatus: string) => {
           message: res.message,
           color: 'green',
         });
-        // getCategoryList();
         if (selectedStatus.value === 'Active' && selectedRowData.value) {
           selectedRowData.value.status = 'InActive';
         } else if (
@@ -277,6 +314,7 @@ const updatingStatus = async (updatedStatus: string) => {
       });
     }
   }
+  callback();
   isLoading.value = false;
   isCategoryStatusModalVisible.value = false;
 };

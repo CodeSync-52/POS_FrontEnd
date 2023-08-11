@@ -7,7 +7,7 @@ export interface ICategoryData {
   action?: string;
 }
 export interface ICategoryDetailsData {
-  categoryId: string;
+  categoryId: number;
   name: string;
   status: string;
   description: string;

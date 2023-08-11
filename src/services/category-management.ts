@@ -15,6 +15,16 @@ export const changeCategoryStatus = async (categoryId: number) => {
   });
   return res;
 };
+export const changeSubcategoryStatus = async (categoryId: number) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: 'api/Category/subcategory/changestatus',
+    params: {
+      categoryId,
+    },
+  });
+  return res;
+};
 export const createCategory = async (name: string) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
