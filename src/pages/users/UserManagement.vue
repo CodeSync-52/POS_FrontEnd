@@ -210,6 +210,16 @@
               unelevated
               dense
               no-caps
+              :disable="
+                !authStore.checkUserHasPermission(
+                  EUserModules.UserManagment,
+                  EActionPermissions.Update
+                ) ||
+                !authStore.checkUserHasPermission(
+                  EUserModules.UserManagment,
+                  EActionPermissions.Delete
+                )
+              "
               :label="props.row.status"
               @click="handleChangeStatusPopup(props.row)"
             />
