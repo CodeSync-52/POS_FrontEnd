@@ -3,10 +3,14 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
-      <span class="text-xl font-medium"
-        >{{ pageTitle }} : {{ selectedGroupName }}</span
-      >
+      <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.VariantManagement,
+            EActionPermissions.Create
+          )
+        "
         label="Add New"
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary text-signature"
@@ -17,9 +21,39 @@
       <q-table
         :rows="variantDetailsRecord"
         :columns="variantDetailsColumn"
+        :loading="isLoading"
         row-key="name"
+        v-model:pagination="pagination"
+        @request="getVariantList"
       >
-        <template v-slot:body-cell-action="props">
+        <template
+          v-slot:header-cell-action
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.VariantManagement,
+              EActionPermissions.Delete
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.VariantManagement,
+              EActionPermissions.Update
+            )
+          "
+        >
+          <q-th></q-th>
+        </template>
+        <template
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.VariantManagement,
+              EActionPermissions.Delete
+            ) &&
+            authStore.checkUserHasPermission(
+              EUserModules.VariantManagement,
+              EActionPermissions.Update
+            )
+          "
+          v-slot:body-cell-action="props"
+        >
           <q-td class="flex justify-start" :props="props">
             <div class="flex gap-2 flex-nowrap">
               <q-btn
@@ -30,16 +64,29 @@
                 icon="edit"
                 @click="editVariant(props.row)"
               />
-              <q-btn
-                size="sm"
-                dense
-                flat
-                unelevated
-                icon="delete"
-                color="red"
-                @click="handleDeleteVariant(props.row)"
-              />
             </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            <q-btn
+              flat
+              unelevated
+              dense
+              :disable="
+                !authStore.checkUserHasPermission(
+                  EUserModules.VariantManagement,
+                  EActionPermissions.Delete
+                ) &&
+                !authStore.checkUserHasPermission(
+                  EUserModules.VariantManagement,
+                  EActionPermissions.Update
+                )
+              "
+              no-caps
+              :label="props.row.status"
+              @click="handleUpdateStatusPopup(props.row)"
+            />
           </q-td>
         </template>
       </q-table>
@@ -52,7 +99,12 @@
         :variant="variant"
         :variant-action="variantAction"
         @name-changed="updateOrAddVariant"
-        @delete-record="deletingVariant"
+      />
+    </q-dialog>
+    <q-dialog v-model="isVariantStatusModalVisible">
+      <variant-status-modal
+        :selected-status="selectedRowData?.status"
+        @updated-status="handleUpdateStatus"
       />
     </q-dialog>
   </div>
@@ -60,84 +112,175 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import VariantDetailsModal from 'src/components/variant-management/VariantDetailsModal.vue';
+import VariantStatusModal from 'src/components/variant-management/VariantStatusModal.vue';
 import {
+  EActionPermissions,
   EUserModules,
   IVariantDetailsData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { variantDetailsColumn, variantDetailsData } from './utils';
+import { variantDetailsColumn } from './utils';
 import { useQuasar } from 'quasar';
+import { isPosError } from 'src/utils';
+import {
+  addVariantApi,
+  changeVariantStatus,
+  updateVariantApi,
+  variantListApi,
+} from 'src/services';
+import { useAuthStore } from 'src/stores';
 const pageTitle = getRoleModuleDisplayName(EUserModules.VariantManagement);
+const authStore = useAuthStore();
 const router = useRouter();
 const $q = useQuasar();
 const isVariantDetailsModalVisible = ref<boolean>(false);
-const variantDetailsRecord = ref<IVariantDetailsData[]>(variantDetailsData);
-const selectedGroupName = router.currentRoute.value.params.id;
+const variantDetailsRecord = ref<IVariantDetailsData[]>([]);
 const variantAction = ref<string>('');
-const variant = ref<{ fullName: string; label: string; id: string }>({
-  fullName: '',
-  label: '',
-  id: '',
+const isVariantStatusModalVisible = ref(false);
+const isLoading = ref(false);
+const variantGroupId = Number(router.currentRoute.value.params.id);
+const variant = ref<{ displayName: string; name: string; id: number | null }>({
+  displayName: '',
+  name: '',
+  id: null,
+});
+const pagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
 });
 const selectedRowData = ref<IVariantDetailsData | null>(null);
+onMounted(() => {
+  getVariantList();
+});
 const addNewVariant = () => {
   variantAction.value = 'Add';
-  variant.value.fullName = '';
-  variant.value.label = '';
+  variant.value.displayName = '';
+  variant.value.name = '';
   isVariantDetailsModalVisible.value = true;
+};
+const handleUpdateStatusPopup = (selectedRow: IVariantDetailsData) => {
+  selectedRowData.value = selectedRow;
+  isVariantStatusModalVisible.value = true;
+};
+const handleUpdateStatus = async (
+  updatedStatus: string,
+  callback: () => void
+) => {
+  if (updatedStatus === selectedRowData.value?.status) {
+    isVariantStatusModalVisible.value = false;
+    return;
+  }
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const variantId = selectedRowData.value?.variantId ?? -1;
+    const res = await changeVariantStatus(variantId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      if (selectedRowData.value && selectedRowData.value.status === 'Active') {
+        selectedRowData.value.status = 'InActive';
+      } else if (
+        selectedRowData.value &&
+        selectedRowData.value.status === 'InActive'
+      ) {
+        selectedRowData.value.status = 'Active';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  callback();
+  isLoading.value = false;
+  isVariantStatusModalVisible.value = false;
 };
 const editVariant = (selectedRow: IVariantDetailsData) => {
   selectedRowData.value = selectedRow;
-  variant.value.fullName = selectedRow.fullName;
-  variant.value.label = selectedRow.label;
+  variant.value.name = selectedRow.name;
+  variant.value.displayName = selectedRow.displayName;
   variantAction.value = 'Edit';
   isVariantDetailsModalVisible.value = true;
 };
-const handleDeleteVariant = (selectedRow: IVariantDetailsData) => {
-  selectedRowData.value = selectedRow;
-  variantAction.value = 'Delete';
-  variant.value.id = selectedRow.id;
-  isVariantDetailsModalVisible.value = true;
-};
 const updateOrAddVariant = async (
-  newName: string,
-  newLabel: string,
+  name: string,
+  displayName: string,
+  action: string,
   callback: () => void
 ) => {
-  if (selectedRowData.value) {
-    await new Promise((res) => {
-      setTimeout(() => res({ newName, newLabel }), 3000);
-    });
-  } else {
-    await new Promise((res) => {
-      setTimeout(() => res({ newName, newLabel }), 3000);
-    });
-  }
-  selectedRowData.value = null;
-  isVariantDetailsModalVisible.value = false;
-  callback();
-};
-const deletingVariant = async (id: string, callback: () => void) => {
-  if (selectedRowData.value) {
-    try {
-      await new Promise((res) => {
-        setTimeout(() => res(id), 3000);
-        selectedRowData.value = null;
-        isVariantDetailsModalVisible.value = false;
-        $q.notify({
-          message: 'The selected variant is deleted successfully',
-          color: 'green',
-        });
-      });
-      callback();
-    } catch (e) {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const variantId = selectedRowData.value?.variantId ?? -1;
+    const res = await (action === 'Add'
+      ? addVariantApi({ name, displayName, variantGroupId })
+      : updateVariantApi({ variantId, name, displayName, variantGroupId }));
+    if (res.type === 'Success') {
       $q.notify({
-        message: 'Unexpected Error',
+        message: res.message,
+        color: 'green',
+      });
+      getVariantList();
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      $q.notify({
+        message,
         color: 'red',
+        icon: 'error',
       });
     }
   }
+
+  isLoading.value = false;
+  selectedRowData.value = null;
+  isVariantDetailsModalVisible.value = false;
+  callback();
+  getVariantList();
+};
+const getVariantList = async (data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
+}) => {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
+  }
+  try {
+    const res = await variantListApi({
+      pageNumber: pagination.value.page,
+      pageSize: pagination.value.rowsPerPage,
+    });
+    if (res.data) {
+      variantDetailsRecord.value = res.data.items;
+      pagination.value.rowsNumber = res.data.totalItemCount;
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isLoading.value = false;
 };
 </script>
