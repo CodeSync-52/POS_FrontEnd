@@ -202,11 +202,11 @@
       />
       <q-btn
         v-if="isEdit"
+        @click="savePermissions"
         flat
         label="Save"
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
-        v-close-popup
         :disable="isFetching"
       />
     </q-card-actions>
@@ -225,7 +225,12 @@ interface IProps {
   isEdit: boolean;
   isFetching: boolean;
 }
+
+const emits = defineEmits<{
+  (e: 'save-data', data: IUserRolePermissions[]): void;
+}>();
 const roleData = ref<IUserRolePermissions[]>([]);
+const isLoading = ref(false);
 
 const props = withDefaults(defineProps<IProps>(), {
   isEdit: false,
@@ -319,9 +324,8 @@ const handleUpdateToggle = (
     } else {
       // Turning on View permission, ensure it's the only permission
       if (viewIndex === -1) {
-        tempArr.push(EActionPermissions.View); // Add View permission if not already present
+        tempArr = [EActionPermissions.View]; // Add View permission if not already present
       }
-      tempArr.splice(2); // Remove other permissions if present
     }
   } else if (newVal && typeIndex === -1 && viewIndex !== -1) {
     // Enabling other permissions and View is on
@@ -354,4 +358,11 @@ const handleSelectAll = (newValue: boolean) => {
     }));
   }
 };
+function savePermissions() {
+  isLoading.value = true;
+  emits(
+    'save-data',
+    roleData.value.filter((item) => item.actionIds.length > 0)
+  );
+}
 </script>

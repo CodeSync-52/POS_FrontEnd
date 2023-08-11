@@ -15,21 +15,13 @@
             <q-td class="!text-right" :props="props">
               <div class="flex justify-end gap-2 md:pr-4">
                 <q-btn
-                  icon="visibility"
-                  size="sm"
-                  flat
-                  unelevated
-                  dense
-                  @click="showEditPopup(false, props.row.role)"
-                  color="bg-btn-secondary"
-                />
-
-                <q-btn
                   v-if="
                     authStore.checkUserHasPermission(
                       EUserModules.RolePermission,
                       EActionPermissions.Update
-                    ) && props.row.role !== EUserRoles.SuperAdmin
+                    ) &&
+                    props.row.role !== EUserRoles.SuperAdmin &&
+                    props.row.role !== EUserRoles.Customer
                   "
                   icon="edit"
                   size="sm"
@@ -37,6 +29,15 @@
                   unelevated
                   dense
                   @click="showEditPopup(true, props.row.role)"
+                  color="bg-btn-secondary"
+                />
+                <q-btn
+                  icon="visibility"
+                  size="sm"
+                  flat
+                  unelevated
+                  dense
+                  @click="showEditPopup(false, props.row.role)"
                   color="bg-btn-secondary"
                 />
               </div>
@@ -52,7 +53,8 @@
       <role-management-modal
         :is-edit="isEdit"
         :is-fetching="isFetchingPermissions"
-        :role-data-prop="selectedModulePermissions"
+        :role-data-prop="selectedModulePermissions.permissions"
+        @save-data="saveNewUserRoles"
       />
     </q-dialog>
   </div>
@@ -71,7 +73,7 @@ import {
   EActionPermissions,
 } from 'src/interfaces';
 import { QTableColumn, useQuasar } from 'quasar';
-import { fetchUserRoles } from 'src/services';
+import { fetchUserRoles, updateUserRoles } from 'src/services';
 import { isPosError } from 'src/utils';
 import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
@@ -97,7 +99,13 @@ const rolesManagementTableColumns: QTableColumn<IUserRole>[] = [
 ];
 const apiController = ref<AbortController | null>(null);
 
-const selectedModulePermissions = ref<IUserRolePermissions[]>([]);
+const selectedModulePermissions = ref<{
+  role: EUserRoles;
+  permissions: IUserRolePermissions[];
+}>({
+  role: EUserRoles.Admin,
+  permissions: [],
+});
 const rolesManagementTableRows = ref(
   Object.values(EUserRoles).map((role) => {
     return {
@@ -110,6 +118,7 @@ const isRoleModalVisible = ref(false);
 const isEdit = ref(false);
 const isFetchingPermissions = ref(false);
 const showEditPopup = async (shouldEdit: boolean, role: EUserRoles) => {
+  selectedModulePermissions.value.role = role;
   if (isFetchingPermissions.value && apiController.value) {
     apiController.value.abort();
     apiController.value = null;
@@ -120,7 +129,7 @@ const showEditPopup = async (shouldEdit: boolean, role: EUserRoles) => {
   isEdit.value = shouldEdit;
   await fetchUserRoles(role, apiController.value)
     .then((res) => {
-      selectedModulePermissions.value.forEach((moduleBase) => {
+      selectedModulePermissions.value.permissions.forEach((moduleBase) => {
         const selectedModule = res.data.permissionModuleActions.find(
           (moduleItem) => moduleItem.moduleId === moduleBase.moduleId
         );
@@ -149,7 +158,7 @@ const showEditPopup = async (shouldEdit: boolean, role: EUserRoles) => {
 };
 
 function setInitialModuleValue() {
-  selectedModulePermissions.value = Object.values(EUserModules)
+  selectedModulePermissions.value.permissions = Object.values(EUserModules)
     .filter((moduleId) => typeof moduleId === 'number')
     .map((moduleId) => ({
       actionIds: [],
@@ -165,4 +174,30 @@ onUnmounted(() => {
     apiController.value.abort();
   }
 });
+async function saveNewUserRoles(data: IUserRolePermissions[]) {
+  isFetchingPermissions.value = true;
+  try {
+    await updateUserRoles({
+      data,
+      roleName: selectedModulePermissions.value.role,
+    });
+    $q.notify({
+      type: 'positive',
+      message: 'Role Permissions updated successfully',
+    });
+  } catch (e) {
+    console.error(e);
+    let message = 'There was an error updating the records';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
+  }
+  isFetchingPermissions.value = false;
+  isRoleModalVisible.value = false;
+  setInitialModuleValue();
+}
 </script>
