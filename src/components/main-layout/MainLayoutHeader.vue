@@ -119,12 +119,15 @@ async function handleLogout() {
     await logoutUser();
     showAccountInfoDropdown.value = false;
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message || 'Unexpected Error Occurred',
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
   authStore.logoutUser();
 }

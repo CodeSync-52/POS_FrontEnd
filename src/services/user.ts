@@ -1,4 +1,8 @@
-import { IGenericResponse, IUserManagementData } from 'src/interfaces';
+import {
+  IGenericResponse,
+  IUserFilterList,
+  IUserManagementData,
+} from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
 export const viewUserProfile = async () => {
@@ -6,7 +10,7 @@ export const viewUserProfile = async () => {
     IGenericResponse<{ fullName: string; phoneNumber: string }>
   >({
     method: 'GET',
-    url: 'api/Account/user/profile',
+    url: 'api/Account/profile',
   });
   return res;
 };
@@ -21,7 +25,7 @@ export const editUserProfile = async ({
 }) => {
   const res = await makeApiCall<IGenericResponse>({
     method: 'POST',
-    url: 'api/Account/user/profile/update',
+    url: 'api/Account/profile',
     data: payload,
   });
   return res;
@@ -29,7 +33,7 @@ export const editUserProfile = async ({
 export const resetUserPassword = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
-    url: `api/User/password/reset?userId=${customerId}`,
+    url: `api/password/reset?userId=${customerId}`,
   });
   return res;
 };
@@ -52,21 +56,19 @@ export const updateUser = async ({
   return res;
 };
 
-export const getUserListApi = async ({
-  customerGroupId,
-  role,
-  status,
-  name,
-  pageNumber = 1,
-  pageSize = 50,
-}: {
-  customerGroupId?: number | null;
-  role?: string | null;
-  status?: string | null;
-  name?: string | null;
-  pageNumber?: number;
-  pageSize?: number;
-}) => {
+export const getUserListApi = async (
+  {
+    filterSearch,
+    pageNumber = 1,
+    pageSize = 50,
+  }: {
+    filterSearch: IUserFilterList;
+    name?: string | null;
+    pageNumber?: number;
+    pageSize?: number;
+  },
+  controller: AbortController
+) => {
   const res = await makeApiCall<
     IGenericResponse<{
       totalItemCount: number;
@@ -76,13 +78,14 @@ export const getUserListApi = async ({
     method: 'GET',
     url: 'api/User/list',
     params: {
-      RoleName: role,
+      RoleName: filterSearch.role,
       PageSize: pageSize,
-      Status: status,
+      Status: filterSearch.status,
       PageNumber: pageNumber,
       Name: name,
-      CustomerGroupId: customerGroupId,
+      CustomerGroupId: filterSearch.customerGroupId,
     },
+    signal: controller?.signal,
   });
   return res;
 };

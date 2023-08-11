@@ -67,6 +67,7 @@ async function makeApiCall<T>({
         e.response?.status || 500
       );
     }
+    throw e;
   }
 }
 
