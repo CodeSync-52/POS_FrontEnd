@@ -15,8 +15,6 @@
     </div>
     <div class="py-4">
       <q-table
-        flat
-        bordered
         :rows="variantDetailsRecord"
         :columns="variantDetailsColumn"
         row-key="name"

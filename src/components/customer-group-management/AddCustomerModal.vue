@@ -3,7 +3,9 @@
     <q-card-section>
       <div class="text-h6 q-mb-md">
         <span>
-          {{ isEditCustomer ? 'Edit New Customer' : 'Add Customer Name' }}</span
+          {{
+            isEditCustomerGroup ? 'Edit Customer Group' : 'Add Customer Group'
+          }}</span
         >
       </div>
       <q-input
@@ -24,7 +26,7 @@
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
       />
       <q-btn
-        v-if="isEditCustomer"
+        v-if="isEditCustomerGroup"
         label="Save"
         flat
         :loading="isLoading"
@@ -53,13 +55,14 @@ const customerName = ref('');
 const isLoading = ref(false);
 interface IProps {
   userName?: string;
-  isEditCustomer?: boolean;
+  isEditCustomerGroup?: boolean;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   userName: '',
-  isEditCustomer: false,
+  isEditCustomerGroup: false,
 });
+
 const emit = defineEmits<{
   (
     event: 'name-changed',

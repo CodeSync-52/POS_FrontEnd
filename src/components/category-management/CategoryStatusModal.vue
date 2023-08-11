@@ -1,7 +1,7 @@
 <template>
   <q-card class="q-pa-md full-width">
     <q-card-section>
-      <div class="text-h6 q-mb-md"><span> Edit Customer Status </span></div>
+      <div class="text-h6 q-mb-md"><span> Edit Category Status </span></div>
       <div class="column">
         <q-radio
           v-model="statusVal"
@@ -44,18 +44,15 @@ interface IProps {
   selectedStatus: string;
 }
 const isLoading = ref<boolean>(false);
-const emit = defineEmits<{
-  (e: 'updated-status', newVal: string, callback: () => void): void;
-}>();
+const emit = defineEmits(['updated-status']);
 const statusVal = ref<string>('');
 const props = withDefaults(defineProps<IProps>(), {
   selectedStatus: '',
 });
-function savingEditedStatus() {
+async function savingEditedStatus() {
   isLoading.value = true;
-  emit('updated-status', statusVal.value, () => {
-    isLoading.value = false;
-  });
+  await emit('updated-status', statusVal.value);
+  isLoading.value = false;
 }
 onMounted(() => {
   statusVal.value = props.selectedStatus;

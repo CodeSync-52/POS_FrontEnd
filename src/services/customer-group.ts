@@ -40,7 +40,7 @@ export const updateCustomerGroup = async ({
   newName,
 }: {
   customerId: number;
-  status: number;
+  status: string;
   newName: string;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
