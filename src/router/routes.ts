@@ -40,6 +40,13 @@ export const routeList = [
   },
 
   {
+    path: '/category/:id',
+    component: () => import('src/pages/category/SelectedCategoryDetails.vue'),
+    meta: {
+      module: EUserModules.CategoryManagement,
+    },
+  },
+  {
     path: '/category',
     component: () => import('src/pages/category/CategoryManagement.vue'),
     meta: {

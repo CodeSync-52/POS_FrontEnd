@@ -256,7 +256,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useAuthStore } from 'src/stores';
 import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
@@ -284,6 +284,7 @@ import {
   getCustomerGroupList,
 } from 'src/services';
 import { useQuasar } from 'quasar';
+import { CanceledError } from 'axios';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const customerGroupList = ref<ICustomerListResponse[]>([]);
@@ -313,16 +314,23 @@ const roleDropdownOptions = computed(() =>
 
 const UserRows = ref<IUserManagementData[]>([]);
 const action = ref<string>('');
-const isFetching = ref(false);
+const apiController = ref<AbortController | null>(null);
 const isCustomerGroupListLoading = ref(false);
 const selectedUser = ref<IUserManagementData | undefined>();
-const pagination = ref({
+const defaultPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
   rowsPerPage: 50,
   rowsNumber: 0,
-});
+};
+const pagination = ref<{
+  sortBy: string;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+  rowsNumber: number;
+}>(defaultPagination);
 const filterSearch = ref<IUserFilterList>(defaultFilterValues);
 onMounted(() => {
   getUserList();
@@ -347,12 +355,12 @@ const handleAddNewUser = () => {
 };
 const handleChangeStatus = (id: number, updatedStatus: string) => {
   if (selectedRowData.value.status !== updatedStatus) {
-    callingChangeStatusApi(id, updatedStatus);
+    handleChangeStatusApi(id, updatedStatus);
   }
   isChangeStatusModalVisible.value = false;
 };
 const handleResetPassword = (customerGroupId: number) => {
-  callingResetPasswordApi(customerGroupId);
+  handleResetPasswordApi(customerGroupId);
   isResetPasswordModalVisible.value = false;
 };
 const showAddUserModal = (isVisible: boolean) => {
@@ -381,6 +389,8 @@ const editUserInfo = async (userData: IUserPayload) => {
     }
     const res = await updateUser(data);
     if (res.type === 'Success') {
+      filterSearch.value = defaultFilterValues;
+      pagination.value = defaultPagination;
       getUserList();
       $q.notify({
         message: res.message,
@@ -388,35 +398,7 @@ const editUserInfo = async (userData: IUserPayload) => {
       });
     }
   } catch (e) {
-    if (isPosError(e)) {
-      $q.notify({
-        message: e.message ?? 'Unexpected Error Occurred',
-        color: 'red',
-      });
-    }
-  }
-  showAddNewAdminRolePopup.value = false;
-};
-const getUserList = async (data?: {
-  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
-}) => {
-  if (isFetching.value) return;
-  isFetching.value = true;
-
-  if (data) {
-    pagination.value = { ...pagination.value, ...data.pagination };
-  }
-  try {
-    const res = await getUserListApi({
-      pageNumber: pagination.value.page,
-      pageSize: pagination.value.rowsPerPage,
-    });
-    if (res?.data) {
-      UserRows.value = res.data.items;
-      pagination.value.rowsNumber = res.data.totalItemCount;
-    }
-  } catch (e) {
-    let message = 'There was an error fetching the user list';
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -426,9 +408,55 @@ const getUserList = async (data?: {
       icon: 'error',
     });
   }
-  isFetching.value = false;
+  showAddNewAdminRolePopup.value = false;
 };
-async function callingChangeStatusApi(id: number, updatedStatus: string) {
+const getUserList = async (paginationData?: {
+  pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
+}) => {
+  isLoading.value = true;
+  if (paginationData) {
+    pagination.value = {
+      ...pagination.value,
+      ...paginationData.pagination,
+    };
+  }
+  try {
+    if (isLoading.value && apiController.value) {
+      apiController.value.abort();
+      apiController.value = null;
+    }
+    apiController.value = new AbortController();
+    const res = await getUserListApi(
+      {
+        filterSearch: filterSearch.value,
+        pageNumber: pagination.value.page,
+        pageSize: pagination.value.rowsPerPage,
+      },
+
+      apiController.value
+    );
+    if (res?.data) {
+      UserRows.value = res.data.items;
+      pagination.value.rowsNumber = res.data.totalItemCount;
+    }
+  } catch (e) {
+    if (e instanceof CanceledError) return;
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isLoading.value = false;
+};
+const handleUserFilter = () => {
+  getUserList();
+};
+async function handleChangeStatusApi(id: number, updatedStatus: string) {
   try {
     const res = await changeUserStatus(id);
     if (res.type === 'Success') {
@@ -451,12 +479,15 @@ async function callingChangeStatusApi(id: number, updatedStatus: string) {
       }
     }
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
 }
 async function handleUserAdd(userData: IUserPayload) {
@@ -475,16 +506,19 @@ async function handleUserAdd(userData: IUserPayload) {
       });
     }
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
   showAddNewAdminRolePopup.value = false;
 }
-async function callingResetPasswordApi(customerId: number) {
+async function handleResetPasswordApi(customerId: number) {
   try {
     const res = await resetUserPassword(customerId);
     if (res.type === 'Success') {
@@ -494,12 +528,15 @@ async function callingResetPasswordApi(customerId: number) {
       });
     }
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
 }
 async function getCustomerListOption() {
@@ -515,51 +552,22 @@ async function getCustomerListOption() {
     }
     isCustomerGroupListLoading.value = false;
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message ?? 'Unexpected Error Occurred',
-        color: 'red',
-      });
+      message = e.message;
     }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
     isCustomerGroupListLoading.value = false;
   }
 }
-const handleUserFilter = () => {
-  const { customerGroupId, role, status } = filterSearch.value;
-  callingfilterUserApi({ customerGroupId, role, status });
-};
-async function callingfilterUserApi({
-  customerGroupId,
-  role,
-  status,
-}: {
-  customerGroupId: number | null;
-  role: string | null;
-  status: string | null;
-}) {
-  try {
-    if (isLoading.value) return;
-    isLoading.value = true;
-    const res = await getUserListApi({ customerGroupId, role, status });
-    if (res?.data) {
-      UserRows.value = res.data.items;
-      pagination.value.rowsNumber = res.data.totalItemCount;
-    }
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        color: 'green',
-      });
-      isLoading.value = false;
-    }
-  } catch (e) {
-    if (isPosError(e)) {
-      $q.notify({
-        message: e.message,
-        color: 'red',
-      });
-      isLoading.value = false;
-    }
+
+onUnmounted(() => {
+  if (apiController.value) {
+    apiController.value.abort();
   }
-}
+});
 </script>

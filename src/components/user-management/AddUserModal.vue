@@ -255,15 +255,17 @@ async function getCustomerListOption() {
     if (res?.data) {
       customerGroupList.value = res?.data.items;
     }
-    isLoading.value = false;
   } catch (e) {
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
-      $q.notify({
-        message: e.message ?? 'Unexpected Error Occurred',
-        color: 'red',
-      });
+      message = e.message;
     }
-    isLoading.value = false;
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
   }
+  isLoading.value = false;
 }
 </script>
