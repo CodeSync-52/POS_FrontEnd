@@ -133,7 +133,8 @@ import { categoryDetailsColumn } from 'src/pages/category/utils';
 import {
   createSubcategory,
   subcategoryListApi,
-  changeSubcategoryStatus,
+  changeCategoryStatus,
+  updateCategory,
 } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
@@ -207,7 +208,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await changeSubcategoryStatus(
+    const res = await changeCategoryStatus(
       selectedRowData.value?.categoryId ?? -1
     );
     if (res.type === 'Success') {
@@ -252,21 +253,31 @@ const addNewCategory = () => {
 const editCategory = (selectedRow: ICategoryDetailsData) => {
   selectedRowData.value = selectedRow;
   category.value.name = selectedRow.name;
+  category.value.id = selectedRow.categoryId;
   categoryAction.value = 'Edit';
   isCategoryDetailsModalVisible.value = true;
 };
 const updateOrAddCategory = async (
-  parentCategoryId: number,
   name: string,
+  categoryId: number,
   callback: () => void
 ) => {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await createSubcategory({
-      name,
-      parentCategoryId: Number(selectedGroupName),
-    });
+    let res;
+    if (categoryId != -1 && isCategoryDetailsModalVisible) {
+      res = await updateCategory({
+        categoryId,
+        name,
+      });
+    } else {
+      res = await createSubcategory({
+        name,
+        parentCategoryId: Number(selectedGroupName),
+      });
+    }
+
     if (res.type === 'Success') {
       $q.notify({ message: res.message, color: 'green' });
     }

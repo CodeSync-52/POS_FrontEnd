@@ -39,11 +39,7 @@
               :disable="
                 !authStore.checkUserHasPermission(
                   EUserModules.CategoryManagement,
-                  EActionPermissions.Update
-                ) &&
-                !authStore.checkUserHasPermission(
-                  EUserModules.CategoryManagement,
-                  EActionPermissions.Delete
+                  EActionPermissions.View
                 )
               "
             />
@@ -79,11 +75,7 @@
           v-if="
             !authStore.checkUserHasPermission(
               EUserModules.CategoryManagement,
-              EActionPermissions.Update
-            ) &&
-            !authStore.checkUserHasPermission(
-              EUserModules.CategoryManagement,
-              EActionPermissions.Delete
+              EActionPermissions.View
             )
           "
         >

@@ -66,8 +66,8 @@ const props = withDefaults(defineProps<IProps>(), {
 const emit = defineEmits<{
   (
     event: 'name-changed',
-    parentId: number,
     newName: string,
+    categoryId: number,
     callback: () => void
   ): Promise<void>;
 }>();
@@ -84,8 +84,8 @@ async function saveNewCategory() {
   isLoading.value = true;
   await emit(
     'name-changed',
-    categoryData.value.id,
     categoryData.value.name,
+    categoryData.value.id,
     () => (isLoading.value = false)
   );
 }

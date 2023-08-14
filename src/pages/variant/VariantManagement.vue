@@ -31,11 +31,7 @@
           v-if="
             !authStore.checkUserHasPermission(
               EUserModules.VariantManagement,
-              EActionPermissions.Delete
-            ) &&
-            !authStore.checkUserHasPermission(
-              EUserModules.VariantManagement,
-              EActionPermissions.Update
+              EActionPermissions.View
             )
           "
           v-slot:header-cell-variant
@@ -46,11 +42,7 @@
           v-if="
             authStore.checkUserHasPermission(
               EUserModules.VariantManagement,
-              EActionPermissions.Delete
-            ) &&
-            authStore.checkUserHasPermission(
-              EUserModules.VariantManagement,
-              EActionPermissions.Update
+              EActionPermissions.View
             )
           "
           v-slot:body-cell-variant="props"
@@ -61,7 +53,7 @@
               unelevated
               dense
               size="sm"
-              @click="handleManageClick(props.row.id)"
+              @click="handleManageClick(props.row.variantGroupId)"
               label="Manage"
               class="hover:text-btn-primary"
             />
