@@ -11,23 +11,35 @@
           @click="toggleLeftDrawer"
           class="text-btn-primary hover:text-btn-primary-hover bg-text_hover"
         />
-        <q-toolbar-title class="text-text_primary"
-          >Point of Sale</q-toolbar-title
-        >
+        <q-toolbar-title class="text-black">Point of Sale </q-toolbar-title>
         <outside-click-container
           @outside-click="showAccountInfoDropdown = false"
         >
-          <div class="accountInfoIcon relative">
-            <q-icon
-              name="account_circle"
-              size="lg"
-              color="grey"
-              class="cursor-pointer"
+          <div class="accountInfoIcon relative flex">
+            <div class="flex justify-center items-center">
+              <q-icon
+                name="account_circle"
+                size="lg"
+                color="grey"
+                class="cursor-pointer"
+                @click="handleShowAccountInfoDropdown"
+              />
+            </div>
+            <div
+              class="bg-signature cursor-pointer flex flex-col ite justify-center leading-3"
               @click="handleShowAccountInfoDropdown"
-            />
+            >
+              <span class="text-black font-medium">{{
+                authStore.loggedInUser?.fullName
+              }}</span>
+              <span class="text-[#8e8a8a] text-[12px]">{{
+                authStore.loggedInUser?.rolePermissions.roleName
+              }}</span>
+            </div>
+
             <q-card
               v-if="showAccountInfoDropdown"
-              class="absolute right-[1rem] z-10 top-[100%] rounded-md"
+              class="absolute right-[2px] z-10 top-[45px] rounded-md"
             >
               <q-card-section class="min-w-[180px] q-pa-none">
                 <q-item

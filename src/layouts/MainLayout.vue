@@ -7,7 +7,7 @@
         @update:model-value="leftDrawerOpen = $event"
       />
       <q-page-container>
-        <div class="p-4">
+        <div class="p-2">
           <router-view />
         </div>
       </q-page-container>
