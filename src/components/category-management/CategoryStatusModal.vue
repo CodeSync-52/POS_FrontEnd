@@ -43,6 +43,7 @@ import { ref, onMounted } from 'vue';
 interface IProps {
   selectedStatus: string;
 }
+
 const isLoading = ref<boolean>(false);
 const emit = defineEmits(['updated-status']);
 const statusVal = ref<string>('');
@@ -51,8 +52,11 @@ const props = withDefaults(defineProps<IProps>(), {
 });
 async function savingEditedStatus() {
   isLoading.value = true;
-  await emit('updated-status', statusVal.value);
-  isLoading.value = false;
+  await emit(
+    'updated-status',
+    statusVal.value,
+    () => (isLoading.value = false)
+  );
 }
 onMounted(() => {
   statusVal.value = props.selectedStatus;
