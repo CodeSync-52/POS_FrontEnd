@@ -3,12 +3,12 @@ import { IVariantData, IVariantDetailsData } from 'src/interfaces';
 
 export const variantColumn: QTableColumn<IVariantData>[] = [
   {
-    name: 'group',
+    name: 'name',
     required: true,
-    label: 'Group',
+    label: 'Group Name',
     align: 'left',
     sortable: true,
-    field: (row) => row.group,
+    field: (row) => row.name,
   },
   {
     name: 'variant',
@@ -26,71 +26,28 @@ export const variantColumn: QTableColumn<IVariantData>[] = [
   },
   { name: 'action', label: 'Action', field: 'action', align: 'left' },
 ];
-
-export const variantRows: IVariantData[] = [
-  {
-    group: 'Size',
-    id: '1',
-    variant: 'Manage',
-    status: 'Active',
-    action: 'edit',
-  },
-  {
-    group: 'Color',
-    id: '2',
-    variant: 'Manage',
-    status: 'Active',
-    action: 'edit',
-  },
-];
 export const variantDetailsColumn: QTableColumn<IVariantDetailsData>[] = [
   {
-    name: 'label',
+    name: 'name',
     required: true,
-    label: 'Label',
+    label: 'Name',
     align: 'left',
     sortable: true,
-    field: (row) => row.label,
+    field: (row) => row.name,
   },
   {
-    name: 'fullName',
+    name: 'displayName',
     required: true,
-    label: 'Full Name',
+    label: 'Display Name',
     align: 'left',
     sortable: true,
-    field: (row) => row.fullName,
+    field: (row) => row.displayName,
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    field: 'status',
+    align: 'left',
   },
   { name: 'action', label: 'Action', field: 'action', align: 'left' },
-];
-export const variantDetailsData: IVariantDetailsData[] = [
-  {
-    id: '1',
-    label: 'Xs',
-    fullName: 'Extra Small',
-    action: 'edit',
-  },
-  {
-    id: '2',
-    label: 'Sm',
-    fullName: 'Small',
-    action: 'edit',
-  },
-  {
-    id: '3',
-    label: 'Md',
-    fullName: 'Medium',
-    action: 'edit',
-  },
-  {
-    id: '4',
-    label: 'Lg',
-    fullName: 'Large',
-    action: 'edit',
-  },
-  {
-    id: '5',
-    label: 'Xl',
-    fullName: 'Extra large',
-    action: 'edit',
-  },
 ];

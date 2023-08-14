@@ -68,7 +68,7 @@ const roleModuleList: Record<EUserModules, string> = {
   [EUserModules.UserManagment]: 'User Management',
   [EUserModules.RolePermission]: 'Role Permission',
   [EUserModules.CustomerGroupManagement]: 'Customer Group Management',
-  [EUserModules.VariantManagement]: 'Variant Management',
+  [EUserModules.VariantManagement]: 'Variant Group Management',
   [EUserModules.CategoryManagement]: 'Category Management',
   [EUserModules.ArticleManagement]: 'Article Management',
   [EUserModules.ReceiptManagement]: 'Receipt Management',

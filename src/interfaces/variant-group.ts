@@ -1,13 +1,16 @@
 export interface IVariantData {
-  group: string;
-  id: string;
-  variant: string;
+  name: string;
+  id: number;
   status: string;
+  variant: string;
   action?: any;
 }
 export interface IVariantDetailsData {
-  id: string;
-  label: string;
-  fullName: string;
-  action: string;
+  variantId: number;
+  name: string;
+  displayName: string;
+  status: string;
+  variantGroupName: string;
+  variantGroupId: number;
+  action?: string;
 }
