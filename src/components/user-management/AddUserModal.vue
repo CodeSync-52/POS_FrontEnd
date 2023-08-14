@@ -29,7 +29,10 @@
               />
             </div>
           </div>
-          <div class="col-md-4 w-full col-sm-12">
+          <div
+            v-if="action === 'Add New User'"
+            class="col-md-4 w-full col-sm-12"
+          >
             <div>
               <q-input
                 dense
@@ -137,7 +140,6 @@
         :label="action === 'Add New User' ? 'Add' : 'Save'"
         color="signature"
         :disable="isButtonDisabled"
-        v-close-popup
         @click="
           action === 'Add New User' ? handleAddNewUser() : handleEditUser()
         "

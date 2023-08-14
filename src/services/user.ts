@@ -33,7 +33,7 @@ export const editUserProfile = async ({
 export const resetUserPassword = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
-    url: `api/password/reset?userId=${customerId}`,
+    url: `api/User/password/reset?userId=${customerId}`,
   });
   return res;
 };

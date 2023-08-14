@@ -210,6 +210,16 @@
               unelevated
               dense
               no-caps
+              :disable="
+                !authStore.checkUserHasPermission(
+                  EUserModules.UserManagment,
+                  EActionPermissions.Update
+                ) ||
+                !authStore.checkUserHasPermission(
+                  EUserModules.UserManagment,
+                  EActionPermissions.Delete
+                )
+              "
               :label="props.row.status"
               @click="handleChangeStatusPopup(props.row)"
             />
@@ -398,6 +408,7 @@ const editUserInfo = async (userData: IUserPayload) => {
       icon: 'error',
     });
   }
+  showAddNewAdminRolePopup.value = false;
 };
 const getUserList = async (paginationData?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -505,6 +516,7 @@ async function handleUserAdd(userData: IUserPayload) {
       icon: 'error',
     });
   }
+  showAddNewAdminRolePopup.value = false;
 }
 async function handleResetPasswordApi(customerId: number) {
   try {
