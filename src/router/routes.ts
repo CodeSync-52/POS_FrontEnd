@@ -125,6 +125,13 @@ export const routeList = [
     },
   },
   {
+    path: '/article/:id',
+    component: () => import('pages/article/SelectedArticleDetails.vue'),
+    meta: {
+      module: EUserModules.ArticleManagement,
+    },
+  },
+  {
     path: '/shop',
     component: () => import('src/pages/shop/ShopManagement.vue'),
     meta: {
