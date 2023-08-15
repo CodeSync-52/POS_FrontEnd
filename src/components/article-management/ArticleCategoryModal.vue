@@ -12,15 +12,27 @@
           <div v-if="category.subCategories.length">
             <q-expansion-item
               group="articleCategory"
-              expand-icon-class="pr-0"
               :caption="category.name"
+              :header-style="{ padding: '10px' }"
             >
               <template v-slot:header>
                 <div class="row w-full items-center">
+                  <q-checkbox
+                    dense
+                    size="sm"
+                    :model-value="isCategoryChecked(category.categoryId)"
+                    @update:model-value="
+                      updateCategoryChecked(category.categoryId, category.name)
+                    "
+                    :label="category.name"
+                    :val="category.categoryId"
+                    color="btn-primary"
+                  />
                   <div>{{ category.name }}</div>
                   <div><q-icon /></div>
                 </div>
               </template>
+
               <div
                 v-for="subCategory in category.subCategories"
                 :key="subCategory.categoryId"
@@ -53,6 +65,25 @@
             />
           </div>
         </div>
+      </div>
+      <div class="row justify-end p-4 gap-4">
+        <q-btn
+          label="Cancel"
+          flat
+          unelevated
+          color="signature"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+          v-close-popup
+        />
+        <q-btn
+          label="Save"
+          flat
+          :loading="isLoading"
+          unelevated
+          color="signature"
+          class="bg-btn-primary hover:bg-btn-primary-hover"
+          v-close-popup
+        />
       </div>
     </q-card-section>
   </q-card>
@@ -89,11 +120,12 @@ const updateCategoryChecked = (id: number, name: string) => {
 };
 const articleCategory = ref<IArticleCategory[]>([]);
 // const emit = defineEmits<{
-//   (event: 'category-selected',category:{category:string,categoryID:number},parentCategoryID:number):void,
+//   (
+//     event: 'category-selected',
+//     category: { category: string; categoryID: number },
+//     parentCategoryID: number
+//   ): void;
 // }>();
-// const props = withDefaults(defineProps<IProps>(),{
-//   selectedArticleCategory:''
-// })
 const getCategoryTreeList = async () => {
   try {
     const res = await categoryTreeList();
