@@ -17,21 +17,32 @@
         >
           <div class="accountInfoIcon relative flex">
             <div class="flex justify-center items-center">
-              <q-icon
+              <!-- <q-icon
                 name="account_circle"
                 size="lg"
                 color="grey"
                 class="cursor-pointer"
                 @click="handleShowAccountInfoDropdown"
-              />
+              /> -->
+              <span
+                class="text-black rounded-full text-bold flex justify-center items-center bg-[#bab6b6] p-[10px] m-2"
+              >
+                {{
+                  authStore.loggedInUser?.fullName
+                    .split(' ')
+                    .map((namePart) => namePart[0])
+                    .join('')
+                    .toUpperCase()
+                }}
+              </span>
             </div>
             <div
-              class="bg-signature cursor-pointer flex flex-col ite justify-center leading-3"
+              class="bg-signature cursor-pointer flex flex-col ite justify-center leading-4"
               @click="handleShowAccountInfoDropdown"
             >
-              <span class="text-black font-medium">{{
-                authStore.loggedInUser?.fullName
-              }}</span>
+              <span class="text-black font-medium">
+                {{ authStore.loggedInUser?.fullName }}
+              </span>
               <span class="text-[#8e8a8a] text-[12px]">{{
                 authStore.loggedInUser?.rolePermissions.roleName
               }}</span>
