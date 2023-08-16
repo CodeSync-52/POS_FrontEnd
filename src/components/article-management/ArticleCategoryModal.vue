@@ -12,7 +12,6 @@
           <div v-if="category.subCategories.length">
             <q-expansion-item
               group="articleCategory"
-              :caption="category.name"
               :header-style="{ padding: '10px' }"
             >
               <template v-slot:header>
@@ -28,7 +27,6 @@
                     :val="category.categoryId"
                     color="btn-primary"
                   />
-                  <div>{{ category.name }}</div>
                   <div><q-icon /></div>
                 </div>
               </template>
@@ -43,7 +41,10 @@
                   size="sm"
                   :model-value="isCategoryChecked(subCategory.categoryId)"
                   @update:model-value="
-                    updateCategoryChecked(subCategory.categoryId, category.name)
+                    updateCategoryChecked(
+                      subCategory.categoryId,
+                      subCategory.name
+                    )
                   "
                   :label="subCategory.name"
                   :val="subCategory.categoryId"
@@ -82,7 +83,7 @@
           unelevated
           color="signature"
           class="bg-btn-primary hover:bg-btn-primary-hover"
-          v-close-popup
+          @click="handleSelectedCategory"
         />
       </div>
     </q-card-section>
@@ -98,10 +99,8 @@ const selectedCategory = ref<{ categoryId: number; categoryName: string }>({
   categoryId: -1,
   categoryName: '',
 });
-// interface IProps{
-//   selectedArticleCategory:string
-// }
 const $q = useQuasar();
+const isLoading = ref(false);
 onMounted(() => {
   getCategoryTreeList();
 });
@@ -118,14 +117,16 @@ const updateCategoryChecked = (id: number, name: string) => {
     selectedCategory.value = { categoryId: id, categoryName: name };
   }
 };
+const handleSelectedCategory = () => {
+  emit('category-selected', selectedCategory.value);
+};
 const articleCategory = ref<IArticleCategory[]>([]);
-// const emit = defineEmits<{
-//   (
-//     event: 'category-selected',
-//     category: { category: string; categoryID: number },
-//     parentCategoryID: number
-//   ): void;
-// }>();
+const emit = defineEmits<{
+  (
+    event: 'category-selected',
+    category: { categoryName: string; categoryId: number }
+  ): void;
+}>();
 const getCategoryTreeList = async () => {
   try {
     const res = await categoryTreeList();

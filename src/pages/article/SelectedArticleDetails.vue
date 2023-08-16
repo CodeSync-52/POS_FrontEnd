@@ -22,7 +22,21 @@
           </div>
           <div class="col-12 col-md-6">
             <span class="text-base">Image</span>
-            <q-input type="file" v-model="newArticle.image" dense outlined />
+            <q-input
+              type="file"
+              v-model="newArticle.image"
+              accept=".jpeg, .jpg , .png"
+              dense
+              outlined
+              :rules="[checkFile]"
+            />
+            <div class="w-[20px] h-[20px]">
+              <img
+                v-if="imagePreview"
+                :src="imagePreview"
+                alt="Image Preview"
+              />
+            </div>
           </div>
           <div class="col-12 col-md-6">
             <span class="text-base">Description</span>
@@ -44,15 +58,12 @@
           :loading="isLoading"
           :disable="!newArticle.name || !newArticle.category"
           color="btn-primary"
-          @click="handleAddNewArticle"
         />
+        <!-- @click="addNewArticle" -->
       </q-card-actions>
     </q-card>
     <q-dialog v-model="isCategoryModalVisible">
-      <article-category-modal
-        :category="newArticle.category"
-        @category-selected="handleSelectedCategory"
-      />
+      <article-category-modal @category-selected="handleSelectedCategory" />
     </q-dialog>
   </div>
 </template>
@@ -61,18 +72,54 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 // import { isPosError } from 'src/utils';
 // import { useQuasar } from 'quasar';
+// import { newArticleApi } from 'src/services/article-management';
 import ArticleCategoryModal from 'src/components/article-management/ArticleCategoryModal.vue';
 const router = useRouter();
-// const $q = useQuasar()
+// const $q = useQuasar();
 const isCategoryModalVisible = ref(false);
 const isLoading = ref(false);
 const defaultArticleValue = {
-  name: '',
+  name: 'f',
   category: 'f',
   image: '',
   description: '',
+  categoryId: -1,
 };
-const newArticle = ref(defaultArticleValue);
+// interface IImage{
+//   file:IImageFileInfo,
+//   length:number
+// }
+// interface IImageFileInfo{
+//   name:string,
+//   lastModified:number,
+//   size:number,
+//   type:string,
+//   webkitRelativePath:string,
+//   lastModifiedDate:()=>void
+// }
+const checkFile = (value: any) => {
+  if (value[0]) {
+    const allowedFormats = ['image/jpeg', 'image/jpg', 'image/png'];
+    const isValidFormat = allowedFormats.includes(value[0].type);
+    if (!isValidFormat) {
+      return 'Invalid file format. Only jpeg, jpg, and png allowed.';
+    }
+    const isValidSize = value[0].size <= 2 * 1024 * 1024;
+    if (!isValidSize) {
+      return 'Selected file must be less than or equal to 2MB';
+    }
+  }
+  return true;
+};
+interface INewArticleData {
+  name: string;
+  category: string;
+  image: any;
+  description: string;
+  categoryId: number;
+}
+const imagePreview = ref('');
+const newArticle = ref<INewArticleData>(defaultArticleValue);
 const addCategory = () => {
   isCategoryModalVisible.value = true;
 };
@@ -80,41 +127,64 @@ const cancelNewArticle = () => {
   newArticle.value = defaultArticleValue;
   router.push('/article');
 };
-const handleAddNewArticle = () => {
-  console.log(newArticle.value);
-};
-const handleSelectedCategory = (
-  selectedCategory: { category: string; categoryID: number },
-  parentCategoryID: number
-) => {
-  console.log(selectedCategory, parentCategoryID);
-  newArticle.value.category = selectedCategory.category;
+const handleSelectedCategory = (selectedCategory: {
+  categoryName: string;
+  categoryId: number;
+}) => {
+  newArticle.value.category = selectedCategory.categoryName;
+  newArticle.value.categoryId = selectedCategory.categoryId;
   isCategoryModalVisible.value = false;
 };
-// async addNewArticle(){
-//   if(isLoading.value) return
-//   isLoading.value = true
-//   try{
-//     const res = await
-//     if(res.type ==='Success'){
-//       $q.notify({
-//         message:res.message,
-//         color:'green'
-//       })
-//     router.push('/article')
-//     }
+// watch(newArticle.value.image,(newImage)=>{
+//   debugger
+//   if(newImage && newImage[0]){
+//     imagePreview.value = URL.createObjectURL(newImage[0])
+//   }else{
+//     imagePreview.value = ''
 //   }
-//   catch(e){
-//     let message = 'Unexpected Error Occurred'
-//     if(isPosError(e)){
-//       message = e.message
+// })
+// async function addNewArticle() {
+//   if (isLoading.value) return;
+//   isLoading.value = true;
+//   try {
+//     const { image, categoryId, name, description } = newArticle.value;
+//     const base64Image = await convertToBase64(image[0]);
+//     const res = await newArticleApi({
+//       categoryId,
+//       name,
+//       description,
+//       image: base64Image,
+//     });
+//     if (res.type === 'Success') {
+//       $q.notify({
+//         message: res.message,
+//         color: 'green',
+//       });
+//       router.push('/article');
+//     }
+//   } catch (e) {
+//     let message = 'Unexpected Error Occurred';
+//     if (isPosError(e)) {
+//       message = e.message;
 //     }
 //     $q.notify({
 //       message,
-//       color:'red',
-//       icon:'error'
-//   })
+//       color: 'red',
+//       icon: 'error',
+//     });
 //   }
-//   isLoading.value = false
+//   isLoading.value = false;
 // }
+// const convertToBase64 = (file: any) => {
+//   return new Promise((resolve, reject) => {
+//     const fileReader = new FileReader();
+//     fileReader.onload = () => {
+//       if (fileReader.result) {
+//         resolve(fileReader.result.split(',')[1]);
+//       }
+//     };
+//     fileReader.onerror = reject;
+//     fileReader.readAsDataURL(file);
+//   });
+// };
 </script>
