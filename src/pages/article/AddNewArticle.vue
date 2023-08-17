@@ -20,22 +20,25 @@
               outlined
             />
           </div>
-
           <div class="col-12 col-md-6">
             <span class="text-base">Image</span>
-            <q-input
+            <q-file
               @update:model-value="handleImageUpload"
               type="file"
-              v-model="newArticle.image"
               accept=".jpeg, .jpg , .png"
               dense
+              label="Select Image"
               outlined
+              v-model="newArticle.image"
               :rules="[checkFile]"
+              clearable
             />
-            <div class="w-[60px] h-[60px] overflow-hidden">
+            <div
+              v-if="imagePreview && newArticle.image"
+              class="w-[60px] h-[60px] overflow-hidden"
+            >
               <img
                 class="w-100 h-100 object-cover"
-                v-if="imagePreview"
                 :src="imagePreview"
                 alt="Image Preview"
               />
@@ -59,7 +62,9 @@
         <q-btn
           label="Save"
           :loading="isLoading"
-          :disable="!newArticle.name || !newArticle.category"
+          :disable="
+            !newArticle.name || !newArticle.category || isImageSizeGreater()
+          "
           color="btn-primary"
           @click="addNewArticle"
         />
@@ -73,45 +78,37 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
 import { newArticleApi } from 'src/services/article-management';
 import ArticleCategoryModal from 'src/components/article-management/ArticleCategoryModal.vue';
+import { INewArticleData } from 'src/interfaces/article-management';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 const router = useRouter();
 const isCategoryModalVisible = ref(false);
 const isLoading = ref(false);
-const defaultArticleValue = {
-  name: '',
-  category: '',
-  image: '',
-  description: '',
-  categoryId: -1,
-};
-
-const checkFile = (value: any) => {
-  if (value[0]) {
+const checkFile = (value: File) => {
+  if (value) {
     const allowedFormats = ['image/jpeg', 'image/jpg', 'image/png'];
-    const isValidFormat = allowedFormats.includes(value[0].type);
+    const isValidFormat = allowedFormats.includes(value.type);
     if (!isValidFormat) {
       return 'Invalid file format. Only jpeg, jpg, and png allowed.';
     }
-    const isValidSize = value[0].size <= 2 * 1024 * 1024;
+    const isValidSize = value.size <= 2 * 1024 * 1024;
     if (!isValidSize) {
       return 'Selected file must be less than or equal to 2MB';
     }
   }
   return true;
 };
-interface INewArticleData {
-  name: string;
-  category: string;
-  image: any;
-  description: string;
-  categoryId: number;
-}
 const $q = useQuasar();
 const imagePreview = ref('');
+const defaultArticleValue: INewArticleData = {
+  name: '',
+  category: '',
+  image: null,
+  description: '',
+  categoryId: -1,
+};
 const newArticle = ref<INewArticleData>(defaultArticleValue);
 const addCategory = () => {
   isCategoryModalVisible.value = true;
@@ -128,20 +125,24 @@ const handleSelectedCategory = (selectedCategory: {
   newArticle.value.categoryId = selectedCategory.categoryId;
   isCategoryModalVisible.value = false;
 };
-
-const handleImageUpload = (event: any) => {
-  const file = event?.[0];
-  if (file) {
-    if (checkFile(file)) {
-      newArticle.value.image = file;
-      imagePreview.value = URL.createObjectURL(file);
-    } else {
-      newArticle.value.image = null;
-      imagePreview.value = '';
+const isImageSizeGreater = () => {
+  if (newArticle.value.image) {
+    if (newArticle.value.image.size > 2 * 1024 * 1024) {
+      return true;
     }
   }
+  return false;
 };
 
+const handleImageUpload = (file: File | null) => {
+  if (imagePreview.value !== '') {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+  if (file) {
+    const url = URL.createObjectURL(file);
+    imagePreview.value = url;
+  }
+};
 async function addNewArticle() {
   if (isLoading.value) return;
 
@@ -149,9 +150,8 @@ async function addNewArticle() {
   let base64Image;
   try {
     const { image, categoryId, name, description } = newArticle.value;
-
-    if (image && image[0]) {
-      base64Image = await convertToBase64(image[0]);
+    if (image) {
+      base64Image = await convertToBase64(image);
     }
     const res = await newArticleApi({
       categoryId,
@@ -159,7 +159,6 @@ async function addNewArticle() {
       description,
       image: base64Image,
     });
-
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -169,25 +168,20 @@ async function addNewArticle() {
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
-
     if (isPosError(e)) {
       message = e.message;
     }
-
     $q.notify({
       message,
       color: 'red',
       icon: 'error',
     });
   }
-
   isLoading.value = false;
 }
-
 const convertToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
-
     fileReader.onload = () => {
       if (fileReader.result && typeof fileReader.result === 'string') {
         const resultParts = fileReader.result.split(',');

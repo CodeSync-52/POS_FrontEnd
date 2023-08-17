@@ -125,8 +125,8 @@ export const routeList = [
     },
   },
   {
-    path: '/article/:id',
-    component: () => import('pages/article/SelectedArticleDetails.vue'),
+    path: '/article/add-new',
+    component: () => import('pages/article/AddNewArticle.vue'),
     meta: {
       module: EUserModules.ArticleManagement,
     },

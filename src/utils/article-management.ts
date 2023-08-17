@@ -57,7 +57,6 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     required: true,
     label: 'M.Stock',
     align: 'left',
-    sortable: true,
     field: (row) => row.masterStock,
   },
   {
@@ -66,20 +65,5 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     label: 'Action',
     align: 'left',
     field: (row) => row.action,
-  },
-];
-export const ArticleRow: IArticleData[] = [
-  {
-    productId: 1,
-    name: 'string',
-    productImage: 'string',
-    categoryName: 'string',
-    wholeSalePrice: 1,
-    retailPrice: 1,
-    costPrice: 1,
-    status: 'string',
-    description: 'string',
-    masterStock: null,
-    action: 'string',
   },
 ];
