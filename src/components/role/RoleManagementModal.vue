@@ -291,19 +291,19 @@ const updateGroupedPermissions = (
   newVal: boolean,
   permissionType: EActionPermissions
 ) => {
-  roleData.value.forEach((module) => {
+  roleData.value = roleData.value.map((moduleItem) => {
+    const moduleNew = { ...moduleItem };
     if (permissionType === EActionPermissions.View && !newVal) {
-      module.actionIds = [];
-      return;
-    }
-    if (newVal && !module.actionIds.includes(permissionType)) {
-      module.actionIds.push(permissionType);
+      moduleNew.actionIds = [];
+    } else if (newVal && !moduleNew.actionIds.includes(permissionType)) {
+      moduleNew.actionIds.push(permissionType);
     } else if (!newVal) {
-      const index = module.actionIds.indexOf(permissionType);
+      const index = moduleNew.actionIds.indexOf(permissionType);
       if (index !== -1) {
-        module.actionIds.splice(index, 1);
+        moduleNew.actionIds.splice(index, 1);
       }
     }
+    return moduleNew;
   });
 };
 
