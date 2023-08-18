@@ -126,6 +126,7 @@ import {
 import { useQuasar } from 'quasar';
 import { IGenericResponse } from 'src/interfaces';
 import { isPosError } from 'src/utils';
+import { useAuthStore } from 'src/stores';
 
 interface IProps {
   isViewProfile: boolean;
@@ -198,6 +199,7 @@ const props = withDefaults(defineProps<IProps>(), {
 });
 const closeModal = ref(false);
 const emit = defineEmits(['close-modal']);
+const authStore = useAuthStore();
 const isLoading = ref<boolean>(false);
 const $q = useQuasar();
 const isButtonDisabled = computed(() => {
@@ -238,6 +240,7 @@ async function callingSaveNewPasswordApi() {
     passwordConfirmation.value.confirmPass = '';
     passwordConfirmation.value.newPass = '';
     passwordConfirmation.value.oldPass = '';
+    authStore.logoutUser();
   } catch (e) {
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {

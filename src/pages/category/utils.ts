@@ -28,12 +28,20 @@ export const categoryColumn: QTableColumn<ICategoryData>[] = [
 ];
 export const categoryDetailsColumn: QTableColumn<ICategoryDetailsData>[] = [
   {
-    name: 'label',
+    name: 'name',
     required: true,
-    label: 'Label',
+    label: 'Name',
     align: 'left',
     sortable: true,
     field: (row) => row.name,
+  },
+  {
+    name: 'status',
+    required: true,
+    label: 'Status',
+    align: 'left',
+    sortable: true,
+    field: (row) => row.status,
   },
   { name: 'action', label: 'Action', field: 'action', align: 'left' },
 ];

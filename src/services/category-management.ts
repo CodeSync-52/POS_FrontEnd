@@ -2,6 +2,7 @@ import {
   ICategoryData,
   ICategoryDetailsData,
   IGenericResponse,
+  IArticleCategory,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -15,10 +16,20 @@ export const changeCategoryStatus = async (categoryId: number) => {
   });
   return res;
 };
+export const changeSubcategoryStatus = async (categoryId: number) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: 'api/Category/subcategory/changestatus',
+    params: {
+      categoryId,
+    },
+  });
+  return res;
+};
 export const createCategory = async (name: string) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
-    url: 'api/Category/create',
+    url: 'api/Category/add',
     data: {
       name,
       description: '',
@@ -35,7 +46,7 @@ export const createSubcategory = async ({
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
-    url: 'api/Category/subcategory/create',
+    url: 'api/Category/subcategory/add',
     data: {
       name,
       description: '',
@@ -101,8 +112,16 @@ export const updateCategory = async ({
     data: {
       name,
       description: '',
-      status: 0,
     },
+  });
+  return res;
+};
+export const categoryTreeList = async () => {
+  const res = await makeApiCall<
+    IGenericResponse<{ categoryTree: IArticleCategory[] }>
+  >({
+    method: 'GET',
+    url: 'api/Category/tree',
   });
   return res;
 };

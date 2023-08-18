@@ -2,22 +2,18 @@
   <q-card class="q-pa-md min-w-[400px]">
     <q-card-section class="q-pa-none">
       <div class="text-h6 q-mb-md">
-        <span> {{ variantAction }} Variant</span>
+        <span> {{ variantAction }} Variant Group</span>
       </div>
       <q-input
-        v-if="variantAction !== 'Delete'"
         dense
         v-model="variantName"
         outlined
         label="Name"
         color="btn-primary"
       />
-      <div v-else class="text-center">
-        <span>Are you sure you want to delete the selected Record?</span>
-      </div>
     </q-card-section>
     <q-card-actions class="q-pb-none q-px-none" align="right">
-      <div v-if="variantAction !== 'Delete'" class="row justify-end gap-4">
+      <div class="row justify-end gap-4">
         <q-btn
           label="Cancel"
           flat
@@ -35,18 +31,6 @@
           color="signature"
           class="bg-btn-primary"
           @click="saveNewVariant"
-        />
-      </div>
-      <div v-else class="row justify-end">
-        <q-btn label="Cancel" flat unelevated color="signature" v-close-popup />
-        <q-btn
-          label="Delete"
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-          flat
-          unelevated
-          color="signature"
-          :loading="isLoading"
-          @click="deleteVariant"
         />
       </div>
     </q-card-actions>
@@ -68,8 +52,12 @@ const props = withDefaults(defineProps<IProps>(), {
   selectedRowId: '-1',
 });
 const emit = defineEmits<{
-  (event: 'name-changed', newName: string, callback: () => void): Promise<void>;
-  (event: 'delete-record', id: string, callback: () => void): Promise<void>;
+  (
+    event: 'name-changed',
+    name: string,
+    variantAction: string,
+    callback: () => void
+  ): Promise<void>;
 }>();
 onMounted(() => {
   variantName.value = props.variant;
@@ -81,15 +69,7 @@ async function saveNewVariant() {
   await emit(
     'name-changed',
     variantName.value,
-    () => (isLoading.value = false)
-  );
-}
-async function deleteVariant() {
-  if (isLoading.value) return;
-  isLoading.value = true;
-  await emit(
-    'delete-record',
-    props.selectedRowId,
+    props.variantAction,
     () => (isLoading.value = false)
   );
 }

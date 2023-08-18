@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -36,10 +36,28 @@
               size="sm"
               @click="handleManageClick(props.row.categoryId)"
               label="Manage"
+              :disable="
+                !authStore.checkUserHasPermission(
+                  EUserModules.CategoryManagement,
+                  EActionPermissions.View
+                )
+              "
             />
           </q-td>
         </template>
-        <template v-slot:body-cell-status="props">
+        <template
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Update
+            ) &&
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.Delete
+            )
+          "
+          v-slot:body-cell-status="props"
+        >
           <q-td :props="props">
             <q-btn
               size="sm"
@@ -50,6 +68,18 @@
               @click="handleShowEditStatusPopup(props.row)"
             />
           </q-td>
+        </template>
+
+        <template
+          v-slot:header-cell-status
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
+              EActionPermissions.View
+            )
+          "
+        >
+          <q-th></q-th>
         </template>
         <template
           v-slot:header-cell-action
@@ -68,12 +98,12 @@
         </template>
         <template
           v-if="
-            !authStore.checkUserHasPermission(
-              EUserModules.UserManagment,
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
               EActionPermissions.Update
             ) &&
-            !authStore.checkUserHasPermission(
-              EUserModules.UserManagment,
+            authStore.checkUserHasPermission(
+              EUserModules.CategoryManagement,
               EActionPermissions.Delete
             )
           "
@@ -132,6 +162,7 @@ import {
   changeCategoryStatus,
   categoryListApi,
   createCategory,
+  updateCategory,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 const router = useRouter();
@@ -158,6 +189,7 @@ onMounted(() => {
 });
 const onEditButtonClick = (row: ICategoryData) => {
   selectedCategory.value = row.name;
+  selectedRowData.value = row;
   CategoryAction.value = 'Edit';
   isCategoryModalVisible.value = true;
 };
@@ -179,62 +211,102 @@ const updateOrAddCategory = async (
   action: string,
   callback: () => void
 ) => {
-  if (action === 'Edit') return;
   if (isLoading.value) return;
   isLoading.value = true;
-  try {
-    const res = await createCategory(newName);
-    if (res.type === 'Success') {
+  if (action === 'Edit' && selectedRowData.value) {
+    try {
+      const res = await updateCategory({
+        categoryId: selectedRowData.value?.categoryId,
+        name: newName,
+      });
+      if (res.type === 'Success') {
+        $q.notify({
+          message: res.message,
+          color: 'green',
+        });
+        if (selectedRowData.value) {
+          selectedRowData.value.name = newName;
+        }
+      }
+    } catch (e) {
+      let message = 'Unexpected Error Occurred';
+      if (isPosError(e)) {
+        message = e.message;
+      }
       $q.notify({
-        message: res.message,
-        color: 'green',
+        message,
+        color: 'red',
+        icon: 'error',
       });
     }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
+  } else {
+    try {
+      const res = await createCategory(newName);
+      if (res.type === 'Success') {
+        $q.notify({
+          message: res.message,
+          color: 'green',
+        });
+      }
+    } catch (e) {
+      let message = 'Unexpected Error Occurred';
+      if (isPosError(e)) {
+        message = e.message;
+      }
+      $q.notify({
+        message,
+        color: 'red',
+        icon: 'error',
+      });
     }
-    $q.notify({
-      message,
-      color: 'red',
-      icon: 'error',
-    });
   }
   isLoading.value = false;
   callback();
   isCategoryModalVisible.value = false;
-  getCategoryList();
+  if (action !== 'Edit') {
+    getCategoryList();
+  }
   selectedRowData.value = null;
 };
-const updatingStatus = async (updatedStatus: string) => {
+const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   if (updatedStatus === selectedStatus.value) {
     isCategoryStatusModalVisible.value = false;
     return;
   }
   if (isLoading.value) return;
   isLoading.value = true;
-  const categoryId = 1;
-  try {
-    const res = await changeCategoryStatus(categoryId);
-    if (res.type === 'Success') {
+  if (selectedRowData?.value) {
+    try {
+      const res = await changeCategoryStatus(
+        selectedRowData?.value?.categoryId
+      );
+      if (res.type === 'Success') {
+        $q.notify({
+          message: res.message,
+          color: 'green',
+        });
+        if (selectedStatus.value === 'Active' && selectedRowData.value) {
+          selectedRowData.value.status = 'InActive';
+        } else if (
+          selectedStatus.value === 'InActive' &&
+          selectedRowData.value
+        ) {
+          selectedRowData.value.status = 'Active';
+        }
+      }
+    } catch (e) {
+      let message = 'Unexpected Error Occurred';
+      if (isPosError(e)) {
+        message = e.message;
+      }
       $q.notify({
-        message: res.message,
-        color: 'green',
+        message,
+        color: 'red',
+        icon: 'error',
       });
-      getCategoryList();
     }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      color: 'red',
-      icon: 'error',
-    });
   }
+  callback();
   isLoading.value = false;
   isCategoryStatusModalVisible.value = false;
 };

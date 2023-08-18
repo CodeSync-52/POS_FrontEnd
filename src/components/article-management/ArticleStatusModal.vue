@@ -1,7 +1,7 @@
 <template>
   <q-card class="q-pa-md full-width">
     <q-card-section>
-      <div class="text-h6 q-mb-md"><span> Edit Category Status </span></div>
+      <div class="text-h6 q-mb-md"><span> Edit Article Status </span></div>
       <div class="column">
         <q-radio
           v-model="statusVal"
