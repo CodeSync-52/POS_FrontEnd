@@ -240,11 +240,14 @@ const props = withDefaults(defineProps<IProps>(), {
 onMounted(() => {
   roleData.value = props.roleDataProp;
 });
-
+const isInitialied = ref(false);
 watch(
   props.roleDataProp,
   (newVal) => {
-    roleData.value = [...newVal];
+    if (!isInitialied.value) {
+      isInitialied.value = true;
+      roleData.value = [...newVal];
+    }
   },
   {
     deep: true,
@@ -291,7 +294,7 @@ const updateGroupedPermissions = (
   newVal: boolean,
   permissionType: EActionPermissions
 ) => {
-  roleData.value = roleData.value.map((moduleItem) => {
+  const newData = roleData.value.map((moduleItem) => {
     const moduleNew = { ...moduleItem };
     if (permissionType === EActionPermissions.View && !newVal) {
       moduleNew.actionIds = [];
@@ -305,6 +308,7 @@ const updateGroupedPermissions = (
     }
     return moduleNew;
   });
+  roleData.value = newData;
 };
 
 const handleUpdateToggle = (
