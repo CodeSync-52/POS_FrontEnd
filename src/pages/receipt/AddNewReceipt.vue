@@ -33,41 +33,38 @@
             </div>
           </div>
         </div>
-        <q-table
+        <!-- <q-table
           tabindex="0"
           :row="selectedArticleData"
           row-key="articleId"
           :columns="selectedArticleColumn"
-        />
+        /> -->
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
         <q-btn label="Cancel" color="btn-secondary" @click="cancelNewReceipt" />
         <q-btn label="Save" :loading="isLoading" color="btn-primary" />
       </q-card-actions>
     </q-card>
+    <q-dialog v-model="isArticleListModalVisible">
+      <article-list-modal />
+    </q-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { selectedArticleColumn } from 'src/utils';
-import { ISelectedArticleData } from 'src/interfaces';
+import ArticleListModal from 'src/components/receipt-management/ArticleListModal.vue';
+// import { ISelectedArticleData } from 'src/interfaces';
+// import { selectedArticleColumn } from 'src/utils';
 // import { isPosError } from 'src/utils';
 // import { useQuasar } from 'quasar';
 const router = useRouter();
 const isLoading = ref(false);
 const isArticleListModalVisible = ref(false);
-const articleData: ISelectedArticleData[] = [
-  {
-    article: 'Shoes',
-    articleId: 1,
-    quantity: 200,
-  },
-];
 const handleSelectArticle = () => {
   isArticleListModalVisible.value = true;
 };
-const selectedArticleData = ref<ISelectedArticleData[]>(articleData);
+// const selectedArticleData = ref<ISelectedArticleData[]>([]);
 // const $q = useQuasar();
 const newReceipt = ref({
   userId: null,

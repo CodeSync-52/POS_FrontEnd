@@ -75,21 +75,22 @@
         :rows="receiptData"
         :columns="receiptColumn"
         v-model:pagination="pagination"
-        @request="() => console.log('ze pag')"
+        @request="getReceiptList"
       >
-        <template v-slot:header-cell-action>
-          <q-th
-            v-if="
-              !authStore.checkUserHasPermission(
-                EUserModules.ReceiptManagement,
-                EActionPermissions.Update
-              ) &&
-              !authStore.checkUserHasPermission(
-                EUserModules.ReceiptManagement,
-                EActionPermissions.Delete
-              )
-            "
-          ></q-th>
+        <template
+          v-slot:header-cell-action
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.ReceiptManagement,
+              EActionPermissions.Update
+            ) &&
+            !authStore.checkUserHasPermission(
+              EUserModules.ReceiptManagement,
+              EActionPermissions.Delete
+            )
+          "
+        >
+          <q-th></q-th>
         </template>
         <template v-slot:body-cell-action="props">
           <q-td
@@ -124,8 +125,8 @@
                 v-if="
                   authStore.checkUserHasPermission(
                     EUserModules.ReceiptManagement,
-                    EActionPermissions.Delete
-                  ) && props.row.productStatus === 'Cancelled'
+                    EActionPermissions.Update
+                  ) && props.row.purchaseStatus !== 'Cancelled'
                 "
                 size="sm"
                 flat
@@ -232,7 +233,6 @@ const handleCancelReceipt = async (selectedRowData: IReceiptData) => {
 const getReceiptList = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
-  console.log(data);
   if (isLoading.value) return;
   isLoading.value = true;
   if (data) {
