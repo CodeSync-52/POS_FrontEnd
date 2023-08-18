@@ -94,6 +94,29 @@ const essentialLinks = [
     ],
   },
   {
+    title: 'Product Management',
+    caption: 'quasar.dev',
+    icon: 'local_florist',
+    children: [
+      {
+        title: EUserModules.VariantManagement,
+        path: '/variant',
+      },
+      {
+        title: EUserModules.CategoryManagement,
+        path: '/category',
+      },
+      {
+        title: EUserModules.ArticleManagement,
+        path: '/article',
+      },
+      {
+        title: EUserModules.InventoryManagement,
+        path: '/inventory',
+      },
+    ],
+  },
+  {
     title: 'Sales Operations',
     icon: 'receipt',
     children: [
@@ -123,29 +146,7 @@ const essentialLinks = [
       },
     ],
   },
-  {
-    title: 'Product Management',
-    caption: 'quasar.dev',
-    icon: 'local_florist',
-    children: [
-      {
-        title: EUserModules.VariantManagement,
-        path: '/variant',
-      },
-      {
-        title: EUserModules.CategoryManagement,
-        path: '/category',
-      },
-      {
-        title: EUserModules.ArticleManagement,
-        path: '/article',
-      },
-      {
-        title: EUserModules.InventoryManagement,
-        path: '/inventory',
-      },
-    ],
-  },
+
   {
     title: 'Shop Management',
     caption: 'quasar.dev',
