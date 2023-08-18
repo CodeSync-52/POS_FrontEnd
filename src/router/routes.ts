@@ -132,6 +132,13 @@ export const routeList = [
     },
   },
   {
+    path: '/article/add-new',
+    component: () => import('pages/article/AddNewArticle.vue'),
+    meta: {
+      module: EUserModules.ArticleManagement,
+    },
+  },
+  {
     path: '/shop',
     component: () => import('src/pages/shop/ShopManagement.vue'),
     meta: {

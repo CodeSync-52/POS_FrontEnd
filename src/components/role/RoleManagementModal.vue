@@ -240,11 +240,14 @@ const props = withDefaults(defineProps<IProps>(), {
 onMounted(() => {
   roleData.value = props.roleDataProp;
 });
-
+const isInitialied = ref(false);
 watch(
   props.roleDataProp,
   (newVal) => {
-    roleData.value = [...newVal];
+    if (!isInitialied.value) {
+      isInitialied.value = true;
+      roleData.value = [...newVal];
+    }
   },
   {
     deep: true,
@@ -291,20 +294,21 @@ const updateGroupedPermissions = (
   newVal: boolean,
   permissionType: EActionPermissions
 ) => {
-  roleData.value.forEach((module) => {
+  const newData = roleData.value.map((moduleItem) => {
+    const moduleNew = { ...moduleItem };
     if (permissionType === EActionPermissions.View && !newVal) {
-      module.actionIds = [];
-      return;
-    }
-    if (newVal && !module.actionIds.includes(permissionType)) {
-      module.actionIds.push(permissionType);
+      moduleNew.actionIds = [];
+    } else if (newVal && !moduleNew.actionIds.includes(permissionType)) {
+      moduleNew.actionIds.push(permissionType);
     } else if (!newVal) {
-      const index = module.actionIds.indexOf(permissionType);
+      const index = moduleNew.actionIds.indexOf(permissionType);
       if (index !== -1) {
-        module.actionIds.splice(index, 1);
+        moduleNew.actionIds.splice(index, 1);
       }
     }
+    return moduleNew;
   });
+  roleData.value = newData;
 };
 
 const handleUpdateToggle = (

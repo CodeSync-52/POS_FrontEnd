@@ -2,6 +2,7 @@ import {
   ICategoryData,
   ICategoryDetailsData,
   IGenericResponse,
+  IArticleCategory,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -112,6 +113,15 @@ export const updateCategory = async ({
       name,
       description: '',
     },
+  });
+  return res;
+};
+export const categoryTreeList = async () => {
+  const res = await makeApiCall<
+    IGenericResponse<{ categoryTree: IArticleCategory[] }>
+  >({
+    method: 'GET',
+    url: 'api/Category/tree',
   });
   return res;
 };
