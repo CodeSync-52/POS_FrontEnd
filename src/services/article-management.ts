@@ -25,7 +25,7 @@ export const newArticleApi = async ({
   return res;
 };
 export const articleListApi = async ({
-  PageNumber = 50,
+  PageNumber = 1,
   PageSize = 50,
 }: {
   PageNumber: number;

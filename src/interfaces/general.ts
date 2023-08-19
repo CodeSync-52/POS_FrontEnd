@@ -124,3 +124,11 @@ export interface IGenericResponse<T = unknown> {
 
 export const checkNameIsModule = (e: any): e is EUserModules =>
   Object.values(EUserModules).includes(e);
+
+export interface IPagination {
+  sortBy: string;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+  rowsNumber: number;
+}
