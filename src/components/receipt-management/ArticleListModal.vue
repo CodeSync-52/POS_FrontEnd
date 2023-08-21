@@ -11,19 +11,21 @@
           </div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
-        <div v-if="articleList.length">
-          <div
-            v-for="(article, index) in articleList"
-            :key="article.categoryId"
-          >
+        <div class="max-h-[250px] overflow-y-auto" v-if="articleList.length">
+          <div v-for="article in articleList" :key="article.productId">
             <q-checkbox
               size="sm"
-              color="btn-primary"
-              v-model="selectedArticles[index]"
+              :model-value="isArtickeChecked(article.productId)"
+              @update:model-value="
+                updateArticleChecked(article.productId, article.name)
+              "
               :label="article.name"
+              color="btn-primary"
+              :val="article.productId"
             />
           </div>
         </div>
+
         <div v-else class="text-center">
           <span>No Article Available</span>
         </div>
@@ -42,6 +44,8 @@
         <q-btn
           flat
           label="Save"
+          :disabled="selectedArticles.length === 0"
+          @click="handleSave"
           unelevated
           color="signature"
           class="bg-btn-primary hover:bg-btn-primary-hover"
@@ -55,13 +59,43 @@ import { useQuasar } from 'quasar';
 import { IArticleData } from 'src/interfaces';
 import { articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, defineEmits, computed } from 'vue';
 const $q = useQuasar();
+
 onMounted(() => {
   getArticleList();
 });
+const emit = defineEmits<{
+  (event: 'selected-data', data: { productId: number; name: string }[]): void;
+}>();
+const handleSave = () => {
+  emit('selected-data', selectedArticles.value);
+};
+const selectedArticles = ref<{ productId: number; name: string }[]>([]);
+
+const updateArticleChecked = (id: number, name: string) => {
+  const existingArticleIndex = selectedArticles.value.findIndex(
+    (x) => x.productId === id
+  );
+
+  if (existingArticleIndex !== -1) {
+    // If the article already exists, remove it
+    selectedArticles.value.splice(existingArticleIndex, 1);
+  } else {
+    // If the article doesn't exist, add it
+    selectedArticles.value.push({ productId: id, name });
+  }
+};
+
+const isArtickeChecked = (productId: number) => {
+  if (selectedArticles.value.find((x) => x.productId === productId)) {
+    return true;
+  }
+  return false;
+};
+
 const isFetchingArticleList = ref(false);
-const selectedArticles = ref<boolean[]>([false]);
+
 const articleList = ref<IArticleData[]>([]);
 const getArticleList = async () => {
   if (isFetchingArticleList.value) return;

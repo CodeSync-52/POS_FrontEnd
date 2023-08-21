@@ -58,8 +58,12 @@
         </template>
         <template v-slot:body-cell-image="props">
           <q-td :props="props">
-            <div class="w-10 h-5">
-              <img :src="props.row.productImage" alt="img" />
+            <div class="w-10 h-5 overflow-hidden">
+              <img
+                class="w-100 h-100 object-cover"
+                :src="getImageUrl(props.row.productImage)"
+                alt="img"
+              />
             </div>
           </q-td>
         </template>
@@ -171,6 +175,11 @@ const pagination = ref({
 onMounted(() => {
   getArticleList();
 });
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+};
 const handleEditArticlePopup = (selectedRow: IArticleData) => {
   selectedRowData.value = selectedRow;
   isEditArticleModalVisible.value = true;

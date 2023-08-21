@@ -100,6 +100,7 @@ const checkFile = (value: File) => {
   }
   return true;
 };
+
 const $q = useQuasar();
 const imagePreview = ref('');
 const defaultArticleValue: INewArticleData = {
