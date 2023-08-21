@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <div class="text-xl text-center md:text-left font-medium mb-4">
+    <div class="text-xl text-center md:text-left font-medium mb-4 mt-2">
       <span>Add New Receipt</span>
     </div>
     <q-card>
@@ -13,6 +13,7 @@
               min="1"
               type="number"
               label="User Id"
+              color="btn-primary"
               dense
               outlined
             />
@@ -21,7 +22,13 @@
             <div class="q-gutter-y-xs">
               <div class="row justify-between items-end">
                 <span class="text-base">Article</span>
-                <q-btn icon="add" rounded dense @click="handleSelectArticle" />
+                <q-btn
+                  color="btn-primary"
+                  icon="add"
+                  rounded
+                  dense
+                  @click="handleSelectArticle"
+                />
               </div>
               <q-input
                 v-model="newReceipt.selectedArticle"
@@ -41,7 +48,12 @@
         /> -->
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
-        <q-btn label="Cancel" color="btn-secondary" @click="cancelNewReceipt" />
+        <q-btn
+          label="Cancel"
+          color="Signature"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+          @click="cancelNewReceipt"
+        />
         <q-btn label="Save" :loading="isLoading" color="btn-primary" />
       </q-card-actions>
     </q-card>
