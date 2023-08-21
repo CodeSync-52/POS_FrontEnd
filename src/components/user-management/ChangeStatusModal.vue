@@ -24,7 +24,6 @@
           color="btn-primary"
           val="InActive"
           label="Active"
-         
         />
       </div>
     </q-card-section>

@@ -1,5 +1,9 @@
 import { makeApiCall } from 'src/utils';
-import { IArticleData, IGenericResponse, IUseArticleData } from 'src/interfaces';
+import {
+  IArticleData,
+  IGenericResponse,
+  IUseArticleData,
+} from 'src/interfaces';
 
 export const newArticleApi = async ({
   name,

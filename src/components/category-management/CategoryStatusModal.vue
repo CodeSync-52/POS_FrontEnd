@@ -7,7 +7,6 @@
           v-model="statusVal"
           val="Active"
           label="Active"
-          
           color="btn-primary"
         />
         <q-radio

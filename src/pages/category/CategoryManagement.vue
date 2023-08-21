@@ -38,7 +38,6 @@
               @click="handleManageClick(props.row.categoryId)"
               label="Manage"
               class="hover:text-btn-primary"
-              
               :disable="
                 !authStore.checkUserHasPermission(
                   EUserModules.CategoryManagement,
