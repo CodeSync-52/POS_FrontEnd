@@ -1,5 +1,3 @@
-import { _ } from 'app/dist/spa/assets/index.0d194373';
-
 export interface IReceiptData {
   purchaseId: number;
   userId: number;
@@ -9,14 +7,23 @@ export interface IReceiptData {
   createdDate: string;
   createdBy: null;
   updatedDate: string;
+  createdById: number;
   updatedBy: null;
   action?: string;
+  purchaseDetails: {
+    productId: number;
+    productName: string;
+    purchaseDetailId: number;
+    quantity: number;
+  }[];
 }
+
 export interface ISelectedArticleData {
   productId: number | null;
   quantity?: number | null;
-  name?: string;
+  productName?: string;
   action?: string;
+  purchaseDetailId?: number;
 }
 
 export interface IProductList {

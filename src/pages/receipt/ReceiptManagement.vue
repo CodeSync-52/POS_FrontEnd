@@ -118,6 +118,7 @@
                 flat
                 dense
                 unelevated
+                @click="router.push(`/receipt/${props.row.purchaseId}`)"
                 icon="edit"
                 color="bg-btn-secondary"
               />

@@ -64,7 +64,7 @@ export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
     required: true,
     label: 'Article',
     align: 'left',
-    field: (row) => row.name,
+    field: (row) => row.productName,
   },
   {
     name: 'quantity',

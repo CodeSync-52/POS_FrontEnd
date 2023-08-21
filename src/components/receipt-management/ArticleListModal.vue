@@ -55,24 +55,34 @@
   </q-card>
 </template>
 <script lang="ts" setup>
-import { useQuasar } from 'quasar';
 import { IArticleData } from 'src/interfaces';
-import { articleListApi } from 'src/services';
-import { isPosError } from 'src/utils';
-import { onMounted, ref, defineEmits, computed } from 'vue';
-const $q = useQuasar();
+import { onMounted, ref } from 'vue';
 
 onMounted(() => {
-  getArticleList();
+  if (props.currentData) {
+    selectedArticles.value = [...props.currentData];
+  }
 });
 const emit = defineEmits<{
-  (event: 'selected-data', data: { productId: number; name: string }[]): void;
+  (
+    event: 'selected-data',
+    data: { productId: number; productName: string }[]
+  ): void;
 }>();
 const handleSave = () => {
   emit('selected-data', selectedArticles.value);
 };
+interface propTypes {
+  currentData: { productId: number; productName: string }[];
+  articleList: IArticleData[];
+  isFetchingArticleList: boolean;
+}
+const props = withDefaults(defineProps<propTypes>(), {
+  currentData: () => [],
+  articleList: () => [],
+  isFetchingArticleList: false,
+});
 const selectedArticles = ref<{ productId: number; name: string }[]>([]);
-
 const updateArticleChecked = (id: number, name: string) => {
   const existingArticleIndex = selectedArticles.value.findIndex(
     (x) => x.productId === id
@@ -83,7 +93,7 @@ const updateArticleChecked = (id: number, name: string) => {
     selectedArticles.value.splice(existingArticleIndex, 1);
   } else {
     // If the article doesn't exist, add it
-    selectedArticles.value.push({ productId: id, name });
+    selectedArticles.value.push({ productId: id, productName: name });
   }
 };
 
@@ -92,30 +102,5 @@ const isArtickeChecked = (productId: number) => {
     return true;
   }
   return false;
-};
-
-const isFetchingArticleList = ref(false);
-
-const articleList = ref<IArticleData[]>([]);
-const getArticleList = async () => {
-  if (isFetchingArticleList.value) return;
-  isFetchingArticleList.value = true;
-  try {
-    const res = await articleListApi({ PageNumber: 1, PageSize: 200 });
-    if (res.type === 'Success') {
-      articleList.value = res.data.items;
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      icon: 'error',
-      color: 'red',
-    });
-  }
-  isFetchingArticleList.value = false;
 };
 </script>

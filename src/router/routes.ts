@@ -76,6 +76,13 @@ export const routeList = [
     },
   },
   {
+    path: '/receipt/:id',
+    component: () => import('src/pages/receipt/AddNewReceipt.vue'),
+    meta: {
+      module: EUserModules.ReceiptManagement,
+    },
+  },
+  {
     path: '/bill-generation',
     component: () => import('src/pages/bill-generation/BillGeneration.vue'),
     meta: {

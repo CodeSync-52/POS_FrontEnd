@@ -1,4 +1,4 @@
-import { IGenericResponse, IReceiptData } from 'src/interfaces';
+import { IAddNewReceipt, IGenericResponse, IReceiptData } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const receiptListApi = async ({
   ToDate,
@@ -40,4 +40,55 @@ export const cancelReceiptApi = async (purchaseId: number) => {
     },
   });
   return res;
+};
+
+export const createNewReceipt = async ({ data }: { data: IAddNewReceipt }) => {
+  return makeApiCall({
+    url: 'api/Purchase/add',
+    method: 'POST',
+    data,
+  });
+};
+
+export const getReceiptData = async (purchaseId: string | number) => {
+  return makeApiCall<IGenericResponse<IReceiptData>>({
+    url: 'api/Purchase/detail',
+    params: {
+      purchaseId,
+    },
+  });
+};
+
+export const deleteReceiptRow = async (params: {
+  purchaseId: number | string;
+  purchaseDetailId: number | string;
+}) => {
+  return makeApiCall({
+    url: 'api/Purchase/detail/delete',
+    params,
+    method: 'PUT',
+  });
+};
+
+export const addReceiptRow = async (params: {
+  purchaseId: number | string;
+  productId: number;
+  quantity: number;
+}) => {
+  return makeApiCall<IGenericResponse<number>>({
+    url: 'api/Purchase/detail/add',
+    method: 'PUT',
+    params,
+  });
+};
+export const editReceiptRow = async (params: {
+  purchaseId: number | string;
+  purchaseDetailId: number | string;
+  quantity: number | string;
+}) => {
+  return makeApiCall({
+    url: 'api/Purchase/detail/update',
+    params,
+    method: 'PUT',
+  });
 };
