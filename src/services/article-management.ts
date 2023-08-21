@@ -1,5 +1,5 @@
 import { makeApiCall } from 'src/utils';
-import { IArticleData, IGenericResponse } from 'src/interfaces';
+import { IArticleData, IGenericResponse, IUseArticleData } from 'src/interfaces';
 
 export const newArticleApi = async ({
   name,
@@ -25,9 +25,11 @@ export const newArticleApi = async ({
   return res;
 };
 export const articleListApi = async ({
+  filterSearch,
   PageNumber = 1,
   PageSize = 50,
 }: {
+  filterSearch: IUseArticleData;
   PageNumber: number;
   PageSize: number;
 }) => {
@@ -42,6 +44,8 @@ export const articleListApi = async ({
     params: {
       PageNumber,
       PageSize,
+      Status: filterSearch.status,
+      Name: filterSearch.name,
     },
   });
   return res;

@@ -38,3 +38,7 @@ export interface INewArticleData {
   description: string;
   categoryId: number;
 }
+export interface IUseArticleData {
+  name: string | null;
+  status: string | null;
+}

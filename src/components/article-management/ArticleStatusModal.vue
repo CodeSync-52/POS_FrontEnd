@@ -8,6 +8,7 @@
           val="Active"
           label="Active"
           color="btn-primary"
+          
         />
         <q-radio
           v-model="statusVal"
@@ -43,7 +44,6 @@ import { ref, onMounted } from 'vue';
 interface IProps {
   selectedStatus: string;
 }
-
 const isLoading = ref<boolean>(false);
 const emit = defineEmits(['updated-status']);
 const statusVal = ref<string>('');
