@@ -5,24 +5,12 @@
         <div class="row q-col-gutter-md">
           <div class="col-12 col-md-6 mt-auto">
             <span class="text-base">Article Name</span>
-            <q-input
-              color="btn-primary"
-              v-model="newArticle.name"
-              label="Name"
-              dense
-              outlined
-            />
+            <q-input v-model="newArticle.name" label="Name" dense outlined />
           </div>
           <div class="col-12 col-md-6 q-gutter-y-sm">
             <div class="row justify-between items-end">
               <span class="text-base">Category</span>
-              <q-btn
-                color="btn-primary"
-                icon="add"
-                rounded
-                dense
-                @click="addCategory"
-              />
+              <q-btn icon="add" rounded dense @click="addCategory" />
             </div>
             <q-input
               v-model="newArticle.category"
@@ -40,7 +28,6 @@
               accept=".jpeg, .jpg , .png"
               dense
               label="Select Image"
-              color="btn-primary"
               outlined
               v-model="newArticle.image"
               :rules="[checkFile]"
@@ -65,19 +52,13 @@
               v-model="newArticle.description"
               dense
               label="Description"
-              color="btn-primary"
               outlined
             />
           </div>
         </div>
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
-        <q-btn
-          label="Cancel"
-          color="Signature"
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-          @click="cancelNewArticle"
-        />
+        <q-btn label="Cancel" color="btn-secondary" @click="cancelNewArticle" />
         <q-btn
           label="Save"
           :loading="isLoading"
@@ -119,6 +100,7 @@ const checkFile = (value: File) => {
   }
   return true;
 };
+
 const $q = useQuasar();
 const imagePreview = ref('');
 const defaultArticleValue: INewArticleData = {

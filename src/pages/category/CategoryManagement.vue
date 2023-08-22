@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -12,7 +12,6 @@
           )
         "
         label="Add New"
-        unelevated
         icon="add"
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
         @click="AddNewCategory"
@@ -37,7 +36,6 @@
               size="sm"
               @click="handleManageClick(props.row.categoryId)"
               label="Manage"
-              class="hover:text-btn-primary"
               :disable="
                 !authStore.checkUserHasPermission(
                   EUserModules.CategoryManagement,

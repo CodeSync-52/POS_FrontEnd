@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
 
@@ -29,29 +29,20 @@
         label="User ID"
         type="number"
         dense
-        color="btn-primary"
         outlined
       />
-      <q-input
-        color="btn-primary"
-        v-model="filterSearch.userName"
-        outlined
-        label="Name"
-        dense
-      />
+      <q-input v-model="filterSearch.userName" outlined label="Name" dense />
       <q-input
         v-model="filterSearch.startDate"
         label="From"
         type="date"
         outlined
-        color="btn-primary"
         dense
       />
       <q-input
         v-model="filterSearch.endDate"
         label="To"
         type="date"
-        color="btn-primary"
         outlined
         dense
       />
@@ -127,6 +118,7 @@
                 flat
                 dense
                 unelevated
+                @click="router.push(`/receipt/${props.row.purchaseId}`)"
                 icon="edit"
                 color="bg-btn-secondary"
               />
@@ -258,7 +250,7 @@ const getReceiptList = async (data?: {
     });
     if (res?.data) {
       receiptData.value = res.data.items;
-      pagination.value.rowsNumber = res.data.totalItemsCount;
+      pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
