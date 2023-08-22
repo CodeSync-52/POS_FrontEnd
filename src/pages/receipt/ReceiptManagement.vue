@@ -250,7 +250,7 @@ const getReceiptList = async (data?: {
     });
     if (res?.data) {
       receiptData.value = res.data.items;
-      pagination.value.rowsNumber = res.data.totalItemsCount;
+      pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

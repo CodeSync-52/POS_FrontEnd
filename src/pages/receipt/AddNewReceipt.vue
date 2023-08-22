@@ -226,7 +226,6 @@ const onDeleteButtonClick = async (row: ISelectedArticleData) => {
     (x) => x.productId === row.productId
   );
   if (tempIndex != -1 && row.productId !== null) {
-
     selectedArticleData.value.splice(tempIndex, 1);
     if (isEdit.value && row.purchaseDetailId !== undefined) {
       try {

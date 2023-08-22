@@ -16,7 +16,7 @@ export const receiptListApi = async ({
   PageSize: number;
 }) => {
   const res = await makeApiCall<
-    IGenericResponse<{ items: IReceiptData[]; totalItemsCount: number }>
+    IGenericResponse<{ items: IReceiptData[]; totalItemCount: number }>
   >({
     method: 'GET',
     url: 'api/Purchase/list',
