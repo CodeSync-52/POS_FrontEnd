@@ -21,12 +21,28 @@
       <q-table
         tabindex="0"
         :loading="isLoading"
-        :rows="variantData"
+        :rows="filteredRows"
         :columns="variantColumn"
         row-key="name"
+        :filter="filter"
         v-model:pagination="pagination"
         @request="getVariantGroupList"
       >
+        <template v-slot:top>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template
           v-if="
             !authStore.checkUserHasPermission(
@@ -146,7 +162,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { variantColumn } from 'src/pages/variant/utils';
@@ -176,6 +192,7 @@ const isVariantModalVisible = ref<boolean>(false);
 const variantData = ref<IVariantData[]>([]);
 const isVariantGroupStatusModalVisible = ref(false);
 const variantAction = ref<string>('');
+const filter = ref('');
 const isLoading = ref(false);
 const pagination = ref({
   sortBy: 'desc',
@@ -187,6 +204,11 @@ const pagination = ref({
 onMounted(() => {
   getVariantGroupList();
 });
+const filteredRows = computed(() =>
+  variantData.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  )
+);
 const getVariantGroupList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {

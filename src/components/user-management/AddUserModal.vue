@@ -16,7 +16,10 @@
       </div>
       <div class="flex flex-col gap-2">
         <div class="row px-2 q-col-gutter-x-sm">
-          <div class="col-md-4 w-full col-sm-12">
+          <div
+            :class="action !== 'Add New User' ? 'col-md-6' : 'col-md-4'"
+            class="w-full col-sm-12"
+          >
             <div>
               <q-input
                 dense
@@ -45,7 +48,10 @@
               />
             </div>
           </div>
-          <div class="col-md-4 w-full col-sm-12">
+          <div
+            :class="action !== 'Add New User' ? 'col-md-6' : 'col-md-4'"
+            class="col-md-4 w-full col-sm-12"
+          >
             <q-input
               dense
               outlined
@@ -90,7 +96,6 @@
                 dense
                 map-options
                 outlined
-                @focus="getCustomerListOption"
                 v-model="userData.customerGroupId"
                 @update:model-value="
                   userData.customerGroupId = $event.customerGroupId
@@ -169,6 +174,7 @@ onMounted(() => {
   if (props.selectedUser !== undefined) {
     userData.value = props.selectedUser;
   }
+  getCustomerListOption();
 });
 const $q = useQuasar();
 const isLoading = ref(false);

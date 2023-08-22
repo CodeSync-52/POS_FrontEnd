@@ -21,12 +21,28 @@
       <q-table
         tabindex="0"
         :loading="isLoading"
-        :rows="categoryData"
+        :rows="filteredRows"
+        :filter="filter"
         :columns="categoryColumn"
         row-key="name"
         v-model:pagination="pagination"
         @request="getCategoryList"
       >
+        <template v-slot:top>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template v-slot:body-cell-category="props">
           <q-td :props="props">
             <q-btn
@@ -145,7 +161,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import CategoryManagementModal from 'src/components/category-management/CategoryManagementModal.vue';
@@ -169,6 +185,11 @@ const router = useRouter();
 const $q = useQuasar();
 const authStore = useAuthStore();
 const selectedCategory = ref<string>('');
+const filteredRows = computed(() =>
+  categoryData.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  )
+);
 const selectedRowData = ref<ICategoryData | null>(null);
 const isCategoryStatusModalVisible = ref(false);
 const pageTitle = getRoleModuleDisplayName(EUserModules.CategoryManagement);
@@ -176,6 +197,7 @@ const isCategoryModalVisible = ref<boolean>(false);
 const categoryData = ref<ICategoryData[]>([]);
 const CategoryAction = ref<string>('');
 const selectedStatus = ref('');
+const filter = ref('');
 const isLoading = ref(false);
 const pagination = ref({
   sortBy: 'desc',
