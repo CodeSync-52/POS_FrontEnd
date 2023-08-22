@@ -17,13 +17,6 @@
         >
           <div class="accountInfoIcon relative flex">
             <div class="flex justify-center items-center">
-              <!-- <q-icon
-                name="account_circle"
-                size="lg"
-                color="grey"
-                class="cursor-pointer"
-                @click="handleShowAccountInfoDropdown"
-              /> -->
               <span
                 class="text-black rounded-full text-bold flex justify-center items-center bg-[#bab6b6] p-[10px] m-2"
               >

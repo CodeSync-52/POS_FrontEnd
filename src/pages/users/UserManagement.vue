@@ -31,7 +31,6 @@
         v-model="filterSearch.customerGroupId"
         :options="customerGroupList"
         map-options
-        @focus="getCustomerListOption"
         @update:model-value="
           filterSearch.customerGroupId = $event.customerGroupId
         "
@@ -334,6 +333,7 @@ const pagination = ref<{
 const filterSearch = ref<IUserFilterList>(defaultFilterValues);
 onMounted(() => {
   getUserList();
+  getCustomerListOption();
 });
 const handleChangeStatusPopup = (selectedRow: IUserResponse) => {
   selectedRowData.value.customerId = selectedRow.userId;
