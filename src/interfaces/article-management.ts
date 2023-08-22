@@ -18,7 +18,7 @@ export interface IArticleInfo {
   costPrice: number;
   description: string;
   name: string;
-  productImage: null | File;
+  productImage: null | File | undefined;
   retailPrice: number;
   wholeSalePrice: number;
 }

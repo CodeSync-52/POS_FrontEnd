@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <div class="text-xl text-center md:text-left font-medium mb-4">
-      <span>{{ isEdit ? 'Update Receupt' : 'Add New Receipt' }}</span>
+      <span>{{ isEdit ? 'Update Receipt' : 'Add New Receipt' }}</span>
     </div>
     <q-card>
       <q-card-section class="q-gutter-y-md">
