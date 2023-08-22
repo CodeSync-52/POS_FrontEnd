@@ -106,9 +106,14 @@
         </template>
         <template v-slot:body-cell-image="props">
           <q-td :props="props">
-            <div class="w-10 h-5">
+            <div
+              @click="handlePreviewImage(props.row.productImage)"
+              v-if="props.row.productImage"
+              class="cursor-pointer w-10 h-5 overflow-hidden"
+            >
               <img :src="props.row.productImage" alt="img" />
             </div>
+            <span v-else> none </span>
           </q-td>
         </template>
         <template
@@ -178,6 +183,15 @@
       @update-article="handleUpdateArticle"
     />
   </q-dialog>
+  <q-dialog v-model="isPreviewImageModalVisible">
+    <q-card class="min-w-[400px]">
+      <q-card-section>
+        <div class="w-full max-h-[350px] overflow-hidden">
+          <img :src="selectedPreviewImage" alt="image" />
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
@@ -211,6 +225,14 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.ArticleManagement);
 const ArticleData = ref<IArticleData[]>([]);
 const isLoading = ref(false);
 const isEditArticleModalVisible = ref(false);
+const selectedPreviewImage = ref('');
+const isPreviewImageModalVisible = ref(false);
+const handlePreviewImage = (selectedImage: string) => {
+  if (selectedImage) {
+    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    isPreviewImageModalVisible.value = true;
+  }
+};
 const defaultFilterValues = {
   name: null,
   status: null,
