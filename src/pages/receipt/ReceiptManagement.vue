@@ -165,12 +165,6 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.ReceiptManagement);
 const isLoading = ref(false);
 const router = useRouter();
 const receiptData = ref<IReceiptData[]>([]);
-const defaultFilterValues = {
-  userId: null,
-  userName: null,
-  startDate: null,
-  endDate: null,
-};
 const defaultPagination = {
   sortBy: 'desc',
   descending: false,
@@ -179,12 +173,18 @@ const defaultPagination = {
   rowsNumber: 0,
 };
 const pagination = ref<IPagination>(defaultPagination);
+
 const filterSearch = ref<{
   userId: null | number;
   userName: null | string;
   startDate: null | string;
   endDate: null | string;
-}>(defaultFilterValues);
+}>({
+  userId: null,
+  userName: null,
+  startDate: null,
+  endDate: null,
+});
 onMounted(() => {
   getReceiptList();
 });
