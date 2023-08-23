@@ -7,12 +7,30 @@ export interface IReceiptData {
   createdDate: string;
   createdBy: null;
   updatedDate: string;
+  createdById: number;
   updatedBy: null;
   action?: string;
+  purchaseDetails: {
+    productId: number;
+    productName: string;
+    purchaseDetailId: number;
+    quantity: number;
+  }[];
 }
+
 export interface ISelectedArticleData {
-  articleId: number;
-  quantity: number;
-  article: string;
+  productId: number | null;
+  quantity?: number | null;
+  productName?: string;
   action?: string;
+  purchaseDetailId?: number;
+}
+
+export interface IProductList {
+  productId: null | number;
+  quantity: null | number;
+}
+export interface IAddNewReceipt {
+  userId: number | null;
+  productList: IProductList[];
 }

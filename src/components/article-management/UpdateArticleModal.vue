@@ -7,13 +7,7 @@
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
-          <q-input
-            v-model="articleInfo.name"
-            color="btn-primary"
-            dense
-            label="Name"
-            outlined
-          />
+          <q-input v-model="articleInfo.name" dense label="Name" outlined />
         </div>
         <div class="col-12 col-sm-6">
           <q-input
@@ -21,15 +15,14 @@
             dense
             label="Description"
             outlined
-            color="btn-primary"
           />
         </div>
         <div class="col-12 col-sm-6">
           <q-file
             @update:model-value="handleImageUpload"
             v-model="articleInfo.productImage"
+            accept=".jpeg, .jpg , .png"
             dense
-            color="btn-primary"
             label="Select Image"
             clearable
             outlined
@@ -51,7 +44,6 @@
             v-model="articleInfo.wholeSalePrice"
             type="number"
             dense
-            color="btn-primary"
             label="Wholesale Price"
             outlined
           />
@@ -61,7 +53,6 @@
             v-model="articleInfo.retailPrice"
             type="number"
             dense
-            color="btn-primary"
             label="Retail Price"
             outlined
           />
@@ -71,7 +62,6 @@
             v-model="articleInfo.costPrice"
             type="number"
             dense
-            color="btn-primary"
             label="Cost Price"
             outlined
           />
@@ -83,7 +73,6 @@
               <q-btn
                 icon="add"
                 rounded
-                color="btn-primary"
                 dense
                 @click="isCategoryModalVisible = true"
               />
@@ -100,12 +89,7 @@
       </div>
     </q-card-section>
     <q-card-actions class="row justify-end">
-      <q-btn
-        label="Close"
-        class="bg-btn-cancel hover:bg-btn-cancel-hover"
-        color="Signature"
-        v-close-popup
-      />
+      <q-btn label="Close" color="btn-secondary" v-close-popup />
       <q-btn
         label="Save"
         color="btn-primary"
@@ -159,7 +143,42 @@ onMounted(() => {
     articleInfo.value.retailPrice = props.selectedRow.retailPrice;
     articleInfo.value.wholeSalePrice = props.selectedRow.wholeSalePrice;
   }
+  if (props.selectedRow?.productImage) {
+    const properBase64 = getImageUrl(props.selectedRow?.productImage);
+    if (properBase64) {
+      imagePreview.value = properBase64;
+    }
+    const image = base64ToFile(properBase64, 'image.jpeg');
+    articleInfo.value.productImage = image;
+  }
 });
+const getImageUrl = (base64Image: string) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+};
+function base64ToFile(
+  base64String: string | undefined,
+  fileName = 'image.jpeg'
+) {
+  // Split the base64 string to get content type and data
+  if (base64String) {
+    const parts = base64String.split(';base64,');
+    const contentType = parts[0].split(':')[1];
+    const base64Data = parts[1];
+
+    // Decode the base64 data
+    const decodedData = atob(base64Data);
+
+    // Create a Blob object from the decoded data
+    const blob = new Blob([decodedData], { type: contentType });
+
+    // Create a File object from the Blob
+    const file = new File([blob], fileName, { type: contentType });
+
+    return file;
+  }
+}
 const isImageSizeGreater = () => {
   if (articleInfo.value.productImage) {
     if (articleInfo.value.productImage.size > 2 * 1024 * 1024) {

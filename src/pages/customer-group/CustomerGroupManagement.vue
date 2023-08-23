@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4 mt-2"
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -15,12 +15,28 @@
     </div>
     <div class="q-pa-md">
       <q-table
-        :rows="customerGroupRows"
+        :rows="filteredRows"
         v-model:pagination="pagination"
         :columns="customerGroupColumns"
         row-key="name"
+        :filter="filter"
         @request="fetchingCustomerGroupList"
       >
+        <template v-slot:top>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
             <div class="flex gap-2 md:pr-4">
@@ -90,9 +106,8 @@
     </q-dialog>
   </div>
 </template>
-
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { QTableColumn, useQuasar } from 'quasar';
 import CustomerStatusModal from 'components/customer-group-management/CustomerStatusModal.vue';
 import AddUserModal from 'components/customer-group-management/AddCustomerModal.vue';
@@ -122,6 +137,7 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const filter = ref('');
 const updateOrAddCustomer = async (
   newName: string,
   action: string,
@@ -219,6 +235,11 @@ const customerGroupColumns: QTableColumn<ICustomerData>[] = [
   },
 ];
 const customerGroupRows = ref<ICustomerListResponse[]>([]);
+const filteredRows = computed(() =>
+  customerGroupRows.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  )
+);
 const selectedRowData = ref<ICustomerListResponse | null>(null);
 const selectedStatus = ref<string>('');
 const editStatusPopup = ref(false);

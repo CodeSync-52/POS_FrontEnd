@@ -62,13 +62,14 @@ export const getUserListApi = async (
     pageNumber = 1,
     pageSize = 50,
   }: {
-    filterSearch: IUserFilterList;
+    filterSearch?: IUserFilterList;
     name?: string | null;
     pageNumber?: number;
     pageSize?: number;
   },
-  controller: AbortController
+  controller?: AbortController
 ) => {
+  console.log(filterSearch);
   const res = await makeApiCall<
     IGenericResponse<{
       totalItemCount: number;
@@ -78,12 +79,12 @@ export const getUserListApi = async (
     method: 'GET',
     url: 'api/User/list',
     params: {
-      RoleName: filterSearch.role,
+      RoleName: filterSearch?.role,
       PageSize: pageSize,
-      Status: filterSearch.status,
+      Status: filterSearch?.status,
       PageNumber: pageNumber,
       Name: name,
-      CustomerGroupId: filterSearch.customerGroupId,
+      CustomerGroupId: filterSearch?.customerGroupId,
     },
     signal: controller?.signal,
   });

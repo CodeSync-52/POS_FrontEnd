@@ -23,7 +23,7 @@
           v-model="statusVal"
           color="btn-primary"
           val="InActive"
-          label="Active"
+          label="InActive"
         />
       </div>
     </q-card-section>
@@ -33,7 +33,7 @@
         label="Cancel"
         color="white"
         v-close-popup
-        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        class="bg-btn-primary hover:bg-btn-secondary"
       />
       <q-btn
         flat

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -12,59 +12,10 @@
           )
         "
         label="Add New"
-        unelevated
         icon="add"
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
         @click="AddNewArticle"
       />
-    </div>
-    <div
-      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
-    >
-      <q-input
-        dense
-        style="min-width: 200px"
-        outlined
-        map-options
-        v-model="filterSearch.name"
-        label="Name"
-        color="btn-primary"
-      />
-      <q-select
-        dense
-        style="min-width: 200px"
-        outlined
-        v-model="filterSearch.status"
-        @update:model-value="filterSearch.status = $event.value"
-        :options="statusOptions"
-        label="Status"
-        color="btn-primary"
-      />
-      <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
-        <q-btn
-          unelevated
-          :loading="isLoading"
-          color=""
-          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
-          icon="search"
-          label="Search"
-          @click="handleArticleFilter"
-        />
-        <q-btn
-          unelevated
-          color=""
-          :loading="isLoading"
-          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-          label="Clear"
-          @click="resetFilter"
-        />
-        <q-btn
-          unelevated
-          color=""
-          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-          label="Export as CSV"
-        />
-      </div>
     </div>
     <div class="py-4">
       <q-table
@@ -73,7 +24,8 @@
         :rows="ArticleData"
         :columns="ArticleColumn"
         row-key="name"
-        v-model:defaultpagination="defaultpagination"
+        v-model:pagination="pagination"
+        @request="getArticleList"
       >
         <template
           v-if="
@@ -111,7 +63,11 @@
               v-if="props.row.productImage"
               class="cursor-pointer w-10 h-5 overflow-hidden"
             >
-              <img :src="props.row.productImage" alt="img" />
+              <img
+                class="w-100 h-100 object-cover"
+                :src="getImageUrl(props.row.productImage)"
+                alt="img"
+              />
             </div>
             <span v-else> none </span>
           </q-td>
@@ -202,14 +158,12 @@ import {
   EUserModules,
   IArticleInfo,
   getRoleModuleDisplayName,
-  IUseArticleData,
 } from 'src/interfaces';
 import UpdateArticleModal from 'src/components/article-management/UpdateArticleModal.vue';
 import ArticleStatusModal from 'src/components/article-management/ArticleStatusModal.vue';
 import { useAuthStore } from 'src/stores';
 import { IArticleData } from 'src/interfaces';
 import { ArticleColumn, isPosError } from 'src/utils';
-import { statusOptions } from 'src/constants/utils';
 import {
   articleListApi,
   changeArticleStatus,
@@ -233,30 +187,20 @@ const handlePreviewImage = (selectedImage: string) => {
     isPreviewImageModalVisible.value = true;
   }
 };
-const defaultFilterValues = {
-  name: null,
-  status: null,
-};
-const pagination = {
+const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
   rowsPerPage: 50,
   rowsNumber: 0,
-};
-const defaultpagination = ref<{
-  sortBy: string;
-  descending: boolean;
-  page: number;
-  rowsPerPage: number;
-  rowsNumber: number;
-}>(pagination);
-const filterSearch = ref<IUseArticleData>(defaultFilterValues);
+});
 onMounted(() => {
   getArticleList();
 });
-const handleArticleFilter = () => {
-  getArticleList();
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
 };
 const handleEditArticlePopup = (selectedRow: IArticleData) => {
   selectedRowData.value = selectedRow;
@@ -269,13 +213,6 @@ const handleEditStatusPopup = (row: IArticleData) => {
 };
 const AddNewArticle = () => {
   router.push('/article/add-new');
-};
-const resetFilter = () => {
-  filterSearch.value = {
-    name: null,
-    status: null,
-  };
-  getArticleList();
 };
 const handleUpdateArticle = async (updatedArticleInfo: IArticleInfo) => {
   if (isLoading.value) return;
@@ -308,9 +245,6 @@ const handleUpdateArticle = async (updatedArticleInfo: IArticleInfo) => {
       name,
     });
     if (res.type === 'Success') {
-      filterSearch.value = defaultFilterValues;
-      defaultpagination.value = pagination;
-      getArticleList();
       $q.notify({
         message: res.message,
         color: 'green',
@@ -379,26 +313,22 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   isLoading.value = false;
   isArticleStatusModalVisible.value = false;
 };
-const getArticleList = async (defaultPaginationData?: {
-  defaultpagination: Omit<typeof defaultpagination.value, 'rowsNumber'>;
+const getArticleList = async (data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
   if (isLoading.value) return;
   isLoading.value = true;
-  if (defaultPaginationData) {
-    defaultpagination.value = {
-      ...defaultpagination.value,
-      ...defaultPaginationData.defaultpagination,
-    };
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
     const res = await articleListApi({
-      filterSearch: filterSearch.value,
-      PageNumber: defaultpagination.value.page,
-      PageSize: defaultpagination.value.rowsPerPage,
+      PageNumber: pagination.value.page,
+      PageSize: pagination.value.rowsPerPage,
     });
     if (res.data) {
       ArticleData.value = res.data.items;
-      defaultpagination.value.rowsNumber = res.data.totalItemCount;
+      pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

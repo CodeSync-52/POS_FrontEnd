@@ -18,7 +18,7 @@ export interface IArticleInfo {
   costPrice: number;
   description: string;
   name: string;
-  productImage: null | File;
+  productImage: null | File | undefined;
   retailPrice: number;
   wholeSalePrice: number;
 }
@@ -37,8 +37,4 @@ export interface INewArticleData {
   image: File | null;
   description: string;
   categoryId: number;
-}
-export interface IUseArticleData {
-  name: string | null;
-  status: string | null;
 }

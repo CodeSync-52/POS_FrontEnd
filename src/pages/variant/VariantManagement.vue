@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -13,7 +13,6 @@
         "
         label="Add New"
         icon="add"
-        unelevated
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
         @click="AddNewVariant"
       />
@@ -22,12 +21,28 @@
       <q-table
         tabindex="0"
         :loading="isLoading"
-        :rows="variantData"
+        :rows="filteredRows"
         :columns="variantColumn"
         row-key="name"
+        :filter="filter"
         v-model:pagination="pagination"
         @request="getVariantGroupList"
       >
+        <template v-slot:top>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template
           v-if="
             !authStore.checkUserHasPermission(
@@ -134,7 +149,7 @@
         :variant="selectedVariant"
         :variant-action="variantAction"
         @name-changed="updateOrAddVariant"
-        :selected-row="selectedRowData?.id"
+        :selected-row="selectedRowData?.variantGroupId"
       />
     </q-dialog>
     <q-dialog v-model="isVariantGroupStatusModalVisible">
@@ -147,7 +162,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { variantColumn } from 'src/pages/variant/utils';
@@ -177,6 +192,7 @@ const isVariantModalVisible = ref<boolean>(false);
 const variantData = ref<IVariantData[]>([]);
 const isVariantGroupStatusModalVisible = ref(false);
 const variantAction = ref<string>('');
+const filter = ref('');
 const isLoading = ref(false);
 const pagination = ref({
   sortBy: 'desc',
@@ -188,6 +204,11 @@ const pagination = ref({
 onMounted(() => {
   getVariantGroupList();
 });
+const filteredRows = computed(() =>
+  variantData.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  )
+);
 const getVariantGroupList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
@@ -233,7 +254,8 @@ const handleUpdateStatus = async (
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const variantGroupId = selectedRowData.value?.id ?? -1;
+    const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
+
     const res = await variantGroupUpdateStatus(variantGroupId);
     if (res.type === 'Success') {
       $q.notify({
@@ -286,7 +308,7 @@ const updateOrAddVariant = async (
   if (isLoading.value) return;
   isLoading.value = false;
   try {
-    const variantGroupId = selectedRowData.value?.id ?? -1;
+    const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
     const res = await (action === 'Add'
       ? addVariantGroupApi(name)
       : updateVariantGroupApi({ variantGroupId, name }));

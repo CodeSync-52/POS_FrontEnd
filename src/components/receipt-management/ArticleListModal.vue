@@ -11,19 +11,21 @@
           </div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
-        <div v-if="articleList.length">
-          <div
-            v-for="(article, index) in articleList"
-            :key="article.categoryId"
-          >
+        <div class="max-h-[250px] overflow-y-auto" v-if="articleList.length">
+          <div v-for="article in articleList" :key="article.productId">
             <q-checkbox
               size="sm"
-              color="btn-primary"
-              v-model="selectedArticles[index]"
+              :model-value="isArtickeChecked(article.productId)"
+              @update:model-value="
+                updateArticleChecked(article.productId, article.name)
+              "
               :label="article.name"
+              color="btn-primary"
+              :val="article.productId"
             />
           </div>
         </div>
+
         <div v-else class="text-center">
           <span>No Article Available</span>
         </div>
@@ -42,6 +44,8 @@
         <q-btn
           flat
           label="Save"
+          :disabled="selectedArticles.length === 0"
+          @click="handleSave"
           unelevated
           color="signature"
           class="bg-btn-primary hover:bg-btn-primary-hover"
@@ -51,37 +55,52 @@
   </q-card>
 </template>
 <script lang="ts" setup>
-import { useQuasar } from 'quasar';
 import { IArticleData } from 'src/interfaces';
-import { articleListApi } from 'src/services';
-import { isPosError } from 'src/utils';
 import { onMounted, ref } from 'vue';
-const $q = useQuasar();
+
 onMounted(() => {
-  getArticleList();
-});
-const isFetchingArticleList = ref(false);
-const selectedArticles = ref<boolean[]>([false]);
-const articleList = ref<IArticleData[]>([]);
-const getArticleList = async () => {
-  if (isFetchingArticleList.value) return;
-  isFetchingArticleList.value = true;
-  try {
-    const res = await articleListApi({ PageNumber: 1, PageSize: 200 });
-    if (res.type === 'Success') {
-      articleList.value = res.data.items;
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      icon: 'error',
-      color: 'red',
-    });
+  if (props.currentData) {
+    selectedArticles.value = [...props.currentData];
   }
-  isFetchingArticleList.value = false;
+});
+const emit = defineEmits<{
+  (
+    event: 'selected-data',
+    data: { productId: number; productName: string }[]
+  ): void;
+}>();
+const handleSave = () => {
+  emit('selected-data', selectedArticles.value);
+};
+interface propTypes {
+  currentData: { productId: number; productName: string }[];
+  articleList: IArticleData[];
+  isFetchingArticleList: boolean;
+}
+const props = withDefaults(defineProps<propTypes>(), {
+  currentData: () => [],
+  articleList: () => [],
+  isFetchingArticleList: false,
+});
+const selectedArticles = ref<{ productId: number; name: string }[]>([]);
+const updateArticleChecked = (id: number, name: string) => {
+  const existingArticleIndex = selectedArticles.value.findIndex(
+    (x) => x.productId === id
+  );
+
+  if (existingArticleIndex !== -1) {
+    // If the article already exists, remove it
+    selectedArticles.value.splice(existingArticleIndex, 1);
+  } else {
+    // If the article doesn't exist, add it
+    selectedArticles.value.push({ productId: id, productName: name });
+  }
+};
+
+const isArtickeChecked = (productId: number) => {
+  if (selectedArticles.value.find((x) => x.productId === productId)) {
+    return true;
+  }
+  return false;
 };
 </script>

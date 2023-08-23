@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
 
@@ -31,7 +31,6 @@
         v-model="filterSearch.customerGroupId"
         :options="customerGroupList"
         map-options
-        @focus="getCustomerListOption"
         @update:model-value="
           filterSearch.customerGroupId = $event.customerGroupId
         "
@@ -334,6 +333,7 @@ const pagination = ref<{
 const filterSearch = ref<IUserFilterList>(defaultFilterValues);
 onMounted(() => {
   getUserList();
+  getCustomerListOption();
 });
 const handleChangeStatusPopup = (selectedRow: IUserResponse) => {
   selectedRowData.value.customerId = selectedRow.userId;
