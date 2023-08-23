@@ -242,7 +242,6 @@ const onDeleteButtonClick = async (row: ISelectedArticleData) => {
           message: 'There was an error deleting row',
           type: 'negative',
         });
-        window.location.reload();
       }
     }
   }
@@ -342,7 +341,6 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
 onMounted(() => {
   getUserList();
   getArticleList();
-
   const selectedItemId = route.params?.id;
   if (selectedItemId && typeof selectedItemId === 'string') {
     isEdit.value = true;
@@ -372,15 +370,17 @@ async function saveUpdatedData(row: ISelectedArticleData) {
       });
       return;
     }
-    await editReceiptRow({
+    const res = await editReceiptRow({
       purchaseId: selectedId.value,
       purchaseDetailId: row.purchaseDetailId,
       quantity: row.quantity,
     });
-    $q.notify({
-      message: 'Updated Row successfuly',
-      type: 'positive',
-    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: 'Updated Row successfuly',
+        type: 'positive',
+      });
+    }
   } catch (e) {
     let message = 'There was an error updating row';
     if (isPosError(e)) {

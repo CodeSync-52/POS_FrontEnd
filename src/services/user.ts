@@ -69,7 +69,6 @@ export const getUserListApi = async (
   },
   controller?: AbortController
 ) => {
-  console.log(filterSearch);
   const res = await makeApiCall<
     IGenericResponse<{
       totalItemCount: number;
