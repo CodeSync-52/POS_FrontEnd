@@ -17,6 +17,40 @@
         @click="AddNewArticle"
       />
     </div>
+    <div
+      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
+    >
+      <q-select
+        dense
+        style="min-width: 200px"
+        outlined
+        v-model="filterSearch.status"
+        @update:model-value="filterSearch.status = $event.value"
+        :options="statusOptions"
+        label="Status"
+        color="btn-primary"
+      />
+      <q-input v-model="filterSearch.articleName" outlined label="Name" dense />
+      <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
+        <q-btn
+          unelevated
+          :loading="isLoading"
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
+          icon="search"
+          label="Search"
+          @click="handleFilterSearch"
+        />
+        <q-btn
+          unelevated
+          color=""
+          :loading="isLoading"
+          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+          label="Clear"
+          @click="resetFilter"
+        />
+      </div>
+    </div>
     <div class="py-4">
       <q-table
         tabindex="0"
@@ -169,6 +203,7 @@ import {
   changeArticleStatus,
   updateProductApi,
 } from 'src/services';
+import { statusOptions } from 'src/constants';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const router = useRouter();
@@ -194,9 +229,27 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const defaultFilterValues = {
+  articleName: null,
+  status: null,
+};
+const resetFilter = () => {
+  filterSearch.value = {
+    articleName: null,
+    status: null,
+  };
+  getArticleList();
+};
+const filterSearch = ref<{
+  articleName: null | string;
+  status: string | null;
+}>(defaultFilterValues);
 onMounted(() => {
   getArticleList();
 });
+const handleFilterSearch = () => {
+  getArticleList();
+};
 const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
@@ -325,6 +378,8 @@ const getArticleList = async (data?: {
     const res = await articleListApi({
       PageNumber: pagination.value.page,
       PageSize: pagination.value.rowsPerPage,
+      Name: filterSearch.value.articleName,
+      Status: filterSearch.value.status,
     });
     if (res.data) {
       ArticleData.value = res.data.items;

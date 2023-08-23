@@ -3,7 +3,7 @@ import {
   IReceiptData,
   ISelectedArticleData,
 } from 'src/interfaces/receipt-management';
-
+import moment from 'moment';
 export const receiptColumn: QTableColumn<IReceiptData>[] = [
   {
     name: 'userid',
@@ -40,7 +40,7 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
     required: true,
     label: 'Created Date',
     align: 'left',
-    field: (row) => row.createdDate,
+    field: (row) => moment(row.createdDate).format('Do MMMM YYYY'),
   },
   {
     name: 'action',

@@ -27,7 +27,11 @@ export const newArticleApi = async ({
 export const articleListApi = async ({
   PageNumber = 1,
   PageSize = 50,
+  Name,
+  Status,
 }: {
+  Name?: string | null;
+  Status?: string | null;
   PageNumber: number;
   PageSize: number;
 }) => {
@@ -42,6 +46,8 @@ export const articleListApi = async ({
     params: {
       PageNumber,
       PageSize,
+      Name,
+      Status,
     },
   });
   return res;
