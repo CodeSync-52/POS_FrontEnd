@@ -133,7 +133,12 @@
       <article-list-modal
         @selected-data="selectedData"
         :article-list="articleListComputed"
-        :current-data="selectedArticleData"
+        :current-data="
+          selectedArticleData.map((item) => ({
+            productId: item.productId !== null ? item.productId : -1,
+            productName: item?.productName || '',
+          }))
+        "
         :is-fetching-article-list="isFetchingArticleList"
       />
     </q-dialog>
@@ -176,7 +181,7 @@ const handleSelectArticle = () => {
   isArticleListModalVisible.value = true;
 };
 const selectedData = (
-  payload: { productId: number; productName: string }[]
+  payload: { productId: number; productName?: string }[]
 ) => {
   const newIdList = payload.map((item) => item.productId);
   selectedArticleData.value = selectedArticleData.value.filter(
@@ -185,7 +190,7 @@ const selectedData = (
   const oldIdList = selectedArticleData.value.map((item) => item.productId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.productId)) {
-      selectedArticleData.value.push(item);
+      selectedArticleData.value.push({ ...item, quantity: 0 });
       if (isEdit.value) {
         addReceiptRow({
           productId: item.productId,
@@ -215,9 +220,7 @@ const selectedData = (
       }
     }
   });
-  if (isEdit.value) {
-  }
-  selectedArticleData.value = payload;
+
   isArticleListModalVisible.value = false;
 };
 
