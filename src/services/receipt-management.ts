@@ -86,7 +86,7 @@ export const editReceiptRow = async (params: {
   purchaseDetailId: number | string;
   quantity: number | string;
 }) => {
-  return makeApiCall({
+  return makeApiCall<IGenericResponse<null>>({
     url: 'api/Purchase/detail/update',
     params,
     method: 'PUT',

@@ -112,7 +112,7 @@
                   authStore.checkUserHasPermission(
                     EUserModules.ReceiptManagement,
                     EActionPermissions.Update
-                  )
+                  ) && props.row.purchaseStatus !== 'Cancelled'
                 "
                 size="sm"
                 flat
