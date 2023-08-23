@@ -1,4 +1,10 @@
-import axios, { AxiosRequestConfig, AxiosResponse, CanceledError } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  CanceledError,
+} from 'axios';
+
 import { useAuthStore } from 'src/stores';
 interface basicParams extends AxiosRequestConfig {
   url: string;
@@ -58,6 +64,11 @@ async function makeApiCall<T>({
     }
     return response.data;
   } catch (e) {
+    if (e instanceof AxiosError && e.code === 'ERR_NETWORK') {
+      localStorage.removeItem('storeData');
+      authStore.logoutUser();
+      return;
+    }
     if (e instanceof CanceledError) {
       throw e;
     }
@@ -67,6 +78,7 @@ async function makeApiCall<T>({
         e.response?.status || 500
       );
     }
+
     throw e;
   }
 }

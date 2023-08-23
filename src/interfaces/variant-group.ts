@@ -1,6 +1,6 @@
 export interface IVariantData {
   name: string;
-  id: number;
+  variantGroupId: number;
   status: string;
   variant: string;
   action?: any;

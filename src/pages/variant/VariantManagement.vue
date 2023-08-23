@@ -149,7 +149,7 @@
         :variant="selectedVariant"
         :variant-action="variantAction"
         @name-changed="updateOrAddVariant"
-        :selected-row="selectedRowData?.id"
+        :selected-row="selectedRowData?.variantGroupId"
       />
     </q-dialog>
     <q-dialog v-model="isVariantGroupStatusModalVisible">
@@ -254,7 +254,8 @@ const handleUpdateStatus = async (
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const variantGroupId = selectedRowData.value?.id ?? -1;
+    const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
+
     const res = await variantGroupUpdateStatus(variantGroupId);
     if (res.type === 'Success') {
       $q.notify({
@@ -307,7 +308,7 @@ const updateOrAddVariant = async (
   if (isLoading.value) return;
   isLoading.value = false;
   try {
-    const variantGroupId = selectedRowData.value?.id ?? -1;
+    const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
     const res = await (action === 'Add'
       ? addVariantGroupApi(name)
       : updateVariantGroupApi({ variantGroupId, name }));
