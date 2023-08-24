@@ -11,12 +11,15 @@
               v-model="billGenerationData.userId"
               :disable="billAction === 'Preview'"
               dense
+              type="number"
               label="User Id"
               outlined
             />
           </div>
           <div class="col-6">
             <q-input
+              type="number"
+              min="0"
               v-model="billGenerationData.outStandingBalance"
               dense
               :disable="billAction === 'Preview'"
@@ -28,7 +31,7 @@
             <q-input
               type="date"
               :disable="billAction === 'Preview'"
-              v-model="billGenerationData.purchaseDate"
+              v-model="formattedPurchaseDate"
               dense
               label="Date"
               outlined
@@ -45,21 +48,32 @@
           </div>
         </div>
         <q-table
+          :loading="isLoading"
           :rows="billGenerationData.productInfoDetailList"
           :columns="editBillGenerationRecordsColumn"
           hide-bottom
         >
           <template v-slot:body-cell-amount="props">
-            <q-td key="carbs" :props="props">
+            <q-td :props="props">
               {{ props.row.amount }}
               <q-popup-edit
+                :disable="router.currentRoute.value.path.includes('preview')"
                 v-model="props.row.amount"
                 color="btn-primary"
                 title="Update Amount"
                 buttons
                 v-slot="scope"
               >
-                <q-input type="number" v-model="scope.value" dense autofocus />
+                <q-input
+                  type="number"
+                  v-model="scope.value"
+                  @update:model-value="
+                    scope.value = ($event as number) >= 0 ? $event : 0
+                  "
+                  min="0"
+                  dense
+                  autofocus
+                />
               </q-popup-edit>
             </q-td>
           </template>
@@ -108,6 +122,7 @@
               : ''
           "
           color="btn-primary"
+          @click="handleBillSaveAsDraft"
         />
       </q-card-actions>
     </q-card>
@@ -131,8 +146,13 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { editBillGenerationRecordsColumn, isPosError } from 'src/utils';
-import { billDetailsApi } from 'src/services';
-import { IBillDetail, IProductInfoDetailList } from 'src/interfaces';
+import { billDetailsApi, addBillApi } from 'src/services';
+import moment from 'moment';
+import {
+  IBillDetail,
+  IProductInfoDetailList,
+  INewBillData,
+} from 'src/interfaces';
 const billAction = ref('');
 const router = useRouter();
 const isLoading = ref(false);
@@ -148,16 +168,59 @@ const billGenerationData = ref<IBillDetail>({
   totalPurchaseQuantity: 0,
   quantity: 0,
 });
+const handleBillSaveAsDraft = () => {
+  const newBillInfo = {
+    purchaseId: Number(selectedId),
+    productList: billGenerationData.value.productInfoDetailList.map(
+      ({ quantity, productId, amount }) => ({
+        quantity,
+        productId,
+        amount,
+      })
+    ),
+  };
+  addNewBill(newBillInfo);
+};
+const addNewBill = async (newBillInfo: INewBillData) => {
+  try {
+    const res = await addBillApi(newBillInfo);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      router.push('/bill-generation');
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      {
+        message = e.message;
+      }
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+};
+const formattedPurchaseDate = computed(() => {
+  if (billGenerationData.value.purchaseDate) {
+    return moment(billGenerationData.value.purchaseDate).format('YYYY-MM-DD');
+  }
+  return '';
+});
 const selectedId = router.currentRoute.value.params.id;
 onMounted(() => {
   if (selectedId) {
     if (router.currentRoute.value.fullPath.includes('preview')) {
       billAction.value = 'Preview';
       if (router.currentRoute.value.fullPath.includes('preview-receipt')) {
-        getBillDetails(Number(selectedId));
       }
     } else {
       billAction.value = 'Edit';
+      getBillDetails(Number(selectedId));
     }
   } else {
     billAction.value = 'Add New';
@@ -191,6 +254,9 @@ const getBillDetails = async (purchaseId: number) => {
         color: 'green',
       });
       billGenerationData.value = res.data;
+      if (res.data.outStandingBalance === null) {
+        billGenerationData.value.outStandingBalance = 0;
+      }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -203,31 +269,6 @@ const getBillDetails = async (purchaseId: number) => {
       icon: 'error',
     });
   }
+  isLoading.value = false;
 };
-
-// getBillList()
-// const getBillList = async () => {
-//   if (isLoading.value) return;
-//   isLoading.value = true;
-//   try {
-//     const res = await billListApi({
-//       PageNumber: 1,
-//       PageSize: 200,
-//     });
-//     if (res.data) {
-//       billGenerationData.value = res.data.items;
-//     }
-//   } catch (e) {
-//     let message = 'Unexpected Error Occurred';
-//     if (isPosError(e)) {
-//       message = e.message;
-//     }
-//     $q.notify({
-//       message,
-//       color: 'red',
-//       icon: 'error',
-//     });
-//   }
-//   isLoading.value = false;
-// };
 </script>

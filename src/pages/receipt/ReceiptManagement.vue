@@ -135,11 +135,6 @@
                 unelevated
                 icon="visibility"
                 color="bg-btn-secondary"
-                @click="
-                  router.push(
-                    `/bill-generation/${props.row.purchaseId}/preview-receipt`
-                  )
-                "
               />
               <q-btn
                 v-if="

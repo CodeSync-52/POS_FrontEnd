@@ -30,3 +30,12 @@ export interface IProductInfoDetailList {
   purchaseDate: string;
   quantity: number;
 }
+export interface INewBillData {
+  purchaseId: number;
+  productList: INewBillProductList[];
+}
+export interface INewBillProductList {
+  productId: number;
+  quantity: number;
+  amount: number;
+}

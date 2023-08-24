@@ -3,6 +3,7 @@ import {
   IBillGenerationData,
   IBillGenerationFilter,
   IGenericResponse,
+  INewBillData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -37,6 +38,16 @@ export const billDetailsApi = async (purchaseId: number) => {
     method: 'GET',
     params: {
       purchaseId,
+    },
+  });
+  return res;
+};
+export const addBillApi = async (newBillInfo: INewBillData) => {
+  const res = makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/bill/add',
+    data: {
+      newBillInfo,
     },
   });
   return res;

@@ -138,11 +138,7 @@ import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  isPosError,
-  billGenerationColumn,
-  billGenerationRecords,
-} from 'src/utils';
+import { isPosError, billGenerationColumn } from 'src/utils';
 import {
   getRoleModuleDisplayName,
   EActionPermissions,
@@ -154,7 +150,7 @@ import { billListApi } from 'src/services';
 import BillPreviewModal from 'src/components/bill-generation/BillPreviewModal.vue';
 const authStore = useAuthStore();
 const router = useRouter();
-const billGenerationData = ref<IBillGenerationData[]>(billGenerationRecords);
+const billGenerationData = ref<IBillGenerationData[]>([]);
 const pageTitle = getRoleModuleDisplayName(EUserModules.BillGeneration);
 const isLoading = ref(false);
 const $q = useQuasar();
