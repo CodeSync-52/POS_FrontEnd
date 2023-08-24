@@ -256,6 +256,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useQuasar } from 'quasar';
+import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
 import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
@@ -282,8 +284,6 @@ import {
   updateUser,
   getCustomerGroupList,
 } from 'src/services';
-import { useQuasar } from 'quasar';
-import { CanceledError } from 'axios';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const customerGroupList = ref<ICustomerListResponse[]>([]);
@@ -301,16 +301,6 @@ const defaultFilterValues = {
   role: null,
   status: null,
 };
-
-const roleDropdownOptions = computed(() =>
-  roleOptions.filter(
-    (role) =>
-      role.value === EUserRoles.Customer ||
-      role.value === EUserRoles.Admin ||
-      role.value === EUserRoles.SuperAdmin
-  )
-);
-
 const UserRows = ref<IUserManagementData[]>([]);
 const action = ref<string>('');
 const apiController = ref<AbortController | null>(null);
@@ -331,6 +321,15 @@ const pagination = ref<{
   rowsNumber: number;
 }>(defaultPagination);
 const filterSearch = ref<IUserFilterList>(defaultFilterValues);
+const roleDropdownOptions = computed(() =>
+  roleOptions.filter(
+    (role) =>
+      role.value === EUserRoles.Customer ||
+      role.value === EUserRoles.Admin ||
+      role.value === EUserRoles.SuperAdmin
+  )
+);
+
 onMounted(() => {
   getUserList();
   getCustomerListOption();

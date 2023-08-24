@@ -29,6 +29,7 @@
         @request="getVariantGroupList"
       >
         <template v-slot:top>
+          <div class="font-medium text-lg"><span>Variant Group</span></div>
           <q-space />
           <q-input
             outlined
@@ -85,7 +86,7 @@
                 !authStore.checkUserHasPermission(
                   EUserModules.VariantManagement,
                   EActionPermissions.Delete
-                ) &&
+                ) ||
                 !authStore.checkUserHasPermission(
                   EUserModules.VariantManagement,
                   EActionPermissions.Update

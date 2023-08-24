@@ -229,10 +229,6 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const defaultFilterValues = {
-  articleName: null,
-  status: null,
-};
 const resetFilter = () => {
   filterSearch.value = {
     articleName: null,
@@ -243,7 +239,10 @@ const resetFilter = () => {
 const filterSearch = ref<{
   articleName: null | string;
   status: string | null;
-}>(defaultFilterValues);
+}>({
+  articleName: null,
+  status: null,
+});
 onMounted(() => {
   getArticleList();
 });
