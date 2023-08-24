@@ -104,6 +104,13 @@ export const routeList = [
     },
   },
   {
+    path: '/bill-generation/:id/preview-receipt',
+    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    meta: {
+      module: EUserModules.BillGeneration,
+    },
+  },
+  {
     path: '/bill-generation/:id/preview',
     component: () => import('src/pages/bill-generation/AddNewBill.vue'),
     meta: {

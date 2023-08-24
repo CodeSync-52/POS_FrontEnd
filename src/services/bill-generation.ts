@@ -1,4 +1,5 @@
 import {
+  IBillDetail,
   IBillGenerationData,
   IBillGenerationFilter,
   IGenericResponse,
@@ -17,7 +18,7 @@ export const billListApi = async ({
   const res = await makeApiCall<
     IGenericResponse<{ items: IBillGenerationData[]; totalItemCount: number }>
   >({
-    url: '',
+    url: 'api/Bill/list',
     method: 'GET',
     params: {
       billId: filterSearch?.billId,
@@ -26,6 +27,16 @@ export const billListApi = async ({
       ToDate: filterSearch?.ToDate,
       PageNumber,
       PageSize,
+    },
+  });
+  return res;
+};
+export const billDetailsApi = async (purchaseId: number) => {
+  const res = await makeApiCall<IGenericResponse<IBillDetail>>({
+    url: 'api/Bill/detail',
+    method: 'GET',
+    params: {
+      purchaseId,
     },
   });
   return res;

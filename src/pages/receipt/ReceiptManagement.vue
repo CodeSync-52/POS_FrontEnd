@@ -133,6 +133,40 @@
                 flat
                 dense
                 unelevated
+                icon="visibility"
+                color="bg-btn-secondary"
+                @click="
+                  router.push(
+                    `/bill-generation/${props.row.purchaseId}/preview-receipt`
+                  )
+                "
+              />
+              <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.ReceiptManagement,
+                    EActionPermissions.Update
+                  ) && props.row.purchaseStatus !== 'Cancelled'
+                "
+                size="sm"
+                flat
+                dense
+                unelevated
+                @click="router.push(`/bill-generation/${props.row.purchaseId}`)"
+                icon="receipt"
+                color="bg-btn-secondary"
+              />
+              <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.ReceiptManagement,
+                    EActionPermissions.Update
+                  ) && props.row.purchaseStatus !== 'Cancelled'
+                "
+                size="sm"
+                flat
+                dense
+                unelevated
                 icon="cancel"
                 color="red"
                 @click="handleCancelReceipt(props.row)"

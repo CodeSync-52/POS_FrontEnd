@@ -8,16 +8,16 @@
         <div class="row q-mb-md q-col-gutter-md">
           <div class="col-6">
             <q-input
-              v-model="billInfo.billId"
+              v-model="billGenerationData.userId"
               :disable="billAction === 'Preview'"
               dense
-              label="Bill Id"
+              label="User Id"
               outlined
             />
           </div>
           <div class="col-6">
             <q-input
-              v-model="billInfo.outstandingBalance"
+              v-model="billGenerationData.outStandingBalance"
               dense
               :disable="billAction === 'Preview'"
               label="Outstanding Balance"
@@ -28,7 +28,7 @@
             <q-input
               type="date"
               :disable="billAction === 'Preview'"
-              v-model="billInfo.date"
+              v-model="billGenerationData.purchaseDate"
               dense
               label="Date"
               outlined
@@ -36,7 +36,7 @@
           </div>
           <div class="col-6">
             <q-input
-              v-model="billInfo.userName"
+              v-model="billGenerationData.fullName"
               :disable="billAction === 'Preview'"
               dense
               label="User Name"
@@ -45,35 +45,51 @@
           </div>
         </div>
         <q-table
-          :rows="billGenerationRecords[0].productReceipt"
+          :rows="billGenerationData.productInfoDetailList"
           :columns="editBillGenerationRecordsColumn"
           hide-bottom
         >
+          <template v-slot:body-cell-amount="props">
+            <q-td key="carbs" :props="props">
+              {{ props.row.amount }}
+              <q-popup-edit
+                v-model="props.row.amount"
+                color="btn-primary"
+                title="Update Amount"
+                buttons
+                v-slot="scope"
+              >
+                <q-input type="number" v-model="scope.value" dense autofocus />
+              </q-popup-edit>
+            </q-td>
+          </template>
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
-              <div v-if="props.row.image" class="w-12 h-8 overflow-hidden">
+              <div
+                v-if="props.row.image"
+                class="w-12 h-8 overflow-hidden cursor-pointer"
+                @click="handleShowImagePreview(props.row.image)"
+              >
                 <img
                   class="bg-contain h-full w-full"
-                  src="src/assets/Images/loginBg.jpg"
+                  :src="getImageUrl(props.row.image)"
                   alt="img"
                 />
               </div>
-              <span v-else>No Image</span>
+              <span v-else>none</span>
             </q-td>
           </template>
-          <template v-slot:body-cell-netTotal="props">
-            <q-td :props="props">
-              {{ props.row.quantity * props.row.amount }}
-            </q-td>
-          </template>
-          <!-- <template v-slot:bottom-row="props">
-            <q-tr :props='props'>
+          <template v-slot:bottom-row="props">
+            <q-tr :props="props">
               <q-td colspan="4" />
               <q-td>
-                <div>Total: {{props.cols}}</div>
+                <div>
+                  Total:
+                  {{ totalAmount }}
+                </div>
               </q-td>
             </q-tr>
-          </template> -->
+          </template>
         </q-table>
       </q-card-section>
       <q-card-actions class="row justify-end">
@@ -95,34 +111,51 @@
         />
       </q-card-actions>
     </q-card>
+    <q-dialog v-model="isPreviewImageModalVisible">
+      <q-card class="min-w-[400px]">
+        <q-card-section>
+          <div class="w-full max-h-[350px] overflow-hidden">
+            <img
+              class="w-full h-full bg-contain"
+              :src="selectedPreviewImage"
+              alt="image"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-// import { useQuasar } from 'quasar';
-import {
-  billGenerationRecords,
-  editBillGenerationRecordsColumn,
-} from 'src/utils';
-// import { billListApi } from 'src/services';
-// import { IBillGenerationData } from 'src/interfaces';
+import { useQuasar } from 'quasar';
+import { editBillGenerationRecordsColumn, isPosError } from 'src/utils';
+import { billDetailsApi } from 'src/services';
+import { IBillDetail, IProductInfoDetailList } from 'src/interfaces';
 const billAction = ref('');
 const router = useRouter();
-// const isLoading = ref(false)
-// const $q = useQuasar()
-// const billGenerationData = ref<IBillGenerationData[]>(billGenerationRecords);
-const selectedId = router.currentRoute.value.params.id;
-const billInfo = ref({
-  billId: 0,
-  outstandingBalance: 0,
-  date: '',
-  userName: '',
+const isLoading = ref(false);
+const $q = useQuasar();
+const isPreviewImageModalVisible = ref(false);
+const selectedPreviewImage = ref('');
+const billGenerationData = ref<IBillDetail>({
+  userId: 0,
+  fullName: '',
+  outStandingBalance: 0,
+  productInfoDetailList: [],
+  purchaseDate: '',
+  totalPurchaseQuantity: 0,
+  quantity: 0,
 });
+const selectedId = router.currentRoute.value.params.id;
 onMounted(() => {
   if (selectedId) {
     if (router.currentRoute.value.fullPath.includes('preview')) {
       billAction.value = 'Preview';
+      if (router.currentRoute.value.fullPath.includes('preview-receipt')) {
+        getBillDetails(Number(selectedId));
+      }
     } else {
       billAction.value = 'Edit';
     }
@@ -130,6 +163,48 @@ onMounted(() => {
     billAction.value = 'Add New';
   }
 });
+const totalAmount = computed(() => {
+  const rows = billGenerationData.value.productInfoDetailList;
+  return rows.reduce((total: number, row: IProductInfoDetailList) => {
+    return total + row.quantity * row.amount;
+  }, 0);
+});
+const handleShowImagePreview = (selectedImage: string) => {
+  if (selectedImage) {
+    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    isPreviewImageModalVisible.value = true;
+  }
+};
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+};
+const getBillDetails = async (purchaseId: number) => {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await billDetailsApi(purchaseId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      billGenerationData.value = res.data;
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+};
+
 // getBillList()
 // const getBillList = async () => {
 //   if (isLoading.value) return;

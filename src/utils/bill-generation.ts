@@ -1,5 +1,5 @@
 import { QTableColumn } from 'quasar';
-import { IBillGenerationData, IProductReceipt } from 'src/interfaces';
+import { IBillGenerationData, IProductInfoDetailList } from 'src/interfaces';
 
 export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
   {
@@ -48,7 +48,7 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     field: (row) => row.action,
   },
 ];
-export const editBillGenerationRecordsColumn: QTableColumn<IProductReceipt>[] =
+export const editBillGenerationRecordsColumn: QTableColumn<IProductInfoDetailList>[] =
   [
     {
       name: 'image',
@@ -60,7 +60,7 @@ export const editBillGenerationRecordsColumn: QTableColumn<IProductReceipt>[] =
       name: 'name',
       label: 'Name',
       align: 'left',
-      field: (row) => row.name,
+      field: (row) => row.productName,
     },
     {
       name: 'quantity',
@@ -78,30 +78,6 @@ export const editBillGenerationRecordsColumn: QTableColumn<IProductReceipt>[] =
       name: 'netTotal',
       label: 'Net Total',
       align: 'left',
-      field: (row) => row.netTotal,
+      field: (row) => row.amount * row.quantity,
     },
   ];
-export const billGenerationRecords: IBillGenerationData[] = [
-  {
-    billId: 1,
-    userId: 1,
-    name: 'Shina',
-    totalAmount: 100,
-    date: '',
-    recordStatus: 'Pending',
-    productReceipt: [
-      {
-        image: 'string',
-        name: 'string',
-        quantity: 10,
-        amount: 50,
-      },
-      {
-        image: 'string2',
-        name: 'string3',
-        quantity: 20,
-        amount: 60,
-      },
-    ],
-  },
-];
