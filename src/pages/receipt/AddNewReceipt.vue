@@ -20,6 +20,7 @@
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
+                :disable="isEdit"
                 ><template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -334,7 +335,7 @@ const getArticleList = async () => {
 const selectedId = ref<number | string>(-1);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
   getReceiptData(selectedItemId).then((res) => {
-    addNewReceipt.value.userId = res.data.createdById;
+    addNewReceipt.value.userId = res.data.userId;
     selectedArticleData.value = res.data.purchaseDetails;
   });
 };
