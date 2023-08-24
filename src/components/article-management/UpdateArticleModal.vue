@@ -7,7 +7,13 @@
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
-          <q-input v-model="articleInfo.name" dense label="Name" outlined />
+          <q-input
+            v-model="articleInfo.name"
+            dense
+            label="Name"
+            outlined
+            color="btn-primary"
+          />
         </div>
         <div class="col-12 col-sm-6">
           <q-input
@@ -15,6 +21,7 @@
             dense
             label="Description"
             outlined
+            color="btn-primary"
           />
         </div>
         <div class="col-12 col-sm-6">
@@ -27,6 +34,7 @@
             clearable
             outlined
             :rules="[checkFile]"
+            color="btn-primary"
           />
           <div
             v-if="imagePreview && articleInfo.productImage"
@@ -46,6 +54,7 @@
             dense
             label="Wholesale Price"
             outlined
+            color="btn-primary"
           />
         </div>
         <div class="col-12 col-sm-6">
@@ -55,6 +64,7 @@
             dense
             label="Retail Price"
             outlined
+            color="btn-primary"
           />
         </div>
         <div class="col-12 col-sm-6">
@@ -64,6 +74,7 @@
             dense
             label="Cost Price"
             outlined
+            color="btn-primary"
           />
         </div>
         <div class="col-12 col-sm-6">
@@ -75,6 +86,7 @@
                 rounded
                 dense
                 @click="isCategoryModalVisible = true"
+                color="btn-primary"
               />
             </div>
             <q-input
@@ -89,7 +101,12 @@
       </div>
     </q-card-section>
     <q-card-actions class="row justify-end">
-      <q-btn label="Close" color="btn-secondary" v-close-popup />
+      <q-btn
+        label="Close"
+        color="Signature"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        v-close-popup
+      />
       <q-btn
         label="Save"
         color="btn-primary"

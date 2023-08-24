@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -34,7 +34,7 @@
             outlined
             dense
             debounce="300"
-            color="primary"
+            color="btn-primary"
             label="Name"
             v-model="filter"
           >
@@ -134,6 +134,8 @@
                 unelevated
                 dense
                 icon="edit"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary"
                 @click="onEditButtonClick(props.row)"
               />
             </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
 
@@ -29,21 +29,30 @@
         label="User ID"
         type="number"
         dense
+        color="btn-primary"
         outlined
       />
-      <q-input v-model="filterSearch.userName" outlined label="Name" dense />
+      <q-input
+        v-model="filterSearch.userName"
+        outlined
+        label="Name"
+        dense
+        color="btn-primary"
+      />
       <q-input
         v-model="filterSearch.startDate"
         label="From"
         type="date"
         outlined
         dense
+        color="btn-primary"
       />
       <q-input
         v-model="filterSearch.endDate"
         label="To"
         type="date"
         outlined
+        color="btn-primary"
         dense
       />
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">

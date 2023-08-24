@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -28,7 +28,7 @@
             outlined
             dense
             debounce="300"
-            color="primary"
+            color="btn-primary"
             label="Name"
             v-model="filter"
           >
@@ -79,7 +79,8 @@
                 dense
                 unelevated
                 icon="edit"
-                color="bg-btn-secondary"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
               />
             </div>

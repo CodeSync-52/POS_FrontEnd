@@ -35,7 +35,13 @@
             <div class="q-gutter-y-xs">
               <div class="row gap-6 items-center">
                 <span class="text-base">Article</span>
-                <q-btn icon="add" rounded dense @click="handleSelectArticle" />
+                <q-btn
+                  icon="add"
+                  rounded
+                  dense
+                  @click="handleSelectArticle"
+                  color="btn-primary"
+                />
               </div>
             </div>
           </div>
@@ -113,7 +119,8 @@
       <q-card-actions class="row items-center justify-end">
         <q-btn
           :label="isEdit ? 'Close' : 'Cancel'"
-          color="btn-secondary"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+          color="Signature"
           @click="cancelNewReceipt"
         />
         <q-btn
