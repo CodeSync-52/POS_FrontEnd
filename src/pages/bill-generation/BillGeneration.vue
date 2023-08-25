@@ -21,9 +21,9 @@
       class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
     >
       <q-input
-        v-model="filterSearch.billId"
+        v-model="filterSearch.userId"
         min="1"
-        label="Bill ID"
+        label="User ID"
         type="number"
         dense
         outlined
@@ -51,7 +51,7 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          :disable="filterSearch.billId !== null && filterSearch.billId < 0"
+          :disable="filterSearch.userId !== null && filterSearch.userId < 0"
           @click="handleFilterSearch"
         />
         <q-btn
@@ -103,14 +103,30 @@
           v-slot:body-cell-action="props"
         >
           <q-td class="flex justify-start" :props="props">
-            <div class="flex gap-2 flex-nowrap">
+            <div
+              v-if="
+                authStore.checkUserHasPermission(
+                  EUserModules.BillGeneration,
+                  EActionPermissions.Delete
+                ) &&
+                authStore.checkUserHasPermission(
+                  EUserModules.BillGeneration,
+                  EActionPermissions.Delete
+                ) &&
+                props.row.billStatus !== 'Cancelled' &&
+                props.row.billStatus !== 'Completed'
+              "
+              class="flex gap-2 flex-nowrap"
+            >
               <q-btn
                 size="sm"
                 flat
                 unelevated
                 dense
-                icon="receipt"
-                @click="router.push(`/bill-generation/${props.row.billId}`)"
+                icon="edit"
+                @click="
+                  router.push(`/bill-generation/${props.row.billId}/edit-bill`)
+                "
               />
               <q-btn
                 size="sm"
@@ -122,14 +138,28 @@
                   router.push(`/bill-generation/${props.row.billId}/preview`)
                 "
               />
+              <q-btn
+                size="sm"
+                flat
+                unelevated
+                dense
+                icon="receipt"
+                @click="handleGenerateBill(props.row)"
+              />
+              <q-btn
+                size="sm"
+                flat
+                unelevated
+                dense
+                color="red"
+                icon="cancel"
+                @click="handleCancelBill(props.row)"
+              />
             </div>
           </q-td>
         </template>
       </q-table>
     </div>
-    <q-dialog v-model="isBillPreviewModalVisible">
-      <bill-preview-modal :isEdit="isEdit" :selected-bill="selectedRowData" />
-    </q-dialog>
   </div>
 </template>
 
@@ -146,15 +176,13 @@ import {
   IBillGenerationData,
   IBillGenerationFilter,
 } from 'src/interfaces';
-import { billListApi } from 'src/services';
-import BillPreviewModal from 'src/components/bill-generation/BillPreviewModal.vue';
+import { billListApi, cancelBillApi, completeBillApi } from 'src/services';
 const authStore = useAuthStore();
 const router = useRouter();
 const billGenerationData = ref<IBillGenerationData[]>([]);
 const pageTitle = getRoleModuleDisplayName(EUserModules.BillGeneration);
 const isLoading = ref(false);
 const $q = useQuasar();
-const isBillPreviewModalVisible = ref(false);
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -162,10 +190,9 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const isEdit = ref(false);
 const selectedRowData = ref<IBillGenerationData | null>(null);
 const filterSearch = ref<IBillGenerationFilter>({
-  billId: null,
+  userId: null,
   userName: null,
   ToDate: null,
   FromDate: null,
@@ -178,12 +205,64 @@ const handleFilterSearch = () => {
 };
 const resetFilter = () => {
   filterSearch.value = {
-    billId: null,
+    userId: null,
     userName: null,
     ToDate: null,
     FromDate: null,
   };
   getBillList();
+};
+const handleGenerateBill = async (selectedRow: IBillGenerationData) => {
+  selectedRowData.value = selectedRow;
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await completeBillApi(selectedRow.billId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      selectedRowData.value.billStatus = 'Completed';
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  isLoading.value = false;
+};
+const handleCancelBill = async (selectedRow: IBillGenerationData) => {
+  selectedRowData.value = selectedRow;
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await cancelBillApi(selectedRow.billId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      selectedRowData.value.billStatus = 'Cancelled';
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  isLoading.value = false;
 };
 const getBillList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;

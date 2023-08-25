@@ -1,5 +1,10 @@
+import moment from 'moment';
 import { QTableColumn } from 'quasar';
-import { IBillGenerationData, IProductInfoDetailList } from 'src/interfaces';
+import {
+  IBillGenerationData,
+  IBillGenerationDetailsInfoProductList,
+  IProductInfoDetailList,
+} from 'src/interfaces';
 
 export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
   {
@@ -33,13 +38,13 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     name: 'date',
     label: 'Date',
     align: 'left',
-    field: (row) => row.date,
+    field: (row) => moment(row.createdDate).format('Do MMMM YYYY'),
   },
   {
     name: 'recordStatus',
     label: 'Record Status',
     align: 'left',
-    field: (row) => row.recordStatus,
+    field: (row) => row.billStatus,
   },
   {
     name: 'action',
@@ -61,6 +66,39 @@ export const editBillGenerationRecordsColumn: QTableColumn<IProductInfoDetailLis
       label: 'Name',
       align: 'left',
       field: (row) => row.productName,
+    },
+    {
+      name: 'quantity',
+      label: 'Quantity',
+      align: 'left',
+      field: (row) => row.quantity,
+    },
+    {
+      name: 'amount',
+      label: 'amount',
+      align: 'left',
+      field: (row) => row.amount,
+    },
+    {
+      name: 'netTotal',
+      label: 'Net Total',
+      align: 'left',
+      field: (row) => row.amount * row.quantity,
+    },
+  ];
+export const BillGenerationDetailsInfoColumn: QTableColumn<IBillGenerationDetailsInfoProductList>[] =
+  [
+    {
+      name: 'image',
+      label: 'Image',
+      align: 'left',
+      field: (row) => row.image,
+    },
+    {
+      name: 'name',
+      label: 'Name',
+      align: 'left',
+      field: (row) => row.name,
     },
     {
       name: 'quantity',

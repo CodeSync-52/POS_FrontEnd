@@ -106,14 +106,18 @@
             "
             :props="props"
           >
-            <div class="flex gap-2 flex-nowrap">
+            <div
+              class="flex gap-2 flex-nowrap"
+              v-if="
+                authStore.checkUserHasPermission(
+                  EUserModules.ReceiptManagement,
+                  EActionPermissions.Update
+                ) &&
+                props.row.purchaseStatus !== 'Cancelled' &&
+                props.row.purchaseStatus !== 'Billed'
+              "
+            >
               <q-btn
-                v-if="
-                  authStore.checkUserHasPermission(
-                    EUserModules.ReceiptManagement,
-                    EActionPermissions.Update
-                  ) && props.row.purchaseStatus !== 'Cancelled'
-                "
                 size="sm"
                 flat
                 dense
@@ -123,41 +127,28 @@
                 color="bg-btn-secondary"
               />
               <q-btn
-                v-if="
-                  authStore.checkUserHasPermission(
-                    EUserModules.ReceiptManagement,
-                    EActionPermissions.Update
-                  ) && props.row.purchaseStatus !== 'Cancelled'
-                "
                 size="sm"
                 flat
                 dense
                 unelevated
                 icon="visibility"
                 color="bg-btn-secondary"
+                @click="router.push(`/receipt/${props.row.purchaseId}/preview`)"
               />
               <q-btn
-                v-if="
-                  authStore.checkUserHasPermission(
-                    EUserModules.ReceiptManagement,
-                    EActionPermissions.Update
-                  ) && props.row.purchaseStatus !== 'Cancelled'
-                "
                 size="sm"
                 flat
                 dense
                 unelevated
-                @click="router.push(`/bill-generation/${props.row.purchaseId}`)"
+                @click="
+                  router.push(
+                    `/bill-generation/${props.row.purchaseId}/generate-receipt-bill`
+                  )
+                "
                 icon="receipt"
                 color="bg-btn-secondary"
               />
               <q-btn
-                v-if="
-                  authStore.checkUserHasPermission(
-                    EUserModules.ReceiptManagement,
-                    EActionPermissions.Update
-                  ) && props.row.purchaseStatus !== 'Cancelled'
-                "
                 size="sm"
                 flat
                 dense

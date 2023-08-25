@@ -1,7 +1,13 @@
 <template>
   <div class="">
     <div class="text-xl text-center md:text-left font-medium mb-4">
-      <span>{{ isEdit ? 'Update Receipt' : 'Add New Receipt' }}</span>
+      <span>{{
+        isEdit
+          ? 'Update Receipt'
+          : isReceiptPreview
+          ? 'Preview Receipt'
+          : 'Add New Receipt'
+      }}</span>
     </div>
     <q-card>
       <q-card-section class="q-gutter-y-md">
@@ -20,7 +26,7 @@
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
-                :disable="isEdit"
+                :disable="isEdit || isReceiptPreview"
                 ><template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -31,7 +37,7 @@
               >
             </div>
           </div>
-          <div class="col-12 col-md-6">
+          <div v-if="!isReceiptPreview" class="col-12 col-md-6">
             <div class="q-gutter-y-xs">
               <div class="row gap-6 items-center">
                 <span class="text-base">Article</span>
@@ -50,7 +56,7 @@
           :columns="selectedArticleColumn"
           row-key="name"
         >
-          <template v-slot:body-cell-action="props">
+          <template v-slot:body-cell-action="props" v-if="!isReceiptPreview">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
                 <q-btn
@@ -89,16 +95,20 @@
               </div>
             </q-td>
           </template>
+          <template v-slot:header-cell-action v-if="isReceiptPreview">
+            <q-th> </q-th>
+          </template>
           <template v-slot:body-cell-quantity="props">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
                 <q-input
                   :disable="
-                    isEdit &&
-                    !authStore.checkUserHasPermission(
-                      EUserModules.ReceiptManagement,
-                      EActionPermissions.Update
-                    )
+                    (isEdit &&
+                      !authStore.checkUserHasPermission(
+                        EUserModules.ReceiptManagement,
+                        EActionPermissions.Update
+                      )) ||
+                    isReceiptPreview
                   "
                   v-model="props.row.quantity"
                   type="number"
@@ -112,12 +122,12 @@
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
         <q-btn
-          :label="isEdit ? 'Close' : 'Cancel'"
+          :label="isReceiptPreview ? 'Close' : 'Cancel'"
           color="btn-secondary"
           @click="cancelNewReceipt"
         />
         <q-btn
-          v-if="!isEdit"
+          v-if="!isReceiptPreview"
           :disable="
             addNewReceipt.userId === null ||
             selectedArticleData.length === 0 ||
@@ -171,6 +181,7 @@ const route = useRoute();
 const router = useRouter();
 const isLoading = ref(false);
 const isAddingPurchase = ref(false);
+const isReceiptPreview = ref(false);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const isArticleListModalVisible = ref(false);
 const handleSelectArticle = () => {
@@ -344,9 +355,18 @@ onMounted(() => {
   getArticleList();
   const selectedItemId = route.params?.id;
   if (selectedItemId && typeof selectedItemId === 'string') {
-    isEdit.value = true;
+    if (router.currentRoute.value.path.includes('preview')) {
+      isEdit.value = false;
+      isReceiptPreview.value = true;
+    } else {
+      isReceiptPreview.value = false;
+      isEdit.value = true;
+    }
     selectedId.value = selectedItemId;
     getReceiptDataFromApi(selectedItemId);
+  } else {
+    isReceiptPreview.value = false;
+    isEdit.value = false;
   }
 });
 const articleListComputed = computed(() => {
