@@ -127,7 +127,7 @@
           @click="cancelNewReceipt"
         />
         <q-btn
-          v-if="!isReceiptPreview"
+          v-if="!isReceiptPreview && !isEdit"
           :disable="
             addNewReceipt.userId === null ||
             selectedArticleData.length === 0 ||
