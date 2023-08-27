@@ -1,8 +1,9 @@
 <template>
-  <q-card class="q-pa-md min-w-[400px]">
-    <q-card-section class="q-pa-none">
-      <div class="text-h6 q-mb-md">
+  <q-card class="min-w-[400px]">
+    <q-card-section>
+      <div class="text-lg font-medium mb-2 row justify-between items-center">
         <span> {{ variantAction }} Variant Group</span>
+        <q-btn icon="close" flat unelevated dense v-close-popup />
       </div>
       <q-input
         dense
@@ -12,27 +13,25 @@
         color="btn-primary"
       />
     </q-card-section>
-    <q-card-actions class="q-pb-none q-px-none" align="right">
-      <div class="row justify-end gap-4">
-        <q-btn
-          label="Cancel"
-          flat
-          unelevated
-          color="signature"
-          v-close-popup
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-        />
-        <q-btn
-          :label="variantAction === 'Edit' ? 'Save' : 'Add'"
-          flat
-          :loading="isLoading"
-          :disable="!variantName"
-          unelevated
-          color="signature"
-          class="bg-btn-primary"
-          @click="saveNewVariant"
-        />
-      </div>
+    <q-card-actions align="right">
+      <q-btn
+        label="Cancel"
+        flat
+        unelevated
+        color="signature"
+        v-close-popup
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+      />
+      <q-btn
+        :label="variantAction === 'Edit' ? 'Save' : 'Add'"
+        flat
+        :loading="isLoading"
+        :disable="!variantName"
+        unelevated
+        color="signature"
+        class="bg-btn-primary"
+        @click="saveNewVariant"
+      />
     </q-card-actions>
   </q-card>
 </template>

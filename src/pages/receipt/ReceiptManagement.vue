@@ -35,6 +35,7 @@
       <q-input
         v-model="filterSearch.startDate"
         label="From"
+        :max="filterSearch.endDate"
         type="date"
         outlined
         dense
@@ -43,6 +44,7 @@
         v-model="filterSearch.endDate"
         label="To"
         type="date"
+        :min="filterSearch.startDate"
         outlined
         dense
       />

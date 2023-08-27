@@ -1,7 +1,10 @@
 <template>
-  <q-card class="q-pa-md full-width">
+  <q-card class="min-w-[400px]">
     <q-card-section>
-      <div class="text-h6 q-mb-md"><span> Edit Customer Status </span></div>
+      <div class="text-lg mb-2 font-medium row justify-between items-center">
+        <span> Edit Customer Status </span>
+        <q-btn flat unelevated dense icon="close" v-close-popup />
+      </div>
       <div class="column">
         <q-radio
           v-model="statusVal"
@@ -17,7 +20,7 @@
         />
       </div>
     </q-card-section>
-    <div class="row justify-end gap-4">
+    <q-card-actions align="right">
       <q-btn
         label="Cancel"
         flat
@@ -35,7 +38,7 @@
         class="bg-btn-primary hover:bg-btn-primary-hover"
         @click="savingEditedStatus"
       />
-    </div>
+    </q-card-actions>
   </q-card>
 </template>
 <script setup lang="ts">
