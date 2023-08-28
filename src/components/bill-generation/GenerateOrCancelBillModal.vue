@@ -56,8 +56,8 @@ const props = withDefaults(defineProps<IProp>(), {
 });
 const isLoading = ref(false);
 const emit = defineEmits<{
-  (event: 'cancel-bill', id: number, callback: () => void): Promise<void>;
-  (event: 'generate-bill', id: number, callback: () => void): Promise<void>;
+  (event: 'cancel-bill', id: number, callback: () => void): void;
+  (event: 'generate-bill', id: number, callback: () => void): void;
 }>();
 const handleBill = async () => {
   if (isLoading.value) return;

@@ -33,6 +33,7 @@
         v-model="filterSearch.FromDate"
         label="From"
         type="date"
+        :max="filterSearch.ToDate"
         outlined
         dense
       />
@@ -40,6 +41,7 @@
         v-model="filterSearch.ToDate"
         label="To"
         type="date"
+        :min="filterSearch.FromDate"
         outlined
         dense
       />
@@ -52,7 +54,7 @@
           icon="search"
           label="Search"
           :disable="filterSearch.userId !== null && filterSearch.userId < 0"
-          @click="handleFilterSearch"
+          @click="getBillList()"
         />
         <q-btn
           unelevated
@@ -66,11 +68,10 @@
     </div>
     <div class="py-4">
       <q-table
-        tabindex="0"
         :loading="isLoading"
         :rows="billGenerationData"
         :columns="billGenerationColumn"
-        row-key="name"
+        row-key="billId"
         v-model:pagination="pagination"
         @request="getBillList"
       >
@@ -234,10 +235,10 @@ const filterSearch = ref<IBillGenerationFilter>({
 onMounted(() => {
   getBillList();
 });
-const handleFilterSearch = () => {
-  getBillList();
-};
 const resetFilter = () => {
+  if (Object.values(filterSearch.value).every((value) => value === null)) {
+    return;
+  }
   filterSearch.value = {
     userId: null,
     userName: null,
