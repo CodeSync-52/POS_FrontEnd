@@ -89,7 +89,7 @@
                   dense
                   unelevated
                   icon="delete"
-                  color="bg-btn-secondary"
+                  color="red"
                   @click="onDeleteButtonClick(props.row)"
                 />
               </div>
@@ -109,6 +109,7 @@
                   v-model="props.row.quantity"
                   type="number"
                   filled
+                  color="btn-primary"
                   style="max-width: 200px"
                 />
               </div>

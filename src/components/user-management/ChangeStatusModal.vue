@@ -26,9 +26,7 @@
         label="Cancel"
         color="white"
         v-close-popup
-
         class="bg-btn-cancel"
-
       />
       <q-btn
         flat

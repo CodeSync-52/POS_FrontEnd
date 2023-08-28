@@ -136,7 +136,7 @@
                 dense
                 icon="edit"
                 text-color="white"
-                class="bg-btn-primary hover:bg-btn-secondary"
+                class="bg-btn-primary hover:bg-btn-secondary !px-[5px]"
                 @click="onEditButtonClick(props.row)"
               />
             </div>
