@@ -5,12 +5,24 @@
         <div class="row q-col-gutter-md">
           <div class="col-12 col-md-6 mt-auto">
             <span class="text-base">Article Name</span>
-            <q-input v-model="newArticle.name" label="Name" dense outlined />
+            <q-input
+              v-model="newArticle.name"
+              label="Name"
+              dense
+              outlined
+              color="btn-primary"
+            />
           </div>
           <div class="col-12 col-md-6 q-gutter-y-sm">
             <div class="row justify-between items-end">
               <span class="text-base">Category</span>
-              <q-btn icon="add" rounded dense @click="addCategory" />
+              <q-btn
+                icon="add"
+                rounded
+                dense
+                @click="addCategory"
+                color="btn-primary"
+              />
             </div>
             <q-input
               v-model="newArticle.category"
@@ -18,6 +30,7 @@
               dense
               readonly
               outlined
+              color="btn-primary"
             />
           </div>
           <div class="col-12 col-md-6">
@@ -32,6 +45,7 @@
               v-model="newArticle.image"
               :rules="[checkFile]"
               clearable
+              color="btn-primary"
             />
             <div
               v-if="imagePreview && newArticle.image"
@@ -53,12 +67,18 @@
               dense
               label="Description"
               outlined
+              color="btn-primary"
             />
           </div>
         </div>
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
-        <q-btn label="Cancel" color="btn-secondary" @click="cancelNewArticle" />
+        <q-btn
+          label="Cancel"
+          color="Signature"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+          @click="cancelNewArticle"
+        />
         <q-btn
           label="Save"
           :loading="isLoading"

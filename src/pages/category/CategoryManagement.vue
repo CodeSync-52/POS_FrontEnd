@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -21,12 +21,29 @@
       <q-table
         tabindex="0"
         :loading="isLoading"
-        :rows="categoryData"
+        :rows="filteredRows"
+        :filter="filter"
         :columns="categoryColumn"
         row-key="name"
         v-model:pagination="pagination"
         @request="getCategoryList"
       >
+        <template v-slot:top>
+          <div class="font-medium text-lg"><span>Category</span></div>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="btn-primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template v-slot:body-cell-category="props">
           <q-td :props="props">
             <q-btn
@@ -34,6 +51,7 @@
               unelevated
               dense
               size="sm"
+              class="hover:text-btn-primary"
               @click="handleManageClick(props.row.categoryId)"
               label="Manage"
               :disable="
@@ -64,6 +82,7 @@
               dense
               flat
               unelevated
+              class="hover:text-btn-primary"
               :label="props.row.status"
               @click="handleShowEditStatusPopup(props.row)"
             />
@@ -117,6 +136,8 @@
                 unelevated
                 dense
                 icon="edit"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary !px-[5px]"
                 @click="onEditButtonClick(props.row)"
               />
             </div>
@@ -145,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import CategoryManagementModal from 'src/components/category-management/CategoryManagementModal.vue';
@@ -169,6 +190,11 @@ const router = useRouter();
 const $q = useQuasar();
 const authStore = useAuthStore();
 const selectedCategory = ref<string>('');
+const filteredRows = computed(() =>
+  categoryData.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  )
+);
 const selectedRowData = ref<ICategoryData | null>(null);
 const isCategoryStatusModalVisible = ref(false);
 const pageTitle = getRoleModuleDisplayName(EUserModules.CategoryManagement);
@@ -176,6 +202,7 @@ const isCategoryModalVisible = ref<boolean>(false);
 const categoryData = ref<ICategoryData[]>([]);
 const CategoryAction = ref<string>('');
 const selectedStatus = ref('');
+const filter = ref('');
 const isLoading = ref(false);
 const pagination = ref({
   sortBy: 'desc',

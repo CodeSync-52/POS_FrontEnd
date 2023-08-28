@@ -66,6 +66,6 @@ export const UserColumn: QTableColumn<IUserData>[] = [
     name: 'action',
     label: 'Action',
     field: (row) => row.action,
-    align: 'center',
+    align: 'left',
   },
 ];

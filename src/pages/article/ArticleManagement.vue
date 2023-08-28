@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -16,6 +16,46 @@
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
         @click="AddNewArticle"
       />
+    </div>
+    <div
+      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
+    >
+      <q-select
+        dense
+        style="min-width: 200px"
+        outlined
+        v-model="filterSearch.status"
+        @update:model-value="filterSearch.status = $event.value"
+        :options="statusOptions"
+        label="Status"
+        color="btn-primary"
+      />
+      <q-input
+        v-model="filterSearch.articleName"
+        outlined
+        label="Name"
+        dense
+        color="btn-primary"
+      />
+      <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
+        <q-btn
+          unelevated
+          :loading="isLoading"
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
+          icon="search"
+          label="Search"
+          @click="handleFilterSearch"
+        />
+        <q-btn
+          unelevated
+          color=""
+          :loading="isLoading"
+          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+          label="Clear"
+          @click="resetFilter"
+        />
+      </div>
     </div>
     <div class="py-4">
       <q-table
@@ -43,6 +83,8 @@
           <q-td :props="props">
             <q-btn
               size="sm"
+              color="hover:text-btn-primary"
+              class="hover:text-btn-primary"
               dense
               flat
               unelevated
@@ -58,13 +100,18 @@
         </template>
         <template v-slot:body-cell-image="props">
           <q-td :props="props">
-            <div class="w-10 h-5 overflow-hidden">
+            <div
+              @click="handlePreviewImage(props.row.productImage)"
+              v-if="props.row.productImage"
+              class="cursor-pointer max-w-[2.5rem] h-[40px] min-w-[2.5rem] overflow-hidden rounded-full"
+            >
               <img
-                class="w-100 h-100 object-cover"
+                class="w-full h-full object-cover"
                 :src="getImageUrl(props.row.productImage)"
                 alt="img"
               />
             </div>
+            <span v-else> none </span>
           </q-td>
         </template>
         <template
@@ -114,6 +161,8 @@
                 unelevated
                 dense
                 icon="edit"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary"
                 @click="handleEditArticlePopup(props.row)"
               />
             </div>
@@ -133,6 +182,15 @@
       :selected-row="selectedRowData"
       @update-article="handleUpdateArticle"
     />
+  </q-dialog>
+  <q-dialog v-model="isPreviewImageModalVisible">
+    <q-card class="min-w-[400px]">
+      <q-card-section>
+        <div class="w-full max-h-[350px] overflow-hidden">
+          <img :src="selectedPreviewImage" alt="image" />
+        </div>
+      </q-card-section>
+    </q-card>
   </q-dialog>
 </template>
 <script lang="ts" setup>
@@ -155,6 +213,7 @@ import {
   changeArticleStatus,
   updateProductApi,
 } from 'src/services';
+import { statusOptions } from 'src/constants';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const router = useRouter();
@@ -165,6 +224,14 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.ArticleManagement);
 const ArticleData = ref<IArticleData[]>([]);
 const isLoading = ref(false);
 const isEditArticleModalVisible = ref(false);
+const selectedPreviewImage = ref('');
+const isPreviewImageModalVisible = ref(false);
+const handlePreviewImage = (selectedImage: string) => {
+  if (selectedImage) {
+    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    isPreviewImageModalVisible.value = true;
+  }
+};
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -172,9 +239,26 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const resetFilter = () => {
+  filterSearch.value = {
+    articleName: null,
+    status: null,
+  };
+  getArticleList();
+};
+const filterSearch = ref<{
+  articleName: null | string;
+  status: string | null;
+}>({
+  articleName: null,
+  status: null,
+});
 onMounted(() => {
   getArticleList();
 });
+const handleFilterSearch = () => {
+  getArticleList();
+};
 const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
@@ -303,6 +387,8 @@ const getArticleList = async (data?: {
     const res = await articleListApi({
       PageNumber: pagination.value.page,
       PageSize: pagination.value.rowsPerPage,
+      Name: filterSearch.value.articleName,
+      Status: filterSearch.value.status,
     });
     if (res.data) {
       ArticleData.value = res.data.items;

@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <div class="text-xl text-center md:text-left font-medium mb-4">
-      <span>{{ isEdit ? 'Update Receupt' : 'Add New Receipt' }}</span>
+      <span>{{ isEdit ? 'Update Receipt' : 'Add New Receipt' }}</span>
     </div>
     <q-card>
       <q-card-section class="q-gutter-y-md">
@@ -20,6 +20,7 @@
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
+                :disable="isEdit"
                 ><template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -34,7 +35,13 @@
             <div class="q-gutter-y-xs">
               <div class="row gap-6 items-center">
                 <span class="text-base">Article</span>
-                <q-btn icon="add" rounded dense @click="handleSelectArticle" />
+                <q-btn
+                  icon="add"
+                  rounded
+                  dense
+                  @click="handleSelectArticle"
+                  color="btn-primary"
+                />
               </div>
             </div>
           </div>
@@ -82,7 +89,7 @@
                   dense
                   unelevated
                   icon="delete"
-                  color="bg-btn-secondary"
+                  color="red"
                   @click="onDeleteButtonClick(props.row)"
                 />
               </div>
@@ -102,6 +109,7 @@
                   v-model="props.row.quantity"
                   type="number"
                   filled
+                  color="btn-primary"
                   style="max-width: 200px"
                 />
               </div>
@@ -112,7 +120,8 @@
       <q-card-actions class="row items-center justify-end">
         <q-btn
           :label="isEdit ? 'Close' : 'Cancel'"
-          color="btn-secondary"
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+          color="Signature"
           @click="cancelNewReceipt"
         />
         <q-btn
@@ -245,7 +254,6 @@ const onDeleteButtonClick = async (row: ISelectedArticleData) => {
           message: 'There was an error deleting row',
           type: 'negative',
         });
-        window.location.reload();
       }
     }
   }
@@ -338,14 +346,13 @@ const getArticleList = async () => {
 const selectedId = ref<number | string>(-1);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
   getReceiptData(selectedItemId).then((res) => {
-    addNewReceipt.value.userId = res.data.createdById;
+    addNewReceipt.value.userId = res.data.userId;
     selectedArticleData.value = res.data.purchaseDetails;
   });
 };
 onMounted(() => {
   getUserList();
   getArticleList();
-
   const selectedItemId = route.params?.id;
   if (selectedItemId && typeof selectedItemId === 'string') {
     isEdit.value = true;
@@ -375,15 +382,17 @@ async function saveUpdatedData(row: ISelectedArticleData) {
       });
       return;
     }
-    await editReceiptRow({
+    const res = await editReceiptRow({
       purchaseId: selectedId.value,
       purchaseDetailId: row.purchaseDetailId,
       quantity: row.quantity,
     });
-    $q.notify({
-      message: 'Updated Row successfuly',
-      type: 'positive',
-    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: 'Updated Row successfuly',
+        type: 'positive',
+      });
+    }
   } catch (e) {
     let message = 'There was an error updating row';
     if (isPosError(e)) {

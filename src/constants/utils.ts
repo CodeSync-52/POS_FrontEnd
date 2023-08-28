@@ -16,7 +16,6 @@ export const roleOptions = Object.values(EUserRoles).map((role) => ({
 }));
 
 export const statusOptions = [
-  { label: 'All', value: '' },
   { label: 'Active', value: 'Active' },
   { label: 'In Active', value: 'InActive' },
 ];

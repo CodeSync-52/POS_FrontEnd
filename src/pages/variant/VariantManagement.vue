@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -21,12 +21,29 @@
       <q-table
         tabindex="0"
         :loading="isLoading"
-        :rows="variantData"
+        :rows="filteredRows"
         :columns="variantColumn"
         row-key="name"
+        :filter="filter"
         v-model:pagination="pagination"
         @request="getVariantGroupList"
       >
+        <template v-slot:top>
+          <div class="font-medium text-lg"><span>Variant Group</span></div>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="btn-primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template
           v-if="
             !authStore.checkUserHasPermission(
@@ -69,7 +86,7 @@
                 !authStore.checkUserHasPermission(
                   EUserModules.VariantManagement,
                   EActionPermissions.Delete
-                ) &&
+                ) ||
                 !authStore.checkUserHasPermission(
                   EUserModules.VariantManagement,
                   EActionPermissions.Update
@@ -118,6 +135,8 @@
                 unelevated
                 dense
                 icon="edit"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary !px-[5px]"
                 @click="onEditButtonClick(props.row)"
               />
             </div>
@@ -133,7 +152,7 @@
         :variant="selectedVariant"
         :variant-action="variantAction"
         @name-changed="updateOrAddVariant"
-        :selected-row="selectedRowData?.id"
+        :selected-row="selectedRowData?.variantGroupId"
       />
     </q-dialog>
     <q-dialog v-model="isVariantGroupStatusModalVisible">
@@ -146,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { variantColumn } from 'src/pages/variant/utils';
@@ -176,6 +195,7 @@ const isVariantModalVisible = ref<boolean>(false);
 const variantData = ref<IVariantData[]>([]);
 const isVariantGroupStatusModalVisible = ref(false);
 const variantAction = ref<string>('');
+const filter = ref('');
 const isLoading = ref(false);
 const pagination = ref({
   sortBy: 'desc',
@@ -187,10 +207,13 @@ const pagination = ref({
 onMounted(() => {
   getVariantGroupList();
 });
+
 const getVariantGroupList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
+  if (filterChanged.value) return;
   if (isLoading.value) return;
+
   isLoading.value = true;
   if (data) {
     pagination.value = { ...pagination.value, ...data.pagination };
@@ -232,7 +255,8 @@ const handleUpdateStatus = async (
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const variantGroupId = selectedRowData.value?.id ?? -1;
+    const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
+
     const res = await variantGroupUpdateStatus(variantGroupId);
     if (res.type === 'Success') {
       $q.notify({
@@ -285,7 +309,7 @@ const updateOrAddVariant = async (
   if (isLoading.value) return;
   isLoading.value = false;
   try {
-    const variantGroupId = selectedRowData.value?.id ?? -1;
+    const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
     const res = await (action === 'Add'
       ? addVariantGroupApi(name)
       : updateVariantGroupApi({ variantGroupId, name }));
@@ -311,4 +335,17 @@ const updateOrAddVariant = async (
   isVariantModalVisible.value = false;
   callback();
 };
+const filteredRows = ref<IVariantData[]>([]);
+const filterChanged = ref(false);
+function setFilteredData() {
+  filterChanged.value = true;
+  filteredRows.value = variantData.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  );
+  setTimeout(() => {
+    filterChanged.value = false;
+  }, 200);
+}
+watch(filter, setFilteredData);
+watch(variantData, setFilteredData);
 </script>

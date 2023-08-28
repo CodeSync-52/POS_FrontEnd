@@ -83,7 +83,7 @@ const props = withDefaults(defineProps<propTypes>(), {
   isFetchingArticleList: false,
 });
 const selectedArticles = ref<{ productId: number; productName?: string }[]>([]);
-const updateArticleChecked = (id: number, name: string) => {
+const updateArticleChecked = (id: number, productName: string) => {
   const existingArticleIndex = selectedArticles.value.findIndex(
     (x) => x.productId === id
   );
@@ -93,7 +93,7 @@ const updateArticleChecked = (id: number, name: string) => {
     selectedArticles.value.splice(existingArticleIndex, 1);
   } else {
     // If the article doesn't exist, add it
-    selectedArticles.value.push({ productId: id, productName: name });
+    selectedArticles.value.push({ productId: id, productName });
   }
 };
 
