@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -31,7 +31,14 @@
         <template v-slot:top>
           <div class="font-medium text-lg"><span>Variant Group</span></div>
           <q-space />
-          <q-input outlined dense color="primary" label="Name" v-model="filter">
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="btn-primary"
+            label="Name"
+            v-model="filter"
+          >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -128,6 +135,8 @@
                 unelevated
                 dense
                 icon="edit"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary !px-[5px]"
                 @click="onEditButtonClick(props.row)"
               />
             </div>

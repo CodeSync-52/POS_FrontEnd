@@ -22,7 +22,7 @@
         label="Cancel"
         color="white"
         v-close-popup
-        class="bg-btn-cancel"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
       />
       <q-btn
         flat

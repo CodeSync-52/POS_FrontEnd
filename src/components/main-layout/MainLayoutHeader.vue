@@ -18,7 +18,7 @@
           <div class="accountInfoIcon relative flex">
             <div class="flex justify-center items-center">
               <span
-                class="text-black rounded-full text-bold flex justify-center items-center bg-[#bab6b6] p-[10px] m-2"
+                class="text-black rounded-full text-bold flex justify-center items-center bg-[#bab6b6] m-2 w-[3rem] h-[3rem]"
               >
                 {{
                   authStore.loggedInUser?.fullName
