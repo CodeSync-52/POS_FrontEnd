@@ -70,17 +70,17 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                v-if="props.row.image"
                 class="w-12 h-8 overflow-hidden cursor-pointer"
                 @click="handleShowImagePreview(props.row.image)"
               >
                 <img
                   class="bg-contain h-full w-full"
-                  :src="getImageUrl(props.row.image)"
+                  :src="
+                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                  "
                   alt="img"
                 />
               </div>
-              <span v-else>none</span>
             </q-td>
           </template>
           <template v-slot:bottom-row="props">
@@ -197,17 +197,17 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                v-if="props.row.image"
                 class="w-12 h-8 overflow-hidden cursor-pointer"
                 @click="handleShowImagePreview(props.row.image)"
               >
                 <img
                   class="bg-contain h-full w-full"
-                  :src="getImageUrl(props.row.image)"
+                  :src="
+                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                  "
                   alt="img"
                 />
               </div>
-              <span v-else>none</span>
             </q-td>
           </template>
           <template v-slot:bottom-row="props">

@@ -1,7 +1,7 @@
 <template>
-  <q-card class="">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
-      <div class="text-h6 row justify-between q-mb-md">
+      <div class="text-lg font-medium row justify-between mb-2">
         <span> Edit Article</span>
         <q-btn icon="close" flat unelevated dense v-close-popup />
       </div>
@@ -85,6 +85,7 @@
                 icon="add"
                 rounded
                 dense
+                unelevated
                 @click="isCategoryModalVisible = true"
                 color="btn-primary"
               />
@@ -100,16 +101,18 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-actions class="row justify-end">
+    <q-card-actions align="right">
       <q-btn
         label="Close"
         color="Signature"
+        unelevated
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
         v-close-popup
       />
       <q-btn
         label="Save"
         color="btn-primary"
+        unelevated
         :disable="!articleInfo.name || isImageSizeGreater()"
         @click="handleUpdateArticle"
       />

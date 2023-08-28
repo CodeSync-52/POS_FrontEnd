@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
 
@@ -15,7 +15,6 @@
         label="Add New"
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
-        unelevated
         color=""
         @click="handleAddNewReceipt"
       />
@@ -59,17 +58,15 @@
       />
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
         <q-btn
-          unelevated
           :loading="isLoading"
           color=""
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
           :disable="filterSearch.userId !== null && filterSearch.userId < 0"
-          @click="handleFilterSearch"
+          @click="getReceiptList()"
         />
         <q-btn
-          unelevated
           color=""
           :loading="isLoading"
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
@@ -237,7 +234,7 @@ import {
 } from 'src/interfaces';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { receiptListApi, cancelReceiptApi } from 'src/services';
 import { isPosError, receiptColumn } from 'src/utils';
 import { useRouter } from 'vue-router';
@@ -258,6 +255,7 @@ const defaultPagination = {
 };
 const pagination = ref<IPagination>(defaultPagination);
 const isCancellingReceipt = ref(false);
+const apiController = ref<AbortController | null>(null);
 const filterSearch = ref<{
   userId: null | number;
   userName: null | string;
@@ -272,10 +270,15 @@ const filterSearch = ref<{
 onMounted(() => {
   getReceiptList();
 });
-const handleFilterSearch = () => {
-  getReceiptList();
-};
+onUnmounted(() => {
+  if (apiController.value) {
+    apiController.value.abort();
+  }
+});
 const handleResetFilter = () => {
+  if (Object.values(filterSearch.value).every((value) => value === null)) {
+    return;
+  }
   filterSearch.value = {
     userId: null,
     userName: null,
@@ -329,14 +332,22 @@ const getReceiptList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
-    const res = await receiptListApi({
-      ToDate: filterSearch.value.endDate,
-      FromDate: filterSearch.value.startDate,
-      UserId: filterSearch.value.userId,
-      FullName: filterSearch.value.userName,
-      PageNumber: pagination.value.page,
-      PageSize: pagination.value.rowsPerPage,
-    });
+    if (isLoading.value && apiController.value) {
+      apiController.value.abort();
+      apiController.value = null;
+    }
+    apiController.value = new AbortController();
+    const res = await receiptListApi(
+      {
+        ToDate: filterSearch.value.endDate,
+        FromDate: filterSearch.value.startDate,
+        UserId: filterSearch.value.userId,
+        FullName: filterSearch.value.userName,
+        PageNumber: pagination.value.page,
+        PageSize: pagination.value.rowsPerPage,
+      },
+      apiController.value
+    );
     if (res?.data) {
       receiptData.value = res.data.items;
       pagination.value.rowsNumber = res.data.totalItemCount;

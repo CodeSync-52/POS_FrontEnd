@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4 mt-2"
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -113,13 +113,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { QTableColumn, useQuasar } from 'quasar';
+import { onMounted, ref, watch } from 'vue';
+import { useQuasar } from 'quasar';
 import CustomerStatusModal from 'components/customer-group-management/CustomerStatusModal.vue';
 import AddUserModal from 'components/customer-group-management/AddCustomerModal.vue';
 import {
   EActionPermissions,
-  ICustomerData,
   ICustomerListResponse,
   EUserModules,
   getRoleModuleDisplayName,
@@ -131,7 +130,7 @@ import {
   updateCustomerGroup,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
-import { isPosError } from 'src/utils';
+import { isPosError, customerGroupColumns } from 'src/utils';
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CustomerGroupManagement
 );
@@ -153,30 +152,19 @@ const isEditCustomerGroup = ref(false);
 const isAddCustomerModalVisible = ref(false);
 const newCustomerName = ref('');
 const isLoading = ref(false);
-const customerGroupColumns: QTableColumn<ICustomerData>[] = [
-  {
-    name: 'name',
-    required: true,
-    label: 'Name',
-    align: 'left',
-    sortable: true,
-    field: 'name',
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    field: 'status',
-    align: 'left',
-    sortable: false,
-  },
-  {
-    name: 'action',
-    label: 'Action',
-    field: 'action',
-    align: 'left',
-    sortable: false,
-  },
-];
+const filteredRows = ref<ICustomerListResponse[]>([]);
+const filterChanged = ref(false);
+function setFilteredData() {
+  filterChanged.value = true;
+  filteredRows.value = customerGroupRows.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  );
+  setTimeout(() => {
+    filterChanged.value = false;
+  }, 200);
+}
+watch(filter, setFilteredData);
+watch(customerGroupRows, setFilteredData);
 const updateOrAddCustomer = async (
   newName: string,
   action: string,
@@ -249,12 +237,6 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   callback();
   editStatusPopup.value = false;
 };
-
-const filteredRows = computed(() =>
-  customerGroupRows.value.filter((row) =>
-    row.name.toLowerCase().includes(filter.value.toLowerCase())
-  )
-);
 const showAddNewCustomerGroupPopup = () => {
   selectedRowData.value = null;
   isEditCustomerGroup.value = false;
@@ -284,6 +266,7 @@ onMounted(() => {
 async function fetchingCustomerGroupList(data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) {
+  if (filterChanged.value) return;
   if (isLoading.value) return;
   isLoading.value = true;
   if (data) {

@@ -1,8 +1,8 @@
 <template>
-  <q-card class="q-pa-md min-w-[400px]">
-    <q-card-section class="q-pa-none">
-      <div class="row items-center q-mb-md justify-between">
-        <div class="text-h6">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
+    <q-card-section>
+      <div class="row items-center mb-2 justify-between">
+        <div class="text-lg font-medium">
           <span> {{ categoryAction }} Subcategory</span>
         </div>
         <q-btn icon="close" flat unelevated dense v-close-popup />
@@ -21,27 +21,25 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-actions class="q-pb-none q-px-none" align="right">
-      <div class="row justify-end gap-4">
-        <q-btn
-          label="Cancel"
-          flat
-          unelevated
-          color="signature"
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-          v-close-popup
-        />
-        <q-btn
-          :label="categoryAction === 'Edit' ? 'Save' : 'Add'"
-          flat
-          :loading="isLoading"
-          :disable="!categoryData.name"
-          unelevated
-          color="signature"
-          class="bg-btn-primary hover:bg-btn-primary-hover"
-          @click="saveNewCategory"
-        />
-      </div>
+    <q-card-actions align="right">
+      <q-btn
+        label="Cancel"
+        flat
+        unelevated
+        color="signature"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        v-close-popup
+      />
+      <q-btn
+        :label="categoryAction === 'Edit' ? 'Save' : 'Add'"
+        flat
+        :loading="isLoading"
+        :disable="!categoryData.name"
+        unelevated
+        color="signature"
+        class="bg-btn-primary hover:bg-btn-primary-hover"
+        @click="saveNewCategory"
+      />
     </q-card-actions>
   </q-card>
 </template>

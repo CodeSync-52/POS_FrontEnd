@@ -1,5 +1,5 @@
 <template>
-  <q-card class="min-w-[400px]">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="flex justify-between items-center mb-2">
         <span class="text-lg font-medium">{{
@@ -30,11 +30,13 @@
         label="Close"
         color="white"
         v-close-popup
+        unelevated
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
       />
       <q-btn
         flat
         :loading="isLoading"
+        unelevated
         :label="isCancel ? 'Cancel' : 'Generate'"
         color="white"
         class="bg-btn-primary hover:bg-btn-primary-hover"

@@ -75,7 +75,7 @@ export const editBillGenerationRecordsColumn: QTableColumn<IProductInfoDetailLis
     },
     {
       name: 'amount',
-      label: 'amount',
+      label: 'Amount',
       align: 'left',
       field: (row) => row.amount,
     },
@@ -108,7 +108,7 @@ export const BillGenerationDetailsInfoColumn: QTableColumn<IBillGenerationDetail
     },
     {
       name: 'amount',
-      label: 'amount',
+      label: 'Amount',
       align: 'left',
       field: (row) => row.amount,
     },

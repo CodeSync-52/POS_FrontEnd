@@ -1,8 +1,9 @@
 <template>
-  <q-card class="q-pa-md min-w-[400px]">
-    <q-card-section class="q-pa-none">
-      <div class="text-h6 q-mb-md">
-        <span> {{ categoryAction }} Category</span>
+  <q-card class="min-w-[310px] md:min-w-[400px]">
+    <q-card-section>
+      <div class="text-lg mb-2 font-medium row justify-between items-center">
+        <span> {{ categoryAction }} Category </span>
+        <q-btn v-close-popup flat unelevated dense icon="close" />
       </div>
       <q-input
         dense
@@ -12,7 +13,7 @@
         color="btn-primary"
       />
     </q-card-section>
-    <q-card-actions class="q-pb-none q-px-none" align="right">
+    <q-card-actions align="right">
       <div class="row justify-end gap-4">
         <q-btn
           label="Cancel"

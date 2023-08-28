@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -195,7 +195,7 @@
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
@@ -214,6 +214,7 @@ import {
   updateProductApi,
 } from 'src/services';
 import { statusOptions } from 'src/constants';
+import { CanceledError } from 'axios';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const router = useRouter();
@@ -226,6 +227,7 @@ const isLoading = ref(false);
 const isEditArticleModalVisible = ref(false);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
+const apiController = ref<AbortController | null>(null);
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
     selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
@@ -239,7 +241,15 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+onUnmounted(() => {
+  if (apiController.value) {
+    apiController.value.abort();
+  }
+});
 const resetFilter = () => {
+  if (Object.values(filterSearch.value).every((value) => value === null)) {
+    return;
+  }
   filterSearch.value = {
     articleName: null,
     status: null,
@@ -384,17 +394,26 @@ const getArticleList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
-    const res = await articleListApi({
-      PageNumber: pagination.value.page,
-      PageSize: pagination.value.rowsPerPage,
-      Name: filterSearch.value.articleName,
-      Status: filterSearch.value.status,
-    });
+    if (isLoading.value && apiController.value) {
+      apiController.value.abort();
+      apiController.value = null;
+    }
+    apiController.value = new AbortController();
+    const res = await articleListApi(
+      {
+        PageNumber: pagination.value.page,
+        PageSize: pagination.value.rowsPerPage,
+        Name: filterSearch.value.articleName,
+        Status: filterSearch.value.status,
+      },
+      apiController.value
+    );
     if (res.data) {
       ArticleData.value = res.data.items;
       pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {
+    if (e instanceof CanceledError) return;
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
       message = e.message;

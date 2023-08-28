@@ -1,5 +1,5 @@
 <template>
-  <q-card class="min-w-[400px]">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="text-lg mb-2 font-medium row justify-between items-center">
         <span> Edit Customer Status </span>

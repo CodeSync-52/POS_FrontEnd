@@ -1,5 +1,5 @@
 <template>
-  <q-card class="min-w-[400px]">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="row justify-between items-center mb-2">
         <span class="text-lg font-medium"> {{ action }}</span>

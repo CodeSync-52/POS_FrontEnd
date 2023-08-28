@@ -1,14 +1,14 @@
 <template>
-  <q-card class="q-pa-md min-w-[400px]">
-    <q-card-section class="q-pa-none">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
+    <q-card-section>
       <div class="row items-center q-mb-md justify-between">
-        <div class="text-h6">
+        <div class="text-lg font-medium">
           <span> {{ variantAction }} Variant</span>
         </div>
         <q-btn icon="close" flat unelevated dense v-close-popup />
       </div>
-      <div class="row q-col-gutter-x-md">
-        <div class="col-6">
+      <div class="row q-col-gutter-md">
+        <div class="col-md-6 col-12">
           <div>
             <q-input
               v-model="variantData.name"
@@ -19,7 +19,7 @@
             />
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-6">
           <div>
             <q-input
               v-model="variantData.displayName"
@@ -32,27 +32,25 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-actions class="q-pb-none q-px-none" align="right">
-      <div class="row justify-end gap-4">
-        <q-btn
-          label="Cancel"
-          flat
-          unelevated
-          color="signature"
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-          v-close-popup
-        />
-        <q-btn
-          :label="variantAction === 'Edit' ? 'Save' : 'Add'"
-          flat
-          :loading="isLoading"
-          :disable="!variantData.name || !variantData.displayName"
-          unelevated
-          color="signature"
-          class="bg-btn-primary hover:bg-btn-primary-hover"
-          @click="saveNewVariant"
-        />
-      </div>
+    <q-card-actions align="right">
+      <q-btn
+        label="Cancel"
+        flat
+        unelevated
+        color="signature"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        v-close-popup
+      />
+      <q-btn
+        :label="variantAction === 'Edit' ? 'Save' : 'Add'"
+        flat
+        :loading="isLoading"
+        :disable="!variantData.name || !variantData.displayName"
+        unelevated
+        color="signature"
+        class="bg-btn-primary hover:bg-btn-primary-hover"
+        @click="saveNewVariant"
+      />
     </q-card-actions>
   </q-card>
 </template>

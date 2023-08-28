@@ -1,20 +1,23 @@
 import { IAddNewReceipt, IGenericResponse, IReceiptData } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
-export const receiptListApi = async ({
-  ToDate,
-  PageNumber = 1,
-  PageSize = 50,
-  FromDate,
-  UserId,
-  FullName,
-}: {
-  ToDate: string | null;
-  FromDate: string | null;
-  UserId: number | null;
-  FullName: string | null;
-  PageNumber: number;
-  PageSize: number;
-}) => {
+export const receiptListApi = async (
+  {
+    ToDate,
+    PageNumber = 1,
+    PageSize = 50,
+    FromDate,
+    UserId,
+    FullName,
+  }: {
+    ToDate: string | null;
+    FromDate: string | null;
+    UserId: number | null;
+    FullName: string | null;
+    PageNumber: number;
+    PageSize: number;
+  },
+  controller?: AbortController
+) => {
   const res = await makeApiCall<
     IGenericResponse<{ items: IReceiptData[]; totalItemCount: number }>
   >({
@@ -28,6 +31,7 @@ export const receiptListApi = async ({
       PageNumber,
       PageSize,
     },
+    signal: controller?.signal,
   });
   return res;
 };
