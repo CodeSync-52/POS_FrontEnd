@@ -162,8 +162,7 @@
                 dense
                 unelevated
                 icon="edit"
-                text-color="white"
-                class="bg-btn-primary hover:bg-btn-secondary"
+                class="hover:text-btn-primary"
                 @click="onEditButtonClick(props.row)"
               />
             </div>

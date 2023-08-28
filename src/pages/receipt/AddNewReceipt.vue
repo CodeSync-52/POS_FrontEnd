@@ -129,7 +129,7 @@
       <q-card-actions class="row items-center justify-end">
         <q-btn
           :label="isReceiptPreview ? 'Close' : 'Cancel'"
-          color="btn-secondary"
+          color="btn-cancel hover:bg-btn-cancel-hover"
           @click="cancelNewReceipt"
         />
         <q-btn

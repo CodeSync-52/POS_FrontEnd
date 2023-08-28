@@ -12,6 +12,7 @@
           )
         "
         label="Add New"
+        unelevated
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary text-signature"
         @click="addNewVariant"
@@ -34,7 +35,7 @@
             outlined
             dense
             debounce="300"
-            color="primary"
+            color="btn-primary"
             label="Name"
             v-model="filter"
           >
@@ -79,6 +80,7 @@
                 unelevated
                 dense
                 icon="edit"
+                class="hover:text-btn-primary"
                 @click="editVariant(props.row)"
               />
             </div>
