@@ -2,7 +2,7 @@
   <q-card class="min-w-[400px]">
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-2xl font-medium"> {{ action }}</span>
+        <span class="text-lg font-medium"> {{ action }}</span>
         <span
           ><q-btn
             class="close-modal"
@@ -132,7 +132,7 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-actions class="justify-end">
+    <q-card-actions align="right">
       <q-btn
         flat
         label="Cancel"

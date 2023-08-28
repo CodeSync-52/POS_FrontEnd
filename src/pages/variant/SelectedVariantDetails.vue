@@ -19,13 +19,30 @@
     </div>
     <div class="py-4">
       <q-table
-        :rows="variantDetailsRecord"
+        :rows="filteredRows"
         :columns="variantDetailsColumn"
         :loading="isLoading"
         row-key="name"
+        :filter="filter"
         v-model:pagination="pagination"
         @request="getVariantList"
       >
+        <template v-slot:top>
+          <div class="font-medium text-lg"><span>Variant</span></div>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template
           v-slot:header-cell-action
           v-if="
@@ -112,7 +129,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import VariantDetailsModal from 'src/components/variant-management/VariantDetailsModal.vue';
 import VariantStatusModal from 'src/components/variant-management/VariantStatusModal.vue';
 import {
@@ -135,6 +152,7 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.VariantManagement);
 const authStore = useAuthStore();
 const router = useRouter();
 const $q = useQuasar();
+const filter = ref('');
 const isVariantDetailsModalVisible = ref<boolean>(false);
 const variantDetailsRecord = ref<IVariantDetailsData[]>([]);
 const variantAction = ref<string>('');
@@ -153,6 +171,11 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const filteredRows = computed(() =>
+  variantDetailsRecord.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  )
+);
 const selectedRowData = ref<IVariantDetailsData | null>(null);
 onMounted(() => {
   getVariantList();

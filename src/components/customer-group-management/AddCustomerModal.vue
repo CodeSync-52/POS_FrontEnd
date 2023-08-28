@@ -1,12 +1,13 @@
 <template>
-  <q-card class="q-pa-md full-width">
+  <q-card class="min-w-[400px]">
     <q-card-section>
-      <div class="text-h6 q-mb-md">
+      <div class="text-lg font-medium mb-2 row justify-between items-center">
         <span>
           {{
             isEditCustomerGroup ? 'Edit Customer Group' : 'Add Customer Group'
           }}</span
         >
+        <q-btn icon="close" flat unelevated dense v-close-popup />
       </div>
       <q-input
         dense
@@ -16,7 +17,7 @@
         color="btn-primary"
       />
     </q-card-section>
-    <div class="row justify-end gap-4">
+    <q-card-actions align="right">
       <q-btn
         label="Cancel"
         flat
@@ -46,7 +47,7 @@
         :loading="isLoading"
         @click="saveNewCustomer('add')"
       />
-    </div>
+    </q-card-actions>
   </q-card>
 </template>
 <script setup lang="ts">

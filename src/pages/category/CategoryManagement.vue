@@ -29,6 +29,7 @@
         @request="getCategoryList"
       >
         <template v-slot:top>
+          <div class="font-medium text-lg"><span>Category</span></div>
           <q-space />
           <q-input
             outlined

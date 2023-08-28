@@ -2,6 +2,7 @@
   <div>
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
+
     >
       <span class="text-xl font-medium">{{ pageTitle }} Details</span>
       <q-btn
@@ -21,12 +22,29 @@
       <q-table
         tabindex="0"
         :loading="isLoading"
-        :rows="categoryDetailsRecord"
+        :rows="filteredRows"
         :columns="categoryDetailsColumn"
+        :filter="filter"
         row-key="name"
         v-model:pagination="pagination"
         @request="getCategoryDetailsList"
       >
+        <template v-slot:top>
+          <div class="font-medium text-lg"><span>Category Details</span></div>
+          <q-space />
+          <q-input
+            outlined
+            dense
+            debounce="300"
+            color="primary"
+            label="Name"
+            v-model="filter"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template
           v-if="
             authStore.checkUserHasPermission(
@@ -119,7 +137,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import CategoryDetailsModal from 'src/components/category-management/CategoryDetailsModal.vue';
 import CategoryStatusModal from 'src/components/category-management/CategoryStatusModal.vue';
@@ -142,6 +160,7 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.CategoryManagement);
 const authStore = useAuthStore();
 const router = useRouter();
 const $q = useQuasar();
+const filter = ref('');
 onMounted(() => {
   getCategoryDetailsList();
 });
@@ -164,6 +183,11 @@ const category = ref<{ name: string; id: number }>({
   id: -1,
 });
 const selectedRowData = ref<ICategoryDetailsData | null>(null);
+const filteredRows = computed(() =>
+  categoryDetailsRecord.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  )
+);
 const getCategoryDetailsList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {

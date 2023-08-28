@@ -2,15 +2,8 @@
   <q-card class="min-w-[400px]">
     <q-card-section>
       <div class="flex justify-between items-center mb-2">
-        <span class="text-2xl font-medium"> {{ action }}</span>
-        <q-btn
-          class="font-medium"
-          icon="close"
-          flat
-          unelevated
-          dense
-          v-close-popup
-        />
+        <span class="text-lg font-medium"> {{ action }}</span>
+        <q-btn icon="close" flat unelevated dense v-close-popup />
       </div>
       <div class="column">
         <q-radio
@@ -27,13 +20,15 @@
         />
       </div>
     </q-card-section>
-    <q-card-actions class="row justify-end q-gutter-x-md">
+    <q-card-actions align="right">
       <q-btn
         flat
         label="Cancel"
         color="white"
         v-close-popup
-        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+
+        class="bg-btn-cancel"
+
       />
       <q-btn
         flat

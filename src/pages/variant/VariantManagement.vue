@@ -29,6 +29,7 @@
         @request="getVariantGroupList"
       >
         <template v-slot:top>
+          <div class="font-medium text-lg"><span>Variant Group</span></div>
           <q-space />
           <q-input
             outlined
@@ -85,7 +86,7 @@
                 !authStore.checkUserHasPermission(
                   EUserModules.VariantManagement,
                   EActionPermissions.Delete
-                ) &&
+                ) ||
                 !authStore.checkUserHasPermission(
                   EUserModules.VariantManagement,
                   EActionPermissions.Update
@@ -164,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { variantColumn } from 'src/pages/variant/utils';
@@ -206,15 +207,13 @@ const pagination = ref({
 onMounted(() => {
   getVariantGroupList();
 });
-const filteredRows = computed(() =>
-  variantData.value.filter((row) =>
-    row.name.toLowerCase().includes(filter.value.toLowerCase())
-  )
-);
+
 const getVariantGroupList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
+  if (filterChanged.value) return;
   if (isLoading.value) return;
+
   isLoading.value = true;
   if (data) {
     pagination.value = { ...pagination.value, ...data.pagination };
@@ -336,4 +335,17 @@ const updateOrAddVariant = async (
   isVariantModalVisible.value = false;
   callback();
 };
+const filteredRows = ref<IVariantData[]>([]);
+const filterChanged = ref(false);
+function setFilteredData() {
+  filterChanged.value = true;
+  filteredRows.value = variantData.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  );
+  setTimeout(() => {
+    filterChanged.value = false;
+  }, 200);
+}
+watch(filter, setFilteredData);
+watch(variantData, setFilteredData);
 </script>
