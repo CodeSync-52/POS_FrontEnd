@@ -41,12 +41,17 @@
             <div class="q-gutter-y-xs">
               <div class="row gap-6 items-center">
                 <span class="text-base">Article</span>
-                <q-btn icon="add" rounded dense @click="handleSelectArticle" />
+                <q-btn
+                  icon="add"
+                  rounded
+                  dense
+                  @click="handleSelectArticle"
+                  color="btn-primary"
+                />
               </div>
             </div>
           </div>
         </div>
-
         <q-table
           v-if="selectedArticleData.length > 0"
           :loading="isLoading"
@@ -89,7 +94,7 @@
                   dense
                   unelevated
                   icon="delete"
-                  color="bg-btn-secondary"
+                  color="red"
                   @click="onDeleteButtonClick(props.row)"
                 />
               </div>
@@ -113,6 +118,7 @@
                   v-model="props.row.quantity"
                   type="number"
                   filled
+                  color="btn-primary"
                   style="max-width: 200px"
                 />
               </div>

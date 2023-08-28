@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
 
@@ -93,6 +93,7 @@
         />
       </div>
     </div>
+
     <div class="py-4">
       <q-table
         :loading="isLoading"
@@ -161,7 +162,8 @@
                 dense
                 unelevated
                 icon="edit"
-                color="bg-btn-secondary"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary"
                 @click="onEditButtonClick(props.row)"
               />
             </div>
@@ -206,6 +208,7 @@
           <q-td :props="props">
             <q-btn
               flat
+              class="hover:text-btn-primary"
               unelevated
               dense
               no-caps
@@ -256,6 +259,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useQuasar } from 'quasar';
+import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
 import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
@@ -282,8 +287,6 @@ import {
   updateUser,
   getCustomerGroupList,
 } from 'src/services';
-import { useQuasar } from 'quasar';
-import { CanceledError } from 'axios';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const customerGroupList = ref<ICustomerListResponse[]>([]);
@@ -301,16 +304,6 @@ const defaultFilterValues = {
   role: null,
   status: null,
 };
-
-const roleDropdownOptions = computed(() =>
-  roleOptions.filter(
-    (role) =>
-      role.value === EUserRoles.Customer ||
-      role.value === EUserRoles.Admin ||
-      role.value === EUserRoles.SuperAdmin
-  )
-);
-
 const UserRows = ref<IUserManagementData[]>([]);
 const action = ref<string>('');
 const apiController = ref<AbortController | null>(null);
@@ -331,6 +324,15 @@ const pagination = ref<{
   rowsNumber: number;
 }>(defaultPagination);
 const filterSearch = ref<IUserFilterList>(defaultFilterValues);
+const roleDropdownOptions = computed(() =>
+  roleOptions.filter(
+    (role) =>
+      role.value === EUserRoles.Customer ||
+      role.value === EUserRoles.Admin ||
+      role.value === EUserRoles.SuperAdmin
+  )
+);
+
 onMounted(() => {
   getUserList();
   getCustomerListOption();

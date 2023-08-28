@@ -103,22 +103,20 @@
           v-slot:body-cell-action="props"
         >
           <q-td class="flex justify-start" :props="props">
-            <div
-              v-if="
-                authStore.checkUserHasPermission(
-                  EUserModules.BillGeneration,
-                  EActionPermissions.Delete
-                ) &&
-                authStore.checkUserHasPermission(
-                  EUserModules.BillGeneration,
-                  EActionPermissions.Delete
-                ) &&
-                props.row.billStatus !== 'Cancelled' &&
-                props.row.billStatus !== 'Completed'
-              "
-              class="flex gap-2 flex-nowrap"
-            >
+            <div class="flex gap-2 flex-nowrap">
               <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.BillGeneration,
+                    EActionPermissions.Delete
+                  ) &&
+                  authStore.checkUserHasPermission(
+                    EUserModules.BillGeneration,
+                    EActionPermissions.Delete
+                  ) &&
+                  props.row.billStatus !== 'Cancelled' &&
+                  props.row.billStatus !== 'Completed'
+                "
                 size="sm"
                 flat
                 unelevated
@@ -139,27 +137,60 @@
                 "
               />
               <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.BillGeneration,
+                    EActionPermissions.Delete
+                  ) &&
+                  authStore.checkUserHasPermission(
+                    EUserModules.BillGeneration,
+                    EActionPermissions.Delete
+                  ) &&
+                  props.row.billStatus !== 'Cancelled' &&
+                  props.row.billStatus !== 'Completed'
+                "
                 size="sm"
                 flat
                 unelevated
                 dense
-                icon="receipt"
-                @click="handleGenerateBill(props.row)"
+                color="green"
+                icon="check"
+                @click="handleGenerateBillPopup(props.row)"
               />
               <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.BillGeneration,
+                    EActionPermissions.Delete
+                  ) &&
+                  authStore.checkUserHasPermission(
+                    EUserModules.BillGeneration,
+                    EActionPermissions.Delete
+                  ) &&
+                  props.row.billStatus !== 'Cancelled' &&
+                  props.row.billStatus !== 'Completed'
+                "
                 size="sm"
                 flat
                 unelevated
                 dense
                 color="red"
                 icon="cancel"
-                @click="handleCancelBill(props.row)"
+                @click="handleCancelBillPopup(props.row)"
               />
             </div>
           </q-td>
         </template>
       </q-table>
     </div>
+    <q-dialog v-model="isCancelOrGenerateBillModalVisible">
+      <generate-or-cancel-bill-modal
+        :is-cancel="isCancel"
+        :selected-row-id="selectedRowData?.billId"
+        @cancel-bill="handleCancelBill"
+        @generate-bill="handleGenerateBill"
+      />
+    </q-dialog>
   </div>
 </template>
 
@@ -169,6 +200,7 @@ import { useQuasar } from 'quasar';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { isPosError, billGenerationColumn } from 'src/utils';
+import GenerateOrCancelBillModal from 'src/components/bill-generation/GenerateOrCancelBillModal.vue';
 import {
   getRoleModuleDisplayName,
   EActionPermissions,
@@ -190,6 +222,8 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const isCancel = ref(false);
+const isCancelOrGenerateBillModalVisible = ref(false);
 const selectedRowData = ref<IBillGenerationData | null>(null);
 const filterSearch = ref<IBillGenerationFilter>({
   userId: null,
@@ -212,44 +246,22 @@ const resetFilter = () => {
   };
   getBillList();
 };
-const handleGenerateBill = async (selectedRow: IBillGenerationData) => {
+const handleGenerateBillPopup = async (selectedRow: IBillGenerationData) => {
   selectedRowData.value = selectedRow;
-  if (isLoading.value) return;
-  isLoading.value = true;
-  try {
-    const res = await completeBillApi(selectedRow.billId);
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        color: 'green',
-      });
-      selectedRowData.value.billStatus = 'Completed';
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      icon: 'error',
-      color: 'red',
-    });
-  }
-  isLoading.value = false;
+  isCancel.value = false;
+  isCancelOrGenerateBillModalVisible.value = true;
 };
-const handleCancelBill = async (selectedRow: IBillGenerationData) => {
-  selectedRowData.value = selectedRow;
-  if (isLoading.value) return;
-  isLoading.value = true;
+const handleGenerateBill = async (id: number, callback: () => void) => {
   try {
-    const res = await cancelBillApi(selectedRow.billId);
+    const res = await completeBillApi(id);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
         color: 'green',
       });
-      selectedRowData.value.billStatus = 'Cancelled';
+      if (selectedRowData.value) {
+        selectedRowData.value.billStatus = 'Completed';
+      }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -262,7 +274,39 @@ const handleCancelBill = async (selectedRow: IBillGenerationData) => {
       color: 'red',
     });
   }
-  isLoading.value = false;
+  callback();
+  isCancelOrGenerateBillModalVisible.value = false;
+};
+const handleCancelBillPopup = async (selectedRow: IBillGenerationData) => {
+  selectedRowData.value = selectedRow;
+  isCancel.value = true;
+  isCancelOrGenerateBillModalVisible.value = true;
+};
+const handleCancelBill = async (id: number, callback: () => void) => {
+  try {
+    const res = await cancelBillApi(id);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.billStatus = 'Cancelled';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  callback();
+  isCancelOrGenerateBillModalVisible.value = false;
 };
 const getBillList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;

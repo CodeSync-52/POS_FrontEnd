@@ -8,18 +8,9 @@
         <div class="row q-mb-md q-col-gutter-md">
           <div class="col-6">
             <q-input
-              v-model="billGenerationData.userId"
-              :disable="true"
-              dense
-              type="number"
-              label="User Id"
-              outlined
-            />
-          </div>
-          <div class="col-6">
-            <q-input
               type="number"
               min="0"
+              disable
               v-model="billGenerationData.outStandingBalance"
               dense
               label="Outstanding Balance"
@@ -29,6 +20,7 @@
           <div class="col-6">
             <q-input
               type="date"
+              disable
               v-model="formattedPurchaseDate"
               dense
               label="Date"
@@ -37,6 +29,7 @@
           </div>
           <div class="col-6">
             <q-input
+              disable
               v-model="billGenerationData.fullName"
               dense
               label="User Name"
@@ -107,7 +100,7 @@
         <q-btn
           label="Cancel"
           color="btn-secondary"
-          @click="router.push('/bill-generation')"
+          @click="router.push('/receipt')"
         />
         <q-btn
           :label="
@@ -130,34 +123,20 @@
     </q-card>
     <q-card v-else>
       <q-card-section>
-        <div
-          v-if="billAction === 'Preview Receipt'"
-          class="row q-mb-md q-col-gutter-md"
-        >
+        <div class="row q-mb-md q-col-gutter-md">
           <div class="col-6">
             <q-input
-              v-model="billGenerationDetailsInfoData.billId"
-              :disable="true"
+              v-model="billGenerationDetailsInfoData.fullName"
+              disable
               dense
-              type="number"
-              label="bill Id"
-              outlined
-            />
-          </div>
-          <div class="col-6">
-            <q-input
-              v-model="billGenerationDetailsInfoData.totalAmount"
-              :disable="billAction === 'Preview Receipt'"
-              dense
-              type="number"
-              label="Total Amount"
+              label="Name"
               outlined
             />
           </div>
           <div class="col-6">
             <q-input
               v-model="billGenerationDetailsInfoData.billStatus"
-              :disable="billAction === 'Preview Receipt'"
+              disable
               dense
               type="text"
               label="Bill Status"
@@ -166,30 +145,21 @@
           </div>
           <div class="col-6">
             <q-input
-              v-model="billGenerationDetailsInfoData.fullName"
-              :disable="billAction === 'Preview Receipt'"
+              v-model="billGenerationDetailsInfoData.totalAmount"
+              disable
               dense
-              label="Name"
+              type="number"
+              label="Total Amount"
               outlined
             />
           </div>
           <div class="col-6">
             <q-input
               v-model="billGenerationDetailsInfoData.createdDate"
-              :disable="true"
+              disable
               dense
               type="date"
               label="Created Date"
-              outlined
-            />
-          </div>
-          <div class="col-6">
-            <q-input
-              v-model="billGenerationDetailsInfoData.billId"
-              :disable="true"
-              dense
-              type="number"
-              label="bill Id"
               outlined
             />
           </div>
@@ -410,7 +380,7 @@ const addNewBill = async (newBillInfo: INewBillData) => {
         message: res.message,
         color: 'green',
       });
-      router.push('/bill-generation');
+      router.push('/receipt');
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -446,6 +416,9 @@ const getBillDetailInfo = async (BillId: number) => {
     if (res.type === 'Success') {
       if (res.data) {
         billGenerationDetailsInfoData.value = res.data;
+        billGenerationDetailsInfoData.value.createdDate = moment(
+          res.data.createdDate
+        ).format('YYYY-MM-DD');
       }
     }
   } catch (e) {

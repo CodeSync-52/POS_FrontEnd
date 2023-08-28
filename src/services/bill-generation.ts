@@ -1,6 +1,7 @@
 import {
   IBillDetail,
   IBillGenerationData,
+  IBillGenerationDetailsInfoData,
   IBillGenerationFilter,
   IGenericResponse,
   INewBillData,
@@ -68,7 +69,9 @@ export const billDetailsApi = async (purchaseId: number) => {
   return res;
 };
 export const billDetailInfoApi = async (BillId: number) => {
-  const res = await makeApiCall<IGenericResponse<null>>({
+  const res = await makeApiCall<
+    IGenericResponse<IBillGenerationDetailsInfoData>
+  >({
     url: 'api/bill/detailinfo',
     method: 'GET',
     params: {

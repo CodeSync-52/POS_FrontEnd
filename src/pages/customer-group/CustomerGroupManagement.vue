@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -23,12 +23,13 @@
         @request="fetchingCustomerGroupList"
       >
         <template v-slot:top>
+          <div class="font-medium text-lg"><span>Customer Group</span></div>
           <q-space />
           <q-input
             outlined
             dense
             debounce="300"
-            color="primary"
+            color="btn-primary"
             label="Name"
             v-model="filter"
           >
@@ -45,6 +46,16 @@
                 flat
                 unelevated
                 dense
+                :disable="
+                  !authStore.checkUserHasPermission(
+                    EUserModules.CustomerGroupManagement,
+                    EActionPermissions.Update
+                  ) ||
+                  !authStore.checkUserHasPermission(
+                    EUserModules.CustomerGroupManagement,
+                    EActionPermissions.Delete
+                  )
+                "
                 class="hover:text-btn-primary"
                 :label="props.row.status"
                 @click="handleEditStatusPopup(props.row)"
@@ -68,18 +79,13 @@
           <q-td class="!text-right" :props="props">
             <div class="flex gap-2 md:pr-4">
               <q-btn
-                v-if="
-                  authStore.checkUserHasPermission(
-                    EUserModules.CustomerGroupManagement,
-                    EActionPermissions.Update
-                  )
-                "
                 size="sm"
                 flat
                 dense
                 unelevated
                 icon="edit"
-                color="bg-btn-secondary"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
               />
             </div>
@@ -115,8 +121,9 @@ import {
   EActionPermissions,
   ICustomerData,
   ICustomerListResponse,
+  EUserModules,
+  getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { EUserModules, getRoleModuleDisplayName } from 'src/interfaces';
 import {
   getCustomerGroupList,
   changeCustomerStatus,
@@ -138,6 +145,38 @@ const pagination = ref({
   rowsNumber: 0,
 });
 const filter = ref('');
+const customerGroupRows = ref<ICustomerListResponse[]>([]);
+const selectedRowData = ref<ICustomerListResponse | null>(null);
+const selectedStatus = ref<string>('');
+const editStatusPopup = ref(false);
+const isEditCustomerGroup = ref(false);
+const isAddCustomerModalVisible = ref(false);
+const newCustomerName = ref('');
+const isLoading = ref(false);
+const customerGroupColumns: QTableColumn<ICustomerData>[] = [
+  {
+    name: 'name',
+    required: true,
+    label: 'Name',
+    align: 'left',
+    sortable: true,
+    field: 'name',
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    field: 'status',
+    align: 'left',
+    sortable: false,
+  },
+  {
+    name: 'action',
+    label: 'Action',
+    field: 'action',
+    align: 'left',
+    sortable: false,
+  },
+];
 const updateOrAddCustomer = async (
   newName: string,
   action: string,
@@ -210,42 +249,12 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   callback();
   editStatusPopup.value = false;
 };
-const customerGroupColumns: QTableColumn<ICustomerData>[] = [
-  {
-    name: 'name',
-    required: true,
-    label: 'Name',
-    align: 'left',
-    sortable: true,
-    field: 'name',
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    field: 'status',
-    align: 'left',
-    sortable: false,
-  },
-  {
-    name: 'action',
-    label: 'Action',
-    field: 'name',
-    align: 'left',
-    sortable: false,
-  },
-];
-const customerGroupRows = ref<ICustomerListResponse[]>([]);
+
 const filteredRows = computed(() =>
   customerGroupRows.value.filter((row) =>
     row.name.toLowerCase().includes(filter.value.toLowerCase())
   )
 );
-const selectedRowData = ref<ICustomerListResponse | null>(null);
-const selectedStatus = ref<string>('');
-const editStatusPopup = ref(false);
-const isEditCustomerGroup = ref(false);
-const isAddCustomerModalVisible = ref(false);
-const newCustomerName = ref('');
 const showAddNewCustomerGroupPopup = () => {
   selectedRowData.value = null;
   isEditCustomerGroup.value = false;
@@ -269,7 +278,6 @@ const handleEditCustomerGroupNamePopup = (
   isAddCustomerModalVisible.value = true;
   selectedRowData.value = selectedRow;
 };
-const isLoading = ref(false);
 onMounted(() => {
   fetchingCustomerGroupList();
 });

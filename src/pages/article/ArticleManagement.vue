@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -30,7 +30,13 @@
         label="Status"
         color="btn-primary"
       />
-      <q-input v-model="filterSearch.articleName" outlined label="Name" dense />
+      <q-input
+        v-model="filterSearch.articleName"
+        outlined
+        label="Name"
+        dense
+        color="btn-primary"
+      />
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
         <q-btn
           unelevated
@@ -77,6 +83,8 @@
           <q-td :props="props">
             <q-btn
               size="sm"
+              color="hover:text-btn-primary"
+              class="hover:text-btn-primary"
               dense
               flat
               unelevated
@@ -95,10 +103,10 @@
             <div
               @click="handlePreviewImage(props.row.productImage)"
               v-if="props.row.productImage"
-              class="cursor-pointer w-10 h-5 overflow-hidden"
+              class="cursor-pointer max-w-[2.5rem] h-[40px] min-w-[2.5rem] overflow-hidden rounded-full"
             >
               <img
-                class="w-100 h-100 object-cover"
+                class="w-full h-full object-cover"
                 :src="getImageUrl(props.row.productImage)"
                 alt="img"
               />
@@ -153,6 +161,8 @@
                 unelevated
                 dense
                 icon="edit"
+                text-color="white"
+                class="bg-btn-primary hover:bg-btn-secondary"
                 @click="handleEditArticlePopup(props.row)"
               />
             </div>
@@ -229,10 +239,6 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const defaultFilterValues = {
-  articleName: null,
-  status: null,
-};
 const resetFilter = () => {
   filterSearch.value = {
     articleName: null,
@@ -243,7 +249,10 @@ const resetFilter = () => {
 const filterSearch = ref<{
   articleName: null | string;
   status: string | null;
-}>(defaultFilterValues);
+}>({
+  articleName: null,
+  status: null,
+});
 onMounted(() => {
   getArticleList();
 });
