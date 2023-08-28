@@ -66,14 +66,14 @@ onMounted(() => {
 const emit = defineEmits<{
   (
     event: 'selected-data',
-    data: { productId: number; productName: string }[]
+    data: { productId: number; productName?: string }[]
   ): void;
 }>();
 const handleSave = () => {
   emit('selected-data', selectedArticles.value);
 };
 interface propTypes {
-  currentData: { productId: number; productName: string }[];
+  currentData: { productId: number; productName?: string }[];
   articleList: IArticleData[];
   isFetchingArticleList: boolean;
 }
@@ -82,7 +82,7 @@ const props = withDefaults(defineProps<propTypes>(), {
   articleList: () => [],
   isFetchingArticleList: false,
 });
-const selectedArticles = ref<{ productId: number; productName: string }[]>([]);
+const selectedArticles = ref<{ productId: number; productName?: string }[]>([]);
 const updateArticleChecked = (id: number, productName: string) => {
   const existingArticleIndex = selectedArticles.value.findIndex(
     (x) => x.productId === id
