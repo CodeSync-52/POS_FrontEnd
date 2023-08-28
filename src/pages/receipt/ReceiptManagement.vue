@@ -130,7 +130,7 @@
                 unelevated
                 @click="router.push(`/receipt/${props.row.purchaseId}`)"
                 icon="edit"
-                color="bg-btn-secondary"
+                class="hover:text-btn-primary"
               />
               <q-btn
                 size="sm"
@@ -138,7 +138,7 @@
                 dense
                 unelevated
                 icon="visibility"
-                color="bg-btn-secondary"
+                color="green"
                 @click="router.push(`/receipt/${props.row.purchaseId}/preview`)"
               />
               <q-btn

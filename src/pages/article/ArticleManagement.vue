@@ -12,6 +12,7 @@
           )
         "
         label="Add New"
+        unelevated
         icon="add"
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
         @click="AddNewArticle"
@@ -103,7 +104,7 @@
             <div
               @click="handlePreviewImage(props.row.productImage)"
               v-if="props.row.productImage"
-              class="cursor-pointer max-w-[2.5rem] h-[40px] min-w-[2.5rem] overflow-hidden rounded-full"
+              class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
             >
               <img
                 class="w-full h-full object-cover"
@@ -161,8 +162,7 @@
                 unelevated
                 dense
                 icon="edit"
-                text-color="white"
-                class="bg-btn-primary hover:bg-btn-secondary"
+                class="!px-[5px] hover:text-btn-primary"
                 @click="handleEditArticlePopup(props.row)"
               />
             </div>

@@ -27,20 +27,18 @@
                   size="sm"
                   flat
                   unelevated
+                  class="hover:text-btn-primary"
                   dense
-                  text-color="white"
                   @click="showEditPopup(true, props.row.role)"
-                  class="bg-btn-primary hover:bg-btn-secondary"
                 />
                 <q-btn
                   icon="visibility"
                   size="sm"
                   flat
                   unelevated
-                  text-color="white"
+                  color="green"
                   dense
                   @click="showEditPopup(false, props.row.role)"
-                  class="hover:bg-btn-secondary bg-[#008000]"
                 />
               </div>
             </q-td>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -12,6 +12,7 @@
           )
         "
         label="Add New"
+        unelevated
         icon="add"
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
       />
@@ -25,20 +26,29 @@
         label="User ID"
         type="number"
         dense
+        color="btn-primary"
         outlined
       />
-      <q-input v-model="filterSearch.userName" outlined label="Name" dense />
+      <q-input
+        v-model="filterSearch.userName"
+        outlined
+        label="Name"
+        dense
+        color="btn-primary"
+      />
       <q-input
         v-model="filterSearch.FromDate"
         label="From"
         type="date"
         :max="filterSearch.ToDate"
         outlined
+        color="btn-primary"
         dense
       />
       <q-input
         v-model="filterSearch.ToDate"
         label="To"
+        color="btn-primary"
         type="date"
         :min="filterSearch.FromDate"
         outlined
@@ -122,6 +132,7 @@
                 unelevated
                 dense
                 icon="edit"
+                class="hover:text-btn-primary"
                 @click="
                   router.push(`/bill-generation/${props.row.billId}/edit-bill`)
                 "
@@ -132,6 +143,7 @@
                 unelevated
                 dense
                 icon="visibility"
+                color="green"
                 @click="
                   router.push(`/bill-generation/${props.row.billId}/preview`)
                 "
