@@ -49,7 +49,7 @@
               <q-popup-edit
                 :disable="router.currentRoute.value.path.includes('preview')"
                 v-model="props.row.amount"
-                color="btn-primary"
+                color="bg-btn-primary  "
                 title="Update Amount"
                 buttons
                 v-slot="scope"
@@ -60,6 +60,7 @@
                   @update:model-value="
                     scope.value = ($event as number) >= 0 ? Number($event) : 0
                   "
+                  color="btn-primary"
                   min="0"
                   dense
                   autofocus
@@ -71,11 +72,11 @@
             <q-td :props="props">
               <div
                 v-if="props.row.image"
-                class="w-12 h-8 overflow-hidden cursor-pointer"
+                class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
                 @click="handleShowImagePreview(props.row.image)"
               >
                 <img
-                  class="bg-contain h-full w-full"
+                  class="w-full h-full object-cover"
                   :src="getImageUrl(props.row.image)"
                   alt="img"
                 />
@@ -99,7 +100,7 @@
       <q-card-actions class="row justify-end">
         <q-btn
           label="Cancel"
-          color="btn-secondary"
+          color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/receipt')"
         />
         <q-btn
@@ -130,6 +131,7 @@
               disable
               dense
               label="Name"
+              class="btn-primary"
               outlined
             />
           </div>
@@ -140,6 +142,7 @@
               dense
               type="text"
               label="Bill Status"
+              class="btn-primary"
               outlined
             />
           </div>
@@ -150,6 +153,7 @@
               dense
               type="number"
               label="Total Amount"
+              class="btn-primary"
               outlined
             />
           </div>
@@ -160,6 +164,7 @@
               dense
               type="date"
               label="Created Date"
+              class="btn-primary"
               outlined
             />
           </div>
@@ -198,11 +203,11 @@
             <q-td :props="props">
               <div
                 v-if="props.row.image"
-                class="w-12 h-8 overflow-hidden cursor-pointer"
+                class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
                 @click="handleShowImagePreview(props.row.image)"
               >
                 <img
-                  class="bg-contain h-full w-full"
+                  class="object-cover h-full w-full"
                   :src="getImageUrl(props.row.image)"
                   alt="img"
                 />
@@ -226,7 +231,7 @@
       <q-card-actions class="row justify-end">
         <q-btn
           :label="billAction !== 'Preview Receipt' ? 'Cancel' : 'Close'"
-          color="btn-secondary"
+          color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/bill-generation')"
         />
         <q-btn

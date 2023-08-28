@@ -2,7 +2,7 @@
   <q-card class="min-w-[400px]">
     <q-card-section>
       <div class="text-lg font-medium mb-2 row justify-between items-center">
-        <span> {{ variantAction }} Variant Group</span>
+        <span> {{ variantAction }} Variant Group </span>
         <q-btn icon="close" flat unelevated dense v-close-popup />
       </div>
       <q-input
