@@ -83,8 +83,43 @@ export const routeList = [
     },
   },
   {
+    path: '/receipt/:id/preview',
+    component: () => import('src/pages/receipt/AddNewReceipt.vue'),
+    meta: {
+      module: EUserModules.ReceiptManagement,
+    },
+  },
+  {
     path: '/bill-generation',
     component: () => import('src/pages/bill-generation/BillGeneration.vue'),
+    meta: {
+      module: EUserModules.BillGeneration,
+    },
+  },
+  {
+    path: '/bill-generation/add-new',
+    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    meta: {
+      module: EUserModules.BillGeneration,
+    },
+  },
+  {
+    path: '/bill-generation/:id/generate-receipt-bill',
+    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    meta: {
+      module: EUserModules.BillGeneration,
+    },
+  },
+  {
+    path: '/bill-generation/:id/edit-bill',
+    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    meta: {
+      module: EUserModules.BillGeneration,
+    },
+  },
+  {
+    path: '/bill-generation/:id/preview',
+    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
     meta: {
       module: EUserModules.BillGeneration,
     },

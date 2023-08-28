@@ -74,7 +74,7 @@
           :loading="isLoading"
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
-          @click="resetFilter"
+          @click="handleResetFilter"
         />
       </div>
     </div>
@@ -123,7 +123,9 @@
                   authStore.checkUserHasPermission(
                     EUserModules.ReceiptManagement,
                     EActionPermissions.Update
-                  ) && props.row.purchaseStatus !== 'Cancelled'
+                  ) &&
+                  props.row.purchaseStatus !== 'Cancelled' &&
+                  props.row.purchaseStatus !== 'Billed'
                 "
                 size="sm"
                 flat
@@ -134,11 +136,43 @@
                 color="bg-btn-secondary"
               />
               <q-btn
+                size="sm"
+                flat
+                dense
+                unelevated
+                icon="visibility"
+                color="bg-btn-secondary"
+                @click="router.push(`/receipt/${props.row.purchaseId}/preview`)"
+              />
+              <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
                     EUserModules.ReceiptManagement,
                     EActionPermissions.Update
-                  ) && props.row.purchaseStatus !== 'Cancelled'
+                  ) &&
+                  props.row.purchaseStatus !== 'Cancelled' &&
+                  props.row.purchaseStatus !== 'Billed'
+                "
+                size="sm"
+                flat
+                dense
+                unelevated
+                @click="
+                  router.push(
+                    `/bill-generation/${props.row.purchaseId}/generate-receipt-bill`
+                  )
+                "
+                icon="receipt"
+                color="bg-btn-secondary"
+              />
+              <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.ReceiptManagement,
+                    EActionPermissions.Update
+                  ) &&
+                  props.row.purchaseStatus !== 'Cancelled' &&
+                  props.row.purchaseStatus !== 'Billed'
                 "
                 size="sm"
                 flat
@@ -146,13 +180,50 @@
                 unelevated
                 icon="cancel"
                 color="red"
-                @click="handleCancelReceipt(props.row)"
+                @click="handleCancelReceiptPopup(props.row)"
               />
             </div>
           </q-td>
         </template>
       </q-table>
     </div>
+    <q-dialog v-model="isCancelReceiptModalVisible">
+      <q-card class="min-w-[400px]">
+        <q-card-section>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-lg font-medium">Reset Password</span>
+            <q-btn
+              class="font-medium"
+              icon="close"
+              flat
+              unelevated
+              dense
+              v-close-popup
+            />
+          </div>
+          <div class="text-center">
+            <span>Are you sure you want to Cancel the Receipt?</span>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="Close"
+            color="white"
+            v-close-popup
+            class="bg-btn-cancel hover:bg-btn-cancel-hover"
+          />
+          <q-btn
+            flat
+            label="Cancel"
+            color="white"
+            :loading="isCancellingReceipt"
+            class="bg-btn-primary hover:bg-btn-primary-hover"
+            @click="handleCancelReceipt"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -176,12 +247,8 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.ReceiptManagement);
 const isLoading = ref(false);
 const router = useRouter();
 const receiptData = ref<IReceiptData[]>([]);
-const defaultFilterValues = {
-  userId: null,
-  userName: null,
-  startDate: null,
-  endDate: null,
-};
+const isCancelReceiptModalVisible = ref(false);
+const selectedRowData = ref<IReceiptData | null>(null);
 const defaultPagination = {
   sortBy: 'desc',
   descending: false,
@@ -190,19 +257,25 @@ const defaultPagination = {
   rowsNumber: 0,
 };
 const pagination = ref<IPagination>(defaultPagination);
+const isCancellingReceipt = ref(false);
 const filterSearch = ref<{
   userId: null | number;
   userName: null | string;
   startDate: null | string;
   endDate: null | string;
-}>(defaultFilterValues);
+}>({
+  userId: null,
+  userName: null,
+  startDate: null,
+  endDate: null,
+});
 onMounted(() => {
   getReceiptList();
 });
 const handleFilterSearch = () => {
   getReceiptList();
 };
-const resetFilter = () => {
+const handleResetFilter = () => {
   filterSearch.value = {
     userId: null,
     userName: null,
@@ -214,18 +287,22 @@ const resetFilter = () => {
 const handleAddNewReceipt = () => {
   router.push('/receipt/add-new');
 };
-const handleCancelReceipt = async (selectedRowData: IReceiptData) => {
-  if (isLoading.value) return;
-  isLoading.value = true;
+const handleCancelReceiptPopup = (selectedRow: IReceiptData) => {
+  selectedRowData.value = selectedRow;
+  isCancelReceiptModalVisible.value = true;
+};
+const handleCancelReceipt = async () => {
+  if (isCancellingReceipt.value) return;
+  isCancellingReceipt.value = true;
   try {
-    const res = await cancelReceiptApi(selectedRowData.purchaseId);
+    const res = await cancelReceiptApi(selectedRowData.value?.purchaseId ?? -1);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
         color: 'green',
       });
       const matchingRowIndex = receiptData.value.findIndex(
-        (row) => selectedRowData.purchaseId === row.purchaseId
+        (row) => selectedRowData.value?.purchaseId === row.purchaseId
       );
       receiptData.value[matchingRowIndex].purchaseStatus = 'Cancelled';
     }
@@ -240,7 +317,8 @@ const handleCancelReceipt = async (selectedRowData: IReceiptData) => {
       color: 'red',
     });
   }
-  isLoading.value = false;
+  isCancellingReceipt.value = false;
+  isCancelReceiptModalVisible.value = false;
 };
 const getReceiptList = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
