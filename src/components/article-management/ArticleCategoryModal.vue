@@ -2,7 +2,7 @@
   <q-card class="min-w-[320px] md:min-w-[400px]">
     <q-card-section class="q-pa-none">
       <div class="q-pa-md row items-center q-mb-md justify-between">
-        <div class="text-h6">
+        <div class="text-lg font-medium">
           <span>Select Category</span>
         </div>
         <q-btn icon="close" flat unelevated dense v-close-popup />
@@ -67,26 +67,26 @@
           </div>
         </div>
       </div>
-      <div class="row justify-end p-4 gap-4">
-        <q-btn
-          label="Cancel"
-          flat
-          unelevated
-          color="signature"
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-          v-close-popup
-        />
-        <q-btn
-          label="Save"
-          flat
-          :loading="isLoading"
-          unelevated
-          color="signature"
-          class="bg-btn-primary hover:bg-btn-primary-hover"
-          @click="handleSelectedCategory"
-        />
-      </div>
     </q-card-section>
+    <q-card-actions align="right">
+      <q-btn
+        label="Cancel"
+        flat
+        unelevated
+        color="signature"
+        class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        v-close-popup
+      />
+      <q-btn
+        label="Save"
+        flat
+        :loading="isLoading"
+        unelevated
+        color="signature"
+        class="bg-btn-primary hover:bg-btn-primary-hover"
+        @click="handleSelectedCategory"
+      />
+    </q-card-actions>
   </q-card>
 </template>
 <script lang="ts" setup>

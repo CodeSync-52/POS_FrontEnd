@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div>
     <q-card>
       <q-card-section>
         <div class="row q-col-gutter-md">

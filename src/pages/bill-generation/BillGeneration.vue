@@ -15,7 +15,6 @@
         unelevated
         icon="add"
         class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
-        @click="router.push('/bill-generation/add-new')"
       />
     </div>
     <div
@@ -210,7 +209,7 @@
 <script setup lang="ts">
 import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { isPosError, billGenerationColumn } from 'src/utils';
 import GenerateOrCancelBillModal from 'src/components/bill-generation/GenerateOrCancelBillModal.vue';
@@ -238,6 +237,7 @@ const pagination = ref({
 const isCancel = ref(false);
 const isCancelOrGenerateBillModalVisible = ref(false);
 const selectedRowData = ref<IBillGenerationData | null>(null);
+const apiController = ref<AbortController | null>(null);
 const filterSearch = ref<IBillGenerationFilter>({
   userId: null,
   userName: null,
@@ -246,6 +246,11 @@ const filterSearch = ref<IBillGenerationFilter>({
 });
 onMounted(() => {
   getBillList();
+});
+onUnmounted(() => {
+  if (apiController.value) {
+    apiController.value.abort();
+  }
 });
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -330,11 +335,19 @@ const getBillList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
-    const res = await billListApi({
-      PageNumber: pagination.value.page,
-      PageSize: pagination.value.rowsPerPage,
-      filterSearch: filterSearch.value,
-    });
+    if (isLoading.value && apiController.value) {
+      apiController.value.abort();
+      apiController.value = null;
+    }
+    apiController.value = new AbortController();
+    const res = await billListApi(
+      {
+        PageNumber: pagination.value.page,
+        PageSize: pagination.value.rowsPerPage,
+        filterSearch: filterSearch.value,
+      },
+      apiController.value
+    );
     if (res.data) {
       billGenerationData.value = res.data.items;
       pagination.value.rowsNumber = res.data.totalItemCount;

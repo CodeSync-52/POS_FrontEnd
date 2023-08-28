@@ -81,15 +81,18 @@ export const billDetailInfoApi = async (BillId: number) => {
   return res;
 };
 
-export const billListApi = async ({
-  PageNumber = 1,
-  PageSize = 50,
-  filterSearch,
-}: {
-  PageNumber: number;
-  PageSize: number;
-  filterSearch?: IBillGenerationFilter;
-}) => {
+export const billListApi = async (
+  {
+    PageNumber = 1,
+    PageSize = 50,
+    filterSearch,
+  }: {
+    PageNumber: number;
+    PageSize: number;
+    filterSearch?: IBillGenerationFilter;
+  },
+  controller?: AbortController
+) => {
   const res = await makeApiCall<
     IGenericResponse<{ items: IBillGenerationData[]; totalItemCount: number }>
   >({
@@ -103,6 +106,7 @@ export const billListApi = async ({
       PageNumber,
       PageSize,
     },
+    signal: controller?.signal,
   });
   return res;
 };

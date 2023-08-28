@@ -77,11 +77,12 @@
               >
                 <img
                   class="w-full h-full object-cover"
-                  :src="getImageUrl(props.row.image)"
+                  :src="
+                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                  "
                   alt="img"
                 />
               </div>
-              <span v-else>none</span>
             </q-td>
           </template>
           <template v-slot:bottom-row="props">
@@ -208,11 +209,12 @@
               >
                 <img
                   class="object-cover h-full w-full"
-                  :src="getImageUrl(props.row.image)"
+                  :src="
+                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                  "
                   alt="img"
                 />
               </div>
-              <span v-else>none</span>
             </q-td>
           </template>
           <template v-slot:bottom-row="props">

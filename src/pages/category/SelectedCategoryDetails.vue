@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }} Details</span>
       <q-btn
@@ -138,7 +138,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import CategoryDetailsModal from 'src/components/category-management/CategoryDetailsModal.vue';
 import CategoryStatusModal from 'src/components/category-management/CategoryStatusModal.vue';
@@ -184,14 +184,23 @@ const category = ref<{ name: string; id: number }>({
   id: -1,
 });
 const selectedRowData = ref<ICategoryDetailsData | null>(null);
-const filteredRows = computed(() =>
-  categoryDetailsRecord.value.filter((row) =>
+const filteredRows = ref<ICategoryDetailsData[]>([]);
+const filterChanged = ref(false);
+function setFilteredData() {
+  filterChanged.value = true;
+  filteredRows.value = categoryDetailsRecord.value.filter((row) =>
     row.name.toLowerCase().includes(filter.value.toLowerCase())
-  )
-);
+  );
+  setTimeout(() => {
+    filterChanged.value = false;
+  }, 200);
+}
+watch(filter, setFilteredData);
+watch(categoryDetailsRecord, setFilteredData);
 const getCategoryDetailsList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
+  if (filterChanged.value) return;
   if (isLoading.value) return;
   isLoading.value = true;
   if (data) {

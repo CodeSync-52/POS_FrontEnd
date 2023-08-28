@@ -1,6 +1,4 @@
 <template>
-  <!-- bg-[url('/src/assets/Images/login-POS.jpg')] -->
-  <!-- lg:grid-cols-[5fr_4fr] -->
   <div class="grid lg:grid-cols-[6fr_6fr]">
     <div class="hidden lg:!inline-block">
       <img

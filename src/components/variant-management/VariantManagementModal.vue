@@ -1,5 +1,5 @@
 <template>
-  <q-card class="min-w-[400px]">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="text-lg font-medium mb-2 row justify-between items-center">
         <span> {{ variantAction }} Variant Group </span>

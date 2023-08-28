@@ -1,5 +1,5 @@
 <template>
-  <q-card class="min-w-[400px]">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div v-if="isFetchingArticleList">
         <q-spinner color="btn-primary" size="3rem" class="mx-auto" />

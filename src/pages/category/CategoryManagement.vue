@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -166,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import CategoryManagementModal from 'src/components/category-management/CategoryManagementModal.vue';
@@ -190,11 +190,6 @@ const router = useRouter();
 const $q = useQuasar();
 const authStore = useAuthStore();
 const selectedCategory = ref<string>('');
-const filteredRows = computed(() =>
-  categoryData.value.filter((row) =>
-    row.name.toLowerCase().includes(filter.value.toLowerCase())
-  )
-);
 const selectedRowData = ref<ICategoryData | null>(null);
 const isCategoryStatusModalVisible = ref(false);
 const pageTitle = getRoleModuleDisplayName(EUserModules.CategoryManagement);
@@ -211,6 +206,19 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const filteredRows = ref<ICategoryData[]>([]);
+const filterChanged = ref(false);
+function setFilteredData() {
+  filterChanged.value = true;
+  filteredRows.value = categoryData.value.filter((row) =>
+    row.name.toLowerCase().includes(filter.value.toLowerCase())
+  );
+  setTimeout(() => {
+    filterChanged.value = false;
+  }, 200);
+}
+watch(filter, setFilteredData);
+watch(categoryData, setFilteredData);
 onMounted(() => {
   getCategoryList();
 });
@@ -340,6 +348,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
 const getCategoryList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
+  if (filterChanged.value) return;
   if (isLoading.value) return;
   isLoading.value = true;
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -131,7 +131,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import VariantDetailsModal from 'src/components/variant-management/VariantDetailsModal.vue';
 import VariantStatusModal from 'src/components/variant-management/VariantStatusModal.vue';
 import {
@@ -173,11 +173,19 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const filteredRows = computed(() =>
-  variantDetailsRecord.value.filter((row) =>
+const filteredRows = ref<IVariantDetailsData[]>([]);
+const filterChanged = ref(false);
+function setFilteredData() {
+  filterChanged.value = true;
+  filteredRows.value = variantDetailsRecord.value.filter((row) =>
     row.name.toLowerCase().includes(filter.value.toLowerCase())
-  )
-);
+  );
+  setTimeout(() => {
+    filterChanged.value = false;
+  }, 200);
+}
+watch(filter, setFilteredData);
+watch(variantDetailsRecord, setFilteredData);
 const selectedRowData = ref<IVariantDetailsData | null>(null);
 onMounted(() => {
   getVariantList();
@@ -281,6 +289,7 @@ const updateOrAddVariant = async (
 const getVariantList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
+  if (filterChanged.value) return;
   if (isLoading.value) return;
   isLoading.value = true;
   if (data) {

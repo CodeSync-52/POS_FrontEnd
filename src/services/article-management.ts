@@ -24,17 +24,20 @@ export const newArticleApi = async ({
   });
   return res;
 };
-export const articleListApi = async ({
-  PageNumber = 1,
-  PageSize = 50,
-  Name,
-  Status,
-}: {
-  Name?: string | null;
-  Status?: string | null;
-  PageNumber: number;
-  PageSize: number;
-}) => {
+export const articleListApi = async (
+  {
+    PageNumber = 1,
+    PageSize = 50,
+    Name,
+    Status,
+  }: {
+    Name?: string | null;
+    Status?: string | null;
+    PageNumber: number;
+    PageSize: number;
+  },
+  controller?: AbortController
+) => {
   const res = await makeApiCall<
     IGenericResponse<{
       totalItemCount: number;
@@ -49,6 +52,7 @@ export const articleListApi = async ({
       Name,
       Status,
     },
+    signal: controller?.signal,
   });
   return res;
 };

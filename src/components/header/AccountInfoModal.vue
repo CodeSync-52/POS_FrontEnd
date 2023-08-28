@@ -1,8 +1,8 @@
 <template>
-  <q-card class="min-w-[370px]">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div
-        class="text-h6 q-mb-md"
+        class="text-lg font-medium mb-2"
         :class="isViewProfile && 'row items-center justify-between'"
       >
         <span>{{ isViewProfile ? 'View Profile' : 'Change Password' }}</span>
@@ -15,7 +15,7 @@
         />
       </div>
       <div v-if="isViewProfile" class="row q-col-gutter-md">
-        <div class="col-6">
+        <div class="col-12 col-md-6">
           <div>
             <q-input
               v-model="userInfo.fullName"
@@ -26,7 +26,7 @@
             />
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-6">
           <div>
             <q-input
               v-model="userInfo.phoneNumber"
@@ -39,7 +39,7 @@
         </div>
       </div>
       <div v-else class="column gap-1">
-        <div class="col-6 q-mb-md">
+        <div class="col-12 col-md-6 q-mb-md">
           <div>
             <q-input
               v-model="passwordConfirmation.oldPass"
@@ -51,7 +51,7 @@
             />
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-6">
           <div>
             <q-input
               v-model="passwordConfirmation.newPass"
@@ -65,7 +65,7 @@
             />
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-6">
           <div>
             <q-input
               v-model="passwordConfirmation.confirmPass"

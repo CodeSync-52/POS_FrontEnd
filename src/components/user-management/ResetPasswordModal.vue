@@ -1,5 +1,5 @@
 <template>
-  <q-card class="min-w-[400px]">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="flex justify-between items-center mb-2">
         <span class="text-lg font-medium">Reset Password</span>
@@ -12,7 +12,7 @@
           v-close-popup
         />
       </div>
-      <div class="text-center">
+      <div class="text-center px-4">
         <span>Are you sure you want to reset the password?</span>
       </div>
     </q-card-section>
