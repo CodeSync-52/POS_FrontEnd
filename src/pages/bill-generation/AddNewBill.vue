@@ -203,7 +203,6 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                v-if="props.row.image"
                 class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
                 @click="handleShowImagePreview(props.row.image)"
               >

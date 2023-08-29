@@ -1,5 +1,6 @@
+import moment from 'moment';
 import { QTableColumn } from 'quasar';
-import { IArticleData } from 'src/interfaces';
+import { IArticleData, IBillingHistoryResponse } from 'src/interfaces';
 
 export const ArticleColumn: QTableColumn<IArticleData>[] = [
   {
@@ -65,5 +66,44 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     label: 'Action',
     align: 'left',
     field: (row) => row.action,
+  },
+];
+export const billingHistoryColumn: QTableColumn<IBillingHistoryResponse>[] = [
+  {
+    name: 'name',
+    required: true,
+    label: 'Name',
+    align: 'left',
+    field: (row) => row.fullName,
+  },
+  {
+    name: 'price',
+    required: true,
+    label: 'Price',
+    align: 'left',
+    field: (row) => row.price,
+  },
+  {
+    name: 'date',
+    required: true,
+    label: 'Date',
+    align: 'left',
+    field: (row) => moment(row.billDate).format('Do MM YYYY'),
+  },
+];
+export const articleListColumn: QTableColumn<IArticleData>[] = [
+  {
+    name: 'image',
+    required: true,
+    label: 'Image',
+    align: 'left',
+    field: (row) => row.productImage,
+  },
+  {
+    name: 'name',
+    required: true,
+    label: 'Name',
+    align: 'left',
+    field: (row) => row.categoryName,
   },
 ];

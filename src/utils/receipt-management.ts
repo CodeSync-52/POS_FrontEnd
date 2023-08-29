@@ -4,7 +4,16 @@ import {
   ISelectedArticleData,
 } from 'src/interfaces/receipt-management';
 import moment from 'moment';
+export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const receiptColumn: QTableColumn<IReceiptData>[] = [
+  {
+    name: 'purchaseId',
+    required: true,
+    label: 'Purchase Id',
+    align: 'left',
+    sortable: true,
+    field: (row) => row.purchaseId,
+  },
   {
     name: 'userid',
     required: true,

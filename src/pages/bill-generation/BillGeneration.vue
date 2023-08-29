@@ -20,14 +20,27 @@
     <div
       class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
     >
-      <q-input
-        v-model="filterSearch.userId"
-        min="1"
-        label="User ID"
-        type="number"
+      <q-select
         dense
-        color="btn-primary"
         outlined
+        style="min-width: 200px"
+        v-model="filterSearch.userId"
+        @update:model-value="filterSearch.userId = $event.userId"
+        :options="UserList"
+        map-options
+        option-label="fullName"
+        option-value="userId"
+        label="User"
+        color="btn-primary"
+      />
+      <q-select
+        dense
+        outlined
+        style="min-width: 200px"
+        v-model="filterSearch.billStatus"
+        :options="billStatusOptions"
+        label="Bill Status"
+        color="btn-primary"
       />
       <q-input
         v-model="filterSearch.userName"
@@ -211,7 +224,7 @@ import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { isPosError, billGenerationColumn } from 'src/utils';
+import { isPosError, billGenerationColumn, billStatusOptions } from 'src/utils';
 import GenerateOrCancelBillModal from 'src/components/bill-generation/GenerateOrCancelBillModal.vue';
 import {
   getRoleModuleDisplayName,
@@ -219,8 +232,15 @@ import {
   EUserModules,
   IBillGenerationData,
   IBillGenerationFilter,
+  IUserManagementData,
 } from 'src/interfaces';
-import { billListApi, cancelBillApi, completeBillApi } from 'src/services';
+import {
+  billListApi,
+  cancelBillApi,
+  completeBillApi,
+  getUserListApi,
+} from 'src/services';
+import { CanceledError } from 'axios';
 const authStore = useAuthStore();
 const router = useRouter();
 const billGenerationData = ref<IBillGenerationData[]>([]);
@@ -243,15 +263,42 @@ const filterSearch = ref<IBillGenerationFilter>({
   userName: null,
   ToDate: null,
   FromDate: null,
+  billStatus: null,
 });
 onMounted(() => {
   getBillList();
+  getUserList();
 });
 onUnmounted(() => {
   if (apiController.value) {
     apiController.value.abort();
   }
 });
+const UserList = ref<IUserManagementData[]>([]);
+const getUserList = async () => {
+  isLoading.value = true;
+  try {
+    const res = await getUserListApi({
+      pageNumber: 1,
+      pageSize: 500,
+    });
+    if (res?.data) {
+      UserList.value = res.data.items;
+    }
+  } catch (e) {
+    if (e instanceof CanceledError) return;
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isLoading.value = false;
+};
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -261,6 +308,7 @@ const resetFilter = () => {
     userName: null,
     ToDate: null,
     FromDate: null,
+    billStatus: null,
   };
   getBillList();
 };

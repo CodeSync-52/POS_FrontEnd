@@ -128,7 +128,7 @@
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
         <q-btn
-          :label="isReceiptPreview ? 'Close' : 'Cancel'"
+          :label="isReceiptPreview ? 'Close' : 'Go Back'"
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="cancelNewReceipt"
         />
@@ -148,6 +148,7 @@
     </q-card>
     <q-dialog v-model="isArticleListModalVisible">
       <article-list-modal
+        @handle-pagination="handlePagination"
         @selected-data="selectedData"
         :article-list="articleListComputed"
         :current-data="
@@ -179,6 +180,7 @@ import {
   EUserModules,
   IAddNewReceipt,
   IArticleData,
+  IPagination,
   IUserManagementData,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
@@ -198,6 +200,17 @@ const isArticleListModalVisible = ref(false);
 const handleSelectArticle = () => {
   isArticleListModalVisible.value = true;
 };
+const handlePagination = (selectedPagination: IPagination) => {
+  pagination.value = selectedPagination;
+  getArticleList();
+};
+const pagination = ref<IPagination>({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
+});
 const selectedData = (
   payload: { productId: number; productName?: string }[]
 ) => {
@@ -331,13 +344,24 @@ const isEdit = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 
-const getArticleList = async () => {
+const getArticleList = async (data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
+}) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
+  }
   try {
-    const res = await articleListApi({ PageNumber: 1, PageSize: 200 });
+    const res = await articleListApi({
+      PageNumber: pagination.value.page,
+      PageSize: pagination.value.rowsPerPage,
+    });
     if (res.type === 'Success') {
-      articleList.value = res.data.items;
+      if (res.data) {
+        articleList.value = res.data.items;
+        pagination.value.rowsNumber = res.data.totalItemCount;
+      }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

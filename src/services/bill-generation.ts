@@ -105,6 +105,7 @@ export const billListApi = async (
       ToDate: filterSearch?.ToDate,
       PageNumber,
       PageSize,
+      BillStatus: filterSearch?.billStatus,
     },
     signal: controller?.signal,
   });

@@ -8,6 +8,7 @@ export const receiptListApi = async (
     FromDate,
     UserId,
     FullName,
+    PurchaseStatus,
   }: {
     ToDate: string | null;
     FromDate: string | null;
@@ -15,6 +16,7 @@ export const receiptListApi = async (
     FullName: string | null;
     PageNumber: number;
     PageSize: number;
+    PurchaseStatus: string | null;
   },
   controller?: AbortController
 ) => {
@@ -30,6 +32,7 @@ export const receiptListApi = async (
       FullName,
       PageNumber,
       PageSize,
+      PurchaseStatus,
     },
     signal: controller?.signal,
   });

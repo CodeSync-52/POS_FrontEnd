@@ -119,3 +119,4 @@ export const BillGenerationDetailsInfoColumn: QTableColumn<IBillGenerationDetail
       field: (row) => row.amount * row.quantity,
     },
   ];
+export const billStatusOptions = ['Completed', 'Cancelled', 'Draft'];

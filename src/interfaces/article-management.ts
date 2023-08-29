@@ -10,7 +10,7 @@ export interface IArticleData {
   costPrice: number;
   productImage: string | null;
   masterStock: null | any;
-  action?: string;
+  action?: any;
 }
 export interface IArticleInfo {
   categoryName: string;
@@ -31,10 +31,17 @@ export interface IArticleSubCategory {
   categoryId: number;
   name: string;
 }
-export interface INewArticleData {
+export interface INewArticleData extends Omit<IArticleData, 'productImage'> {
+  productImage: File | null;
+}
+export interface IBillingHistoryResponse {
+  quantity: number;
+  price: number;
+  billId: number;
+  billDate: string;
+  userId: number;
+  fullName: string;
+  image: string;
   name: string;
-  category: string;
-  image: File | null;
-  description: string;
-  categoryId: number;
+  productId: number;
 }
