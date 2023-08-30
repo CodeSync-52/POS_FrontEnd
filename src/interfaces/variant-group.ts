@@ -3,7 +3,6 @@ export interface IVariantData {
   variantGroupId: number;
   status: string;
   variant: string;
-  action?: any;
 }
 export interface IVariantDetailsData {
   variantId: number;
@@ -12,5 +11,4 @@ export interface IVariantDetailsData {
   status: string;
   variantGroupName: string;
   variantGroupId: number;
-  action?: string;
 }

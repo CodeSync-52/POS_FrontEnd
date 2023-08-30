@@ -4,7 +4,6 @@ export interface ICategoryData {
   name: string;
   parentCategory: null | number;
   status: string;
-  action?: string;
 }
 export interface ICategoryDetailsData {
   categoryId: number;
@@ -12,5 +11,4 @@ export interface ICategoryDetailsData {
   status: string;
   description: string;
   parentCategoryId: number;
-  action: string;
 }

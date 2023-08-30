@@ -24,7 +24,7 @@ export const variantColumn: QTableColumn<IVariantData>[] = [
     sortable: true,
     field: (row) => row.status,
   },
-  { name: 'action', label: 'Action', field: 'action', align: 'left' },
+  { name: 'action', label: 'Action', field: () => '', align: 'left' },
 ];
 export const variantDetailsColumn: QTableColumn<IVariantDetailsData>[] = [
   {
@@ -49,5 +49,5 @@ export const variantDetailsColumn: QTableColumn<IVariantDetailsData>[] = [
     field: 'status',
     align: 'left',
   },
-  { name: 'action', label: 'Action', field: 'action', align: 'left' },
+  { name: 'action', label: 'Action', field: () => '', align: 'left' },
 ];

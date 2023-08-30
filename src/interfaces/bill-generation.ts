@@ -7,13 +7,13 @@ export interface IBillGenerationData {
   billStatus: string;
   createdDate: string;
   createdBy: null | number | string;
-  action?: string;
 }
 export interface IBillGenerationFilter {
   userId: null | number;
   userName: null | string;
   ToDate: null | string;
   FromDate: null | string;
+  billStatus: null | string;
 }
 export interface IBillDetail {
   userId: number;

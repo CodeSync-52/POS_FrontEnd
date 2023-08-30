@@ -4,7 +4,16 @@ import {
   ISelectedArticleData,
 } from 'src/interfaces/receipt-management';
 import moment from 'moment';
+export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const receiptColumn: QTableColumn<IReceiptData>[] = [
+  {
+    name: 'purchaseId',
+    required: true,
+    label: 'Purchase Id',
+    align: 'left',
+    sortable: true,
+    field: (row) => row.purchaseId,
+  },
   {
     name: 'userid',
     required: true,
@@ -47,7 +56,7 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
     required: true,
     label: 'Action',
     align: 'left',
-    field: (row) => row.action,
+    field: () => '',
   },
 ];
 export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
@@ -76,7 +85,7 @@ export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
   {
     name: 'action',
     label: 'Action',
-    field: (row) => row.action,
+    field: () => '',
     align: 'left',
   },
 ];

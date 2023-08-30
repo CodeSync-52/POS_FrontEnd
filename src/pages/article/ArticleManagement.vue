@@ -103,16 +103,17 @@
           <q-td :props="props">
             <div
               @click="handlePreviewImage(props.row.productImage)"
-              v-if="props.row.productImage"
               class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
             >
               <img
                 class="w-full h-full object-cover"
-                :src="getImageUrl(props.row.productImage)"
+                :src="
+                  getImageUrl(props.row.productImage) ||
+                  'assets/default-image.png'
+                "
                 alt="img"
               />
             </div>
-            <span v-else> none </span>
           </q-td>
         </template>
         <template
@@ -155,7 +156,10 @@
           v-slot:body-cell-action="props"
         >
           <q-td class="flex justify-start" :props="props">
-            <div class="flex gap-2 flex-nowrap">
+            <router-link
+              :to="`/article/${props.row.productId}/update`"
+              class="flex gap-2 flex-nowrap"
+            >
               <q-btn
                 size="sm"
                 flat
@@ -163,9 +167,8 @@
                 dense
                 icon="edit"
                 class="!px-[5px] hover:text-btn-primary"
-                @click="handleEditArticlePopup(props.row)"
               />
-            </div>
+            </router-link>
           </q-td>
         </template>
       </q-table>
@@ -175,12 +178,6 @@
     <article-status-modal
       :selected-status="selectedStatus"
       @updated-status="updatingStatus"
-    />
-  </q-dialog>
-  <q-dialog v-model="isEditArticleModalVisible">
-    <update-article-modal
-      :selected-row="selectedRowData"
-      @update-article="handleUpdateArticle"
     />
   </q-dialog>
   <q-dialog v-model="isPreviewImageModalVisible">
@@ -200,19 +197,13 @@ import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
   EUserModules,
-  IArticleInfo,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import UpdateArticleModal from 'src/components/article-management/UpdateArticleModal.vue';
 import ArticleStatusModal from 'src/components/article-management/ArticleStatusModal.vue';
 import { useAuthStore } from 'src/stores';
 import { IArticleData } from 'src/interfaces';
 import { ArticleColumn, isPosError } from 'src/utils';
-import {
-  articleListApi,
-  changeArticleStatus,
-  updateProductApi,
-} from 'src/services';
+import { articleListApi, changeArticleStatus } from 'src/services';
 import { statusOptions } from 'src/constants';
 import { CanceledError } from 'axios';
 const authStore = useAuthStore();
@@ -224,7 +215,6 @@ const isArticleStatusModalVisible = ref(false);
 const pageTitle = getRoleModuleDisplayName(EUserModules.ArticleManagement);
 const ArticleData = ref<IArticleData[]>([]);
 const isLoading = ref(false);
-const isEditArticleModalVisible = ref(false);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
@@ -273,10 +263,7 @@ const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
-};
-const handleEditArticlePopup = (selectedRow: IArticleData) => {
-  selectedRowData.value = selectedRow;
-  isEditArticleModalVisible.value = true;
+  return '';
 };
 const handleEditStatusPopup = (row: IArticleData) => {
   selectedStatus.value = row.status;
@@ -285,66 +272,6 @@ const handleEditStatusPopup = (row: IArticleData) => {
 };
 const AddNewArticle = () => {
   router.push('/article/add-new');
-};
-const handleUpdateArticle = async (updatedArticleInfo: IArticleInfo) => {
-  if (isLoading.value) return;
-  isLoading.value = true;
-  let base64Image;
-  const productId = selectedRowData.value?.productId ?? -1;
-  const {
-    name,
-    description,
-    categoryId,
-    categoryName,
-    productImage,
-    wholeSalePrice,
-    retailPrice,
-    costPrice,
-  } = updatedArticleInfo;
-
-  if (productImage) {
-    base64Image = await convertToBase64(productImage);
-  }
-  try {
-    const res = await updateProductApi({
-      productId,
-      description,
-      categoryId,
-      image: base64Image,
-      wholeSalePrice,
-      retailPrice,
-      costPrice,
-      name,
-    });
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        color: 'green',
-      });
-      const selectedRow = selectedRowData.value;
-      if (selectedRow) {
-        selectedRow.categoryName = categoryName;
-        selectedRow.categoryId = categoryId;
-        selectedRow.costPrice = costPrice;
-        selectedRow.description = description;
-        selectedRow.name = name;
-        selectedRow.retailPrice = retailPrice;
-        selectedRow.wholeSalePrice = wholeSalePrice;
-      }
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      color: 'red',
-      icon: 'error',
-    });
-  }
-  isLoading.value = false;
-  isEditArticleModalVisible.value = false;
 };
 const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   if (updatedStatus === selectedStatus.value) {
@@ -425,24 +352,5 @@ const getArticleList = async (data?: {
     });
   }
   isLoading.value = false;
-};
-const convertToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      if (fileReader.result && typeof fileReader.result === 'string') {
-        const resultParts = fileReader.result.split(',');
-        if (resultParts.length === 2) {
-          resolve(resultParts[1]);
-        } else {
-          reject(new Error('Invalid data URL format'));
-        }
-      }
-    };
-    fileReader.onerror = (error) => {
-      reject(error);
-    };
-    fileReader.readAsDataURL(file);
-  });
 };
 </script>

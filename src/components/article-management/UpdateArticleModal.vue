@@ -176,6 +176,7 @@ const getImageUrl = (base64Image: string) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
+  return '';
 };
 function base64ToFile(
   base64String: string | undefined,
