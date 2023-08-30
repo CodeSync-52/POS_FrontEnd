@@ -48,24 +48,21 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
   },
   {
     name: 'status',
-    required: true,
     label: 'Status',
     align: 'left',
     field: (row) => row.status,
   },
   {
     name: 'mstock',
-    required: true,
     label: 'M.Stock',
     align: 'left',
     field: (row) => row.masterStock,
   },
   {
     name: 'action',
-    required: true,
     label: 'Action',
     align: 'left',
-    field: (row) => row.action,
+    field: () => '',
   },
 ];
 export const billingHistoryColumn: QTableColumn<IBillingHistoryResponse>[] = [
@@ -104,6 +101,6 @@ export const articleListColumn: QTableColumn<IArticleData>[] = [
     required: true,
     label: 'Name',
     align: 'left',
-    field: (row) => row.categoryName,
+    field: (row) => row.name,
   },
 ];

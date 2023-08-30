@@ -41,7 +41,6 @@
           :loading="isLoading"
           :rows="billGenerationData.productInfoDetailList"
           :columns="editBillGenerationRecordsColumn"
-          hide-bottom
         >
           <template v-slot:body-cell-amount="props">
             <q-td :props="props">
@@ -49,7 +48,7 @@
               <q-popup-edit
                 :disable="router.currentRoute.value.path.includes('preview')"
                 v-model="props.row.amount"
-                color="bg-btn-primary  "
+                color="btn-primary"
                 title="Update Amount"
                 buttons
                 v-slot="scope"
@@ -71,7 +70,6 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                v-if="props.row.image"
                 class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
                 @click="handleShowImagePreview(props.row.image)"
               >
@@ -174,7 +172,6 @@
           :loading="isLoading"
           :rows="billGenerationDetailsInfoData.productList"
           :columns="BillGenerationDetailsInfoColumn"
-          hide-bottom
         >
           <template v-slot:body-cell-amount="props">
             <q-td :props="props">

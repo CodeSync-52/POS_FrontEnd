@@ -1,6 +1,7 @@
 <template>
   <div>
     <div
+      class="mb-2"
       :class="
         isUpdate ? 'grid grid-cols-1 q-gutter-md md:grid-cols-2' : 'grid-cols-1'
       "
@@ -157,6 +158,8 @@
       <q-card v-if="isUpdate">
         <q-card-section>
           <q-table
+            class="max-h-[400px] h-full"
+            virtual-scroll
             v-if="billingHistoryRecord.length"
             :columns="billingHistoryColumn"
             hide-bottom

@@ -50,7 +50,7 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     name: 'action',
     label: 'Action',
     align: 'left',
-    field: (row) => row.action,
+    field: () => '',
   },
 ];
 export const editBillGenerationRecordsColumn: QTableColumn<IProductInfoDetailList>[] =

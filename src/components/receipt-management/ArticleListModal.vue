@@ -1,6 +1,6 @@
 <template>
-  <q-card class="min-w-[310px] md:min-w-[750px]">
-    <q-card-section>
+  <q-card class="min-w-[310px] md:min-w-[750px] h-[600px]">
+    <q-card-section class="h-[calc(100%-52px)]">
       <div v-if="isFetchingArticleList">
         <q-spinner color="btn-primary" size="3rem" class="mx-auto" />
       </div>
@@ -11,47 +11,40 @@
           </div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
-        <div v-if="articleList.length">
-          <!-- <div v-for="article in articleList" :key="article.productId">
-            <q-checkbox
-              size="sm"
-              :model-value="isArtickeChecked(article.productId)"
-              @update:model-value="
-                updateArticleChecked(article.productId, article.name)
-              "
-              :label="article.name"
-              color="btn-primary"
-              :val="article.productId"
-            />
-          </div> -->
+        <div>
           <q-table
-            v-model:pagination="pagination"
-            :rows="articleList"
+            class="max-h-[450px] h-full"
+            v-model:pagination="articlePagination"
+            :rows="filteredRows"
             :columns="articleListColumn"
+            virtual-scroll
+            :filter="filter"
+            row-key="productId"
+            @request="handlePagination($event.pagination)"
             selection="multiple"
             v-model:selected="selected"
-            :filter="filter"
-            @request="handlePagination($event.pagination)"
-            :selected-rows-label="getSelectedString"
           >
             <template v-slot:top>
-              <div class="text-lg font-medium"><span> Article </span></div>
-              <q-space />
-              <q-input
-                borderless
-                dense
-                outlined
-                label="search"
-                debounce="300"
-                color="primary"
-                v-model="filter"
+              <div
+                class="flex flex-col md:flex-row justify-between items-center w-full"
               >
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
+                <div class="text-lg font-medium"><span> Article </span></div>
+                <q-space />
+                <q-input
+                  borderless
+                  dense
+                  outlined
+                  label="search"
+                  debounce="300"
+                  color="primary"
+                  v-model="filter"
+                >
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
             </template>
-
             <template v-slot:body-cell-image="props">
               <q-td :props="props">
                 <div
@@ -63,16 +56,12 @@
                       getImageUrl(props.row.productImage) ??
                       'assets/default-image.png'
                     "
-                    alt=""
+                    alt="article"
                   />
                 </div>
               </q-td>
             </template>
           </q-table>
-        </div>
-
-        <div v-else class="text-center">
-          <span>No Article Available</span>
         </div>
       </div>
     </q-card-section>
@@ -88,7 +77,7 @@
         />
         <q-btn
           flat
-          :disabled="selectedArticles.length === 0"
+          :disabled="selected.length === 0"
           label="Save"
           @click="handleSave"
           unelevated
@@ -101,19 +90,30 @@
 </template>
 <script lang="ts" setup>
 import { IArticleData, IPagination } from 'src/interfaces';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { articleListColumn } from 'src/utils';
-onMounted(() => {
-  if (props.currentData) {
-    selectedArticles.value = [...props.currentData];
-  }
-});
-const pagination = ref<IPagination>({
+interface propTypes {
+  currentData: { productId: number; productName?: string }[];
+  articleList: IArticleData[];
+  isFetchingArticleList: boolean;
+  pagination: IPagination;
+}
+const articlePagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
   rowsPerPage: 50,
   rowsNumber: 0,
+});
+const selectedArticles = ref<{ productId: number; productName?: string }[]>([]);
+const selected = ref([]);
+const filter = ref('');
+const filteredRows = ref<IArticleData[]>([]);
+const filterChanged = ref(false);
+const props = withDefaults(defineProps<propTypes>(), {
+  currentData: () => [],
+  articleList: () => [],
+  isFetchingArticleList: false,
 });
 const emit = defineEmits<{
   (
@@ -121,33 +121,41 @@ const emit = defineEmits<{
     data: { productId: number; productName?: string }[]
   ): void;
   (event: 'handle-pagination', pagination: IPagination): void;
+  (event: 'filtered-rows', isFilterChanged: boolean): void;
 }>();
-const props = withDefaults(defineProps<propTypes>(), {
-  currentData: () => [],
-  articleList: () => [],
-  isFetchingArticleList: false,
+watch(selected, (newSelected: IArticleData[]) => {
+  selectedArticles.value = newSelected.map((article) => ({
+    productId: article.productId,
+    productName: article.name,
+  }));
 });
-const selectedArticles = ref<{ productId: number; productName?: string }[]>([]);
-const selected = ref([]);
-interface propTypes {
-  currentData: { productId: number; productName?: string }[];
-  articleList: IArticleData[];
-  isFetchingArticleList: boolean;
+function setFilteredData() {
+  filterChanged.value = true;
+  if (filter.value) {
+    filteredRows.value = props.articleList.filter((row) =>
+      row.name.toLowerCase().includes(filter.value.toLowerCase())
+    );
+  } else {
+    filteredRows.value = props.articleList;
+  }
+  emit('filtered-rows', filterChanged.value);
+  setTimeout(() => {
+    filterChanged.value = false;
+    emit('filtered-rows', filterChanged.value);
+  }, 200);
 }
-const filter = ref('');
-// const filteredRows = ref<IArticleData[]>([]);
-// const filterChanged = ref(false);
-// function setFilteredData() {
-//   filterChanged.value = true;
-//   filteredRows.value = props.articleList.filter((row) =>
-//     row.name.toLowerCase().includes(filter.value.toLowerCase())
-//   );
-//   setTimeout(() => {
-//     filterChanged.value = false;
-//   }, 200);
-// }
-// watch(filter, setFilteredData);
-// watch(props.articleList, setFilteredData);
+onMounted(() => {
+  if (props.currentData) {
+    selectedArticles.value = [...props.currentData];
+  }
+  articlePagination.value = props.pagination;
+  filteredRows.value = props.articleList;
+});
+
+watch(filter, setFilteredData);
+watch(props, setFilteredData, {
+  deep: true,
+});
 const handleSave = () => {
   emit('selected-data', selectedArticles.value);
 };
@@ -156,34 +164,12 @@ const getImageUrl = (base64Image: string | null) => {
     return `data:image/png;base64,${base64Image}`;
   }
 };
-const handlePagination = (newVal: { pagination: IPagination }) => {
-  pagination.value = newVal.pagination;
-  emit('handle-pagination', newVal.pagination);
+const handlePagination = (newVal: Omit<IPagination, 'rowsNumber'>) => {
+  const selectedPagination = {
+    ...newVal,
+    rowsNumber: articlePagination.value.rowsNumber,
+  };
+  articlePagination.value = selectedPagination;
+  emit('handle-pagination', selectedPagination);
 };
-const getSelectedString = () => {
-  return selected.value.length === 0
-    ? ''
-    : `${selected.value.length} record${
-        selected.value.length > 1 ? 's' : ''
-      } selected of ${props.articleList.length}`;
-};
-// const updateArticleChecked = (id: number, productName: string) => {
-//   const existingArticleIndex = selectedArticles.value.findIndex(
-//     (x) => x.productId === id
-//   );
-
-//   if (existingArticleIndex !== -1) {
-//     // If the article already exists, remove it
-//     selectedArticles.value.splice(existingArticleIndex, 1);
-//   } else {
-//     // If the article doesn't exist, add it
-//     selectedArticles.value.push({ productId: id, productName });
-//   }
-// };
-// const isArtickeChecked = (productId: number) => {
-//   if (selectedArticles.value.find((x) => x.productId === productId)) {
-//     return true;
-//   }
-//   return false;
-// };
 </script>

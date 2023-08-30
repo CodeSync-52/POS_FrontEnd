@@ -29,7 +29,6 @@ export type IUserData = {
   outStandingBalance?: number; // do not post
   password?: string;
   isPhnNumberAsUserNumber?: boolean; // do not post
-  action?: any;
   status: string;
   discount: number;
   customerGroup: null | any;

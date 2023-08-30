@@ -166,7 +166,6 @@
                 class="!px-[5px] hover:text-btn-primary"
                 @click="router.push(`/article/${props.row.productId}/update`)"
               />
-              <!-- @click="handleEditArticlePopup(props.row)" -->
             </div>
           </q-td>
         </template>
@@ -263,10 +262,6 @@ const getImageUrl = (base64Image: string | null) => {
     return `data:image/png;base64,${base64Image}`;
   }
 };
-// const handleEditArticlePopup = (selectedRow: IArticleData) => {
-//   selectedRowData.value = selectedRow;
-//   isEditArticleModalVisible.value = true;
-// };
 const handleEditStatusPopup = (row: IArticleData) => {
   selectedStatus.value = row.status;
   selectedRowData.value = row;

@@ -77,6 +77,7 @@
                   flat
                   dense
                   unelevated
+                  :disable="props.row.quantity < 1"
                   icon="check"
                   color="green"
                 />
@@ -118,6 +119,7 @@
                   v-model="props.row.quantity"
                   type="number"
                   filled
+                  :min="1"
                   color="btn-primary"
                   style="max-width: 200px"
                 />
@@ -151,6 +153,8 @@
         @handle-pagination="handlePagination"
         @selected-data="selectedData"
         :article-list="articleListComputed"
+        :pagination="pagination"
+        @filtered-rows="handleFilterRows"
         :current-data="
           selectedArticleData.map((item) => ({
             productId: item.productId !== null ? item.productId : -1,
@@ -197,6 +201,7 @@ const isAddingPurchase = ref(false);
 const isReceiptPreview = ref(false);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const isArticleListModalVisible = ref(false);
+const isFilterChanged = ref(false);
 const handleSelectArticle = () => {
   isArticleListModalVisible.value = true;
 };
@@ -239,6 +244,7 @@ const selectedData = (
             if (index !== -1) {
               selectedArticleData.value[index].purchaseDetailId = res.data;
             }
+            getReceiptDataFromApi(selectedId.value);
           })
           .catch((e) => {
             console.error(e);
@@ -343,10 +349,18 @@ const saveNewReceipt = async () => {
 const isEdit = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
-
+const handleFilterRows = (filterChanged: boolean) => {
+  if (filterChanged) {
+    isFilterChanged.value = filterChanged;
+    setTimeout(() => {
+      isFilterChanged.value = false;
+    }, 200);
+  }
+};
 const getArticleList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
+  if (isFilterChanged.value) return;
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   if (data) {

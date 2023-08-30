@@ -10,7 +10,6 @@ export interface IArticleData {
   costPrice: number;
   productImage: string | null;
   masterStock: null | any;
-  action?: any;
 }
 export interface IArticleInfo {
   categoryName: string;

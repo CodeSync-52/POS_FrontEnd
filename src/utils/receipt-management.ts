@@ -56,7 +56,7 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
     required: true,
     label: 'Action',
     align: 'left',
-    field: (row) => row.action,
+    field: () => '',
   },
 ];
 export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
@@ -85,7 +85,7 @@ export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
   {
     name: 'action',
     label: 'Action',
-    field: (row) => row.action,
+    field: () => '',
     align: 'left',
   },
 ];
