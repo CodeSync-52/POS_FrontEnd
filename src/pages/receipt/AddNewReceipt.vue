@@ -77,6 +77,7 @@
                   flat
                   dense
                   unelevated
+                  :disable="props.row.quantity < 1"
                   icon="check"
                   color="green"
                 />
@@ -118,6 +119,7 @@
                   v-model="props.row.quantity"
                   type="number"
                   filled
+                  :min="1"
                   color="btn-primary"
                   style="max-width: 200px"
                 />
@@ -128,7 +130,7 @@
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
         <q-btn
-          :label="isReceiptPreview ? 'Close' : 'Cancel'"
+          :label="isReceiptPreview ? 'Close' : 'Go Back'"
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="cancelNewReceipt"
         />
@@ -148,8 +150,11 @@
     </q-card>
     <q-dialog v-model="isArticleListModalVisible">
       <article-list-modal
+        @handle-pagination="handlePagination"
         @selected-data="selectedData"
         :article-list="articleListComputed"
+        :pagination="pagination"
+        @filtered-rows="handleFilterRows"
         :current-data="
           selectedArticleData.map((item) => ({
             productId: item.productId !== null ? item.productId : -1,
@@ -179,6 +184,7 @@ import {
   EUserModules,
   IAddNewReceipt,
   IArticleData,
+  IPagination,
   IUserManagementData,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
@@ -195,9 +201,21 @@ const isAddingPurchase = ref(false);
 const isReceiptPreview = ref(false);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const isArticleListModalVisible = ref(false);
+const isFilterChanged = ref(false);
 const handleSelectArticle = () => {
   isArticleListModalVisible.value = true;
 };
+const handlePagination = (selectedPagination: IPagination) => {
+  pagination.value = selectedPagination;
+  getArticleList();
+};
+const pagination = ref<IPagination>({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
+});
 const selectedData = (
   payload: { productId: number; productName?: string }[]
 ) => {
@@ -226,6 +244,7 @@ const selectedData = (
             if (index !== -1) {
               selectedArticleData.value[index].purchaseDetailId = res.data;
             }
+            getReceiptDataFromApi(selectedId.value);
           })
           .catch((e) => {
             console.error(e);
@@ -330,14 +349,33 @@ const saveNewReceipt = async () => {
 const isEdit = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
-
-const getArticleList = async () => {
+const handleFilterRows = (filterChanged: boolean) => {
+  if (filterChanged) {
+    isFilterChanged.value = filterChanged;
+    setTimeout(() => {
+      isFilterChanged.value = false;
+    }, 200);
+  }
+};
+const getArticleList = async (data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
+}) => {
+  if (isFilterChanged.value) return;
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
+  }
   try {
-    const res = await articleListApi({ PageNumber: 1, PageSize: 200 });
+    const res = await articleListApi({
+      PageNumber: pagination.value.page,
+      PageSize: pagination.value.rowsPerPage,
+    });
     if (res.type === 'Success') {
-      articleList.value = res.data.items;
+      if (res.data) {
+        articleList.value = res.data.items;
+        pagination.value.rowsNumber = res.data.totalItemCount;
+      }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

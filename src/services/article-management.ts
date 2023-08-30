@@ -1,5 +1,9 @@
 import { makeApiCall } from 'src/utils';
-import { IArticleData, IGenericResponse } from 'src/interfaces';
+import {
+  IArticleData,
+  IBillingHistoryResponse,
+  IGenericResponse,
+} from 'src/interfaces';
 
 export const newArticleApi = async ({
   name,
@@ -100,6 +104,26 @@ export const updateProductApi = async ({
       wholeSalePrice,
       retailPrice,
       costPrice,
+    },
+  });
+  return res;
+};
+export const articleDetailApi = async (productId: number) => {
+  const res = await makeApiCall<IGenericResponse<IArticleData>>({
+    method: 'GET',
+    url: 'api/product/detail',
+    params: {
+      productId,
+    },
+  });
+  return res;
+};
+export const billingHistoryApi = async (productId: number) => {
+  const res = await makeApiCall<IGenericResponse<IBillingHistoryResponse[]>>({
+    url: 'api/product/billinghistory',
+    method: 'GET',
+    params: {
+      productId,
     },
   });
   return res;

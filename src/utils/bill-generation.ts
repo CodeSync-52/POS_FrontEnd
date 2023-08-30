@@ -50,7 +50,7 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     name: 'action',
     label: 'Action',
     align: 'left',
-    field: (row) => row.action,
+    field: () => '',
   },
 ];
 export const editBillGenerationRecordsColumn: QTableColumn<IProductInfoDetailList>[] =
@@ -119,3 +119,4 @@ export const BillGenerationDetailsInfoColumn: QTableColumn<IBillGenerationDetail
       field: (row) => row.amount * row.quantity,
     },
   ];
+export const billStatusOptions = ['Completed', 'Cancelled', 'Draft'];

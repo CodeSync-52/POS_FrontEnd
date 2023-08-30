@@ -1,6 +1,6 @@
 <template>
-  <q-card class="min-w-[310px] md:min-w-[400px]">
-    <q-card-section>
+  <q-card class="min-w-[310px] md:min-w-[750px] h-[600px]">
+    <q-card-section class="h-[calc(100%-52px)]">
       <div v-if="isFetchingArticleList">
         <q-spinner color="btn-primary" size="3rem" class="mx-auto" />
       </div>
@@ -11,23 +11,57 @@
           </div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
-        <div class="max-h-[250px] overflow-y-auto" v-if="articleList.length">
-          <div v-for="article in articleList" :key="article.productId">
-            <q-checkbox
-              size="sm"
-              :model-value="isArtickeChecked(article.productId)"
-              @update:model-value="
-                updateArticleChecked(article.productId, article.name)
-              "
-              :label="article.name"
-              color="btn-primary"
-              :val="article.productId"
-            />
-          </div>
-        </div>
-
-        <div v-else class="text-center">
-          <span>No Article Available</span>
+        <div>
+          <q-table
+            class="max-h-[450px] h-full"
+            v-model:pagination="articlePagination"
+            :rows="filteredRows"
+            :columns="articleListColumn"
+            virtual-scroll
+            :filter="filter"
+            row-key="productId"
+            @request="handlePagination($event.pagination)"
+            selection="multiple"
+            v-model:selected="selected"
+          >
+            <template v-slot:top>
+              <div
+                class="flex flex-col md:flex-row justify-between items-center w-full"
+              >
+                <div class="text-lg font-medium"><span> Article </span></div>
+                <q-space />
+                <q-input
+                  borderless
+                  dense
+                  outlined
+                  label="search"
+                  debounce="300"
+                  color="primary"
+                  v-model="filter"
+                >
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
+            </template>
+            <template v-slot:body-cell-image="props">
+              <q-td :props="props">
+                <div
+                  class="max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
+                >
+                  <img
+                    class="w-full h-full object-cover"
+                    :src="
+                      getImageUrl(props.row.productImage) ||
+                      'assets/default-image.png'
+                    "
+                    alt="article"
+                  />
+                </div>
+              </q-td>
+            </template>
+          </q-table>
         </div>
       </div>
     </q-card-section>
@@ -43,8 +77,8 @@
         />
         <q-btn
           flat
+          :disabled="selected.length === 0"
           label="Save"
-          :disabled="selectedArticles.length === 0"
           @click="handleSave"
           unelevated
           color="signature"
@@ -55,52 +89,88 @@
   </q-card>
 </template>
 <script lang="ts" setup>
-import { IArticleData } from 'src/interfaces';
-import { onMounted, ref } from 'vue';
-
-onMounted(() => {
-  if (props.currentData) {
-    selectedArticles.value = [...props.currentData];
-  }
+import { IArticleData, IPagination } from 'src/interfaces';
+import { onMounted, ref, watch } from 'vue';
+import { articleListColumn } from 'src/utils';
+interface propTypes {
+  currentData: { productId: number; productName?: string }[];
+  articleList: IArticleData[];
+  isFetchingArticleList: boolean;
+  pagination: IPagination;
+}
+const articlePagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
+});
+const selectedArticles = ref<{ productId: number; productName?: string }[]>([]);
+const selected = ref([]);
+const filter = ref('');
+const filteredRows = ref<IArticleData[]>([]);
+const filterChanged = ref(false);
+const props = withDefaults(defineProps<propTypes>(), {
+  currentData: () => [],
+  articleList: () => [],
+  isFetchingArticleList: false,
 });
 const emit = defineEmits<{
   (
     event: 'selected-data',
     data: { productId: number; productName?: string }[]
   ): void;
+  (event: 'handle-pagination', pagination: IPagination): void;
+  (event: 'filtered-rows', isFilterChanged: boolean): void;
 }>();
+watch(selected, (newSelected: IArticleData[]) => {
+  selectedArticles.value = newSelected.map((article) => ({
+    productId: article.productId,
+    productName: article.name,
+  }));
+});
+function setFilteredData() {
+  filterChanged.value = true;
+  if (filter.value) {
+    filteredRows.value = props.articleList.filter((row) =>
+      row.name.toLowerCase().includes(filter.value.toLowerCase())
+    );
+  } else {
+    filteredRows.value = props.articleList;
+  }
+  emit('filtered-rows', filterChanged.value);
+  setTimeout(() => {
+    filterChanged.value = false;
+    emit('filtered-rows', filterChanged.value);
+  }, 200);
+}
+onMounted(() => {
+  if (props.currentData) {
+    selectedArticles.value = [...props.currentData];
+  }
+  articlePagination.value = props.pagination;
+  filteredRows.value = props.articleList;
+});
+
+watch(filter, setFilteredData);
+watch(props, setFilteredData, {
+  deep: true,
+});
 const handleSave = () => {
   emit('selected-data', selectedArticles.value);
 };
-interface propTypes {
-  currentData: { productId: number; productName?: string }[];
-  articleList: IArticleData[];
-  isFetchingArticleList: boolean;
-}
-const props = withDefaults(defineProps<propTypes>(), {
-  currentData: () => [],
-  articleList: () => [],
-  isFetchingArticleList: false,
-});
-const selectedArticles = ref<{ productId: number; productName?: string }[]>([]);
-const updateArticleChecked = (id: number, productName: string) => {
-  const existingArticleIndex = selectedArticles.value.findIndex(
-    (x) => x.productId === id
-  );
-
-  if (existingArticleIndex !== -1) {
-    // If the article already exists, remove it
-    selectedArticles.value.splice(existingArticleIndex, 1);
-  } else {
-    // If the article doesn't exist, add it
-    selectedArticles.value.push({ productId: id, productName });
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
   }
+  return '';
 };
-
-const isArtickeChecked = (productId: number) => {
-  if (selectedArticles.value.find((x) => x.productId === productId)) {
-    return true;
-  }
-  return false;
+const handlePagination = (newVal: Omit<IPagination, 'rowsNumber'>) => {
+  const selectedPagination = {
+    ...newVal,
+    rowsNumber: articlePagination.value.rowsNumber,
+  };
+  articlePagination.value = selectedPagination;
+  emit('handle-pagination', selectedPagination);
 };
 </script>

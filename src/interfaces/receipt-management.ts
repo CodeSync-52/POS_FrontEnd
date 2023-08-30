@@ -9,7 +9,6 @@ export interface IReceiptData {
   updatedDate: string;
   createdById: number;
   updatedBy: null;
-  action?: string;
   purchaseDetails: {
     productId: number;
     productName: string;
@@ -22,7 +21,6 @@ export interface ISelectedArticleData {
   productId: number | null;
   quantity?: number | null;
   productName?: string;
-  action?: string;
   purchaseDetailId?: number;
 }
 

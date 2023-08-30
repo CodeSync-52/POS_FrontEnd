@@ -41,7 +41,6 @@
           :loading="isLoading"
           :rows="billGenerationData.productInfoDetailList"
           :columns="editBillGenerationRecordsColumn"
-          hide-bottom
         >
           <template v-slot:body-cell-amount="props">
             <q-td :props="props">
@@ -49,7 +48,7 @@
               <q-popup-edit
                 :disable="router.currentRoute.value.path.includes('preview')"
                 v-model="props.row.amount"
-                color="bg-btn-primary  "
+                color="btn-primary"
                 title="Update Amount"
                 buttons
                 v-slot="scope"
@@ -71,14 +70,13 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                v-if="props.row.image"
                 class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
                 @click="handleShowImagePreview(props.row.image)"
               >
                 <img
                   class="w-full h-full object-cover"
                   :src="
-                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                    getImageUrl(props.row.image) || 'assets/default-image.png'
                   "
                   alt="img"
                 />
@@ -174,7 +172,6 @@
           :loading="isLoading"
           :rows="billGenerationDetailsInfoData.productList"
           :columns="BillGenerationDetailsInfoColumn"
-          hide-bottom
         >
           <template v-slot:body-cell-amount="props">
             <q-td :props="props">
@@ -203,14 +200,13 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                v-if="props.row.image"
                 class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
                 @click="handleShowImagePreview(props.row.image)"
               >
                 <img
                   class="object-cover h-full w-full"
                   :src="
-                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                    getImageUrl(props.row.image) || 'assets/default-image.png'
                   "
                   alt="img"
                 />
@@ -414,6 +410,7 @@ const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
+  return '';
 };
 const getBillDetailInfo = async (BillId: number) => {
   if (isLoading.value) return;

@@ -24,7 +24,7 @@ export const categoryColumn: QTableColumn<ICategoryData>[] = [
     sortable: true,
     field: (row) => row.status,
   },
-  { name: 'action', label: 'Action', field: 'action', align: 'left' },
+  { name: 'action', label: 'Action', field: () => '', align: 'left' },
 ];
 export const categoryDetailsColumn: QTableColumn<ICategoryDetailsData>[] = [
   {
@@ -43,5 +43,5 @@ export const categoryDetailsColumn: QTableColumn<ICategoryDetailsData>[] = [
     sortable: true,
     field: (row) => row.status,
   },
-  { name: 'action', label: 'Action', field: 'action', align: 'left' },
+  { name: 'action', label: 'Action', field: () => '', align: 'left' },
 ];
