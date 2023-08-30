@@ -108,7 +108,7 @@
               <img
                 class="w-full h-full object-cover"
                 :src="
-                  getImageUrl(props.row.productImage) ??
+                  getImageUrl(props.row.productImage) ||
                   'assets/default-image.png'
                 "
                 alt="img"
@@ -156,7 +156,10 @@
           v-slot:body-cell-action="props"
         >
           <q-td class="flex justify-start" :props="props">
-            <div class="flex gap-2 flex-nowrap">
+            <router-link
+              :to="`/article/${props.row.productId}/update`"
+              class="flex gap-2 flex-nowrap"
+            >
               <q-btn
                 size="sm"
                 flat
@@ -164,9 +167,8 @@
                 dense
                 icon="edit"
                 class="!px-[5px] hover:text-btn-primary"
-                @click="router.push(`/article/${props.row.productId}/update`)"
               />
-            </div>
+            </router-link>
           </q-td>
         </template>
       </q-table>
@@ -261,6 +263,7 @@ const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
+  return '';
 };
 const handleEditStatusPopup = (row: IArticleData) => {
   selectedStatus.value = row.status;

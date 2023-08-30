@@ -53,7 +53,7 @@
                   <img
                     class="w-full h-full object-cover"
                     :src="
-                      getImageUrl(props.row.productImage) ??
+                      getImageUrl(props.row.productImage) ||
                       'assets/default-image.png'
                     "
                     alt="article"
@@ -163,6 +163,7 @@ const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
+  return '';
 };
 const handlePagination = (newVal: Omit<IPagination, 'rowsNumber'>) => {
   const selectedPagination = {

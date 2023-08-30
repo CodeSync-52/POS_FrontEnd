@@ -76,7 +76,7 @@
                 <img
                   class="w-full h-full object-cover"
                   :src="
-                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                    getImageUrl(props.row.image) || 'assets/default-image.png'
                   "
                   alt="img"
                 />
@@ -206,7 +206,7 @@
                 <img
                   class="object-cover h-full w-full"
                   :src="
-                    getImageUrl(props.row.image) ?? 'assets/default-image.png'
+                    getImageUrl(props.row.image) || 'assets/default-image.png'
                   "
                   alt="img"
                 />
@@ -410,6 +410,7 @@ const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
+  return '';
 };
 const getBillDetailInfo = async (BillId: number) => {
   if (isLoading.value) return;

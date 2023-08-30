@@ -277,6 +277,7 @@ const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
+  return '';
 };
 async function addNewArticle() {
   if (isLoading.value) return;
