@@ -170,7 +170,7 @@
         </template>
         <template v-slot:body-cell-discount="props">
           <q-td :props="props">
-            {{ props.row.discount ?? 'Null' }}
+            {{ props.row.discount ?? 0 }}
           </q-td>
         </template>
         <template v-slot:body-cell-customerGroup="props">
