@@ -139,7 +139,10 @@
           :disable="
             addNewReceipt.userId === null ||
             selectedArticleData.length === 0 ||
-            !selectedArticleData.every((item) => item.quantity)
+            !selectedArticleData.every((item) => item.quantity) ||
+            selectedArticleData.some(
+              (item) => item.quantity && item.quantity < 0
+            )
           "
           label="Save"
           @click="saveNewReceipt"
