@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-6"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn

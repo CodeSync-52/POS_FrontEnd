@@ -48,7 +48,8 @@
             <template v-slot:body-cell-image="props">
               <q-td :props="props">
                 <div
-                  class="max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
+                  class=" max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                  :class="props.row.productImage ? 'cursor-pointer' : '' "
                 >
                   <img
                     class="w-full h-full object-cover"
