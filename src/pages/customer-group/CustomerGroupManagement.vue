@@ -13,7 +13,7 @@
         @click="showAddNewCustomerGroupPopup"
       />
     </div>
-    <div class="q-pa-md">
+    <div class="">
       <q-table
         :rows="filteredRows"
         v-model:pagination="pagination"

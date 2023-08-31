@@ -105,6 +105,7 @@
               no-caps
               :label="props.row.status"
               @click="handleUpdateStatusPopup(props.row)"
+              class="hover:text-btn-primary"
             />
           </q-td>
         </template>

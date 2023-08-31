@@ -3,7 +3,7 @@
     <div class="flex mb-4">
       <span class="text-xl font-medium">{{ pageTitle }}</span>
     </div>
-    <div class="q-pa-md">
+    <div class="">
       <div class="roleManagementTable">
         <q-table
           :rows="rolesManagementTableRows"
