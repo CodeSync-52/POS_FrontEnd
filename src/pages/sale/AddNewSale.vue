@@ -6,8 +6,86 @@
     <q-card>
       <q-card-section class="q-gutter-y-md">
         <div class="row q-col-gutter-md">
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              dense
+              label="Created By"
+              v-model="selectedSaleRecord.createdBy"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              outlined
+              type="date"
+              disable
+              label="Created Date"
+              dense
+              v-model="selectedSaleRecord.createdDate"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              dense
+              label="Created By"
+              v-model="selectedSaleRecord.createdBy"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              dense
+              label="Created By"
+              v-model="selectedSaleRecord.createdBy"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              dense
+              label="Created By"
+              v-model="selectedSaleRecord.createdBy"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              dense
+              label="Created By"
+              v-model="selectedSaleRecord.createdBy"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              dense
+              label="Created By"
+              v-model="selectedSaleRecord.createdBy"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              dense
+              label="Created By"
+              v-model="selectedSaleRecord.createdBy"
+            />
+          </div>
           <div class="col-md-4 w-full col-sm-12">
             <div>
+              <!-- createdBy : "Furqan Zafar" createdById : 1 createdDate
+              :"2023-08-31 15:28:49.5643373" discount : 0 fullName : "Furqan
+              Zafar" netAmount : 0 outStandingBalance : -545 totalAmount : 0
+              totalQuantity : 10 updatedBy : null updatedDate : "2023-08-31
+              17:32:07.2875920" userId : 1 -->
               <!-- <q-select
                       :options="UserList"
                       :loading="isLoading"
@@ -31,14 +109,11 @@
                     > -->
             </div>
           </div>
-          <div v-if="action !== 'Preview'" class="col-12 col-md-6">
-            <div class="q-gutter-y-xs"></div>
-          </div>
         </div>
         <q-table
           v-if="action !== 'Add New'"
-          :rows="selectedSaleRecord"
-          :columns="salesManagementColumn"
+          :rows="selectedSaleRecord?.wholeSaleDetails"
+          :columns="salesDetailsColumn"
           :loading="isLoading"
           tabindex="0"
           align="left"
@@ -137,11 +212,11 @@
           </template>
           <template v-slot:bottom-row="props">
             <q-tr :props="props">
-              <q-td colspan="7" />
+              <q-td colspan="4" />
               <q-td>
                 <div>
                   Total:
-                  {{ saleGenerationTotalAmount }}
+                  <!-- {{ saleGenerationTotalAmount }} -->
                 </div>
               </q-td>
             </q-tr>
@@ -167,17 +242,39 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ISalesManagementData } from 'src/interfaces';
-import { EActionPermissions, EUserModules } from 'src/interfaces';
-import { useAuthStore } from 'src/stores';
-import { salesManagementColumn, salesManagementData } from 'src/utils';
-import { ref, onMounted, computed } from 'vue';
+import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
-const selectedSaleRecord = ref(salesManagementData);
+import { useAuthStore } from 'src/stores';
+import {
+  EActionPermissions,
+  EUserModules,
+  ISelectedSalesDetailData,
+} from 'src/interfaces';
+import { isPosError, salesDetailsColumn } from 'src/utils';
+import { ref, onMounted } from 'vue';
+import { wholeSaleDetailApi } from 'src/services';
+import moment from 'moment';
+const selectedSaleRecord = ref<ISelectedSalesDetailData>({
+  createdBy: '',
+  createdById: 0,
+  createdDate: '',
+  discount: 0,
+  fullName: '',
+  netAmount: 0,
+  outStandingBalance: 0,
+  totalAmount: 0,
+  totalQuantity: 1,
+  updatedBy: null,
+  updatedDate: '',
+  userId: 0,
+  wholeSaleDetails: [],
+  wholeSaleStatus: '',
+});
 const action = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const $q = useQuasar();
 onMounted(() => {
   const route = router.currentRoute.value;
   if (route.params.id) {
@@ -186,16 +283,47 @@ onMounted(() => {
     } else {
       action.value = 'Edit';
     }
+    getSelectedWholesaleDetail(Number(route.params.id));
   } else {
     action.value = 'Add New';
   }
 });
-const saleGenerationTotalAmount = computed(() => {
-  return selectedSaleRecord.value.reduce(
-    (total: number, row: ISalesManagementData) => {
-      return total + row.totalAmount * row.totalQuantity - row.discount;
-    },
-    0
-  );
-});
+// const saleGenerationTotalAmount = computed(() => {
+//   const row = selectedSaleRecord.value?.wholeSaleDetails
+//   if (row){
+//     return row.reduce(
+//       (total: number, row: ISelectedSalesDetailData) => {
+//         return total + row.totalAmount * row.totalQuantity - row.discount;
+//       },
+//       0
+//     );
+//   }
+//   return 0
+// });
+const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await wholeSaleDetailApi(wholeSaleId);
+    if (res.type === 'Success') {
+      if (res.data) {
+        selectedSaleRecord.value = res.data;
+        selectedSaleRecord.value.createdDate = moment(
+          res.data.createdDate
+        ).format('YYYY-MM-DD');
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred fetching Wholesale Details';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  isLoading.value = false;
+};
 </script>

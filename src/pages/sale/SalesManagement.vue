@@ -38,8 +38,9 @@
       <q-select
         dense
         outlined
+        :options="wholeSaleStatusOptions"
         style="min-width: 200px"
-        v-model="filterSearch.wholesaleStatus"
+        v-model="filterSearch.wholeSaleStatus"
         label="Wholesale Status"
         color="btn-primary"
       />
@@ -128,15 +129,15 @@
             :props="props"
           >
             <div class="flex gap-2 flex-nowrap">
-              <router-link :to="`/sale/${props.row.userId}`">
+              <router-link :to="`/sale/${props.row.wholeSaleId}`">
                 <q-btn
                   v-if="
                     authStore.checkUserHasPermission(
                       EUserModules.SalesManagement,
                       EActionPermissions.Update
                     ) &&
-                    props.row.wholesaleStatus !== 'Cancelled' &&
-                    props.row.wholesaleStatus !== 'Billed'
+                    props.row.wholeSaleStatus !== 'Cancelled' &&
+                    props.row.wholeSaleStatus !== 'Completed'
                   "
                   size="sm"
                   flat
@@ -146,7 +147,7 @@
                   class="hover:text-btn-primary"
                 />
               </router-link>
-              <router-link :to="`/sale/${props.row.userId}/preview`">
+              <router-link :to="`/sale/${props.row.wholeSaleId}/preview`">
                 <q-btn
                   size="sm"
                   flat
@@ -162,15 +163,16 @@
                     EUserModules.SalesManagement,
                     EActionPermissions.Update
                   ) &&
-                  props.row.wholesaleStatus !== 'Cancelled' &&
-                  props.row.wholesaleStatus !== 'Billed'
+                  props.row.wholeSaleStatus !== 'Cancelled' &&
+                  props.row.wholeSaleStatus !== 'Completed'
                 "
                 size="sm"
                 flat
                 dense
                 unelevated
-                icon="receipt"
-                color="bg-btn-secondary"
+                icon="check"
+                color="green"
+                @click="handleGenerateSalePopup(props.row)"
               />
               <q-btn
                 v-if="
@@ -178,8 +180,8 @@
                     EUserModules.SalesManagement,
                     EActionPermissions.Update
                   ) &&
-                  props.row.wholesaleStatus !== 'Cancelled' &&
-                  props.row.wholesaleStatus !== 'Billed'
+                  props.row.wholeSaleStatus !== 'Cancelled' &&
+                  props.row.wholeSaleStatus !== 'Completed'
                 "
                 size="sm"
                 flat
@@ -187,18 +189,17 @@
                 unelevated
                 icon="cancel"
                 color="red"
-                @click="handleCancelSale(props.row)"
               />
             </div>
           </q-td>
         </template>
       </q-table>
     </div>
-    <q-dialog v-model="isCancelSaleModalVisible">
+    <q-dialog v-model="isGenerateSaleModalVisible">
       <q-card class="min-w-[400px]">
         <q-card-section>
           <div class="flex justify-between items-center mb-2">
-            <span class="text-lg font-medium">Cancel Sale</span>
+            <span class="text-lg font-medium">Generate Sale</span>
             <q-btn
               class="font-medium"
               icon="close"
@@ -209,7 +210,7 @@
             />
           </div>
           <div class="text-center">
-            <span>Are you sure you want to Cancel the Sale?</span>
+            <span>Are you sure you want to Generate the Sale?</span>
           </div>
         </q-card-section>
         <q-card-actions align="right">
@@ -222,10 +223,11 @@
           />
           <q-btn
             flat
-            label="Cancel"
+            label="Generate"
             color="white"
-            :loading="isCancellingSale"
+            :loading="isGeneratingSale"
             class="bg-btn-primary hover:bg-btn-primary-hover"
+            @click="handleGenerateSale"
           />
         </q-card-actions>
       </q-card>
@@ -242,14 +244,14 @@ import {
   getRoleModuleDisplayName,
   ISalesFilterSearch,
 } from 'src/interfaces';
-import { salesManagementListApi } from 'src/services';
+import { onMounted, ref } from 'vue';
+import { salesManagementListApi, completeWholeSaleApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import {
   isPosError,
   salesManagementColumn,
-  salesManagementData,
+  wholeSaleStatusOptions,
 } from 'src/utils';
-import { onMounted, ref } from 'vue';
 const pageTitle = getRoleModuleDisplayName(EUserModules.SalesManagement);
 const authStore = useAuthStore();
 const $q = useQuasar();
@@ -265,11 +267,11 @@ const filterSearch = ref<ISalesFilterSearch>({
   userName: null,
   startDate: null,
   endDate: null,
-  wholesaleStatus: null,
+  wholeSaleStatus: null,
 });
-const isCancelSaleModalVisible = ref(false);
-const isCancellingSale = ref(false);
-const salesManagementRecords = ref<ISalesManagementData[]>(salesManagementData);
+const isGenerateSaleModalVisible = ref(false);
+const isGeneratingSale = ref(false);
+const salesManagementRecords = ref<ISalesManagementData[]>([]);
 const pagination = ref<IPagination>(defaultPagination);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
@@ -286,13 +288,13 @@ const handleResetFilter = () => {
     userName: null,
     startDate: null,
     endDate: null,
-    wholesaleStatus: null,
+    wholeSaleStatus: null,
   };
   getSalesManagementList();
 };
-const handleCancelSale = (selectedRow: ISalesManagementData) => {
+const handleGenerateSalePopup = (selectedRow: ISalesManagementData) => {
   selectedRowData.value = selectedRow;
-  isCancelSaleModalVisible.value = true;
+  isGenerateSaleModalVisible.value = true;
 };
 const getSalesManagementList = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -332,5 +334,34 @@ const getSalesManagementList = async (data?: {
     });
   }
   isLoading.value = false;
+};
+const handleGenerateSale = async () => {
+  if (isGeneratingSale.value) return;
+  isGeneratingSale.value = true;
+  try {
+    const selectedId = selectedRowData.value?.wholeSaleId ?? -1;
+    const res = await completeWholeSaleApi(selectedId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.wholeSaleStatus = 'Completed';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred Completing Sale';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  isGeneratingSale.value = false;
+  isGenerateSaleModalVisible.value = false;
 };
 </script>
