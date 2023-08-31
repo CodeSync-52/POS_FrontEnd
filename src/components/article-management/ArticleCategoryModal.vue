@@ -55,6 +55,8 @@
                     rounded
                     @click="props.expand = !props.expand"
                     :icon="props.expand ? 'remove' : 'add'"
+                    class="bg-btn-primary"
+                    color="Sgnature"
                   />
                 </div>
               </q-td>

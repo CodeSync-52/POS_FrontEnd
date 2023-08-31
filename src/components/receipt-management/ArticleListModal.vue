@@ -36,7 +36,7 @@
                   outlined
                   label="search"
                   debounce="300"
-                  color="primary"
+                  color="btn-primary"
                   v-model="filter"
                 >
                   <template v-slot:append>

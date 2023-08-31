@@ -95,6 +95,7 @@
               :label="props.row.status"
               dense
               no-caps
+              class="hover:text-btn-primary"
               @click="handleStatusModalPopup(props.row)"
             />
           </q-td>
