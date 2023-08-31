@@ -103,7 +103,7 @@
               />
               <div
                 v-if="imagePreview"
-                class="w-[60px] h-[60px] overflow-hidden relative"
+                class="min-w-[120px] max-w-[120px] h-[120px] overflow-hidden relative rounded-full"
               >
                 <q-btn
                   icon="close"
@@ -115,7 +115,7 @@
                   class="absolute bg-signature top-0 end-0"
                 />
                 <img
-                  class="w-100 h-100 object-cover"
+                  class="w-full h-full object-cover"
                   :src="imagePreview"
                   alt="Image Preview"
                 />

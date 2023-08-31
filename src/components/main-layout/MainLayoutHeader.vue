@@ -43,7 +43,7 @@
 
             <q-card
               v-if="showAccountInfoDropdown"
-              class="absolute right-[2px] z-10 top-[45px] rounded-md"
+              class="absolute right-[10px] z-10 top-[64px] rounded-md"
             >
               <q-card-section class="min-w-[180px] q-pa-none">
                 <q-item

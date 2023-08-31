@@ -10,7 +10,8 @@
           v-if="isViewProfile"
           label="edit"
           unelevated
-          color="btn-primary "
+          class="bg-btn-primary hover:bg-btn-primary-hover"
+          color="Signature"
           @click="canUpdateProfile = true"
         />
       </div>

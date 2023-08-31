@@ -201,7 +201,7 @@
       <q-card class="min-w-[400px]">
         <q-card-section>
           <div class="flex justify-between items-center mb-2">
-            <span class="text-lg font-medium">Reset Password</span>
+            <span class="text-lg font-medium">Cancel Receipt</span>
             <q-btn
               class="font-medium"
               icon="close"
