@@ -62,6 +62,27 @@ export const routeList = [
     },
   },
   {
+    path: '/sale/:id',
+    component: () => import('src/pages/sale/AddNewSale.vue'),
+    meta: {
+      module: EUserModules.SalesManagement,
+    },
+  },
+  {
+    path: '/sale/add-new',
+    component: () => import('src/pages/sale/AddNewSale.vue'),
+    meta: {
+      module: EUserModules.SalesManagement,
+    },
+  },
+  {
+    path: '/sale/:id/preview',
+    component: () => import('src/pages/sale/AddNewSale.vue'),
+    meta: {
+      module: EUserModules.SalesManagement,
+    },
+  },
+  {
     path: '/receipt',
     component: () => import('src/pages/receipt/ReceiptManagement.vue'),
     meta: {

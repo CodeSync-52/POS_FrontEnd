@@ -4,7 +4,7 @@ import { ISalesManagementData } from 'src/interfaces';
 export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
   {
     name: 'wholesale',
-    label: 'Wholesale#',
+    label: 'Wholesale Id',
     field: (row) => row.wholesaleId,
     align: 'left',
   },
@@ -50,6 +50,12 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
     field: (row) => row.totalQuantity * row.totalAmount - row.discount,
     align: 'left',
   },
+  {
+    name: 'action',
+    label: 'Action',
+    field: () => '',
+    align: 'left',
+  },
 ];
 export const salesManagementData: ISalesManagementData[] = [
   {
@@ -57,8 +63,17 @@ export const salesManagementData: ISalesManagementData[] = [
     userId: 1,
     fullName: 'darek',
     totalQuantity: 5,
-    wholesaleStatus: 'Cancelled',
-    totalAmount: 200,
+    wholesaleStatus: 'Open',
+    totalAmount: 100,
     discount: 10,
+  },
+  {
+    wholesaleId: 2,
+    userId: 2,
+    fullName: 'mark',
+    totalQuantity: 10,
+    wholesaleStatus: 'Open',
+    totalAmount: 50,
+    discount: 12,
   },
 ];
