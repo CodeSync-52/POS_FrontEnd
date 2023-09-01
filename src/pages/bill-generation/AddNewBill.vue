@@ -70,7 +70,8 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
+                class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                :class="props.row.image ? 'cursor-pointer' : ''"
                 @click="handleShowImagePreview(props.row.image)"
               >
                 <img
@@ -200,8 +201,9 @@
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
               <div
-                class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
+                class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
                 @click="handleShowImagePreview(props.row.image)"
+                :class="props.row.image ? 'cursor-pointer' : ''"
               >
                 <img
                   class="object-cover h-full w-full"

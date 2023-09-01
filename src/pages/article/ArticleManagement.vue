@@ -104,7 +104,8 @@
           <q-td :props="props">
             <div
               @click="handlePreviewImage(props.row.productImage)"
-              class="cursor-pointer max-w-[2rem] h-[32px] min-w-[2rem] overflow-hidden rounded-full"
+              class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+              :class="props.row.productImage ? 'cursor-pointer' : ''"
             >
               <img
                 class="w-full h-full object-cover"

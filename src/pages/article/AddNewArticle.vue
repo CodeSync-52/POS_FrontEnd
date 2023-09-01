@@ -59,18 +59,18 @@
               <q-input
                 v-model="newArticle.wholeSalePrice"
                 dense
+                type="number"
                 label="Wholesale Price"
                 outlined
-                disable
                 color="btn-primary"
               />
             </div>
             <div v-if="isUpdate" class="col-12 col-md-6">
               <span class="text-base">Retail Price</span>
               <q-input
-                disable
                 v-model="newArticle.retailPrice"
                 dense
+                type="number"
                 label="Retail Price"
                 outlined
                 color="btn-primary"
@@ -81,7 +81,7 @@
               <q-input
                 v-model="newArticle.costPrice"
                 dense
-                disable
+                type="number"
                 label="Cost Price"
                 outlined
                 color="btn-primary"
