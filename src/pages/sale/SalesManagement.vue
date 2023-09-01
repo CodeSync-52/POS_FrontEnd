@@ -27,6 +27,7 @@
         dense
         outlined
         style="min-width: 200px"
+        :options="UserList"
         v-model="filterSearch.userId"
         @update:model-value="filterSearch.userId = $event.userId"
         map-options
@@ -189,48 +190,20 @@
                 unelevated
                 icon="cancel"
                 color="red"
+                @click="handleCancelSalePopup(props.row)"
               />
             </div>
           </q-td>
         </template>
       </q-table>
     </div>
-    <q-dialog v-model="isGenerateSaleModalVisible">
-      <q-card class="min-w-[400px]">
-        <q-card-section>
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-lg font-medium">Generate Sale</span>
-            <q-btn
-              class="font-medium"
-              icon="close"
-              flat
-              unelevated
-              dense
-              v-close-popup
-            />
-          </div>
-          <div class="text-center">
-            <span>Are you sure you want to Generate the Sale?</span>
-          </div>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            label="Close"
-            color="white"
-            v-close-popup
-            class="bg-btn-cancel hover:bg-btn-cancel-hover"
-          />
-          <q-btn
-            flat
-            label="Generate"
-            color="white"
-            :loading="isGeneratingSale"
-            class="bg-btn-primary hover:bg-btn-primary-hover"
-            @click="handleGenerateSale"
-          />
-        </q-card-actions>
-      </q-card>
+    <q-dialog v-model="isGenerateOrCancelSaleModalVisible">
+      <generate-or-cancel-sale-modal
+        :is-cancel="isCancel"
+        :selected-row-id="selectedRowData?.wholeSaleId"
+        @cancel-sale="handleCancelSale"
+        @generate-sale="handleGenerateSale"
+      />
     </q-dialog>
   </div>
 </template>
@@ -243,18 +216,27 @@ import {
   ISalesManagementData,
   getRoleModuleDisplayName,
   ISalesFilterSearch,
+  IUserManagementData,
 } from 'src/interfaces';
 import { onMounted, ref } from 'vue';
-import { salesManagementListApi, completeWholeSaleApi } from 'src/services';
+import {
+  salesManagementListApi,
+  completeWholeSaleApi,
+  cancelWholeSaleApi,
+  getUserListApi,
+} from 'src/services';
 import { useAuthStore } from 'src/stores';
 import {
   isPosError,
   salesManagementColumn,
   wholeSaleStatusOptions,
 } from 'src/utils';
+import GenerateOrCancelSaleModal from 'src/components/sales-management/GenerateOrCancelSaleModal.vue';
+import { CanceledError } from 'axios';
 const pageTitle = getRoleModuleDisplayName(EUserModules.SalesManagement);
 const authStore = useAuthStore();
 const $q = useQuasar();
+const isCancel = ref(false);
 const defaultPagination = {
   sortBy: 'desc',
   descending: false,
@@ -269,15 +251,17 @@ const filterSearch = ref<ISalesFilterSearch>({
   endDate: null,
   wholeSaleStatus: null,
 });
-const isGenerateSaleModalVisible = ref(false);
+const isGenerateOrCancelSaleModalVisible = ref(false);
 const isGeneratingSale = ref(false);
 const salesManagementRecords = ref<ISalesManagementData[]>([]);
 const pagination = ref<IPagination>(defaultPagination);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const selectedRowData = ref<ISalesManagementData | null>(null);
+const UserList = ref<IUserManagementData[]>([]);
 onMounted(() => {
   getSalesManagementList();
+  getUserList();
 });
 const handleResetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -294,7 +278,39 @@ const handleResetFilter = () => {
 };
 const handleGenerateSalePopup = (selectedRow: ISalesManagementData) => {
   selectedRowData.value = selectedRow;
-  isGenerateSaleModalVisible.value = true;
+  isCancel.value = false;
+  isGenerateOrCancelSaleModalVisible.value = true;
+};
+const handleCancelSalePopup = (selectedRow: ISalesManagementData) => {
+  selectedRowData.value = selectedRow;
+  isCancel.value = true;
+  isGenerateOrCancelSaleModalVisible.value = true;
+};
+const handleCancelSale = async (id: number, callback: () => void) => {
+  try {
+    const res = await cancelWholeSaleApi(id);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.wholeSaleStatus = 'Cancelled';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred Cancelling sale';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  callback();
+  isGenerateOrCancelSaleModalVisible.value = false;
 };
 const getSalesManagementList = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -351,7 +367,7 @@ const handleGenerateSale = async () => {
       }
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred Completing Sale';
+    let message = 'Unexpected Error Occurred Generating Sale';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -362,6 +378,30 @@ const handleGenerateSale = async () => {
     });
   }
   isGeneratingSale.value = false;
-  isGenerateSaleModalVisible.value = false;
+  isGenerateOrCancelSaleModalVisible.value = false;
+};
+const getUserList = async () => {
+  isLoading.value = true;
+  try {
+    const res = await getUserListApi({
+      pageNumber: 1,
+      pageSize: 500,
+    });
+    if (res?.data) {
+      UserList.value = res.data.items;
+    }
+  } catch (e) {
+    if (e instanceof CanceledError) return;
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isLoading.value = false;
 };
 </script>

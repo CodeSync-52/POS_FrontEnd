@@ -28,7 +28,7 @@ export interface ISelectedSalesDetailData {
   totalQuantity: number;
   updatedBy: null | number;
   updatedDate: string;
-  userId: number;
+  userId: number | null;
   wholeSaleDetails: IWholeSaleDetailsData[];
   wholeSaleStatus: string;
 }
@@ -38,4 +38,25 @@ export interface IWholeSaleDetailsData {
   totalAmount: number;
   unitWholeSalePrice: number;
   wholeSaleDetailId: number;
+  productName?: string;
+}
+export interface IWholesaleProductList {
+  productId: number;
+  quantity: number;
+}
+export interface IAddNewSale {
+  userId: number | null;
+  productList: ISelectedArticleList[];
+}
+export interface ISelectedArticleList {
+  productId: null | number;
+  quantity: null | number;
+}
+export interface ISelectedWholeSaleArticleData {
+  productId: number | null;
+  quantity?: number | null;
+  productName?: string;
+  wholeSaleDetailId?: number;
+  unitWholeSalePrice?: number;
+  totalAmount?: number;
 }

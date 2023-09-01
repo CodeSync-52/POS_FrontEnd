@@ -65,35 +65,42 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
     align: 'left',
   },
 ];
-export const salesDetailsColumn: QTableColumn<IWholeSaleDetailsData>[] = [
-  {
-    name: 'productId',
-    label: 'Product Id',
-    field: (row) => row.productId,
-    align: 'left',
-  },
-  {
-    name: 'wholeSaleDetailId',
-    label: 'wholesale Detail Id',
-    field: (row) => row.wholeSaleDetailId,
-    align: 'left',
-  },
-  {
-    name: 'quantity',
-    label: 'Quantity',
-    field: (row) => row.quantity,
-    align: 'left',
-  },
-  {
-    name: 'unitWholeSalePrice',
-    label: 'Unit Wholesale Price',
-    field: (row) => row.unitWholeSalePrice,
-    align: 'left',
-  },
-  {
-    name: 'totalAmount',
-    label: 'Total Amount',
-    field: (row) => row.totalAmount,
-    align: 'left',
-  },
-];
+export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
+  [
+    {
+      name: 'productId',
+      label: 'Product Id',
+      field: (row) => row.productId,
+      align: 'left',
+    },
+    {
+      name: 'productName',
+      label: 'Product Name',
+      field: (row) => row.productName,
+      align: 'left',
+    },
+    {
+      name: 'quantity',
+      label: 'Quantity',
+      field: (row) => row.quantity,
+      align: 'left',
+    },
+    {
+      name: 'unitWholeSalePrice',
+      label: 'Unit Wholesale Price',
+      field: (row) => row.unitWholeSalePrice,
+      align: 'left',
+    },
+    {
+      name: 'totalAmount',
+      label: 'Total Amount',
+      field: (row) => row.totalAmount,
+      align: 'left',
+    },
+    {
+      name: 'action',
+      label: 'Action',
+      field: () => '',
+      align: 'left',
+    },
+  ];
