@@ -151,9 +151,8 @@ function setFilteredData() {
 onMounted(() => {
   console.log(props.currentData);
   if (props.currentData.length) {
-
     selected.value = [];
-    console.log(props.currentData, props.articleList)
+    console.log(props.currentData, props.articleList);
 
     props.currentData.forEach((item) => {
       const selectedItem = props.articleList.find(
