@@ -3,7 +3,7 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
-      <span class="text-xl font-medium">{{ pageTitle }}</span>
+      <span class="text-lg font-medium">{{ pageTitle }}</span>
       <q-btn
         v-if="
           authStore.checkUserHasPermission(
@@ -18,7 +18,7 @@
         @click="AddNewCategory"
       />
     </div>
-    <div class="py-4">
+    <div class="">
       <q-table
         tabindex="0"
         :loading="isLoading"
@@ -30,20 +30,24 @@
         @request="getCategoryList"
       >
         <template v-slot:top>
-          <div class="font-medium text-lg"><span>Category</span></div>
-          <q-space />
-          <q-input
-            outlined
-            dense
-            debounce="300"
-            color="btn-primary"
-            label="Name"
-            v-model="filter"
+          <div
+            class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 w-full"
           >
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
+            <div class="font-medium text-lg"><span>Category</span></div>
+
+            <q-input
+              outlined
+              dense
+              debounce="300"
+              color="btn-primary"
+              label="Name"
+              v-model="filter"
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
         </template>
         <template v-slot:body-cell-category="props">
           <q-td :props="props">

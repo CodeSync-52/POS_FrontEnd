@@ -1,9 +1,9 @@
 <template>
   <div>
     <div
-      class="flex flex-col sm:flex-row justify-center md:justify-between gap-2 items-center mb-4"
+      class="flex flex-col sm:flex-row justify-center md:justify-between gap-4 items-center mb-4"
     >
-      <span class="text-xl font-medium">{{ pageTitle }}</span>
+      <span class="text-lg font-medium">{{ pageTitle }}</span>
       <q-btn
         label="Add New"
         icon="add"
@@ -23,20 +23,25 @@
         @request="fetchingCustomerGroupList"
       >
         <template v-slot:top>
-          <div class="font-medium text-lg"><span>Customer Group</span></div>
-          <q-space />
-          <q-input
-            outlined
-            dense
-            debounce="300"
-            color="btn-primary"
-            label="Name"
-            v-model="filter"
+          <div
+            class="flex flex-col sm:flex-row justify-center md:justify-between gap-4 item-center w-full"
           >
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
+            <div class="font-medium text-lg flex items-center">
+              <span>Customer Group</span>
+            </div>
+            <q-input
+              outlined
+              dense
+              debounce="300"
+              color="btn-primary"
+              label="Name"
+              v-model="filter"
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
         </template>
         <template v-slot:body-cell-status="props">
           <q-td :props="props">

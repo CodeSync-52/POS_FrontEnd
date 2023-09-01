@@ -1,9 +1,9 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
-      <span class="text-xl font-medium">{{ pageTitle }}</span>
+      <span class="text-lg font-medium">{{ pageTitle }}</span>
       <q-btn
         v-if="
           authStore.checkUserHasPermission(
@@ -18,7 +18,7 @@
       />
     </div>
     <div
-      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
+      class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
       <q-select
         dense
@@ -45,6 +45,7 @@
       <q-input
         v-model="filterSearch.userName"
         outlined
+        style="min-width: 200px"
         label="Name"
         dense
         color="btn-primary"
@@ -52,6 +53,7 @@
       <q-input
         v-model="filterSearch.FromDate"
         label="From"
+        style="min-width: 200px"
         type="date"
         :max="filterSearch.ToDate"
         outlined
@@ -63,11 +65,12 @@
         label="To"
         color="btn-primary"
         type="date"
+        style="min-width: 200px"
         :min="filterSearch.FromDate"
         outlined
         dense
       />
-      <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
+      <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           unelevated
           :loading="isLoading"
