@@ -29,9 +29,20 @@
             <q-input
               disable
               outlined
+              type="number"
               dense
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
+              label="Discount"
+              v-model="selectedSaleRecord.discount"
+            />
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              disable
+              outlined
+              type="number"
+              dense
+              label="Net Amount"
+              v-model="selectedSaleRecord.netAmount"
             />
           </div>
           <div class="col-md-6 col-sm-12">
@@ -39,8 +50,9 @@
               disable
               outlined
               dense
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
+              type="number"
+              label="Outstanding Balance"
+              v-model="selectedSaleRecord.outStandingBalance"
             />
           </div>
           <div class="col-md-6 col-sm-12">
@@ -48,8 +60,9 @@
               disable
               outlined
               dense
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
+              type="number"
+              label="Total Amount"
+              v-model="selectedSaleRecord.totalAmount"
             />
           </div>
           <div class="col-md-6 col-sm-12">
@@ -57,8 +70,8 @@
               disable
               outlined
               dense
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
+              label="Total Quantity"
+              v-model="selectedSaleRecord.totalQuantity"
             />
           </div>
           <div class="col-md-6 col-sm-12">
@@ -66,26 +79,12 @@
               disable
               outlined
               dense
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
+              label="Updated Date"
+              v-model="selectedSaleRecord.updatedDate"
             />
           </div>
           <div class="col-md-4 w-full col-sm-12">
             <div>
-              <!-- createdBy : "Furqan Zafar" createdById : 1 createdDate
-              :"2023-08-31 15:28:49.5643373" discount : 0 fullName : "Furqan
-              Zafar" netAmount : 0 outStandingBalance : -545 totalAmount : 0
-              totalQuantity : 10 updatedBy : null updatedDate : "2023-08-31
-              17:32:07.2875920" userId : 1 -->
               <!-- <q-select
                       :options="UserList"
                       :loading="isLoading"
@@ -144,12 +143,12 @@
               </q-popup-edit>
             </q-td>
           </template>
-          <template v-slot:body-cell-discount="props">
+          <template v-slot:body-cell-quantity="props">
             <q-td :props="props">
               {{ props.row.discount }}
               <q-popup-edit
                 :disable="router.currentRoute.value.path.includes('preview')"
-                v-model="props.row.discount"
+                v-model="props.row.quantity"
                 color="btn-primary"
                 title="Update Amount"
                 buttons
@@ -311,6 +310,9 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
         selectedSaleRecord.value.createdDate = moment(
           res.data.createdDate
         ).format('YYYY-MM-DD');
+        selectedSaleRecord.value.updatedDate = moment(
+          res.data.updatedDate
+        ).format('DD/MM/YYYY');
       }
     }
   } catch (e) {
