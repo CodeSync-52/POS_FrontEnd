@@ -155,9 +155,9 @@
       <article-list-modal
         @handle-pagination="handlePagination"
         @selected-data="selectedData"
+        @filtered-rows="handleFilterRows"
         :article-list="articleListComputed"
         :pagination="pagination"
-        @filtered-rows="handleFilterRows"
         :current-data="
           selectedArticleData.map((item) => ({
             productId: item.productId !== null ? item.productId : -1,
@@ -222,10 +222,12 @@ const pagination = ref<IPagination>({
 const selectedData = (
   payload: { productId: number; productName?: string }[]
 ) => {
-  const newIdList = payload.map((item) => item.productId);
-  selectedArticleData.value = selectedArticleData.value.filter(
-    (item) => item.productId && newIdList.includes(item.productId)
-  );
+  if (!isEdit.value) {
+    const newIdList = payload.map((item) => item.productId);
+    selectedArticleData.value = selectedArticleData.value.filter(
+      (item) => item.productId && newIdList.includes(item.productId)
+    );
+  }
   const oldIdList = selectedArticleData.value.map((item) => item.productId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.productId)) {

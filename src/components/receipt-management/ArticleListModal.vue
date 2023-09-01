@@ -106,16 +106,19 @@ const articlePagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const selectedArticles = ref<{ productId: number; productName?: string }[]>([]);
-const selected = ref([]);
-const filter = ref('');
-const filteredRows = ref<IArticleData[]>([]);
-const filterChanged = ref(false);
 const props = withDefaults(defineProps<propTypes>(), {
   currentData: () => [],
   articleList: () => [],
   isFetchingArticleList: false,
 });
+const selectedArticles = ref<{ productId: number; productName?: string }[]>([
+  ...props.currentData,
+]);
+const selected = ref<IArticleData[]>([]);
+const filter = ref('');
+const filteredRows = ref<IArticleData[]>([]);
+const filterChanged = ref(false);
+
 const emit = defineEmits<{
   (
     event: 'selected-data',
@@ -146,6 +149,20 @@ function setFilteredData() {
   }, 200);
 }
 onMounted(() => {
+  console.log(props.currentData);
+  if (props.currentData.length) {
+    selected.value = [];
+    console.log(props.currentData, props.articleList);
+
+    props.currentData.forEach((item) => {
+      const selectedItem = props.articleList.find(
+        (filteredItem) => filteredItem.categoryId === item.productId
+      );
+      if (selectedItem) {
+        selected.value.push(selectedItem);
+      }
+    });
+  }
   if (props.currentData) {
     selectedArticles.value = [...props.currentData];
   }
