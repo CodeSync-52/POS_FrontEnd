@@ -397,7 +397,7 @@ const handlePagination = (selectedPagination: IPagination) => {
   getArticleList();
 };
 const articleListComputed = computed(() => {
-  // if (action.value !== 'Edit') return articleList.value;
+  if (action.value !== 'Edit') return articleList.value;
   return articleList.value.filter((item) => {
     const index = selectedArticleData.value.findIndex(
       (art) => art.productId === item.productId
@@ -437,14 +437,22 @@ const saveNewReceipt = async () => {
 const selectedData = (
   payload: { productId: number; productName?: string }[]
 ) => {
-  // const newIdList = payload.map((item) => item.productId);
-  // selectedArticleData.value = selectedArticleData.value.filter(
-  //   (item) => item.productId && newIdList.includes(item.productId)
-  // );
+  if (action.value !== 'Edit') {
+    const newIdList = payload.map((item) => item.productId);
+    selectedArticleData.value = selectedArticleData.value.filter(
+      (item) => item.productId && newIdList.includes(item.productId)
+    );
+  }
   const oldIdList = selectedArticleData.value.map((item) => item.productId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.productId)) {
-      selectedArticleData.value.push({ ...item, quantity: 0 });
+      selectedArticleData.value.push({
+        ...item,
+        quantity: 0,
+        totalAmount: 0,
+        unitWholeSalePrice: 0,
+        wholeSaleDetailId: -1,
+      });
       if (action.value === 'Edit') {
         addWholeSaleDetailApi({
           productId: item.productId,
