@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-xl text-center md:text-left font-medium mb-4">
+    <div class="text-lg text-center md:text-left font-medium mb-4">
       <span>{{ billAction }}</span>
     </div>
     <q-card v-if="billAction === 'Generate Receipt'">

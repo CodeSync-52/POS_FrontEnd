@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex mb-4">
-      <span class="text-xl font-medium">{{ pageTitle }}</span>
+      <span class="text-lg font-medium">{{ pageTitle }}</span>
     </div>
     <div class="">
       <div class="roleManagementTable">

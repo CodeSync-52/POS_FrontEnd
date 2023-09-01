@@ -1,9 +1,9 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-start mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-center sm:flex-col sm:gap-2 md:items-center sm:items-center mb-4"
     >
-      <span class="text-xl font-medium">{{ pageTitle }}</span>
+      <span class="text-lg font-medium">{{ pageTitle }}</span>
 
       <q-btn
         v-if="
@@ -22,7 +22,7 @@
     </div>
 
     <div
-      class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
+      class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
     >
       <q-select
         dense
@@ -67,7 +67,7 @@
         label="Status"
         color="btn-primary"
       />
-      <div class="flex lg:justify-end sm:justify-start items-end h-full gap-4">
+      <div class="flex lg:justify-end sm:justify-center items-end gap-2">
         <q-btn
           unelevated
           :loading="isLoading"
