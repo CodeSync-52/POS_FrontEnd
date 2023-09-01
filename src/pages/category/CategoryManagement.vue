@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-6"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
       <q-btn
@@ -18,7 +18,7 @@
         @click="AddNewCategory"
       />
     </div>
-    <div class="py-4">
+    <div class="">
       <q-table
         tabindex="0"
         :loading="isLoading"

@@ -4,18 +4,6 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 mt-2"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
-      <q-btn
-        v-if="
-          authStore.checkUserHasPermission(
-            EUserModules.BillGeneration,
-            EActionPermissions.Create
-          )
-        "
-        label="Add New"
-        unelevated
-        icon="add"
-        class="rounded-[4px] bg-btn-primary text-signature hover:bg-btn-secondary"
-      />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
