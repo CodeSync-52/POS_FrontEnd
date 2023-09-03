@@ -149,14 +149,11 @@ function setFilteredData() {
   }, 200);
 }
 onMounted(() => {
-  console.log(props.currentData);
   if (props.currentData.length) {
     selected.value = [];
-    console.log(props.currentData, props.articleList);
-
     props.currentData.forEach((item) => {
       const selectedItem = props.articleList.find(
-        (filteredItem) => filteredItem.categoryId === item.productId
+        (filteredItem) => filteredItem.productId === item.productId
       );
       if (selectedItem) {
         selected.value.push(selectedItem);
