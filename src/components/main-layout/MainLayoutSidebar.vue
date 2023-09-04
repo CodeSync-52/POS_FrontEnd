@@ -130,7 +130,7 @@ const essentialLinks = [
       },
       {
         title: EUserModules.CashInCashOutManagement,
-        path: '/cashInOut',
+        path: '/cash-flow',
       },
       {
         title: EUserModules.SalesManagement,

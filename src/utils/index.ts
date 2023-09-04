@@ -6,3 +6,4 @@ export * from './bill-generation';
 export * from './customer-group';
 export * from './sales-management';
 export * from './category-management';
+export * from './cash-flow';
