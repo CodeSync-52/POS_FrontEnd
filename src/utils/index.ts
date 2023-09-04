@@ -6,3 +6,5 @@ export * from './bill-generation';
 export * from './customer-group';
 export * from './sales-management';
 export * from './category-management';
+export * from './variant-management';
+export * from './user-management';

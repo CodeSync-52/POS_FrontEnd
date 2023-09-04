@@ -144,9 +144,8 @@ import {
   IVariantDetailsData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { variantDetailsColumn } from './utils';
 import { useQuasar } from 'quasar';
-import { isPosError } from 'src/utils';
+import { isPosError, variantDetailsColumn } from 'src/utils';
 import {
   addVariantApi,
   changeVariantStatus,

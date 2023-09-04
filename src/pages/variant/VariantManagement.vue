@@ -171,7 +171,6 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import { variantColumn } from 'src/pages/variant/utils';
 import VariantManagementModal from 'src/components/variant-management/VariantManagementModal.vue';
 import VariantStatusModal from 'src/components/variant-management/VariantStatusModal.vue';
 import {
@@ -187,7 +186,7 @@ import {
   variantGroupUpdateStatus,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
-import { isPosError } from 'src/utils';
+import { isPosError, variantColumn } from 'src/utils';
 const router = useRouter();
 const authStore = useAuthStore();
 const $q = useQuasar();

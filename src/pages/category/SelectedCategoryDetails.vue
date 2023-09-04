@@ -94,8 +94,8 @@
               flat
               :label="props.row.status"
               dense
-              no-caps
               class="hover:text-btn-primary"
+              no-caps
               @click="handleStatusModalPopup(props.row)"
             />
           </q-td>
@@ -149,7 +149,7 @@ import {
   ICategoryDetailsData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { categoryDetailsColumn } from 'src/pages/category/utils';
+import { categoryDetailsColumn } from 'src/utils';
 import {
   createSubcategory,
   subcategoryListApi,

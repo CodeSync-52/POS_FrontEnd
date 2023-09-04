@@ -261,7 +261,6 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
-import { UserColumn } from './utils';
 import AddUserModal from 'components/user-management/AddUserModal.vue';
 import ChangeStatusModal from 'src/components/user-management/ChangeStatusModal.vue';
 import ResetPasswordModal from 'src/components/user-management/ResetPasswordModal.vue';
@@ -278,7 +277,7 @@ import {
   IUserFilterList,
   IUserPayload,
 } from 'src/interfaces';
-import { isPosError, makeApiCall } from 'src/utils';
+import { UserColumn, isPosError, makeApiCall } from 'src/utils';
 import {
   getUserListApi,
   resetUserPassword,

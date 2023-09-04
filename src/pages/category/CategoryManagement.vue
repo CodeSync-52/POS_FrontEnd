@@ -175,14 +175,13 @@ import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import CategoryManagementModal from 'src/components/category-management/CategoryManagementModal.vue';
 import CategoryStatusModal from 'src/components/category-management/CategoryStatusModal.vue';
-import { categoryColumn } from 'src/pages/category/utils';
+import { isPosError, categoryColumn } from 'src/utils';
 import {
   EActionPermissions,
   EUserModules,
   ICategoryData,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { isPosError } from 'src/utils';
 import {
   changeCategoryStatus,
   categoryListApi,
