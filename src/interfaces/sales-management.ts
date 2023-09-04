@@ -46,6 +46,8 @@ export interface IWholesaleProductList {
 }
 export interface IAddNewSale {
   userId: number | null;
+  userDiscount: number;
+  userOutstandingBalance: number;
   productList: ISelectedArticleList[];
 }
 export interface ISelectedArticleList {

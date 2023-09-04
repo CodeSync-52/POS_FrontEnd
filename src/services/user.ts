@@ -2,6 +2,7 @@ import {
   IGenericResponse,
   IUserFilterList,
   IUserManagementData,
+  IUserResponse,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -72,7 +73,7 @@ export const getUserListApi = async (
   const res = await makeApiCall<
     IGenericResponse<{
       totalItemCount: number;
-      items: IUserManagementData[];
+      items: IUserResponse[];
     }>
   >({
     method: 'GET',

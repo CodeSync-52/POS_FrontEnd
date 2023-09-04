@@ -22,7 +22,7 @@
                 outlined
                 v-model="addNewReceipt.userId"
                 @update:model-value="addNewReceipt.userId = $event.userId"
-                label="User ID"
+                label="User Name"
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
@@ -188,7 +188,7 @@ import {
   IAddNewReceipt,
   IArticleData,
   IPagination,
-  IUserManagementData,
+  IUserResponse,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
 import { isPosError } from 'src/utils';
@@ -296,7 +296,7 @@ const addNewReceipt = ref<IAddNewReceipt>({
   productList: [],
 });
 const $q = useQuasar();
-const UserList = ref<IUserManagementData[]>([]);
+const UserList = ref<IUserResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {

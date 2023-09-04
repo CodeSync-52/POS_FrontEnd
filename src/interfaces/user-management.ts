@@ -35,13 +35,14 @@ export type IUserData = {
 } & IUserManagementData;
 export interface IUserResponse {
   customerGroup: null;
-  discount: null;
+  discount: number;
   fullName: string;
+  outStandingBalance: number;
   phoneNumber: string;
   roleName: string;
   status: string;
   userId: number;
-  username: string;
+  userName: string;
 }
 export interface IUserFilterList {
   customerGroupId: number | null;

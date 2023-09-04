@@ -85,7 +85,7 @@
           </div>
         </div>
         <div class="row q-col-gutter-md">
-          <div class="col-md-6 w-full col-sm-12">
+          <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-select
                 :options="UserList"
@@ -110,7 +110,7 @@
               >
             </div>
           </div>
-          <div v-if="action !== 'Preview'" class="col-12 col-md-6">
+          <div v-if="action !== 'Preview'" class="col-12 col-md-4">
             <div class="q-gutter-y-xs">
               <div class="row gap-6 items-center">
                 <span class="text-base">Article</span>
@@ -123,6 +123,15 @@
                 />
               </div>
             </div>
+          </div>
+          <div v-if="action === 'Add New'" class="col-12 col-md-4">
+            <q-input
+              dense
+              outlined
+              label="Outstanding Balance"
+              disable
+              v-model="addNewSale.userOutstandingBalance"
+            />
           </div>
         </div>
         <q-table
@@ -177,30 +186,25 @@
           <template v-slot:header-cell-action v-if="action === 'Preview'">
             <q-th> </q-th>
           </template>
-          <template
-            v-slot:body-cell-totalAmount="props"
-            v-if="action !== 'Add New'"
-          >
+          <template v-slot:body-cell-totalAmount="props">
             <q-td :props="props">
               {{ props.row.quantity * props.row.unitWholeSalePrice }}
             </q-td>
           </template>
-          <template v-slot:header-cell-totalAmount v-if="action === 'Add New'">
-            <q-th></q-th>
-          </template>
-          <template
-            v-slot:header-cell-unitWholeSalePrice
-            v-if="action === 'Add New'"
-          >
-            <q-th></q-th>
-          </template>
-          <template v-slot:bottom-row="props" v-if="action !== 'Add New'">
+          <template v-slot:bottom-row="props">
             <q-tr :props="props">
-              <q-td colspan="5" />
+              <q-td colspan="2" />
               <q-td>
                 <div>
                   Total Quantity:
                   {{ saleGenerationTotalQuantity }}
+                </div>
+              </q-td>
+              <q-td colspan="2" />
+              <q-td>
+                <div>
+                  Total Amount:
+                  {{ saleGenerationTotalAmount }}
                 </div>
               </q-td>
             </q-tr>
@@ -209,8 +213,7 @@
               <q-td>
                 <div>
                   Discount:
-                  {{ discount }}
-                  <!-- {{ selectedSaleRecord.discount }} -->
+                  {{ selectedSaleRecord.discount }}
                 </div>
               </q-td>
             </q-tr>
@@ -219,7 +222,7 @@
               <q-td>
                 <div>
                   Net Total:
-                  <!-- {{ saleGenerationTotalAmount(selectedArticleData) }} -->
+                  {{ saleGenerationNetAmount(selectedArticleData) }}
                 </div>
               </q-td>
             </q-tr>
@@ -237,6 +240,10 @@
                     action === 'Preview'
                   "
                   v-model="props.row.quantity"
+                  @update:model-value="
+                    props.row.quantity =
+                      typeof $event === 'string' ? parseFloat($event) : $event
+                  "
                   type="number"
                   filled
                   :min="1"
@@ -301,6 +308,7 @@
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from 'src/stores';
 import {
   EActionPermissions,
@@ -308,13 +316,12 @@ import {
   IArticleData,
   IPagination,
   ISelectedSalesDetailData,
-  IUserManagementData,
   IAddNewSale,
   ISelectedWholeSaleArticleData,
   IWholeSaleDetailsData,
+  IUserResponse,
 } from 'src/interfaces';
 import { isPosError, selectedSalesArticleColumn } from 'src/utils';
-import { ref, onMounted, computed } from 'vue';
 import {
   addWholeSaleApi,
   addWholeSaleDetailApi,
@@ -327,7 +334,6 @@ import {
 import moment from 'moment';
 import { CanceledError } from 'axios';
 import ArticleListModal from 'src/components/receipt-management/ArticleListModal.vue';
-const discount = 1;
 const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   createdBy: '',
   createdById: 0,
@@ -350,7 +356,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const isLoading = ref(false);
 const $q = useQuasar();
-const UserList = ref<IUserManagementData[]>([]);
+const UserList = ref<IUserResponse[]>([]);
 const isFetchingArticleList = ref(false);
 const isFilterChanged = ref(false);
 const articleList = ref<IArticleData[]>([]);
@@ -366,7 +372,19 @@ const pagination = ref<IPagination>({
 });
 const addNewSale = ref<IAddNewSale>({
   userId: null,
+  userDiscount: 0,
+  userOutstandingBalance: 0,
   productList: [],
+});
+watch(addNewSale.value, (newVal: IAddNewSale) => {
+  const selectedUser = UserList.value.find(
+    (row) => newVal.userId === row.userId
+  );
+  if (selectedUser) {
+    addNewSale.value.userOutstandingBalance = selectedUser.outStandingBalance;
+    addNewSale.value.userDiscount = selectedUser.discount;
+    selectedSaleRecord.value.discount = selectedUser.discount;
+  }
 });
 onMounted(() => {
   const route = router.currentRoute.value;
@@ -435,7 +453,11 @@ const saveNewReceipt = async () => {
   isAddingSale.value = false;
 };
 const selectedData = (
-  payload: { productId: number; productName?: string }[]
+  payload: {
+    productId: number;
+    productName?: string;
+    unitWholeSalePrice?: number;
+  }[]
 ) => {
   if (action.value !== 'Edit') {
     const newIdList = payload.map((item) => item.productId);
@@ -450,7 +472,6 @@ const selectedData = (
         ...item,
         quantity: 0,
         totalAmount: 0,
-        unitWholeSalePrice: 0,
         wholeSaleDetailId: -1,
       });
       if (action.value === 'Edit') {
@@ -563,26 +584,53 @@ const getUserList = async () => {
     });
   }
 };
-
-// const saleGenerationTotalAmount = (table: ISelectedWholeSaleArticleData[]) => {
-//   return table.reduce((total: number, row: ISelectedWholeSaleArticleData) => {
-//     if (row.quantity && row.unitWholeSalePrice) {
-//       const ItemDiscount = row.quantity * discount
-//       return (total + Number(row.quantity * row.unitWholeSalePrice)-ItemDiscount)
-
-//     }
-//     return total;
-//   }, 0);
-// };
-
 const saleGenerationTotalQuantity = computed(() => {
-  return selectedSaleRecord.value.wholeSaleDetails.reduce(
-    (total: number, row: IWholeSaleDetailsData) => {
-      return total + Number(row.quantity);
-    },
-    0
-  );
+  if (action.value === 'Edit') {
+    return selectedSaleRecord.value.wholeSaleDetails.reduce(
+      (total: number, row: IWholeSaleDetailsData) => {
+        return total + Number(row.quantity);
+      },
+      0
+    );
+  } else {
+    return selectedArticleData.value.reduce(
+      (total: number, row: ISelectedWholeSaleArticleData) => {
+        return total + Number(row.quantity);
+      },
+      0
+    );
+  }
 });
+const saleGenerationTotalAmount = computed(() => {
+  if (action.value === 'Edit') {
+    return selectedSaleRecord.value.wholeSaleDetails.reduce(
+      (total: number, row: IWholeSaleDetailsData) => {
+        return total + row.quantity * row.unitWholeSalePrice;
+      },
+      0
+    );
+  } else {
+    return selectedArticleData.value.reduce(
+      (total: number, row: ISelectedWholeSaleArticleData) => {
+        if (row.quantity && row.unitWholeSalePrice) {
+          return total + row.quantity * row.unitWholeSalePrice;
+        }
+        return total;
+      },
+      0
+    );
+  }
+});
+const saleGenerationNetAmount = (table: ISelectedWholeSaleArticleData[]) => {
+  return table.reduce((total: number, row: ISelectedWholeSaleArticleData) => {
+    if (row.quantity && row.unitWholeSalePrice) {
+      const ItemDiscount =
+        Number(row.quantity) * selectedSaleRecord.value.discount;
+      return total - ItemDiscount + row.quantity * row.unitWholeSalePrice;
+    }
+    return total;
+  }, 0);
+};
 const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
   if (isLoading.value) return;
   isLoading.value = true;
