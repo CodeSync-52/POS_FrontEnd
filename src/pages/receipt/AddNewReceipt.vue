@@ -172,7 +172,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import ArticleListModal from 'src/components/receipt-management/ArticleListModal.vue';
+import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import {
   getUserListApi,
   createNewReceipt,

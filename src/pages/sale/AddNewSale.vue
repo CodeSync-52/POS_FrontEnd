@@ -309,6 +309,8 @@
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import { ref, onMounted, computed, watch } from 'vue';
+import moment from 'moment';
+import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
 import {
   EActionPermissions,
@@ -331,9 +333,7 @@ import {
   updateWholeSaleDetailApi,
   wholeSaleDetailApi,
 } from 'src/services';
-import moment from 'moment';
-import { CanceledError } from 'axios';
-import ArticleListModal from 'src/components/receipt-management/ArticleListModal.vue';
+import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   createdBy: '',
   createdById: 0,
