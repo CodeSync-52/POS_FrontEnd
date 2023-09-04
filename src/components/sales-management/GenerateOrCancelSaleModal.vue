@@ -18,7 +18,7 @@
         <span>
           {{
             `Are you sure you want to ${
-              isCancel ? 'Cancel the sale' : 'Generate the sale'
+              isCancel ? 'mark this as canceled' : 'mark this as completed'
             }?`
           }}</span
         >
