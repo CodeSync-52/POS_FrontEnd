@@ -75,7 +75,7 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="handleUserFilter"
+          @click="getUserList()"
         />
         <q-btn
           unelevated
@@ -368,6 +368,9 @@ const showAddUserModal = (isVisible: boolean) => {
   showAddNewAdminRolePopup.value = isVisible;
 };
 const resetFilter = () => {
+  if (Object.values(filterSearch.value).every((item) => item === null)) {
+    return;
+  }
   filterSearch.value = {
     customerGroupId: null,
     role: null,
@@ -453,9 +456,6 @@ const getUserList = async (paginationData?: {
     });
   }
   isLoading.value = false;
-};
-const handleUserFilter = () => {
-  getUserList();
 };
 async function handleChangeStatusApi(id: number, updatedStatus: string) {
   try {
