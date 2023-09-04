@@ -22,7 +22,7 @@
                 outlined
                 v-model="addNewReceipt.userId"
                 @update:model-value="addNewReceipt.userId = $event.userId"
-                label="User ID"
+                label="User Name"
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
@@ -37,7 +37,7 @@
               >
             </div>
           </div>
-          <div v-if="!isReceiptPreview" class="col-12 col-md-6">
+          <div v-if="!isReceiptPreview" class="col-12 col-md-4">
             <div class="q-gutter-y-xs">
               <div class="row gap-6 items-center">
                 <span class="text-base">Article</span>
@@ -50,6 +50,15 @@
                 />
               </div>
             </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <q-input
+              dense
+              outlined
+              label="Outstanding Balance"
+              disable
+              v-model="addNewReceipt.userOutstandingBalance"
+            />
           </div>
         </div>
         <q-table
@@ -170,9 +179,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import ArticleListModal from 'src/components/receipt-management/ArticleListModal.vue';
+import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import {
   getUserListApi,
   createNewReceipt,
@@ -188,7 +197,7 @@ import {
   IAddNewReceipt,
   IArticleData,
   IPagination,
-  IUserManagementData,
+  IUserResponse,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
 import { isPosError } from 'src/utils';
@@ -293,10 +302,22 @@ const onDeleteButtonClick = async (row: ISelectedArticleData) => {
 };
 const addNewReceipt = ref<IAddNewReceipt>({
   userId: null,
+  userOutstandingBalance: 0,
+  userDiscount: 0,
   productList: [],
 });
+watch(addNewReceipt.value, (newVal: IAddNewReceipt) => {
+  const selectedUser = UserList.value.find(
+    (row) => newVal.userId === row.userId
+  );
+  if (selectedUser) {
+    addNewReceipt.value.userOutstandingBalance =
+      selectedUser.outStandingBalance;
+    addNewReceipt.value.userDiscount = selectedUser.discount;
+  }
+});
 const $q = useQuasar();
-const UserList = ref<IUserManagementData[]>([]);
+const UserList = ref<IUserResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
@@ -399,6 +420,7 @@ const selectedId = ref<number | string>(-1);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
   getReceiptData(selectedItemId).then((res) => {
     addNewReceipt.value.userId = res.data.userId;
+    addNewReceipt.value.userOutstandingBalance = res.data.outStandingBalance;
     selectedArticleData.value = res.data.purchaseDetails;
   });
 };

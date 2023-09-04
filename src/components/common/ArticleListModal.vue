@@ -111,9 +111,9 @@ const props = withDefaults(defineProps<propTypes>(), {
   articleList: () => [],
   isFetchingArticleList: false,
 });
-const selectedArticles = ref<{ productId: number; productName?: string }[]>([
-  ...props.currentData,
-]);
+const selectedArticles = ref<
+  { productId: number; productName?: string; unitWholeSalePrice?: number }[]
+>([...props.currentData]);
 const selected = ref<IArticleData[]>([]);
 const filter = ref('');
 const filteredRows = ref<IArticleData[]>([]);
@@ -125,12 +125,17 @@ const emit = defineEmits<{
     data: { productId: number; productName?: string }[]
   ): void;
   (event: 'handle-pagination', pagination: IPagination): void;
+  (
+    event: 'selected-data-cost',
+    data: { productId: number; productWholeSaleCost: number }[]
+  ): void;
   (event: 'filtered-rows', isFilterChanged: boolean): void;
 }>();
 watch(selected, (newSelected: IArticleData[]) => {
   selectedArticles.value = newSelected.map((article) => ({
     productId: article.productId,
     productName: article.name,
+    unitWholeSalePrice: article.wholeSalePrice,
   }));
 });
 function setFilteredData() {

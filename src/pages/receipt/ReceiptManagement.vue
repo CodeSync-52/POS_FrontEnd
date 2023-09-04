@@ -247,7 +247,7 @@ import {
   getRoleModuleDisplayName,
   IReceiptData,
   IPagination,
-  IUserManagementData,
+  IUserResponse,
 } from 'src/interfaces';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
@@ -296,7 +296,7 @@ onUnmounted(() => {
     apiController.value.abort();
   }
 });
-const UserList = ref<IUserManagementData[]>([]);
+const UserList = ref<IUserResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
