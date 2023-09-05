@@ -12,6 +12,7 @@
           <div>
             <q-input
               v-model="variantData.name"
+              maxlength="250"
               dense
               label="Name"
               color="btn-primary"
@@ -22,6 +23,7 @@
         <div class="col-12 col-md-6">
           <div>
             <q-input
+              maxlength="250"
               v-model="variantData.displayName"
               label="Display Name"
               color="btn-primary"

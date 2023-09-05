@@ -29,6 +29,7 @@
           </div>
           <div class="col-6">
             <q-input
+              maxlength="250"
               disable
               v-model="billGenerationData.fullName"
               dense
@@ -95,6 +96,12 @@
               </q-td>
             </q-tr>
           </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
+          </template>
         </q-table>
       </q-card-section>
       <q-card-actions class="row justify-end">
@@ -127,6 +134,7 @@
         <div class="row q-mb-md q-col-gutter-md">
           <div class="col-6">
             <q-input
+              maxlength="250"
               v-model="billGenerationDetailsInfoData.fullName"
               disable
               dense
@@ -137,6 +145,7 @@
           </div>
           <div class="col-6">
             <q-input
+              maxlength="250"
               v-model="billGenerationDetailsInfoData.billStatus"
               disable
               dense
@@ -225,6 +234,12 @@
                 </div>
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
           </template>
         </q-table>
       </q-card-section>

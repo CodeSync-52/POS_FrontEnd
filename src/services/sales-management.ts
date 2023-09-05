@@ -48,7 +48,7 @@ export const salesManagementListApi = async (
       PageSize,
       FromDate: startDate,
       UserId: userId,
-      FullName: userName,
+      FullName: userName?.trim(),
       wholeSaleStatus,
       ToDate: endDate,
     },

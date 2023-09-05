@@ -23,6 +23,7 @@
             >Username</label
           >
           <q-input
+            maxlength="250"
             v-model="loginCredentials.userName"
             label="Enter your username"
             dense
@@ -37,6 +38,7 @@
             >Password</label
           >
           <q-input
+            maxlength="250"
             type="password"
             v-model="loginCredentials.password"
             label="Enter your password"

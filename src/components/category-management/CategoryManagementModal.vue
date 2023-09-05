@@ -6,6 +6,7 @@
         <q-btn v-close-popup flat unelevated dense icon="close" />
       </div>
       <q-input
+        maxlength="250"
         dense
         v-model="categoryName"
         outlined

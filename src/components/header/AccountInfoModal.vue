@@ -19,6 +19,7 @@
         <div class="col-12 col-md-6">
           <div>
             <q-input
+              maxlength="250"
               v-model="userInfo.fullName"
               label="Name"
               outlined
@@ -33,6 +34,7 @@
               v-model="userInfo.phoneNumber"
               label="Phone #"
               outlined
+              maxlength="12"
               dense
               :readonly="!canUpdateProfile"
             />
@@ -44,6 +46,7 @@
           <div>
             <q-input
               v-model="passwordConfirmation.oldPass"
+              maxlength="250"
               type="password"
               label="Old Password"
               color="btn-primary"
@@ -56,6 +59,7 @@
           <div>
             <q-input
               v-model="passwordConfirmation.newPass"
+              maxlength="250"
               label="New Password"
               color="btn-primary"
               type="password"
@@ -70,6 +74,7 @@
           <div>
             <q-input
               v-model="passwordConfirmation.confirmPass"
+              maxlength="250"
               type="password"
               label="Confirm Password"
               color="btn-primary"
@@ -103,7 +108,9 @@
         :loading="isLoading"
         :disable="
           isViewProfile || canUpdateProfile
-            ? !userInfo.fullName || !userInfo.phoneNumber
+            ? !userInfo.fullName ||
+              !userInfo.phoneNumber ||
+              userInfo.phoneNumber.length !== 12
             : isButtonDisabled
         "
         flat

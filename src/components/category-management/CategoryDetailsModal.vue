@@ -11,6 +11,7 @@
         <div class="col-12">
           <div>
             <q-input
+              maxlength="250"
               v-model="categoryData.name"
               dense
               label="Name"
