@@ -100,7 +100,7 @@ export const billListApi = async (
     method: 'GET',
     params: {
       UserId: filterSearch?.userId,
-      FullName: filterSearch?.userName,
+      FullName: filterSearch?.userName?.trim(),
       FromDate: filterSearch?.FromDate,
       ToDate: filterSearch?.ToDate,
       PageNumber,

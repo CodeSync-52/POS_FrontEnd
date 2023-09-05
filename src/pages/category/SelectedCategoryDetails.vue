@@ -33,6 +33,7 @@
           <div class="font-medium text-lg"><span>Category Details</span></div>
           <q-space />
           <q-input
+            maxlength="250"
             outlined
             dense
             debounce="300"
@@ -94,7 +95,7 @@
               flat
               :label="props.row.status"
               dense
-              no-caps
+              size="sm"
               class="hover:text-btn-primary"
               @click="handleStatusModalPopup(props.row)"
             />
@@ -114,6 +115,20 @@
           "
         >
           <q-th> </q-th>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
+        <template v-slot:body-cell-name="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.name }}
+          </q-td>
         </template>
       </q-table>
     </div>
@@ -190,7 +205,7 @@ const filterChanged = ref(false);
 function setFilteredData() {
   filterChanged.value = true;
   filteredRows.value = categoryDetailsRecord.value.filter((row) =>
-    row.name.toLowerCase().includes(filter.value.toLowerCase())
+    row.name.toLowerCase().includes(filter.value.toLowerCase().trim())
   );
   setTimeout(() => {
     filterChanged.value = false;
@@ -283,6 +298,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
 const addNewCategory = () => {
   categoryAction.value = 'Add';
   category.value.name = '';
+  category.value.id = -1;
   isCategoryDetailsModalVisible.value = true;
 };
 const editCategory = (selectedRow: ICategoryDetailsData) => {

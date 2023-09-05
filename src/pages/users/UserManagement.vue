@@ -75,12 +75,11 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="handleUserFilter"
+          @click="getUserList()"
         />
         <q-btn
           unelevated
           color=""
-          :loading="isLoading"
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="resetFilter"
@@ -173,8 +172,27 @@
             {{ props.row.discount ?? 0 }}
           </q-td>
         </template>
+        <template v-slot:body-cell-userName="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.userName }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-fullname="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.fullName }}
+          </q-td>
+        </template>
         <template v-slot:body-cell-customerGroup="props">
-          <q-td :props="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
             {{ props.row.customerGroup ?? 'Null' }}
           </q-td>
         </template>
@@ -206,11 +224,11 @@
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
             <q-btn
-              flat
               class="hover:text-btn-primary"
+              flat
+              size="sm"
               unelevated
               dense
-              no-caps
               :disable="
                 !authStore.checkUserHasPermission(
                   EUserModules.UserManagment,
@@ -225,6 +243,12 @@
               @click="handleChangeStatusPopup(props.row)"
             />
           </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
         </template>
       </q-table>
     </div>
@@ -368,6 +392,9 @@ const showAddUserModal = (isVisible: boolean) => {
   showAddNewAdminRolePopup.value = isVisible;
 };
 const resetFilter = () => {
+  if (Object.values(filterSearch.value).every((item) => item === null)) {
+    return;
+  }
   filterSearch.value = {
     customerGroupId: null,
     role: null,
@@ -453,9 +480,6 @@ const getUserList = async (paginationData?: {
     });
   }
   isLoading.value = false;
-};
-const handleUserFilter = () => {
-  getUserList();
 };
 async function handleChangeStatusApi(id: number, updatedStatus: string) {
   try {
