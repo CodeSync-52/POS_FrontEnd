@@ -8,3 +8,4 @@ export * from './receipt-management';
 export * from './article-management';
 export * from './bill-generation';
 export * from './sales-management';
+export * from './cash-flow';

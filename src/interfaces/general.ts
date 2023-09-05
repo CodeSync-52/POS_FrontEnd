@@ -73,7 +73,7 @@ const roleModuleList: Record<EUserModules, string> = {
   [EUserModules.ArticleManagement]: 'Article Management',
   [EUserModules.ReceiptManagement]: 'Receipt Management',
   [EUserModules.BillGeneration]: 'Bill Generation',
-  [EUserModules.CashInCashOutManagement]: 'Cash In / Cash Out Management',
+  [EUserModules.CashInCashOutManagement]: 'Cash Flow Management',
   [EUserModules.SalesManagement]: 'Sales Management',
   [EUserModules.InventoryManagement]: 'Inventory Management',
   [EUserModules.ShopManagement]: 'Shop Management',
