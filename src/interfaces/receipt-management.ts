@@ -6,6 +6,7 @@ export interface IReceiptData {
   purchaseStatus: string;
   createdDate: string;
   createdBy: null;
+  outStandingBalance: number;
   updatedDate: string;
   createdById: number;
   updatedBy: null;
@@ -30,5 +31,7 @@ export interface IProductList {
 }
 export interface IAddNewReceipt {
   userId: number | null;
+  userOutstandingBalance: number;
+  userDiscount: number;
   productList: IProductList[];
 }

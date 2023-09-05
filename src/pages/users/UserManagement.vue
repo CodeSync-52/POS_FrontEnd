@@ -303,7 +303,7 @@ const defaultFilterValues = {
   role: null,
   status: null,
 };
-const UserRows = ref<IUserManagementData[]>([]);
+const UserRows = ref<IUserResponse[]>([]);
 const action = ref<string>('');
 const apiController = ref<AbortController | null>(null);
 const isCustomerGroupListLoading = ref(false);

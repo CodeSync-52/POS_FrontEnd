@@ -216,7 +216,7 @@ import {
   ISalesManagementData,
   getRoleModuleDisplayName,
   ISalesFilterSearch,
-  IUserManagementData,
+  IUserResponse,
 } from 'src/interfaces';
 import { onMounted, ref } from 'vue';
 import {
@@ -258,7 +258,7 @@ const pagination = ref<IPagination>(defaultPagination);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const selectedRowData = ref<ISalesManagementData | null>(null);
-const UserList = ref<IUserManagementData[]>([]);
+const UserList = ref<IUserResponse[]>([]);
 onMounted(() => {
   getSalesManagementList();
   getUserList();
