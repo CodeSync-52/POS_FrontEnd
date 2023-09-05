@@ -70,6 +70,10 @@
                 dense
                 outlined
                 v-model="addNewFlow.amount"
+                @update:model-value="
+                  typeof $event === 'string' &&
+                    (addNewFlow.amount = parseFloat($event))
+                "
               />
             </div>
           </div>
@@ -142,7 +146,7 @@ const handleAddNewFlow = async () => {
   try {
     const res = await addCashFlowApi({
       sourceUserId: source?.userId ?? -1,
-      amount: Number(amount),
+      amount: amount,
       targetUserId: target?.userId ?? -1,
     });
     if (res.type === 'Success') {
