@@ -53,7 +53,6 @@
         />
         <q-btn
           color=""
-          :loading="isLoading"
           unelevated
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
@@ -76,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
@@ -86,7 +85,7 @@ import {
 } from 'src/interfaces';
 import { cashFlowListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
-import { isPosError, cashFlowColumn, cashFlowData } from 'src/utils';
+import { isPosError, cashFlowColumn } from 'src/utils';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement
@@ -97,9 +96,9 @@ const filterSearch = ref({
   FromDate: null,
   ToDate: null,
 });
-const cashFlowRecords = ref<ICashFlowRecords[]>(cashFlowData);
+const cashFlowRecords = ref<ICashFlowRecords[]>([]);
 const handleResetFilter = () => {
-  if (Object.values(filterSearch).every((item) => item === null)) return;
+  if (Object.values(filterSearch.value).every((item) => item === null)) return;
   filterSearch.value = {
     FromDate: null,
     ToDate: null,
@@ -114,6 +113,9 @@ const pagination = ref({
   rowsNumber: 0,
 });
 const apiController = ref<AbortController | null>(null);
+onMounted(() => {
+  getCashFlowRecords();
+});
 const getCashFlowRecords = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {

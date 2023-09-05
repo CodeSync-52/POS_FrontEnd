@@ -189,7 +189,7 @@ export const routeList = [
   },
   {
     path: '/cash-flow/add-new',
-    component: () => import('src/pages/cash-flow/AddNew.vue'),
+    component: () => import('src/pages/cash-flow/AddNewCashFlow.vue'),
     meta: {
       module: EUserModules.CashInCashOutManagement,
     },

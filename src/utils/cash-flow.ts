@@ -4,29 +4,35 @@ import { ICashFlowRecords } from 'src/interfaces';
 
 export const cashFlowColumn: QTableColumn<ICashFlowRecords>[] = [
   {
-    name: 'id',
-    label: 'Id',
+    name: 'sourceId',
+    label: 'Source Id',
     required: true,
     align: 'left',
-    field: (row) => row.id,
+    field: (row) => row.sourceUserId,
   },
   {
-    name: 'source',
-    label: 'Source',
+    name: 'targetId',
+    label: 'Target Id',
     align: 'left',
-    field: (row) => row.source,
+    field: (row) => row.targetUserId,
   },
   {
-    name: 'target',
-    label: 'Target',
+    name: 'sourceUserName',
+    label: 'Source User Name',
     align: 'left',
-    field: (row) => row.target,
+    field: (row) => row.sourceUserName,
   },
   {
-    name: 'date',
-    label: 'Date',
+    name: 'targetUserName',
+    label: 'Target User Name',
     align: 'left',
-    field: (row) => moment(row.date).format('DD-MM-YYYY'),
+    field: (row) => row.targetUserName,
+  },
+  {
+    name: 'cashFlowStatus',
+    label: 'Cash Flow Status',
+    align: 'left',
+    field: (row) => row.cashFlowStatus,
   },
   {
     name: 'amount',
@@ -34,13 +40,10 @@ export const cashFlowColumn: QTableColumn<ICashFlowRecords>[] = [
     align: 'left',
     field: (row) => row.amount,
   },
-];
-export const cashFlowData: ICashFlowRecords[] = [
   {
-    id: 1,
-    source: 'LinkedIn',
-    target: 'Facebook',
-    amount: 1000,
-    date: '2023-08-25 12:31:05.3591687',
+    name: 'date',
+    label: 'Date',
+    align: 'left',
+    field: (row) => moment(row.transactinoDate).format('Do MMMM YYYY'),
   },
 ];

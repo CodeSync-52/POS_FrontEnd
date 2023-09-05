@@ -14,10 +14,13 @@
                   label="Source"
                   dense
                   outlined
-                  :options="sourceOptions"
+                  map-options
+                  option-label="userName"
+                  option-value="userId"
+                  :options="userList"
                   @update:model-value="
                     addNewFlow.sourceOutstandingBalance =
-                      $event.outstandingBalance
+                      $event.outStandingBalance
                   "
                   v-model="addNewFlow.source"
                 />
@@ -40,9 +43,12 @@
                   outlined
                   @update:model-value="
                     addNewFlow.targetOutstandingBalance =
-                      $event.outstandingBalance
+                      $event.outStandingBalance
                   "
-                  :options="targetOptions"
+                  map-options
+                  option-label="userName"
+                  option-value="userId"
+                  :options="userList"
                   v-model="addNewFlow.target"
                 />
               </div>
@@ -58,7 +64,7 @@
             <div class="col-md-4 col-12">
               <span class="text-base font-medium">Amount</span>
               <q-input
-                min="0"
+                :min="0"
                 type="number"
                 label="Amount"
                 dense
@@ -80,13 +86,15 @@
           </div>
         </div>
       </q-card-section>
-      <q-card-actions align="right">
-        <q-btn
-          unelevated
-          label="Cancel"
-          color="btn-cancel hover:bg-btn-cancel-hover"
-          @click="router.push('/cash-flow')"
-        />
+      <q-card-actions align="right" class="q-gutter-x-sm">
+        <router-link to="/cash-flow">
+          <q-btn
+            unelevated
+            label="Cancel"
+            :disable="isAdding"
+            color="btn-cancel hover:bg-btn-cancel-hover"
+          />
+        </router-link>
         <q-btn
           label="Add"
           unelevated
@@ -102,28 +110,85 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { CanceledError } from 'axios';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+import { onMounted, ref } from 'vue';
+import { IUserResponse } from 'src/interfaces';
+import { addCashFlowApi, getUserListApi } from 'src/services';
+import { isPosError } from 'src/utils';
 const router = useRouter();
-
 const isAdding = ref(false);
-const addNewFlow = ref({
-  source: 0,
-  target: 0,
+const addNewFlow = ref<{
+  source: IUserResponse | null;
+  target: IUserResponse | null;
+  amount: number;
+  comment: string;
+  sourceOutstandingBalance: null | number;
+  targetOutstandingBalance: null | number;
+}>({
+  source: null,
+  target: null,
   amount: 0,
   comment: '',
   sourceOutstandingBalance: null,
   targetOutstandingBalance: null,
 });
-const handleAddNewFlow = () => {
-  console.log(addNewFlow.value);
+const userList = ref<IUserResponse[]>([]);
+const handleAddNewFlow = async () => {
+  if (isAdding.value) return;
+  isAdding.value = true;
+  const { source, target, amount } = addNewFlow.value;
+  try {
+    const res = await addCashFlowApi({
+      sourceUserId: source?.userId ?? -1,
+      amount: Number(amount),
+      targetUserId: target?.userId ?? -1,
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      router.push('/cash-flow');
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred Add Cash Flow';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  isAdding.value = false;
 };
-const targetOptions = [
-  { label: 'label 1', outstandingBalance: 5 },
-  { label: 'label 2', outstandingBalance: 15 },
-];
-const sourceOptions = [
-  { label: 'label 1', outstandingBalance: 15 },
-  { label: 'label 2', outstandingBalance: 25 },
-];
+const $q = useQuasar();
+onMounted(() => {
+  getUserList();
+});
+const getUserList = async () => {
+  try {
+    const res = await getUserListApi({
+      pageNumber: 1,
+      pageSize: 500,
+    });
+    if (res?.data) {
+      userList.value = res.data.items;
+    }
+  } catch (e) {
+    if (e instanceof CanceledError) return;
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+};
 </script>

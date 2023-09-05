@@ -18,7 +18,7 @@ export const cashFlowListApi = async (
     IGenericResponse<{ items: ICashFlowRecords[]; totalItemCount: number }>
   >({
     method: 'GET',
-    url: '',
+    url: 'api/cashflow/list',
     params: {
       PageNumber,
       PageSize,
@@ -26,6 +26,26 @@ export const cashFlowListApi = async (
       ToDate,
     },
     signal: controller?.signal,
+  });
+  return res;
+};
+export const addCashFlowApi = async ({
+  sourceUserId,
+  amount,
+  targetUserId,
+}: {
+  sourceUserId: number;
+  amount: number;
+  targetUserId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/cashflow/add',
+    data: {
+      sourceUserId,
+      amount,
+      targetUserId,
+    },
   });
   return res;
 };

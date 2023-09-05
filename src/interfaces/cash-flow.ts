@@ -1,7 +1,10 @@
 export interface ICashFlowRecords {
-  id: number;
-  source: string;
-  target: string;
-  date: string;
+  sourceUserId: number;
+  targetUserId: number;
+  sourceUserName: string;
+  targetUserName: string;
+  cashFlowStatus: string;
+  transactinoDate: string;
+  createdBy: null;
   amount: number;
 }
