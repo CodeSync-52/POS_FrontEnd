@@ -1,6 +1,8 @@
 <template>
   <div class="">
-    <div class="text-lg text-center md:text-left font-medium mb-4">
+    <div
+      class="text-lg text-center md:text-left font-medium mb-4 row justify-between items-center"
+    >
       <span>{{
         isEdit
           ? 'Update Receipt'
@@ -8,6 +10,14 @@
           ? 'Preview Receipt'
           : 'Add New Receipt'
       }}</span>
+      <q-btn
+        v-if="isReceiptPreview"
+        color="btn-primary"
+        class="mb-2"
+        unelevated
+        label="Download PDF"
+        @click="downloadPdfData"
+      />
     </div>
     <q-card>
       <q-card-section class="q-gutter-y-md">
@@ -200,7 +210,7 @@ import {
   IUserResponse,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
-import { isPosError } from 'src/utils';
+import { ITableHeaders, downloadPdf, isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
 import { selectedArticleColumn } from 'src/utils';
@@ -274,7 +284,6 @@ const selectedData = (
 
   isArticleListModalVisible.value = false;
 };
-
 const onDeleteButtonClick = async (row: ISelectedArticleData) => {
   const tempIndex = selectedArticleData.value.findIndex(
     (x) => x.productId === row.productId
@@ -374,6 +383,7 @@ const saveNewReceipt = async () => {
 };
 const isEdit = ref(false);
 const isFetchingArticleList = ref(false);
+const userName = ref('');
 const articleList = ref<IArticleData[]>([]);
 const handleFilterRows = (filterChanged: boolean) => {
   if (filterChanged) {
@@ -417,11 +427,14 @@ const getArticleList = async (data?: {
   isFetchingArticleList.value = false;
 };
 const selectedId = ref<number | string>(-1);
+const tableItems = ref<string[][]>([]);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
   getReceiptData(selectedItemId).then((res) => {
     addNewReceipt.value.userId = res.data.userId;
+    userName.value = res.data.fullName;
     addNewReceipt.value.userOutstandingBalance = res.data.outStandingBalance;
     selectedArticleData.value = res.data.purchaseDetails;
+    tableItems.value = convertArray(res.data.purchaseDetails);
   });
 };
 onMounted(() => {
@@ -487,5 +500,40 @@ async function saveUpdatedData(row: ISelectedArticleData) {
     });
     getReceiptDataFromApi(selectedId.value);
   }
+}
+function convertArray(array: ISelectedArticleData[]) {
+  const tableStuff = [];
+  const headerRow = ['Id', 'Article', 'Quantity'];
+  tableStuff.push(headerRow);
+  array.forEach((item: ISelectedArticleData) => {
+    const row = [
+      item.purchaseDetailId,
+      item.productName,
+      { text: item.quantity, bold: true },
+    ];
+    tableStuff.push(row);
+  });
+
+  return tableStuff;
+}
+function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'User Name',
+      content: userName.value,
+    },
+    {
+      heading: 'Outstanding Balance',
+      content: addNewReceipt.value.userOutstandingBalance,
+    },
+  ];
+  const fileTitle = 'Receipt';
+  const myFileName = 'Receipt.pdf';
+  downloadPdf({
+    filename: myFileName,
+    tableData: tableItems.value,
+    tableHeaders: headers,
+    title: fileTitle,
+  });
 }
 </script>

@@ -8,7 +8,7 @@ export type ITableItems =
 
 export interface ITableHeaders {
   heading: string;
-  content: string;
+  content: string | number;
 }
 export interface IPdfPayload {
   tableHeaders?: ITableHeaders[];
