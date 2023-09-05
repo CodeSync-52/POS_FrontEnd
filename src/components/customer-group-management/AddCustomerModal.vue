@@ -11,6 +11,7 @@
       </div>
       <q-input
         dense
+        maxlength="250"
         v-model="customerName"
         outlined
         label="Name"

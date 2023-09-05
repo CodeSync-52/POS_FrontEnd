@@ -24,6 +24,7 @@
               <q-input
                 dense
                 outlined
+                maxlength="250"
                 v-model="userData.fullName"
                 label="Full Name"
                 lazy-rules
@@ -40,6 +41,7 @@
               <q-input
                 dense
                 outlined
+                maxlength="250"
                 v-model="userData.userName"
                 label="User Name"
                 color="btn-primary"
@@ -120,6 +122,8 @@
                 type="number"
                 dense
                 outlined
+                :min="0"
+                :max="5000000"
                 v-model="userData.flatDiscount"
                 fill-mask="0"
                 reverse-fill-mask
@@ -206,8 +210,14 @@ function removeStatusFromPayload(
 }
 
 const isButtonDisabled = computed(() => {
-  const { fullName, phoneNumber, roleName, userName, customerGroupId } =
-    userData.value;
+  const {
+    fullName,
+    phoneNumber,
+    roleName,
+    userName,
+    customerGroupId,
+    flatDiscount,
+  } = userData.value;
   const validations = ref<boolean[]>([]);
   if (
     roleName === EUserRoles.Admin ||
@@ -223,6 +233,8 @@ const isButtonDisabled = computed(() => {
     validations.value = shopValidation;
   } else if (roleName === EUserRoles.Customer) {
     const customerValidation = [
+      flatDiscount < 0,
+      flatDiscount > 5000000,
       !fullName,
       phoneNumber.length !== 12,
       !userName,

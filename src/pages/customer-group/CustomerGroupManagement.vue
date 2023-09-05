@@ -32,6 +32,7 @@
             <q-input
               outlined
               dense
+              maxlength="250"
               debounce="300"
               color="btn-primary"
               label="Name"
@@ -95,6 +96,19 @@
             </div>
           </q-td>
         </template>
+        <template v-slot:body-cell-name="props">
+          <q-td
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.name }}
+          </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
       </q-table>
     </div>
 
@@ -108,7 +122,7 @@
       @update:model-value="selectedRowData = null"
       v-model="isAddCustomerModalVisible"
     >
-      <add-user-modal
+      <add-customer-modal
         :user-name="selectedRowData?.name"
         :is-edit-customer-group="isEditCustomerGroup"
         @name-changed="updateOrAddCustomer"
@@ -120,7 +134,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import CustomerStatusModal from 'components/customer-group-management/CustomerStatusModal.vue';
-import AddUserModal from 'components/customer-group-management/AddCustomerModal.vue';
+import AddCustomerModal from 'components/customer-group-management/AddCustomerModal.vue';
 import {
   EActionPermissions,
   ICustomerListResponse,
@@ -161,7 +175,7 @@ const filterChanged = ref(false);
 function setFilteredData() {
   filterChanged.value = true;
   filteredRows.value = customerGroupRows.value.filter((row) =>
-    row.name.toLowerCase().includes(filter.value.toLowerCase())
+    row.name.toLowerCase().includes(filter.value.toLowerCase().trim())
   );
   setTimeout(() => {
     filterChanged.value = false;

@@ -135,6 +135,20 @@
               </div>
             </q-td>
           </template>
+          <template v-slot:body-cell-name="props">
+            <q-td
+              :props="props"
+              class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+            >
+              {{ props.row.productName }}
+            </q-td>
+          </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
+          </template>
         </q-table>
       </q-card-section>
       <q-card-actions class="row items-center justify-end">

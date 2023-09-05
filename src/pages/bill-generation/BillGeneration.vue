@@ -45,6 +45,7 @@
       <q-input
         v-model="filterSearch.userName"
         outlined
+        maxlength="250"
         style="min-width: 200px"
         label="Name"
         dense
@@ -84,7 +85,6 @@
         <q-btn
           unelevated
           color=""
-          :loading="isLoading"
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="resetFilter"
@@ -209,6 +209,20 @@
             </div>
           </q-td>
         </template>
+        <template v-slot:body-cell-name="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.name }}
+          </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
       </q-table>
     </div>
     <q-dialog v-model="isCancelOrGenerateBillModalVisible">
@@ -235,7 +249,7 @@ import {
   EUserModules,
   IBillGenerationData,
   IBillGenerationFilter,
-  IUserManagementData,
+  IUserResponse,
 } from 'src/interfaces';
 import {
   billListApi,
@@ -277,7 +291,7 @@ onUnmounted(() => {
     apiController.value.abort();
   }
 });
-const UserList = ref<IUserManagementData[]>([]);
+const UserList = ref<IUserResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {

@@ -37,6 +37,7 @@
 
             <q-input
               outlined
+              maxlength="250"
               dense
               debounce="300"
               color="btn-primary"
@@ -93,7 +94,6 @@
             />
           </q-td>
         </template>
-
         <template
           v-slot:header-cell-status
           v-if="
@@ -145,6 +145,20 @@
                 @click="onEditButtonClick(props.row)"
               />
             </div>
+          </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
+        <template v-slot:body-cell-group="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.name }}
           </q-td>
         </template>
       </q-table>
@@ -215,7 +229,7 @@ const filterChanged = ref(false);
 function setFilteredData() {
   filterChanged.value = true;
   filteredRows.value = categoryData.value.filter((row) =>
-    row.name.toLowerCase().includes(filter.value.toLowerCase())
+    row.name.toLowerCase().includes(filter.value.toLowerCase().trim())
   );
   setTimeout(() => {
     filterChanged.value = false;

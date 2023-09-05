@@ -11,6 +11,7 @@
               disable
               outlined
               dense
+              maxlength="250"
               label="Created By"
               v-model="selectedSaleRecord.createdBy"
             />
@@ -252,6 +253,20 @@
                 />
               </div>
             </q-td>
+          </template>
+          <template v-slot:body-cell-productName="props">
+            <q-td
+              :props="props"
+              class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+            >
+              {{ props.row.productName }}
+            </q-td>
+          </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
           </template>
         </q-table>
       </q-card-section>

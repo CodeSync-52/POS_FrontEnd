@@ -27,6 +27,7 @@
             <div class="col-12 col-md-6 mt-auto">
               <span class="text-base">Article Name</span>
               <q-input
+                maxlength="250"
                 v-model="newArticle.name"
                 label="Name"
                 dense
@@ -46,6 +47,7 @@
                 />
               </div>
               <q-input
+                maxlength="250"
                 v-model="newArticle.categoryName"
                 label="category"
                 dense
@@ -59,6 +61,7 @@
               <q-input
                 v-model="newArticle.wholeSalePrice"
                 dense
+                :min="0"
                 type="number"
                 label="Wholesale Price"
                 outlined
@@ -70,6 +73,7 @@
               <q-input
                 v-model="newArticle.retailPrice"
                 dense
+                :min="0"
                 type="number"
                 label="Retail Price"
                 outlined
@@ -81,6 +85,7 @@
               <q-input
                 v-model="newArticle.costPrice"
                 dense
+                :min="0"
                 type="number"
                 label="Cost Price"
                 outlined
@@ -126,6 +131,7 @@
               <q-input
                 type="textarea"
                 autogrow
+                maxlength="250"
                 v-model="newArticle.description"
                 dense
                 label="Description"
@@ -148,6 +154,12 @@
             :disable="
               !newArticle.name ||
               !newArticle.categoryName ||
+              newArticle.retailPrice < 0 ||
+              newArticle.wholeSalePrice < 0 ||
+              newArticle.costPrice < 0 ||
+              !newArticle.retailPrice ||
+              !newArticle.wholeSalePrice ||
+              !newArticle.costPrice ||
               isImageSizeGreater()
             "
             color="btn-primary"
@@ -164,7 +176,16 @@
             :columns="billingHistoryColumn"
             hide-bottom
             :rows="billingHistoryRecord"
-          />
+          >
+            <template v-slot:body-cell-name="props">
+              <q-td
+                :props="props"
+                class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+              >
+                {{ props.row.fullName }}
+              </q-td>
+            </template>
+          </q-table>
           <div v-else class="text-center">
             <span>There is nothing to show</span>
           </div>

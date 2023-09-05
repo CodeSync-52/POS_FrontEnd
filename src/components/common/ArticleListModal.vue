@@ -33,6 +33,7 @@
                 <q-input
                   borderless
                   dense
+                  maxlength="250"
                   outlined
                   label="search"
                   debounce="300"
@@ -61,6 +62,12 @@
                   />
                 </div>
               </q-td>
+            </template>
+            <template v-slot:no-data>
+              <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+                <q-icon name="warning" size="xs" />
+                <span class="text-md font-medium"> No data available. </span>
+              </div>
             </template>
           </q-table>
         </div>
@@ -142,7 +149,7 @@ function setFilteredData() {
   filterChanged.value = true;
   if (filter.value) {
     filteredRows.value = props.articleList.filter((row) =>
-      row.name.toLowerCase().includes(filter.value.toLowerCase())
+      row.name.toLowerCase().includes(filter.value.toLowerCase().trim())
     );
   } else {
     filteredRows.value = props.articleList;

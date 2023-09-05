@@ -46,6 +46,7 @@
       />
       <q-input
         v-model="filterSearch.userName"
+        maxlength="250"
         outlined
         label="Name"
         style="min-width: 200px"
@@ -84,7 +85,6 @@
         />
         <q-btn
           color=""
-          :loading="isLoading"
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="handleResetFilter"
@@ -101,6 +101,14 @@
         v-model:pagination="pagination"
         @request="getReceiptList"
       >
+        <template v-slot:body-cell-fullName="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.fullName }}
+          </q-td>
+        </template>
         <template
           v-slot:header-cell-action
           v-if="
@@ -197,6 +205,12 @@
               />
             </div>
           </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
         </template>
       </q-table>
     </div>
@@ -389,7 +403,7 @@ const getReceiptList = async (data?: {
         ToDate: filterSearch.value.endDate,
         FromDate: filterSearch.value.startDate,
         UserId: filterSearch.value.userId,
-        FullName: filterSearch.value.userName,
+        FullName: filterSearch.value.userName?.trim() ?? '',
         PageNumber: pagination.value.page,
         PageSize: pagination.value.rowsPerPage,
         PurchaseStatus: filterSearch.value.purchaseStatus,

@@ -8,6 +8,7 @@
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
           <q-input
+            maxlength="250"
             v-model="articleInfo.name"
             dense
             label="Name"
@@ -17,6 +18,7 @@
         </div>
         <div class="col-12 col-sm-6">
           <q-input
+            maxlength="250"
             v-model="articleInfo.description"
             dense
             label="Description"
@@ -91,6 +93,7 @@
               />
             </div>
             <q-input
+              maxlength="250"
               v-model="articleInfo.categoryName"
               label="category"
               dense
