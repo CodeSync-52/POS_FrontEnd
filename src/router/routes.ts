@@ -181,8 +181,15 @@ export const routeList = [
     },
   },
   {
-    path: '/cashInOut',
-    component: () => import('src/pages/cashInOut/CashInOut.vue'),
+    path: '/cash-flow',
+    component: () => import('src/pages/cash-flow/CashFlow.vue'),
+    meta: {
+      module: EUserModules.CashInCashOutManagement,
+    },
+  },
+  {
+    path: '/cash-flow/add-new',
+    component: () => import('src/pages/cash-flow/AddNewCashFlow.vue'),
     meta: {
       module: EUserModules.CashInCashOutManagement,
     },
