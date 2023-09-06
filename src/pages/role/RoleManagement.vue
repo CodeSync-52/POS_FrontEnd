@@ -4,12 +4,7 @@
       <span class="text-lg font-medium">{{ pageTitle }}</span>
     </div>
     <div class="">
-      <q-btn
-        color="primary"
-        class="my-3"
-        label="Download Dummy PDF"
-        @click="downloadPdfData"
-      />
+      
       <div class="roleManagementTable">
         <q-table
           :rows="rolesManagementTableRows"
@@ -212,58 +207,5 @@ async function saveNewUserRoles(data: IUserRolePermissions[]) {
   isRoleModalVisible.value = false;
   setInitialModuleValue();
 }
-function downloadPdfData() {
-  const headers: ITableHeaders[] = [
-    {
-      content: 'Value 1',
-      heading: 'Heading 1',
-    },
-    {
-      content: 'Value 2',
-      heading: 'Heading 2',
-    },
-    {
-      content: 'Value 3',
-      heading: 'Heading 3',
-    },
-  ];
-  // Each array represents a row inside the main array, number of columns in each row must be consistent
-  const tableStuff: ITableItems[][] = [
-    [
-      'Heading 1',
-      'Heading 2',
-      'Heading 3',
-      // {
-      //   image: base64 of image goes here ,
-      // },
-    ],
-    [
-      'Row data 1',
-      'Row data 2',
-      {
-        text: 'Row Data 3',
-        bold: true,
-      },
-    ],
-    [
-      'Row data 4',
-      {
-        text: 'Row Data 5',
-        bold: true,
-      },
-      'Row data 6',
-      // {
-      //   image: base64 of image goes here ,
-      // },
-    ],
-  ];
-  const fileTitle = 'Title here';
-  const myFileName = 'FileNameHere.pdf';
-  downloadPdf({
-    filename: myFileName,
-    tableData: tableStuff,
-    tableHeaders: headers,
-    title: fileTitle,
-  });
-}
+ 
 </script>
