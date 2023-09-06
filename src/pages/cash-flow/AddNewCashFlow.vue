@@ -67,6 +67,7 @@
                 :min="0"
                 type="number"
                 label="Amount"
+                :max="99999999"
                 dense
                 outlined
                 v-model="addNewFlow.amount"
@@ -103,7 +104,11 @@
           label="Add"
           unelevated
           :disable="
-            !addNewFlow.source || !addNewFlow.target || addNewFlow.amount <= 0
+            !addNewFlow.source ||
+            !addNewFlow.target ||
+            addNewFlow.amount <= 0 ||
+            !addNewFlow.amount ||
+            addNewFlow.amount > 99999999
           "
           :loading="isAdding"
           @click="handleAddNewFlow"

@@ -69,6 +69,22 @@
         :loading="isLoading"
         @request="getCashFlowRecords"
       >
+        <template v-slot:body-cell-sourceUserName="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.sourceUserName }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-targetUserName="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.targetUserName }}
+          </q-td>
+        </template>
       </q-table>
     </div>
   </div>
