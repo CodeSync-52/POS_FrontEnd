@@ -22,6 +22,7 @@ export interface IPurchaseDetails {
 export interface ISelectedArticleData {
   productId: number | null;
   quantity?: number | null;
+  productImage: string;
   productName?: string;
   purchaseDetailId?: number;
 }

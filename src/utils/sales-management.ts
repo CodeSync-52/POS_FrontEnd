@@ -74,6 +74,12 @@ export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
       align: 'left',
     },
     {
+      name: 'productImage',
+      label: 'Product Image',
+      field: (row) => row.productImage,
+      align: 'left',
+    },
+    {
       name: 'productName',
       label: 'Product Name',
       field: (row) => row.productName,

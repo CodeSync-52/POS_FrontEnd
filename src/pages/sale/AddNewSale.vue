@@ -1,7 +1,17 @@
 <template>
   <div>
-    <div class="text-xl text-center md:text-left font-medium mb-4">
-      <span>{{ action }} Sale</span>
+    <div class="mb-4 row justify-between items-center">
+      <div class="text-xl text-center md:text-left font-medium">
+        <span>{{ action }} Sale</span>
+      </div>
+      <q-btn
+        v-if="action === 'Preview'"
+        color="btn-primary"
+        class="mb-2"
+        unelevated
+        label="Download PDF"
+        @click="downloadPdfData"
+      />
     </div>
     <q-card>
       <q-card-section class="q-gutter-y-md">
@@ -144,6 +154,24 @@
           :columns="selectedSalesArticleColumn"
           row-key="name"
         >
+          <template v-slot:body-cell-productImage="props">
+            <q-td :props="props">
+              <div
+                @click="handlePreviewImage(props.row.productImage)"
+                class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                :class="props.row.productImage ? 'cursor-pointer' : ''"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  :src="
+                    getImageUrl(props.row.productImage) ||
+                    'assets/default-image.png'
+                  "
+                  alt="img"
+                />
+              </div>
+            </q-td>
+          </template>
           <template v-slot:body-cell-action="props" v-if="action !== 'Preview'">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
@@ -194,7 +222,7 @@
           </template>
           <template v-slot:bottom-row="props">
             <q-tr :props="props">
-              <q-td colspan="2" />
+              <q-td colspan="3" />
               <q-td>
                 <div>
                   Total Quantity:
@@ -210,16 +238,18 @@
               </q-td>
             </q-tr>
             <q-tr :props="props">
-              <q-td colspan="5" />
+              <q-td colspan="6" />
               <q-td>
                 <div>
                   Discount:
-                  {{ selectedSaleRecord.discount }}
+                  {{
+                    selectedSaleRecord.discount * saleGenerationTotalQuantity
+                  }}
                 </div>
               </q-td>
             </q-tr>
             <q-tr :props="props">
-              <q-td colspan="5" />
+              <q-td colspan="6" />
               <q-td>
                 <div>
                   Net Total:
@@ -271,6 +301,13 @@
         </q-table>
       </q-card-section>
       <q-card-actions align="right" class="q-gutter-x-sm">
+        <q-btn
+          v-if="action === 'Edit'"
+          unelevated
+          label="Print"
+          color="btn-primary"
+          @click="action = 'Preview'"
+        />
         <router-link to="/sale">
           <q-btn
             unelevated
@@ -296,7 +333,7 @@
           "
           unelevated
           label="Save"
-          @click="saveNewReceipt"
+          @click="saveNewSale"
           :loading="isAddingSale"
           color="btn-primary"
         />
@@ -313,10 +350,20 @@
           selectedArticleData.map((item) => ({
             productId: item.productId !== null ? item.productId : -1,
             productName: item?.productName || '',
+            productImage: item.productImage || '',
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"
       />
+    </q-dialog>
+    <q-dialog v-model="isPreviewImageModalVisible">
+      <q-card class="min-w-[400px]">
+        <q-card-section>
+          <div class="w-full max-h-[350px] overflow-hidden">
+            <img :src="selectedPreviewImage" alt="image" class="mx-auto" />
+          </div>
+        </q-card-section>
+      </q-card>
     </q-dialog>
   </div>
 </template>
@@ -338,7 +385,13 @@ import {
   IWholeSaleDetailsData,
   IUserResponse,
 } from 'src/interfaces';
-import { isPosError, selectedSalesArticleColumn } from 'src/utils';
+import {
+  ITableHeaders,
+  ITableItems,
+  downloadPdf,
+  isPosError,
+  selectedSalesArticleColumn,
+} from 'src/utils';
 import {
   addWholeSaleApi,
   addWholeSaleDetailApi,
@@ -378,6 +431,8 @@ const articleList = ref<IArticleData[]>([]);
 const selectedArticleData = ref<ISelectedWholeSaleArticleData[]>([]);
 const selectedId = ref<number>(-1);
 const isAddingSale = ref(false);
+const selectedPreviewImage = ref('');
+const isPreviewImageModalVisible = ref(false);
 const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
@@ -385,6 +440,7 @@ const pagination = ref<IPagination>({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const tableItems = ref<ITableItems[][]>([]);
 const addNewSale = ref<IAddNewSale>({
   userId: null,
   userDiscount: 0,
@@ -425,6 +481,18 @@ const handleFilterRows = (filterChanged: boolean) => {
     }, 200);
   }
 };
+const handlePreviewImage = (selectedImage: string) => {
+  if (selectedImage) {
+    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    isPreviewImageModalVisible.value = true;
+  }
+};
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+  return '';
+};
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   getArticleList();
@@ -438,7 +506,7 @@ const articleListComputed = computed(() => {
     return index === -1;
   });
 });
-const saveNewReceipt = async () => {
+const saveNewSale = async () => {
   if (isAddingSale.value) return;
   isAddingSale.value = true;
   const productList = selectedArticleData.value.map((item) => {
@@ -449,10 +517,16 @@ const saveNewReceipt = async () => {
   });
   addNewSale.value.productList = productList;
   try {
-    await addWholeSaleApi({
+    const res = await addWholeSaleApi({
       userId: addNewSale.value.userId,
       productList: addNewSale.value.productList,
     });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        type: 'positive',
+      });
+    }
     router.push('/sale');
   } catch (e) {
     let message = 'There was an unexpected error adding sale';
@@ -472,6 +546,7 @@ const selectedData = (
     productId: number;
     productName?: string;
     unitWholeSalePrice?: number;
+    productImage: string | null;
   }[]
 ) => {
   if (action.value !== 'Edit') {
@@ -488,6 +563,7 @@ const selectedData = (
         quantity: 0,
         totalAmount: 0,
         wholeSaleDetailId: -1,
+        productImage: item.productImage,
       });
       if (action.value === 'Edit') {
         addWholeSaleDetailApi({
@@ -661,6 +737,7 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
           res.data.updatedDate
         ).format('DD/MM/YYYY');
         selectedArticleData.value = res.data.wholeSaleDetails;
+        tableItems.value = await convertArray(res.data.wholeSaleDetails);
       }
     }
   } catch (e) {
@@ -710,5 +787,132 @@ async function saveUpdatedData(row: IWholeSaleDetailsData) {
     });
     getSelectedWholesaleDetail(selectedId.value);
   }
+}
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+const defaultImage = ref<string | null>(null);
+async function convertArray(array: IWholeSaleDetailsData[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+
+  const tableStuff = [];
+  const headerRow = [
+    'Product Id',
+    'Product Image',
+    'Product Name',
+    'Quantity',
+    'Unit Wholsale Price',
+    'Amount',
+  ];
+  tableStuff.push(headerRow);
+  const totalAmount = array.reduce((total, row: IWholeSaleDetailsData) => {
+    return total + row.totalAmount;
+  }, 0);
+  const footerRow = [
+    '',
+    '',
+    '',
+    {
+      text: `Total: ${saleGenerationTotalQuantity.value}`,
+      margin: 5,
+      width: 10,
+    },
+    '',
+    { text: `Total: ${totalAmount}`, margin: 5 },
+  ];
+  const discountRow = [
+    '',
+    '',
+    '',
+    '',
+    '',
+    {
+      text: `Discount: ${
+        selectedSaleRecord.value.discount * saleGenerationTotalQuantity.value
+      }`,
+      margin: 5,
+    },
+  ];
+  const netTotalRow = [
+    '',
+    '',
+    '',
+    '',
+    '',
+    {
+      text: `Net Total: ${saleGenerationNetAmount(selectedArticleData.value)}`,
+      margin: 5,
+    },
+  ];
+  array.forEach((item: IWholeSaleDetailsData) => {
+    const row = [
+      { text: item.productId, margin: 5 },
+      {
+        image:
+          'data:image/png;base64,' + (item.productImage || defaultImage.value),
+        width: 25,
+        height: 25,
+        margin: 2,
+      },
+      { text: item.productName, bold: true, margin: 5 },
+      { text: item.quantity, margin: 5 },
+      { text: item.unitWholeSalePrice, margin: 5 },
+      { text: item.unitWholeSalePrice * item.quantity, margin: 5 },
+    ];
+    tableStuff.push(row);
+  });
+  tableStuff.push(footerRow);
+  tableStuff.push(discountRow);
+  tableStuff.push(netTotalRow);
+  return tableStuff;
+}
+function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'User Name',
+      content: selectedSaleRecord.value.fullName,
+    },
+    {
+      heading: 'Outstanding Balance',
+      content: selectedSaleRecord.value.outStandingBalance,
+    },
+    {
+      heading: 'Discount',
+      content: selectedSaleRecord.value.discount,
+    },
+  ];
+  const fileTitle = 'Sale';
+  const myFileName = 'Sale.pdf';
+  downloadPdf({
+    filename: myFileName,
+    tableData: tableItems.value,
+    tableHeaders: headers,
+    title: fileTitle,
+  });
 }
 </script>
