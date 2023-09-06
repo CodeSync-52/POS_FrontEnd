@@ -623,7 +623,7 @@ async function convertArray(array: ISelectedArticleData[]) {
   tableStuff.push(headerRow);
   array.forEach((item: ISelectedArticleData) => {
     const row = [
-      { text: item.purchaseDetailId, margin: 5 },
+      { text: item.productId, margin: 5 },
       {
         image:
           'data:image/png;base64,' + (item.productImage || defaultImage.value),

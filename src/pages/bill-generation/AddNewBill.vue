@@ -393,7 +393,7 @@ const handleBillSaveAsDraft = () => {
 };
 const formattedPurchaseDate = computed(() => {
   if (billGenerationData.value.purchaseDate) {
-    return moment(billGenerationData.value.purchaseDate).format('YYYY-MM-DD');
+    return moment(billGenerationData.value.purchaseDate).format('YYYY-MM-DD ');
   }
   return '';
 });
@@ -592,6 +592,7 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
   return tableStuff;
 }
 function downloadPdfData() {
+  debugger
   const headers: ITableHeaders[] = [
     {
       heading: 'User Name',
@@ -600,6 +601,10 @@ function downloadPdfData() {
     {
       heading: 'Bill Status',
       content: billGenerationDetailsInfoData.value.billStatus,
+    },
+    {
+      heading: 'Date',
+      content: moment(billGenerationDetailsInfoData?.value?.createdDate).format('MMMM Do YYYY'),
     },
   ];
   const fileTitle = 'Bill';
