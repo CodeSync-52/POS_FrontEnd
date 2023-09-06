@@ -572,7 +572,7 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
     },
     0
   );
-  const footerRow = ['', '', '', '', `Net Total: ${netTotalAmount}`];
+  const footerRow = ['', '', '', 'Net Total:', `${netTotalAmount}`];
   array.forEach((item: IBillGenerationDetailsInfoProductList) => {
     const row = [
       {
@@ -592,7 +592,6 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
   return tableStuff;
 }
 function downloadPdfData() {
-  debugger
   const headers: ITableHeaders[] = [
     {
       heading: 'User Name',
@@ -604,10 +603,12 @@ function downloadPdfData() {
     },
     {
       heading: 'Date',
-      content: moment(billGenerationDetailsInfoData?.value?.createdDate).format('MMMM Do YYYY'),
+      content: moment(billGenerationDetailsInfoData?.value?.createdDate).format(
+        'MMMM Do YYYY'
+      ),
     },
   ];
-  const fileTitle = 'Bill';
+  const fileTitle = `Bill No: ${billGenerationDetailsInfoData.value.billId}`;
   const myFileName = 'Bill.pdf';
   downloadPdf({
     filename: myFileName,

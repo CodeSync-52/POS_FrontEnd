@@ -821,41 +821,41 @@ async function convertArray(array: IWholeSaleDetailsData[]) {
   }
 
   const tableStuff = [];
-  const headerRow = [
-    'Product Id',
-    'Product Image',
-    'Product Name',
-    'Quantity',
-    'Unit Wholsale Price',
-    'Amount',
-  ];
+  const headerRow = ['Id', 'Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
   tableStuff.push(headerRow);
   const totalAmount = array.reduce((total, row: IWholeSaleDetailsData) => {
     return total + row.totalAmount;
   }, 0);
   const footerRow = [
-    '',
+    {
+      text: 'Total',
+      margin: 5,
+    },
     '',
     '',
     {
-      text: `Total: ${saleGenerationTotalQuantity.value}`,
+      text: `${saleGenerationTotalQuantity.value}`,
       margin: 5,
-      width: 10,
     },
     '',
-    { text: `Total: ${totalAmount}`, margin: 5 },
+    { text: `${totalAmount}`, margin: 5 },
   ];
   const discountRow = [
     '',
     '',
     '',
     '',
-    '',
     {
-      text: `Discount: ${
+      text: 'Discount:',
+      margin: 5,
+      width: 10,
+    },
+    {
+      text: `${
         selectedSaleRecord.value.discount * saleGenerationTotalQuantity.value
       }`,
       margin: 5,
+      width: 10,
     },
   ];
   const netTotalRow = [
@@ -863,9 +863,12 @@ async function convertArray(array: IWholeSaleDetailsData[]) {
     '',
     '',
     '',
-    '',
     {
-      text: `Net Total: ${saleGenerationNetAmount(selectedArticleData.value)}`,
+      text: 'Net Total:',
+      margin: 5,
+    },
+    {
+      text: `${saleGenerationNetAmount(selectedArticleData.value)}`,
       margin: 5,
     },
   ];
@@ -900,6 +903,16 @@ function downloadPdfData() {
     {
       heading: 'Outstanding Balance',
       content: selectedSaleRecord.value.outStandingBalance,
+    },
+    {
+      heading: 'Date',
+      content: moment(selectedSaleRecord?.value?.createdDate).format(
+        'MMMM Do YYYY'
+      ),
+    },
+    {
+      heading: 'Created By',
+      content: selectedSaleRecord.value.createdBy,
     },
     {
       heading: 'Discount',

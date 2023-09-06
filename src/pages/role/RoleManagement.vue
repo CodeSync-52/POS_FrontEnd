@@ -4,7 +4,6 @@
       <span class="text-lg font-medium">{{ pageTitle }}</span>
     </div>
     <div class="">
-      
       <div class="roleManagementTable">
         <q-table
           :rows="rolesManagementTableRows"
@@ -81,7 +80,7 @@ import {
 } from 'src/interfaces';
 import { QTableColumn, useQuasar } from 'quasar';
 import { fetchUserRoles, updateUserRoles } from 'src/services';
-import { downloadPdf, isPosError, ITableHeaders, ITableItems } from 'src/utils';
+import { isPosError } from 'src/utils';
 import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
 const $q = useQuasar();
@@ -207,5 +206,4 @@ async function saveNewUserRoles(data: IUserRolePermissions[]) {
   isRoleModalVisible.value = false;
   setInitialModuleValue();
 }
- 
 </script>
