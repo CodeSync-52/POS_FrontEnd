@@ -1,6 +1,8 @@
 <template>
   <div class="">
-    <div class="text-lg text-center md:text-left font-medium mb-4">
+    <div
+      class="text-lg text-center md:text-left font-medium mb-4 row justify-between items-center"
+    >
       <span>{{
         isEdit
           ? 'Update Receipt'
@@ -8,6 +10,14 @@
           ? 'Preview Receipt'
           : 'Add New Receipt'
       }}</span>
+      <q-btn
+        v-if="isReceiptPreview"
+        color="btn-primary"
+        class="mb-2"
+        unelevated
+        label="Download PDF"
+        @click="downloadPdfData"
+      />
     </div>
     <q-card>
       <q-card-section class="q-gutter-y-md">
@@ -70,6 +80,24 @@
           :columns="selectedArticleColumn"
           row-key="name"
         >
+          <template v-slot:body-cell-image="props">
+            <q-td :props="props">
+              <div
+                @click="handlePreviewImage(props.row.productImage)"
+                class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                :class="props.row.productImage ? 'cursor-pointer' : ''"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  :src="
+                    getImageUrl(props.row.productImage) ||
+                    'assets/default-image.png'
+                  "
+                  alt="img"
+                />
+              </div>
+            </q-td>
+          </template>
           <template v-slot:body-cell-action="props" v-if="!isReceiptPreview">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
@@ -149,10 +177,22 @@
               <span class="text-md font-medium"> No data available. </span>
             </div>
           </template>
+          <template v-slot:bottom="props">
+            <q-td></q-td>
+            <q-td :props="props"> </q-td>
+          </template>
         </q-table>
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
         <q-btn
+          v-if="isEdit"
+          unelevated
+          label="Print"
+          color="btn-primary"
+          @click="handlePrintReceipt"
+        />
+        <q-btn
+          unelevated
           :label="isReceiptPreview ? 'Close' : 'Go Back'"
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="cancelNewReceipt"
@@ -185,10 +225,20 @@
           selectedArticleData.map((item) => ({
             productId: item.productId !== null ? item.productId : -1,
             productName: item?.productName || '',
+            productImage: item.productImage || '',
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"
       />
+    </q-dialog>
+    <q-dialog v-model="isPreviewImageModalVisible">
+      <q-card class="min-w-[400px]">
+        <q-card-section>
+          <div class="w-full max-h-[350px] overflow-hidden">
+            <img :src="selectedPreviewImage" alt="image" class="mx-auto" />
+          </div>
+        </q-card-section>
+      </q-card>
     </q-dialog>
   </div>
 </template>
@@ -214,7 +264,7 @@ import {
   IUserResponse,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
-import { isPosError } from 'src/utils';
+import { ITableHeaders, downloadPdf, isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
 import { selectedArticleColumn } from 'src/utils';
@@ -228,6 +278,8 @@ const isReceiptPreview = ref(false);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const isArticleListModalVisible = ref(false);
 const isFilterChanged = ref(false);
+const selectedPreviewImage = ref('');
+const isPreviewImageModalVisible = ref(false);
 const handleSelectArticle = () => {
   isArticleListModalVisible.value = true;
 };
@@ -242,8 +294,28 @@ const pagination = ref<IPagination>({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const handlePreviewImage = (selectedImage: string) => {
+  if (selectedImage) {
+    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    isPreviewImageModalVisible.value = true;
+  }
+};
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+  return '';
+};
+const handlePrintReceipt = () => {
+  isEdit.value = false;
+  isReceiptPreview.value = true;
+};
 const selectedData = (
-  payload: { productId: number; productName?: string }[]
+  payload: {
+    productId: number;
+    productName?: string;
+    productImage: string | null;
+  }[]
 ) => {
   if (!isEdit.value) {
     const newIdList = payload.map((item) => item.productId);
@@ -254,7 +326,11 @@ const selectedData = (
   const oldIdList = selectedArticleData.value.map((item) => item.productId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.productId)) {
-      selectedArticleData.value.push({ ...item, quantity: 0 });
+      selectedArticleData.value.push({
+        ...item,
+        quantity: 0,
+        productImage: item.productImage ?? '',
+      });
       if (isEdit.value) {
         addReceiptRow({
           productId: item.productId,
@@ -288,7 +364,6 @@ const selectedData = (
 
   isArticleListModalVisible.value = false;
 };
-
 const onDeleteButtonClick = async (row: ISelectedArticleData) => {
   const tempIndex = selectedArticleData.value.findIndex(
     (x) => x.productId === row.productId
@@ -370,9 +445,15 @@ const saveNewReceipt = async () => {
   });
   addNewReceipt.value.productList = productList;
   try {
-    await createNewReceipt({
+    const res = await createNewReceipt({
       data: addNewReceipt.value,
     });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        type: 'positive',
+      });
+    }
     router.push('/receipt');
   } catch (e) {
     let message = 'There was an unexpected error';
@@ -388,6 +469,7 @@ const saveNewReceipt = async () => {
 };
 const isEdit = ref(false);
 const isFetchingArticleList = ref(false);
+const userName = ref('');
 const articleList = ref<IArticleData[]>([]);
 const handleFilterRows = (filterChanged: boolean) => {
   if (filterChanged) {
@@ -431,11 +513,14 @@ const getArticleList = async (data?: {
   isFetchingArticleList.value = false;
 };
 const selectedId = ref<number | string>(-1);
+const tableItems = ref<string[][]>([]);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
-  getReceiptData(selectedItemId).then((res) => {
+  getReceiptData(selectedItemId).then(async (res) => {
     addNewReceipt.value.userId = res.data.userId;
+    userName.value = res.data.fullName;
     addNewReceipt.value.userOutstandingBalance = res.data.outStandingBalance;
     selectedArticleData.value = res.data.purchaseDetails;
+    tableItems.value = await convertArray(res.data.purchaseDetails);
   });
 };
 onMounted(() => {
@@ -501,5 +586,77 @@ async function saveUpdatedData(row: ISelectedArticleData) {
     });
     getReceiptDataFromApi(selectedId.value);
   }
+}
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+const defaultImage = ref<string | null>(null);
+async function convertArray(array: ISelectedArticleData[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+  const tableStuff = [];
+  const headerRow = ['Id', 'Article Image', 'Article Name', 'Quantity'];
+  tableStuff.push(headerRow);
+  array.forEach((item: ISelectedArticleData) => {
+    const row = [
+      { text: item.productId, margin: 5 },
+      {
+        image:
+          'data:image/png;base64,' + (item.productImage || defaultImage.value),
+        width: 25,
+        height: 25,
+        margin: 2,
+      },
+      { text: item.productName, margin: 5 },
+      { text: item.quantity, bold: true, margin: 5 },
+    ];
+    tableStuff.push(row);
+  });
+
+  return tableStuff;
+}
+function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'User Name',
+      content: userName.value,
+    },
+    {
+      heading: 'Outstanding Balance',
+      content: addNewReceipt.value.userOutstandingBalance,
+    },
+  ];
+  const fileTitle = 'Receipt';
+  const myFileName = 'Receipt.pdf';
+  downloadPdf({
+    filename: myFileName,
+    tableData: tableItems.value,
+    tableHeaders: headers,
+    title: fileTitle,
+  });
 }
 </script>

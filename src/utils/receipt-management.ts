@@ -69,9 +69,16 @@ export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
     field: (row) => row.productId,
   },
   {
+    name: 'image',
+    required: true,
+    label: 'Article Image',
+    align: 'left',
+    field: (row) => row.productImage,
+  },
+  {
     name: 'name',
     required: true,
-    label: 'Article',
+    label: 'Article Name',
     align: 'left',
     field: (row) => row.productName,
   },

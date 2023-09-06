@@ -1,7 +1,16 @@
 <template>
   <div>
-    <div class="text-lg text-center md:text-left font-medium mb-4">
-      <span>{{ billAction }}</span>
+    <div class="row items-center justify-between mb-2">
+      <div class="text-lg text-center md:text-left font-medium">
+        <span>{{ billAction }}</span>
+      </div>
+      <q-btn
+        v-if="billAction === 'Preview Receipt'"
+        color="btn-primary"
+        unelevated
+        label="Download PDF"
+        @click="downloadPdfData"
+      />
     </div>
     <q-card v-if="billAction === 'Generate Receipt'">
       <q-card-section>
@@ -187,7 +196,10 @@
             <q-td :props="props">
               {{ props.row.amount }}
               <q-popup-edit
-                :disable="router.currentRoute.value.path.includes('preview')"
+                :disable="
+                  router.currentRoute.value.path.includes('preview') ||
+                  billAction === 'Preview Receipt'
+                "
                 v-model="props.row.amount"
                 color="btn-primary"
                 title="Update Amount"
@@ -245,6 +257,13 @@
       </q-card-section>
       <q-card-actions class="row justify-end">
         <q-btn
+          v-if="billAction === 'Update bill'"
+          unelevated
+          label="Print"
+          color="btn-primary"
+          @click="billAction = 'Preview Receipt'"
+        />
+        <q-btn
           :label="billAction !== 'Preview Receipt' ? 'Cancel' : 'Close'"
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/bill-generation')"
@@ -286,6 +305,8 @@ import {
   editBillGenerationRecordsColumn,
   isPosError,
   BillGenerationDetailsInfoColumn,
+  ITableHeaders,
+  downloadPdf,
 } from 'src/utils';
 import {
   billDetailsApi,
@@ -329,6 +350,7 @@ const billGenerationData = ref<IBillDetail>({
 });
 const selectedId = router.currentRoute.value.params.id;
 const path = router.currentRoute.value.fullPath;
+const tableItems = ref<string[][]>([]);
 onMounted(() => {
   if (selectedId) {
     if (path.includes('preview')) {
@@ -371,7 +393,7 @@ const handleBillSaveAsDraft = () => {
 };
 const formattedPurchaseDate = computed(() => {
   if (billGenerationData.value.purchaseDate) {
-    return moment(billGenerationData.value.purchaseDate).format('YYYY-MM-DD');
+    return moment(billGenerationData.value.purchaseDate).format('YYYY-MM-DD ');
   }
   return '';
 });
@@ -437,13 +459,14 @@ const getBillDetailInfo = async (BillId: number) => {
     if (res.type === 'Success') {
       if (res.data) {
         billGenerationDetailsInfoData.value = res.data;
+        tableItems.value = await convertArray(res.data.productList);
         billGenerationDetailsInfoData.value.createdDate = moment(
           res.data.createdDate
         ).format('YYYY-MM-DD');
       }
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred';
+    let message = 'Unexpected Error Occurred Fetching bill details';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -509,4 +532,89 @@ const updateExistingBill = async (
   }
   isUpdating.value = false;
 };
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+const defaultImage = ref<string | null>(null);
+async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+  const tableStuff = [];
+  const headerRow = ['Image', 'Article Name', 'Quantity', 'Amount', 'Total'];
+  tableStuff.push(headerRow);
+  const netTotalAmount = array.reduce(
+    (total, row: IBillGenerationDetailsInfoProductList) => {
+      return total + row.amount * row.quantity;
+    },
+    0
+  );
+  const footerRow = ['', '', '', 'Net Total:', `${netTotalAmount}`];
+  array.forEach((item: IBillGenerationDetailsInfoProductList) => {
+    const row = [
+      {
+        image: 'data:image/png;base64,' + (item.image || defaultImage.value),
+        width: 25,
+        height: 25,
+        margin: 2,
+      },
+      { text: item.name, margin: 5 },
+      { text: item.quantity, bold: true, margin: 5 },
+      { text: item.amount, margin: 5 },
+      { text: item.amount * item.quantity, margin: 5 },
+    ];
+    tableStuff.push(row);
+  });
+  tableStuff.push(footerRow);
+  return tableStuff;
+}
+function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'User Name',
+      content: billGenerationDetailsInfoData.value.fullName,
+    },
+    {
+      heading: 'Bill Status',
+      content: billGenerationDetailsInfoData.value.billStatus,
+    },
+    {
+      heading: 'Date',
+      content: moment(billGenerationDetailsInfoData?.value?.createdDate).format(
+        'MMMM Do YYYY'
+      ),
+    },
+  ];
+  const fileTitle = `Bill No: ${billGenerationDetailsInfoData.value.billId}`;
+  const myFileName = 'Bill.pdf';
+  downloadPdf({
+    filename: myFileName,
+    tableData: tableItems.value,
+    tableHeaders: headers,
+    title: fileTitle,
+  });
+}
 </script>

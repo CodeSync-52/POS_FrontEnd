@@ -1,10 +1,7 @@
 <template>
   <q-card class="min-w-[310px] md:min-w-[750px] h-[600px]">
     <q-card-section class="h-[calc(100%-52px)]">
-      <div v-if="isFetchingArticleList">
-        <q-spinner color="btn-primary" size="3rem" class="mx-auto" />
-      </div>
-      <div v-else>
+      <div>
         <div class="row items-center q-mb-md justify-between">
           <div class="text-h6">
             <span>Add Article</span>
@@ -17,6 +14,7 @@
             v-model:pagination="articlePagination"
             :rows="filteredRows"
             :columns="articleListColumn"
+            :loading="isFetchingArticleList"
             virtual-scroll
             :filter="filter"
             row-key="productId"
@@ -101,7 +99,11 @@ import { IArticleData, IPagination } from 'src/interfaces';
 import { onMounted, ref, watch } from 'vue';
 import { articleListColumn } from 'src/utils';
 interface propTypes {
-  currentData: { productId: number; productName?: string }[];
+  currentData: {
+    productId: number;
+    productName?: string;
+    productImage: string;
+  }[];
   articleList: IArticleData[];
   isFetchingArticleList: boolean;
   pagination: IPagination;
@@ -119,7 +121,12 @@ const props = withDefaults(defineProps<propTypes>(), {
   isFetchingArticleList: false,
 });
 const selectedArticles = ref<
-  { productId: number; productName?: string; unitWholeSalePrice?: number }[]
+  {
+    productId: number;
+    productName?: string;
+    unitWholeSalePrice?: number;
+    productImage: string | null;
+  }[]
 >([...props.currentData]);
 const selected = ref<IArticleData[]>([]);
 const filter = ref('');
@@ -129,7 +136,11 @@ const filterChanged = ref(false);
 const emit = defineEmits<{
   (
     event: 'selected-data',
-    data: { productId: number; productName?: string }[]
+    data: {
+      productId: number;
+      productName?: string;
+      productImage: string | null;
+    }[]
   ): void;
   (event: 'handle-pagination', pagination: IPagination): void;
   (
@@ -143,6 +154,7 @@ watch(selected, (newSelected: IArticleData[]) => {
     productId: article.productId,
     productName: article.name,
     unitWholeSalePrice: article.wholeSalePrice,
+    productImage: article.productImage,
   }));
 });
 function setFilteredData() {
