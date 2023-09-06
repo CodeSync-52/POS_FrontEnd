@@ -10,17 +10,19 @@ export interface IReceiptData {
   updatedDate: string;
   createdById: number;
   updatedBy: null;
-  purchaseDetails: {
-    productId: number;
-    productName: string;
-    purchaseDetailId: number;
-    quantity: number;
-  }[];
+  purchaseDetails: IPurchaseDetails[];
 }
-
+export interface IPurchaseDetails {
+  productId: number;
+  productName: string;
+  purchaseDetailId: number;
+  productImage: string;
+  quantity: number;
+}
 export interface ISelectedArticleData {
   productId: number | null;
   quantity?: number | null;
+  productImage: string;
   productName?: string;
   purchaseDetailId?: number;
 }

@@ -39,6 +39,7 @@ export interface IWholeSaleDetailsData {
   unitWholeSalePrice: number;
   wholeSaleDetailId: number;
   productName?: string;
+  productImage: string | null;
 }
 export interface IWholesaleProductList {
   productId: number;
@@ -59,6 +60,7 @@ export interface ISelectedWholeSaleArticleData {
   quantity?: number | null;
   productName?: string;
   wholeSaleDetailId?: number;
+  productImage: string | null;
   unitWholeSalePrice?: number;
   totalAmount?: number;
 }
