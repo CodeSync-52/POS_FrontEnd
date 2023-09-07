@@ -77,6 +77,46 @@
             {{ props.row.sourceUserName }}
           </q-td>
         </template>
+        <template
+          v-if="
+            !authStore.checkUserHasPermission(
+              EUserModules.CashInCashOutManagement,
+              EActionPermissions.View
+            )
+          "
+          v-slot:header-cell-action
+        >
+          <q-th> </q-th>
+        </template>
+        <template
+          v-slot:body-cell-action="props"
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.CashInCashOutManagement,
+              EActionPermissions.View
+            )
+          "
+        >
+          <q-td :props="props">
+            <q-btn
+              icon="visibility"
+              dense
+              flat
+              unelevated
+              color="green"
+              size="sm"
+              @click="handleShowCashFlow(props.row)"
+            />
+          </q-td>
+        </template>
+        <template v-slot:body-cell-comment="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.comment }}
+          </q-td>
+        </template>
         <template v-slot:body-cell-targetUserName="props">
           <q-td
             :props="props"
@@ -87,6 +127,9 @@
         </template>
       </q-table>
     </div>
+    <q-dialog v-model="isPreviewCashFlowModalVisible">
+      <preview-cash-flow :selected-data="selectedRowData" />
+    </q-dialog>
   </div>
 </template>
 
@@ -102,10 +145,12 @@ import {
 import { cashFlowListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
+import PreviewCashFlow from 'src/components/cash-flow/PreviewCashFlow.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement
 );
+const isPreviewCashFlowModalVisible = ref(false);
 const isLoading = ref(false);
 const $q = useQuasar();
 const filterSearch = ref({
@@ -121,6 +166,7 @@ const handleResetFilter = () => {
   };
   getCashFlowRecords();
 };
+const selectedRowData = ref<ICashFlowRecords | null>(null);
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -128,6 +174,10 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const handleShowCashFlow = (selectedRow: ICashFlowRecords) => {
+  selectedRowData.value = selectedRow;
+  isPreviewCashFlowModalVisible.value = true;
+};
 const apiController = ref<AbortController | null>(null);
 onMounted(() => {
   getCashFlowRecords();
