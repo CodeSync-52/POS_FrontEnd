@@ -1,7 +1,7 @@
 import {
   IGenericResponse,
   IUserFilterList,
-  IUserManagementData,
+  IUserPayload,
   IUserResponse,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
@@ -48,7 +48,7 @@ export const changeUserStatus = async (customerId: number) => {
 export const updateUser = async ({
   userId,
   ...data
-}: Partial<IUserManagementData>) => {
+}: Partial<IUserPayload>) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: `api/User/update?userId=${userId}`,

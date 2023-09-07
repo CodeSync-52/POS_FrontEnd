@@ -32,9 +32,15 @@
           <div>
             <q-input
               v-model="userInfo.phoneNumber"
-              label="Phone #"
               outlined
-              maxlength="12"
+              mask="+92###-########"
+              label="Phone Number"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val.length >= 14 && val.length <= 15) ||
+                  'This entered number is not valid',
+              ]"
               dense
               :readonly="!canUpdateProfile"
             />
@@ -110,14 +116,17 @@
           isViewProfile || canUpdateProfile
             ? !userInfo.fullName ||
               !userInfo.phoneNumber ||
-              userInfo.phoneNumber.length !== 12
+              !(
+                userInfo.phoneNumber.length >= 14 &&
+                userInfo.phoneNumber.length <= 15
+              )
             : isButtonDisabled
         "
         flat
         unelevated
         @click="
           isViewProfile || canUpdateProfile
-            ? updateProfile()
+            ? handleUpdateProfile()
             : callingSaveNewPasswordApi()
         "
       />
@@ -144,6 +153,27 @@ onMounted(() => {
     callingViewUserProfileApi();
   }
 });
+const handleUpdateProfile = () => {
+  if (userInfo.value.phoneNumber) {
+    if (userInfo.value.phoneNumber.charAt(3) === '0') {
+      const userPhoneNumber = userInfo.value.phoneNumber;
+      userInfo.value.phoneNumber =
+        userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
+      userInfo.value.phoneNumber =
+        userInfo.value.phoneNumber.substring(0, 3) +
+        userInfo.value.phoneNumber.substring(4);
+    } else if (
+      userInfo.value.phoneNumber.charAt(3) !== '0' &&
+      (userInfo.value.phoneNumber.length === 14 ||
+        userInfo.value.phoneNumber.length === 15)
+    ) {
+      const userPhoneNumber = userInfo.value.phoneNumber;
+      userInfo.value.phoneNumber =
+        userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
+    }
+  }
+  updateProfile();
+};
 const updateProfile = async () => {
   try {
     isLoading.value = true;

@@ -10,7 +10,7 @@ interface IUserCustomer {
 
 interface IUserNonCustomer {
   roleName: Exclude<EUserRoles, EUserRoles.Customer>;
-  flatDiscount?: never;
+  flatDiscount?: number | undefined;
   customerGroupId?: never;
   status?: 'InActive';
 }
@@ -34,14 +34,16 @@ export type IUserData = {
   customerGroup: null | any;
 } & IUserManagementData;
 export interface IUserResponse {
-  customerGroup: null;
-  discount: number;
+  customerGroup?: null | string;
+  customerGroupId?: null | number;
+  discount?: number;
   fullName: string;
-  outStandingBalance: number;
+  flatDiscount?: number;
+  outStandingBalance?: number;
   phoneNumber: string;
   roleName: string;
-  status: string;
-  userId: number;
+  status?: string;
+  userId?: number;
   userName: string;
 }
 export interface IUserFilterList {
@@ -49,4 +51,4 @@ export interface IUserFilterList {
   role: string | null;
   status: string | null;
 }
-export type IUserPayload = Omit<IUserManagementData, 'status'>;
+export type IUserPayload = Omit<IUserResponse, 'status'>;
