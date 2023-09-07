@@ -208,7 +208,7 @@
     <q-card class="min-w-[400px]">
       <q-card-section>
         <div class="w-full max-h-[350px] overflow-hidden">
-          <img :src="selectedPreviewImage" alt="image" />
+          <img :src="selectedPreviewImage" alt="image" class="mx-auto" />
         </div>
       </q-card-section>
     </q-card>
