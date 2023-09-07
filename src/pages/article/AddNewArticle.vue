@@ -221,9 +221,9 @@ const checkFile = (value: File) => {
     if (!isValidFormat) {
       return 'Invalid file format. Only jpeg, jpg, and png allowed.';
     }
-    const isValidSize = value.size <= 2 * 1024 * 1024;
+    const isValidSize = value.size <= 0.5 * 1024 * 1024;
     if (!isValidSize) {
-      return 'Selected file must be less than or equal to 2MB';
+      return 'Selected file must be less than or equal to 0.5MB';
     }
   }
   return true;
@@ -275,7 +275,7 @@ const handleSelectedCategory = (selectedCategory: {
 };
 const isImageSizeGreater = () => {
   if (newArticle.value.productImage) {
-    if (newArticle.value.productImage.size > 2 * 1024 * 1024) {
+    if (newArticle.value.productImage.size > 0.5 * 1024 * 1024) {
       return true;
     }
   }

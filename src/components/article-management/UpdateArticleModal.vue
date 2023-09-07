@@ -205,7 +205,7 @@ function base64ToFile(
 }
 const isImageSizeGreater = () => {
   if (articleInfo.value.productImage) {
-    if (articleInfo.value.productImage.size > 2 * 1024 * 1024) {
+    if (articleInfo.value.productImage.size > 0.5 * 1024 * 1024) {
       return true;
     }
   }
@@ -227,9 +227,9 @@ const checkFile = (value: File) => {
     if (!isValidFormat) {
       return 'Invalid file format. Only jpeg, jpg, and png allowed.';
     }
-    const isValidSize = value.size <= 2 * 1024 * 1024;
+    const isValidSize = value.size <= 0.5 * 1024 * 1024;
     if (!isValidSize) {
-      return 'Selected file must be less than or equal to 2MB';
+      return 'Selected file must be less than or equal to 0.5MB';
     }
   }
   return true;
