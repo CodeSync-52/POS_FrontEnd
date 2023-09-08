@@ -33,12 +33,12 @@ export const addCashFlowApi = async ({
   sourceUserId,
   amount,
   targetUserId,
-  comments
+  comments,
 }: {
   sourceUserId: number;
   amount: number;
   targetUserId: number;
-  comments?: string
+  comments?: string;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
@@ -47,7 +47,7 @@ export const addCashFlowApi = async ({
       sourceUserId,
       amount,
       targetUserId,
-      comments
+      comments,
     },
   });
   return res;

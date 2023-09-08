@@ -25,7 +25,7 @@
                   v-model="addNewFlow.source"
                 />
               </div>
-              
+
               <q-input
                 v-model="addNewFlow.sourceOutstandingBalance"
                 disable
@@ -52,7 +52,7 @@
                   v-model="addNewFlow.target"
                 />
               </div>
-              
+
               <q-input
                 v-model="addNewFlow.targetOutstandingBalance"
                 disable
@@ -153,7 +153,7 @@ const handleAddNewFlow = async () => {
       sourceUserId: source?.userId ?? -1,
       amount: amount,
       targetUserId: target?.userId ?? -1,
-      comments: comment
+      comments: comment,
     });
     if (res.type === 'Success') {
       $q.notify({
