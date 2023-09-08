@@ -41,9 +41,21 @@ export const cashFlowColumn: QTableColumn<ICashFlowRecords>[] = [
     field: (row) => row.amount,
   },
   {
+    name: 'comment',
+    label: 'Comments',
+    align: 'left',
+    field: (row) => row.comments,
+  },
+  {
     name: 'date',
     label: 'Date',
     align: 'left',
-    field: (row) => moment(row.transactinoDate).format('Do MMMM YYYY'),
+    field: (row) => moment(row.transactionDate).format('Do MMMM YYYY'),
+  },
+  {
+    name: 'action',
+    label: 'Action',
+    align: 'left',
+    field: () => '',
   },
 ];
