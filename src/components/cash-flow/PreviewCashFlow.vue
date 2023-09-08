@@ -62,7 +62,7 @@
             label="Comments"
             type="textarea"
             autogrow
-            v-model="previewCashFlow.sourceUserName"
+            v-model="previewCashFlow.comments"
             outlined
             maxlength="250"
             dense

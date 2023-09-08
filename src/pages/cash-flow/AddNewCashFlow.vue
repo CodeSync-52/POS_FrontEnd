@@ -25,8 +25,8 @@
                   v-model="addNewFlow.source"
                 />
               </div>
+              
               <q-input
-                v-if="addNewFlow.sourceOutstandingBalance"
                 v-model="addNewFlow.sourceOutstandingBalance"
                 disable
                 label="Source Outstanding Balance"
@@ -52,8 +52,8 @@
                   v-model="addNewFlow.target"
                 />
               </div>
+              
               <q-input
-                v-if="addNewFlow.targetOutstandingBalance"
                 v-model="addNewFlow.targetOutstandingBalance"
                 disable
                 label="Target Outstanding Balance"
@@ -67,7 +67,7 @@
                 :min="0"
                 type="number"
                 label="Amount"
-                :max="99999999"
+                :max="9999999999"
                 dense
                 outlined
                 v-model="addNewFlow.amount"
@@ -147,12 +147,13 @@ const userList = ref<IUserResponse[]>([]);
 const handleAddNewFlow = async () => {
   if (isAdding.value) return;
   isAdding.value = true;
-  const { source, target, amount } = addNewFlow.value;
+  const { source, target, amount, comment } = addNewFlow.value;
   try {
     const res = await addCashFlowApi({
       sourceUserId: source?.userId ?? -1,
       amount: amount,
       targetUserId: target?.userId ?? -1,
+      comments: comment
     });
     if (res.type === 'Success') {
       $q.notify({

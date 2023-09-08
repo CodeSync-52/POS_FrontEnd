@@ -41,7 +41,7 @@ export const cashFlowColumn: QTableColumn<ICashFlowRecords>[] = [
     field: (row) => row.amount,
   },
   {
-    name: 'comment',
+    name: 'comments',
     label: 'Comments',
     align: 'left',
     field: (row) => row.comments,

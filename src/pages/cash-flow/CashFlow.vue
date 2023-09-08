@@ -125,6 +125,14 @@
             {{ props.row.targetUserName }}
           </q-td>
         </template>
+        <template v-slot:body-cell-comments="props">
+              <q-td
+                :props="props"
+                class="whitespace-nowrap max-w-[150px] text-ellipsis overflow-hidden"
+              >
+                {{ props.row.comments }}
+              </q-td>
+            </template>
       </q-table>
     </div>
     <q-dialog v-model="isPreviewCashFlowModalVisible">
