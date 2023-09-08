@@ -60,12 +60,13 @@
               v-model="userData.phoneNumber"
               type="tel"
               color="btn-primary"
-              mask="####-#######"
+              mask="+92###-########"
               label="Phone Number"
               lazy-rules
               :rules="[
                 (val) =>
-                  val.length === 12 || 'This entered number is not valid',
+                  (val.length >= 14 && val.length <= 15) ||
+                  'This entered number is not valid',
               ]"
             />
           </div>
@@ -124,7 +125,7 @@
                 outlined
                 :min="0"
                 :max="5000000"
-                v-model="userData.flatDiscount"
+                v-model="userData.discount"
                 fill-mask="0"
                 reverse-fill-mask
                 input-class="text-right"
@@ -165,17 +166,17 @@ import { roleOptions } from 'src/constants';
 import {
   EUserRoles,
   ICustomerListResponse,
-  IUserManagementData,
   IUserPayload,
+  IUserResponse,
 } from 'src/interfaces';
 import { getCustomerGroupList } from 'src/services';
 import { isPosError } from 'src/utils';
 type PropType = {
-  selectedUser?: IUserManagementData;
+  selectedUser: IUserResponse | null;
   action: string;
 };
 onMounted(() => {
-  if (props.selectedUser !== undefined) {
+  if (props.selectedUser) {
     userData.value = props.selectedUser;
   }
   getCustomerListOption();
@@ -183,10 +184,13 @@ onMounted(() => {
 const $q = useQuasar();
 const isLoading = ref(false);
 const customerGroupList = ref<ICustomerListResponse[]>([]);
-const userData = ref<IUserManagementData>({
+const userData = ref<IUserResponse>({
   roleName: EUserRoles.Customer,
-  flatDiscount: 0,
   customerGroupId: null,
+  customerGroup: null,
+  discount: 0,
+  outStandingBalance: 0,
+  userId: -1,
   fullName: '',
   status: '',
   phoneNumber: '',
@@ -200,15 +204,6 @@ const roleDropdownOptions = computed(() =>
       role.value === EUserRoles.SuperAdmin
   )
 );
-
-function removeStatusFromPayload(
-  param: IUserManagementData & { status?: string }
-): IUserPayload {
-  const data = { ...param };
-  delete data.status;
-  return data;
-}
-
 const isButtonDisabled = computed(() => {
   const {
     fullName,
@@ -216,7 +211,7 @@ const isButtonDisabled = computed(() => {
     roleName,
     userName,
     customerGroupId,
-    flatDiscount,
+    discount,
   } = userData.value;
   const validations = ref<boolean[]>([]);
   if (
@@ -224,19 +219,26 @@ const isButtonDisabled = computed(() => {
     roleName === EUserRoles.SuperAdmin ||
     roleName === EUserRoles.OfficeManager
   ) {
-    validations.value = [!fullName, phoneNumber.length !== 12];
+    validations.value = [
+      !fullName,
+      !(phoneNumber.length >= 14 && phoneNumber.length <= 15),
+    ];
   } else if (
     roleName === EUserRoles.ShopManager ||
     roleName === EUserRoles.ShopOfficer
   ) {
-    const shopValidation = [!fullName, phoneNumber.length !== 12, !userName];
-    validations.value = shopValidation;
-  } else if (roleName === EUserRoles.Customer) {
-    const customerValidation = [
-      flatDiscount < 0,
-      flatDiscount > 5000000,
+    const shopValidation = [
       !fullName,
-      phoneNumber.length !== 12,
+      !(phoneNumber.length >= 14 && phoneNumber.length <= 15),
+      !userName,
+    ];
+    validations.value = shopValidation;
+  } else if (roleName === EUserRoles.Customer && discount) {
+    const customerValidation = [
+      discount < 0,
+      discount > 5000000,
+      !fullName,
+      !(phoneNumber.length >= 14 && phoneNumber.length <= 15),
       !userName,
       !customerGroupId,
     ];
@@ -244,23 +246,43 @@ const isButtonDisabled = computed(() => {
   }
   return validations.value.some((validation) => validation);
 });
+
 const emit = defineEmits<{
   (event: 'user-add', data: IUserPayload): void;
   (event: 'user-edit', data: IUserPayload): void;
 }>();
 const props = defineProps<PropType>();
 const handleEditUser = () => {
-  const payload = removeStatusFromPayload(userData.value);
-  emit('user-edit', payload);
+  emit('user-edit', userData.value);
 };
 function handleAddNewUser() {
+  delete userData.value.outStandingBalance;
+  delete userData.value.customerGroup;
+  delete userData.value.userId;
+  delete userData.value.status;
   if (userData.value.roleName !== EUserRoles.Customer) {
     delete userData.value.customerGroupId;
-    delete userData.value.flatDiscount;
-    delete userData.value.customerGroupId;
+    delete userData.value.discount;
   }
-  const payload = removeStatusFromPayload(userData.value);
-  emit('user-add', payload);
+  if (userData.value.phoneNumber) {
+    if (userData.value.phoneNumber.charAt(3) === '0') {
+      const userPhoneNumber = userData.value.phoneNumber;
+      userData.value.phoneNumber =
+        userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
+      userData.value.phoneNumber =
+        userData.value.phoneNumber.substring(0, 3) +
+        userData.value.phoneNumber.substring(4);
+    } else if (
+      userData.value.phoneNumber.charAt(3) !== '0' &&
+      (userData.value.phoneNumber.length === 14 ||
+        userData.value.phoneNumber.length === 15)
+    ) {
+      const userPhoneNumber = userData.value.phoneNumber;
+      userData.value.phoneNumber =
+        userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
+    }
+  }
+  emit('user-add', userData.value);
 }
 async function getCustomerListOption() {
   if (isLoading.value) return;

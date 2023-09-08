@@ -254,7 +254,7 @@
     </div>
     <q-dialog
       v-model="showAddNewAdminRolePopup"
-      @update:model-value="selectedUser = undefined"
+      @update:model-value="selectedUser = null"
     >
       <add-user-modal
         :action="action"
@@ -296,7 +296,6 @@ import {
   IGenericResponse,
   getRoleModuleDisplayName,
   IUserResponse,
-  IUserManagementData,
   EUserRoles,
   ICustomerListResponse,
   IUserFilterList,
@@ -331,7 +330,7 @@ const UserRows = ref<IUserResponse[]>([]);
 const action = ref<string>('');
 const apiController = ref<AbortController | null>(null);
 const isCustomerGroupListLoading = ref(false);
-const selectedUser = ref<IUserManagementData | undefined>();
+const selectedUser = ref<IUserResponse | null>(null);
 const defaultPagination = {
   sortBy: 'desc',
   descending: false,
@@ -355,18 +354,19 @@ const roleDropdownOptions = computed(() =>
       role.value === EUserRoles.SuperAdmin
   )
 );
-
 onMounted(() => {
   getUserList();
   getCustomerListOption();
 });
 const handleChangeStatusPopup = (selectedRow: IUserResponse) => {
-  selectedRowData.value.customerId = selectedRow.userId;
-  selectedRowData.value.status = selectedRow.status;
+  if (selectedRow.userId && selectedRow.status) {
+    selectedRowData.value.customerId = selectedRow.userId;
+    selectedRowData.value.status = selectedRow.status;
+  }
   action.value = 'Change Status';
   isChangeStatusModalVisible.value = true;
 };
-const onEditButtonClick = (row: IUserManagementData) => {
+const onEditButtonClick = (row: IUserResponse) => {
   action.value = 'Edit User';
   selectedUser.value = {
     ...row,
@@ -376,6 +376,7 @@ const onEditButtonClick = (row: IUserManagementData) => {
 };
 const handleAddNewUser = () => {
   action.value = 'Add New User';
+  selectedUser.value = null;
   showAddUserModal(true);
 };
 const handleChangeStatus = (id: number, updatedStatus: string) => {
@@ -403,19 +404,24 @@ const resetFilter = () => {
   getUserList();
 };
 const handleResetPasswordPopup = (selectedRow: IUserResponse) => {
-  selectedRowData.value.customerId = selectedRow.userId;
+  if (selectedRow.userId) {
+    selectedRowData.value.customerId = selectedRow.userId;
+  }
   isResetPasswordModalVisible.value = true;
 };
 const editUserInfo = async (userData: IUserPayload) => {
   const { userId, fullName, phoneNumber } = userData;
-  let data: Partial<IUserManagementData> = { userId, fullName, phoneNumber };
+  let data: Partial<IUserResponse> = { userId, fullName, phoneNumber };
   try {
     if (userData.roleName === EUserRoles.Customer) {
-      const { customerGroupId, flatDiscount } = userData;
+      const { customerGroupId, discount } = userData;
       data.customerGroupId = customerGroupId;
-      data.flatDiscount = flatDiscount;
+      data.discount = Number(discount);
     }
-    const res = await updateUser(data);
+    const res = await updateUser({
+      ...data,
+      flatDiscount: data.discount,
+    });
     if (res.type === 'Success') {
       filterSearch.value = defaultFilterValues;
       pagination.value = defaultPagination;
@@ -520,7 +526,10 @@ async function handleUserAdd(userData: IUserPayload) {
     const res: IGenericResponse = await makeApiCall({
       url: 'api/User/create',
       method: 'POST',
-      data: userData,
+      data: {
+        ...userData,
+        flatDiscount: userData.discount,
+      },
     });
 
     if (res.type === 'Success') {
