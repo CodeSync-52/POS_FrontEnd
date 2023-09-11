@@ -140,7 +140,11 @@
                 @click="
                   router.push(`/bill-generation/${props.row.billId}/edit-bill`)
                 "
-              />
+              >
+                <q-tooltip class="bg-black" :offset="[10, 10]">
+                  Edit Bill
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 size="sm"
                 flat
@@ -151,7 +155,10 @@
                 @click="
                   router.push(`/bill-generation/${props.row.billId}/preview`)
                 "
-              />
+                ><q-tooltip class="bg-green" :offset="[10, 10]">
+                  Preview Bill
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -172,7 +179,11 @@
                 color="green"
                 icon="check"
                 @click="handleGenerateBillPopup(props.row)"
-              />
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Generate Bill
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -193,7 +204,10 @@
                 color="red"
                 icon="cancel"
                 @click="handleCancelBillPopup(props.row)"
-              />
+                ><q-tooltip class="bg-red" :offset="[10, 10]">
+                  Cancel Bill
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>

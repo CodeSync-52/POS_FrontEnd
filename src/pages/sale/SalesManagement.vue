@@ -146,7 +146,10 @@
                   unelevated
                   icon="edit"
                   class="hover:text-btn-primary"
-                />
+                  ><q-tooltip class="bg-black" :offset="[10, 10]">
+                    Edit Sale
+                  </q-tooltip></q-btn
+                >
               </router-link>
               <router-link :to="`/sale/${props.row.wholeSaleId}/preview`">
                 <q-btn
@@ -156,7 +159,11 @@
                   unelevated
                   icon="visibility"
                   color="green"
-                />
+                >
+                  <q-tooltip class="bg-green" :offset="[10, 10]">
+                    Preview Sale
+                  </q-tooltip>
+                </q-btn>
               </router-link>
               <q-btn
                 v-if="
@@ -174,7 +181,11 @@
                 icon="check"
                 color="green"
                 @click="handleGenerateSalePopup(props.row)"
-              />
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Generate Sale
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -191,7 +202,10 @@
                 icon="cancel"
                 color="red"
                 @click="handleCancelSalePopup(props.row)"
-              />
+                ><q-tooltip class="bg-red" :offset="[10, 10]">
+                  Cancel Sale
+                </q-tooltip></q-btn
+              >
             </div>
           </q-td>
         </template>

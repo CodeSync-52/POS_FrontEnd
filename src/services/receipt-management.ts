@@ -53,7 +53,10 @@ export const createNewReceipt = async ({ data }: { data: IAddNewReceipt }) => {
   return makeApiCall<IGenericResponse<null>>({
     url: 'api/Purchase/add',
     method: 'POST',
-    data,
+    data: {
+      userId: data.userId,
+      productList: [...data.productList],
+    },
   });
 };
 

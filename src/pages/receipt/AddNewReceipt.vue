@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div>
     <div
       class="text-lg text-center md:text-left font-medium mb-4 row justify-between items-center"
     >
@@ -79,6 +79,7 @@
           align="left"
           :columns="selectedArticleColumn"
           row-key="name"
+          hide-pagination
         >
           <template v-slot:body-cell-image="props">
             <q-td :props="props">
@@ -154,6 +155,10 @@
                     isReceiptPreview
                   "
                   v-model="props.row.quantity"
+                  @update:model-value="
+                    typeof $event === 'string' &&
+                      (props.row.quantity = parseFloat($event))
+                  "
                   type="number"
                   filled
                   :min="1"
@@ -177,9 +182,16 @@
               <span class="text-md font-medium"> No data available. </span>
             </div>
           </template>
-          <template v-slot:bottom="props">
-            <q-td></q-td>
-            <q-td :props="props"> </q-td>
+          <template v-slot:bottom-row="props">
+            <q-tr :props="props">
+              <q-td colspan="3" />
+              <q-td>
+                <div>
+                  Total:
+                  {{ addNewReceiptTotalQuantity }}
+                </div>
+              </q-td>
+            </q-tr>
           </template>
         </q-table>
       </q-card-section>
@@ -264,11 +276,12 @@ import {
   IUserResponse,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
-import { ITableHeaders, downloadPdf, isPosError } from 'src/utils';
+import { ITableHeaders, ITableItems, downloadPdf, isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
 import { selectedArticleColumn } from 'src/utils';
 import { useAuthStore } from 'src/stores';
+import moment from 'moment';
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
@@ -287,6 +300,15 @@ const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   getArticleList();
 };
+const addNewReceiptTotalQuantity = computed(() => {
+  const row = selectedArticleData.value;
+  return row.reduce((total: number, row: ISelectedArticleData) => {
+    if (row.quantity) {
+      return total + row.quantity;
+    }
+    return total;
+  }, 0);
+});
 const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
@@ -394,6 +416,9 @@ const addNewReceipt = ref<IAddNewReceipt>({
   userOutstandingBalance: 0,
   userDiscount: 0,
   productList: [],
+  createdDate: '',
+  createdBy: '',
+  userName: '',
 });
 watch(addNewReceipt.value, (newVal: IAddNewReceipt) => {
   const selectedUser = UserList.value.find(
@@ -401,8 +426,8 @@ watch(addNewReceipt.value, (newVal: IAddNewReceipt) => {
   );
   if (selectedUser) {
     addNewReceipt.value.userOutstandingBalance =
-      selectedUser.outStandingBalance;
-    addNewReceipt.value.userDiscount = selectedUser.discount;
+      selectedUser.outStandingBalance ?? 0;
+    addNewReceipt.value.userDiscount = selectedUser.discount ?? 0;
   }
 });
 const $q = useQuasar();
@@ -469,7 +494,6 @@ const saveNewReceipt = async () => {
 };
 const isEdit = ref(false);
 const isFetchingArticleList = ref(false);
-const userName = ref('');
 const articleList = ref<IArticleData[]>([]);
 const handleFilterRows = (filterChanged: boolean) => {
   if (filterChanged) {
@@ -513,14 +537,16 @@ const getArticleList = async (data?: {
   isFetchingArticleList.value = false;
 };
 const selectedId = ref<number | string>(-1);
-const tableItems = ref<string[][]>([]);
+const tableItems = ref<ITableItems[][]>([]);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
   getReceiptData(selectedItemId).then(async (res) => {
     addNewReceipt.value.userId = res.data.userId;
-    userName.value = res.data.fullName;
+    addNewReceipt.value.createdBy = res.data.createdBy ?? '';
+    addNewReceipt.value.userName = res.data.fullName;
     addNewReceipt.value.userOutstandingBalance = res.data.outStandingBalance;
+    addNewReceipt.value.createdDate = res.data.createdDate;
     selectedArticleData.value = res.data.purchaseDetails;
-    tableItems.value = await convertArray(res.data.purchaseDetails);
+    tableItems.value = await convertArrayToPdfData(res.data.purchaseDetails);
   });
 };
 onMounted(() => {
@@ -574,6 +600,7 @@ async function saveUpdatedData(row: ISelectedArticleData) {
         message: 'Updated Row successfuly',
         type: 'positive',
       });
+      tableItems.value = await convertArrayToPdfData(selectedArticleData.value);
     }
   } catch (e) {
     let message = 'There was an error updating row';
@@ -609,7 +636,7 @@ const convertToBase64 = (file: File): Promise<string> => {
   });
 };
 const defaultImage = ref<string | null>(null);
-async function convertArray(array: ISelectedArticleData[]) {
+async function convertArrayToPdfData(array: ISelectedArticleData[]) {
   if (!defaultImage.value) {
     defaultImage.value = await fetch('/assets/default-image.png')
       .then((res) => res.blob())
@@ -621,6 +648,16 @@ async function convertArray(array: ISelectedArticleData[]) {
   const tableStuff = [];
   const headerRow = ['Id', 'Article Image', 'Article Name', 'Quantity'];
   tableStuff.push(headerRow);
+  const netQuantity = array.reduce(
+    (total: number, row: ISelectedArticleData) => {
+      if (row.quantity) {
+        return total + row.quantity;
+      }
+      return total;
+    },
+    0
+  );
+  const footerRow = ['', '', '', { text: `Total: ${netQuantity}`, margin: 5 }];
   array.forEach((item: ISelectedArticleData) => {
     const row = [
       { text: item.productId, margin: 5 },
@@ -636,6 +673,7 @@ async function convertArray(array: ISelectedArticleData[]) {
     ];
     tableStuff.push(row);
   });
+  tableStuff.push(footerRow);
 
   return tableStuff;
 }
@@ -643,18 +681,30 @@ function downloadPdfData() {
   const headers: ITableHeaders[] = [
     {
       heading: 'User Name',
-      content: userName.value,
+      content: addNewReceipt.value.userName,
     },
     {
       heading: 'Outstanding Balance',
       content: addNewReceipt.value.userOutstandingBalance,
+    },
+    {
+      heading: 'Date',
+      content: moment(addNewReceipt.value.createdDate).format('LLL'),
+    },
+    {
+      heading: 'Created By',
+      content: addNewReceipt.value.createdBy,
+    },
+    {
+      heading: 'Discount',
+      content: addNewReceipt.value.userDiscount,
     },
   ];
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
   downloadPdf({
     filename: myFileName,
-    tableData: tableItems.value,
+    tableData: JSON.parse(JSON.stringify(tableItems.value)),
     tableHeaders: headers,
     title: fileTitle,
   });

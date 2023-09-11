@@ -452,9 +452,10 @@ watch(addNewSale.value, (newVal: IAddNewSale) => {
     (row) => newVal.userId === row.userId
   );
   if (selectedUser) {
-    addNewSale.value.userOutstandingBalance = selectedUser.outStandingBalance;
-    addNewSale.value.userDiscount = selectedUser.discount;
-    selectedSaleRecord.value.discount = selectedUser.discount;
+    addNewSale.value.userOutstandingBalance =
+      selectedUser.outStandingBalance ?? 0;
+    addNewSale.value.userDiscount = selectedUser.discount ?? 0;
+    selectedSaleRecord.value.discount = selectedUser.discount ?? 0;
   }
 });
 onMounted(() => {
@@ -737,7 +738,9 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
           res.data.updatedDate
         ).format('DD/MM/YYYY');
         selectedArticleData.value = res.data.wholeSaleDetails;
-        tableItems.value = await convertArray(res.data.wholeSaleDetails);
+        tableItems.value = await convertArrayToPdfData(
+          res.data.wholeSaleDetails
+        );
       }
     }
   } catch (e) {
@@ -786,6 +789,9 @@ async function saveUpdatedData(row: IWholeSaleDetailsData) {
       message,
     });
     getSelectedWholesaleDetail(selectedId.value);
+    if (selectedArticleData.value) {
+      tableItems.value = await convertArrayToPdfData(selectedArticleData.value);
+    }
   }
 }
 const convertToBase64 = (file: File): Promise<string> => {
@@ -810,7 +816,9 @@ const convertToBase64 = (file: File): Promise<string> => {
   });
 };
 const defaultImage = ref<string | null>(null);
-async function convertArray(array: IWholeSaleDetailsData[]) {
+async function convertArrayToPdfData(
+  array: IWholeSaleDetailsData[] | ISelectedWholeSaleArticleData[]
+) {
   if (!defaultImage.value) {
     defaultImage.value = await fetch('/assets/default-image.png')
       .then((res) => res.blob())
@@ -823,9 +831,15 @@ async function convertArray(array: IWholeSaleDetailsData[]) {
   const tableStuff = [];
   const headerRow = ['Id', 'Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
   tableStuff.push(headerRow);
-  const totalAmount = array.reduce((total, row: IWholeSaleDetailsData) => {
-    return total + row.totalAmount;
-  }, 0);
+  const totalAmount = array.reduce(
+    (total, row: IWholeSaleDetailsData | ISelectedWholeSaleArticleData) => {
+      if (row.totalAmount) {
+        return total + row.totalAmount ?? 0;
+      }
+      return total;
+    },
+    0
+  );
   const footerRow = [
     {
       text: 'Total',
@@ -872,23 +886,29 @@ async function convertArray(array: IWholeSaleDetailsData[]) {
       margin: 5,
     },
   ];
-  array.forEach((item: IWholeSaleDetailsData) => {
-    const row = [
-      { text: item.productId, margin: 5 },
-      {
-        image:
-          'data:image/png;base64,' + (item.productImage || defaultImage.value),
-        width: 25,
-        height: 25,
-        margin: 2,
-      },
-      { text: item.productName, bold: true, margin: 5 },
-      { text: item.quantity, margin: 5 },
-      { text: item.unitWholeSalePrice, margin: 5 },
-      { text: item.unitWholeSalePrice * item.quantity, margin: 5 },
-    ];
-    tableStuff.push(row);
-  });
+  array.forEach(
+    (item: IWholeSaleDetailsData | ISelectedWholeSaleArticleData) => {
+      const row = [
+        { text: item.productId, margin: 5 },
+        {
+          image:
+            'data:image/png;base64,' +
+            (item.productImage || defaultImage.value),
+          width: 25,
+          height: 25,
+          margin: 2,
+        },
+        { text: item.productName, bold: true, margin: 5 },
+        { text: item.quantity, margin: 5 },
+        { text: item.unitWholeSalePrice, margin: 5 },
+        {
+          text: item.unitWholeSalePrice ?? 0 * (item.quantity ?? 0),
+          margin: 5,
+        },
+      ];
+      tableStuff.push(row);
+    }
+  );
   tableStuff.push(footerRow);
   tableStuff.push(discountRow);
   tableStuff.push(netTotalRow);
@@ -906,9 +926,7 @@ function downloadPdfData() {
     },
     {
       heading: 'Date',
-      content: moment(selectedSaleRecord?.value?.createdDate).format(
-        'MMMM Do YYYY'
-      ),
+      content: moment(selectedSaleRecord?.value?.createdDate).format('LLL'),
     },
     {
       heading: 'Created By',
@@ -923,7 +941,7 @@ function downloadPdfData() {
   const myFileName = 'Sale.pdf';
   downloadPdf({
     filename: myFileName,
-    tableData: tableItems.value,
+    tableData: JSON.parse(JSON.stringify(tableItems.value)),
     tableHeaders: headers,
     title: fileTitle,
   });

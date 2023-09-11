@@ -30,7 +30,10 @@
                   class="hover:text-btn-primary"
                   dense
                   @click="showEditPopup(true, props.row.role)"
-                />
+                  ><q-tooltip class="bg-black" :offset="[10, 10]">
+                    Edit Permissions
+                  </q-tooltip>
+                </q-btn>
                 <q-btn
                   icon="visibility"
                   size="sm"
@@ -39,7 +42,10 @@
                   color="green"
                   dense
                   @click="showEditPopup(false, props.row.role)"
-                />
+                  ><q-tooltip class="bg-green" :offset="[10, 10]">
+                    Preview Permissions
+                  </q-tooltip>
+                </q-btn>
               </div>
             </q-td>
           </template>

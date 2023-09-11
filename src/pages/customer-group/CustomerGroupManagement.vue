@@ -65,7 +65,11 @@
                 class="hover:text-btn-primary"
                 :label="props.row.status"
                 @click="handleEditStatusPopup(props.row)"
-              />
+              >
+                <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                  Edit Status
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>
@@ -92,7 +96,10 @@
                 icon="edit"
                 class="hover:text-btn-primary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
-              />
+                ><q-tooltip class="bg-black" :offset="[10, 10]">
+                  Edit Customer Group
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>

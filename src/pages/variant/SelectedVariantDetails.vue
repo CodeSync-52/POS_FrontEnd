@@ -86,7 +86,10 @@
                 icon="edit"
                 class="hover:text-btn-primary"
                 @click="editVariant(props.row)"
-              />
+                ><q-tooltip class="bg-black" :offset="[10, 10]">
+                  Edit Variant
+                </q-tooltip></q-btn
+              >
             </div>
           </q-td>
         </template>
@@ -110,7 +113,10 @@
               :label="props.row.status"
               @click="handleUpdateStatusPopup(props.row)"
               class="hover:text-btn-primary"
-            />
+              ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                Edit Status
+              </q-tooltip></q-btn
+            >
           </q-td>
         </template>
         <template v-slot:no-data>

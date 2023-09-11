@@ -155,7 +155,11 @@
                 @click="router.push(`/receipt/${props.row.purchaseId}`)"
                 icon="edit"
                 class="hover:text-btn-primary"
-              />
+              >
+                <q-tooltip class="bg-black" :offset="[10, 10]">
+                  Edit Receipt
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 size="sm"
                 flat
@@ -164,7 +168,10 @@
                 icon="visibility"
                 color="green"
                 @click="router.push(`/receipt/${props.row.purchaseId}/preview`)"
-              />
+                ><q-tooltip class="bg-green" :offset="[10, 10]">
+                  Preview Receipt
+                </q-tooltip></q-btn
+              >
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -185,7 +192,10 @@
                 "
                 icon="receipt"
                 color="bg-btn-secondary"
-              />
+                ><q-tooltip class="bg-black" :offset="[10, 10]">
+                  Generate Bill
+                </q-tooltip></q-btn
+              >
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -202,7 +212,10 @@
                 icon="cancel"
                 color="red"
                 @click="handleCancelReceiptPopup(props.row)"
-              />
+                ><q-tooltip class="bg-red" :offset="[10, 10]">
+                  Cancel Receipt
+                </q-tooltip></q-btn
+              >
             </div>
           </q-td>
         </template>
