@@ -253,6 +253,24 @@ const emit = defineEmits<{
 }>();
 const props = defineProps<PropType>();
 const handleEditUser = () => {
+  if (userData.value.phoneNumber) {
+    if (userData.value.phoneNumber.charAt(3) === '0') {
+      const userPhoneNumber = userData.value.phoneNumber;
+      userData.value.phoneNumber =
+        userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
+      userData.value.phoneNumber =
+        userData.value.phoneNumber.substring(0, 3) +
+        userData.value.phoneNumber.substring(4);
+    } else if (
+      userData.value.phoneNumber.charAt(3) !== '0' &&
+      (userData.value.phoneNumber.length === 14 ||
+        userData.value.phoneNumber.length === 15)
+    ) {
+      const userPhoneNumber = userData.value.phoneNumber;
+      userData.value.phoneNumber =
+        userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
+    }
+  }
   emit('user-edit', userData.value);
 };
 function handleAddNewUser() {
