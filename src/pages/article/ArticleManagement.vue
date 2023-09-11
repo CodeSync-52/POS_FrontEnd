@@ -92,7 +92,10 @@
               unelevated
               :label="props.row.status"
               @click="handleEditStatusPopup(props.row)"
-            />
+              ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                Edit Status
+              </q-tooltip></q-btn
+            >
           </q-td>
         </template>
         <template v-slot:body-cell-mstock="props">
@@ -169,7 +172,11 @@
                 dense
                 icon="edit"
                 class="!px-[5px] hover:text-btn-primary"
-              />
+              >
+                <q-tooltip class="bg-black" :offset="[10, 10]">
+                  Edit Article
+                </q-tooltip></q-btn
+              >
             </router-link>
           </q-td>
         </template>

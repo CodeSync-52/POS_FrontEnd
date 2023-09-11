@@ -91,7 +91,10 @@
               class="hover:text-btn-primary"
               :label="props.row.status"
               @click="handleShowEditStatusPopup(props.row)"
-            />
+              ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                Edit Status
+              </q-tooltip></q-btn
+            >
           </q-td>
         </template>
         <template
@@ -143,7 +146,10 @@
                 icon="edit"
                 class="hover:text-btn-primary !px-[5px]"
                 @click="onEditButtonClick(props.row)"
-              />
+                ><q-tooltip class="bg-black" :offset="[10, 10]">
+                  Edit Category
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>

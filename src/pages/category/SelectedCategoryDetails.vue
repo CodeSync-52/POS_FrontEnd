@@ -69,7 +69,10 @@
                 icon="edit"
                 class="hover:text-btn-primary"
                 @click="editCategory(props.row)"
-              />
+                ><q-tooltip class="bg-black" :offset="[10, 10]">
+                  Edit Category Details
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>
@@ -98,7 +101,10 @@
               size="sm"
               class="hover:text-btn-primary"
               @click="handleStatusModalPopup(props.row)"
-            />
+              ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                Edit Status
+              </q-tooltip></q-btn
+            >
           </q-td>
         </template>
         <template
