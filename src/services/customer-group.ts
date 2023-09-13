@@ -36,17 +36,15 @@ export const addNewCustomerGroup = async (newCustomer: string) => {
 };
 export const updateCustomerGroup = async ({
   customerId,
-  status,
   newName,
 }: {
   customerId: number;
-  status: string;
   newName: string;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: `api/CustomerGroup/update?customerGroupId=${customerId}`,
-    data: { name: newName, status: status },
+    data: { name: newName },
   });
   return res;
 };

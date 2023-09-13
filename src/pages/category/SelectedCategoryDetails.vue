@@ -324,6 +324,12 @@ const updateOrAddCategory = async (
   try {
     let res;
     if (categoryId != -1 && isCategoryDetailsModalVisible) {
+      if (name === selectedRowData.value?.name) {
+        callback();
+        isCategoryDetailsModalVisible.value = false;
+        isLoading.value = false;
+        return;
+      }
       res = await updateCategory({
         categoryId,
         name,

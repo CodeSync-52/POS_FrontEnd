@@ -195,12 +195,16 @@ const updateOrAddCustomer = async (
   action: string,
   callback: () => void
 ) => {
+  if (action !== 'add' && selectedRowData.value?.name === newName) {
+    isAddCustomerModalVisible.value = false;
+    callback();
+    return;
+  }
   try {
     const customerId = selectedRowData.value?.customerGroupId ?? -1;
-    const status = selectedRowData.value?.status ?? '';
     const res = await (action === 'add'
       ? addNewCustomerGroup(newName)
-      : updateCustomerGroup({ newName, customerId, status }));
+      : updateCustomerGroup({ newName, customerId }));
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -220,8 +224,8 @@ const updateOrAddCustomer = async (
   }
   selectedRowData.value = null;
   isAddCustomerModalVisible.value = false;
-  fetchingCustomerGroupList();
   callback();
+  fetchingCustomerGroupList();
 };
 const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   try {

@@ -157,7 +157,7 @@
                   v-model="props.row.quantity"
                   @update:model-value="
                     typeof $event === 'string' &&
-                      (props.row.quantity = parseFloat($event))
+                      (props.row.quantity = parseInt($event))
                   "
                   type="number"
                   filled
@@ -551,7 +551,6 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
 };
 onMounted(() => {
   getUserList();
-  getArticleList();
   const selectedItemId = route.params?.id;
   if (selectedItemId && typeof selectedItemId === 'string') {
     if (router.currentRoute.value.path.includes('preview')) {
@@ -560,12 +559,14 @@ onMounted(() => {
     } else {
       isReceiptPreview.value = false;
       isEdit.value = true;
+      getArticleList();
     }
     selectedId.value = selectedItemId;
     getReceiptDataFromApi(selectedItemId);
   } else {
     isReceiptPreview.value = false;
     isEdit.value = false;
+    getArticleList();
   }
 });
 const articleListComputed = computed(() => {
