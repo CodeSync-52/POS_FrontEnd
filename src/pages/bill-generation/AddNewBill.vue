@@ -52,7 +52,7 @@
                   :class="billAction === 'Generate Receipt' && 'cursor-pointer'"
                   >{{ props.row.amount }}</span
                 >
-                <div class="updateArticleAmount">
+                <div class="updateArticleAmount ml-5">
                   <q-btn
                     v-if="billAction === 'Generate Receipt'"
                     icon="edit"
@@ -206,7 +206,7 @@
                   :class="billAction === 'Update bill' && 'cursor-pointer'"
                   >{{ props.row.amount }}</span
                 >
-                <div class="updateArticleAmount">
+                <div class="updateArticleAmount ml-5">
                   <q-btn
                     v-if="billAction === 'Update bill'"
                     icon="edit"

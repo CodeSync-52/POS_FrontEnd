@@ -7,5 +7,5 @@ export interface ICashFlowRecords {
   transactionDate: string;
   createdBy: null;
   amount: number;
-  comments: string;
+  comments?: string;
 }
