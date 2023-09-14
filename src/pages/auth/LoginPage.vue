@@ -91,7 +91,19 @@ const handleLogin = async () => {
   if (isFetching.value) return;
   isFetching.value = true;
   try {
-    await authStore.loginUser(loginCredentials.value);
+    let res = await authStore.loginUser(loginCredentials.value);
+    if (
+      res.data.rolePermissions.permissionModuleActions.every(
+        (obj) => obj.actionIds.length === 0
+      )
+    ) {
+      const message = 'You Do not have permission to login';
+      $q.notify({
+        message,
+        icon: 'error',
+        color: 'red',
+      });
+    }
   } catch (e) {
     let message = 'Unexpected Error Fetching Api';
     if (isPosError(e)) {

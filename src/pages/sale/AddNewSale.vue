@@ -99,14 +99,16 @@
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-select
-                :options="UserList"
+                :options="options"
                 :loading="isLoading"
+                use-input
                 dense
                 map-options
                 outlined
+                @filter="filterFn"
                 v-model="selectedSaleRecord.userId"
                 @update:model-value="addNewSale.userId = $event.userId"
-                label="User Name"
+                label="Select User"
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
@@ -429,6 +431,7 @@ const isLoading = ref(false);
 const $q = useQuasar();
 const UserList = ref<IUserResponse[]>([]);
 const isFetchingArticleList = ref(false);
+const options = ref<IUserResponse[]>([]);
 const isFilterChanged = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticleData = ref<ISelectedWholeSaleArticleData[]>([]);
@@ -665,6 +668,7 @@ const getUserList = async () => {
     });
     if (res?.data) {
       UserList.value = res.data.items;
+      options.value = res.data.items;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -949,4 +953,12 @@ function downloadPdfData() {
     title: fileTitle,
   });
 }
+const filterFn = (val: string, update: any) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = UserList.value.filter((v) =>
+      v.fullName.toLowerCase().includes(needle)
+    );
+  });
+};
 </script>

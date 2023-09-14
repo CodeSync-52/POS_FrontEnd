@@ -196,7 +196,7 @@
             :props="props"
             class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
           >
-            {{ props.row.customerGroup ?? 'Null' }}
+            {{ props.row.customerGroup ?? '-' }}
           </q-td>
         </template>
         <template
@@ -212,7 +212,10 @@
           "
           v-slot:body-cell-reset="props"
         >
-          <q-td :props="props">
+          <q-td
+            v-if="authStore.loggedInUser?.rolePermissions.roleName"
+            :props="props"
+          >
             <q-btn
               flat
               unelevated
@@ -317,6 +320,7 @@ import {
 } from 'src/services';
 const $q = useQuasar();
 const authStore = useAuthStore();
+console.log(authStore.loggedInUser?.rolePermissions.roleName);
 const customerGroupList = ref<ICustomerListResponse[]>([]);
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);

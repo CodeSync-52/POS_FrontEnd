@@ -35,7 +35,7 @@
               disable
               v-model="billGenerationData.fullName"
               dense
-              label="User Name"
+              label="Select User"
               outlined
             />
           </div>
