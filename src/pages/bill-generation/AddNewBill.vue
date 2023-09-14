@@ -47,7 +47,7 @@
             :columns="editBillGenerationRecordsColumn"
           >
             <template v-slot:body-cell-amount="props">
-              <q-td :props="props" class="flex items-center">
+              <q-td :props="props" class="flex items-center !h-[70px]">
                 <span
                   :class="billAction === 'Generate Receipt' && 'cursor-pointer'"
                   >{{ props.row.amount }}</span
@@ -86,7 +86,7 @@
             <template v-slot:body-cell-image="props">
               <q-td :props="props">
                 <div
-                  class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                  class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
                   :class="props.row.image ? 'cursor-pointer' : ''"
                   @click="handleShowImagePreview(props.row.image)"
                 >
@@ -201,7 +201,7 @@
             :columns="BillGenerationDetailsInfoColumn"
           >
             <template v-slot:body-cell-amount="props">
-              <q-td :props="props" class="flex items-center">
+              <q-td :props="props" class="flex items-center !h-[70px]">
                 <span
                   :class="billAction === 'Update bill' && 'cursor-pointer'"
                   >{{ props.row.amount }}</span
@@ -243,7 +243,7 @@
             <template v-slot:body-cell-image="props">
               <q-td :props="props">
                 <div
-                  class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                  class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
                   @click="handleShowImagePreview(props.row.image)"
                   :class="props.row.image ? 'cursor-pointer' : ''"
                 >

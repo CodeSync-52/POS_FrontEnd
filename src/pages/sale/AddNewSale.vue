@@ -160,7 +160,7 @@
             <q-td :props="props">
               <div
                 @click="handlePreviewImage(props.row.productImage)"
-                class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                class="w-[50px] h-[50px] min-w-[2rem] overflow-hidden rounded-full"
                 :class="props.row.productImage ? 'cursor-pointer' : ''"
               >
                 <img
@@ -896,21 +896,21 @@ async function convertArrayToPdfData(
   array.forEach(
     (item: IWholeSaleDetailsData | ISelectedWholeSaleArticleData) => {
       const row = [
-        { text: item.productId, margin: 5 },
+        { text: item.productId, margin: [0, 20] },
         {
           image:
             'data:image/png;base64,' +
             (item.productImage || defaultImage.value),
-          width: 25,
-          height: 25,
+          width: 50,
+          height: 50,
           margin: 2,
         },
-        { text: item.productName, bold: true, margin: 5 },
-        { text: item.quantity, margin: 5 },
-        { text: item.unitWholeSalePrice, margin: 5 },
+        { text: item.productName, bold: true, margin: [0, 20] },
+        { text: item.quantity, margin: [0, 20] },
+        { text: item.unitWholeSalePrice, margin: [0, 20] },
         {
           text: item.unitWholeSalePrice ?? 0 * (item.quantity ?? 0),
-          margin: 5,
+          margin: [0, 20],
         },
       ];
       tableStuff.push(row);
@@ -923,6 +923,14 @@ async function convertArrayToPdfData(
 }
 function downloadPdfData() {
   const headers: ITableHeaders[] = [
+    {
+      heading: 'Sale Id',
+      content: Number(router.currentRoute.value.params.id),
+    },
+    {
+      heading: 'Sale Status',
+      content: selectedSaleRecord.value.wholeSaleStatus,
+    },
     {
       heading: 'User Name',
       content: selectedSaleRecord.value.fullName,
