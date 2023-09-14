@@ -272,8 +272,11 @@
                   "
                   v-model="props.row.quantity"
                   @update:model-value="
-                    props.row.quantity =
-                      typeof $event === 'string' ? parseFloat($event) : $event
+                    props.row.quantity = $event
+                      ? typeof $event === 'string'
+                        ? parseInt($event)
+                        : $event
+                      : 0
                   "
                   type="number"
                   filled

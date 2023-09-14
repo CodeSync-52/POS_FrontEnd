@@ -288,6 +288,15 @@ const updateOrAddVariant = async (
   action: string,
   callback: () => void
 ) => {
+  if (
+    action === 'Edit' &&
+    selectedRowData.value?.name === name &&
+    selectedRowData.value?.displayName === displayName
+  ) {
+    isVariantDetailsModalVisible.value = false;
+    callback();
+    return;
+  }
   if (isLoading.value) return;
   isLoading.value = true;
   try {

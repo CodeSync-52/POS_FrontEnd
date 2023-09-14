@@ -65,15 +65,15 @@
               <span class="text-base font-medium">Amount</span>
               <q-input
                 :min="0"
-                type="number"
+                type="tel"
                 label="Amount"
-                :max="9999999999"
+                mask="#######"
                 dense
                 outlined
                 v-model="addNewFlow.amount"
                 @update:model-value="
                   typeof $event === 'string' &&
-                    (addNewFlow.amount = parseFloat($event))
+                    (addNewFlow.amount = parseInt($event))
                 "
               />
             </div>
@@ -108,7 +108,7 @@
             !addNewFlow.target ||
             addNewFlow.amount <= 0 ||
             !addNewFlow.amount ||
-            addNewFlow.amount > 99999999
+            addNewFlow.amount > 9999999
           "
           :loading="isAdding"
           @click="handleAddNewFlow"

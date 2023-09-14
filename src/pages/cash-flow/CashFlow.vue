@@ -109,12 +109,12 @@
             />
           </q-td>
         </template>
-        <template v-slot:body-cell-comment="props">
+        <template v-slot:body-cell-comments="props">
           <q-td
             :props="props"
-            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+            class="whitespace-nowrap max-w-[150px] text-ellipsis overflow-hidden"
           >
-            {{ props.row.comment }}
+            {{ props.row.comments || 'N/A' }}
           </q-td>
         </template>
         <template v-slot:body-cell-targetUserName="props">
@@ -123,14 +123,6 @@
             class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
           >
             {{ props.row.targetUserName }}
-          </q-td>
-        </template>
-        <template v-slot:body-cell-comments="props">
-          <q-td
-            :props="props"
-            class="whitespace-nowrap max-w-[150px] text-ellipsis overflow-hidden"
-          >
-            {{ props.row.comments }}
           </q-td>
         </template>
         <template v-slot:no-data>

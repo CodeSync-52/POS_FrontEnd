@@ -13,7 +13,7 @@
           <q-icon
             name="close"
             flat
-            @click="handleChange"
+            @click="handleChange(!modelValue)"
             dense
             round
             size="25px"

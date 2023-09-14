@@ -61,8 +61,8 @@
               <q-input
                 v-model="newArticle.wholeSalePrice"
                 dense
-                :min="0"
-                type="number"
+                type="tel"
+                mask="######"
                 label="Wholesale Price"
                 outlined
                 color="btn-primary"
@@ -73,8 +73,8 @@
               <q-input
                 v-model="newArticle.retailPrice"
                 dense
-                :min="0"
-                type="number"
+                type="tel"
+                mask="######"
                 label="Retail Price"
                 outlined
                 color="btn-primary"
@@ -85,8 +85,8 @@
               <q-input
                 v-model="newArticle.costPrice"
                 dense
-                :min="0"
-                type="number"
+                type="tel"
+                mask="######"
                 label="Cost Price"
                 outlined
                 color="btn-primary"

@@ -270,6 +270,11 @@ const updateOrAddCategory = async (
   action: string,
   callback: () => void
 ) => {
+  if (action === 'Edit' && selectedRowData.value?.name === newName) {
+    callback();
+    isCategoryModalVisible.value = false;
+    return;
+  }
   if (isLoading.value) return;
   isLoading.value = true;
   if (action === 'Edit' && selectedRowData.value) {
