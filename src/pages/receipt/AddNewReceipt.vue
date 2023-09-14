@@ -82,10 +82,10 @@
           hide-pagination
         >
           <template v-slot:body-cell-image="props">
-            <q-td :props="props">
+            <q-td :props="props" class="!h-[71px]">
               <div
                 @click="handlePreviewImage(props.row.productImage)"
-                class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+                class="w-[50px] h-[50px] min-w-[2rem] overflow-hidden rounded-full"
                 :class="props.row.productImage ? 'cursor-pointer' : ''"
               >
                 <img
@@ -419,6 +419,7 @@ const addNewReceipt = ref<IAddNewReceipt>({
   createdDate: '',
   createdBy: '',
   userName: '',
+  purchaseStatus: '',
 });
 watch(addNewReceipt.value, (newVal: IAddNewReceipt) => {
   const selectedUser = UserList.value.find(
@@ -545,6 +546,7 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
     addNewReceipt.value.userName = res.data.fullName;
     addNewReceipt.value.userOutstandingBalance = res.data.outStandingBalance;
     addNewReceipt.value.createdDate = res.data.createdDate;
+    addNewReceipt.value.purchaseStatus = res.data.purchaseStatus;
     selectedArticleData.value = res.data.purchaseDetails;
     tableItems.value = await convertArrayToPdfData(res.data.purchaseDetails);
   });
@@ -661,16 +663,16 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
   const footerRow = ['', '', '', { text: `Total: ${netQuantity}`, margin: 5 }];
   array.forEach((item: ISelectedArticleData) => {
     const row = [
-      { text: item.productId, margin: 5 },
+      { text: item.productId, margin: [0, 20] },
       {
         image:
           'data:image/png;base64,' + (item.productImage || defaultImage.value),
-        width: 25,
-        height: 25,
+        width: 50,
+        height: 50,
         margin: 2,
       },
-      { text: item.productName, margin: 5 },
-      { text: item.quantity, bold: true, margin: 5 },
+      { text: item.productName, margin: [0, 20] },
+      { text: item.quantity, bold: true, margin: [0, 20] },
     ];
     tableStuff.push(row);
   });
@@ -680,6 +682,14 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
 }
 function downloadPdfData() {
   const headers: ITableHeaders[] = [
+    {
+      heading: 'Receipt Id',
+      content: Number(route.params.id),
+    },
+    {
+      heading: 'Purchased Status',
+      content: addNewReceipt.value.purchaseStatus,
+    },
     {
       heading: 'User Name',
       content: addNewReceipt.value.userName,

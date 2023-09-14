@@ -39,4 +39,5 @@ export interface IAddNewReceipt {
   productList: IProductList[];
   createdBy: string;
   userName: string;
+  purchaseStatus: string;
 }

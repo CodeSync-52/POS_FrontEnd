@@ -100,14 +100,14 @@
         </template>
         <template v-slot:body-cell-mstock="props">
           <q-td :props="props">
-            {{ props.row.masterStock ?? 'Null' }}
+            {{ props.row.masterStock ?? '-' }}
           </q-td>
         </template>
         <template v-slot:body-cell-image="props">
           <q-td :props="props">
             <div
               @click="handlePreviewImage(props.row.productImage)"
-              class="max-w-[2rem] h-[2rem] min-w-[2rem] overflow-hidden rounded-full"
+              class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
               :class="props.row.productImage ? 'cursor-pointer' : ''"
             >
               <img
@@ -160,7 +160,10 @@
           "
           v-slot:body-cell-action="props"
         >
-          <q-td class="flex justify-start" :props="props">
+          <q-td
+            class="flex items-center !h-[65px] justify-center"
+            :props="props"
+          >
             <router-link
               :to="`/article/${props.row.productId}/update`"
               class="flex gap-2 flex-nowrap"
