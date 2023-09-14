@@ -100,7 +100,7 @@
         </template>
         <template v-slot:body-cell-mstock="props">
           <q-td :props="props">
-            {{ props.row.masterStock ?? 'Null' }}
+            {{ props.row.masterStock ?? '-' }}
           </q-td>
         </template>
         <template v-slot:body-cell-image="props">

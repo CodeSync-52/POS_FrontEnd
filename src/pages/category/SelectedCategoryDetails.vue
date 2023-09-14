@@ -3,7 +3,7 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
-      <span class="text-lg font-medium">{{ pageTitle }} Details</span>
+      <span class="text-lg font-medium">Category : {{ parentGroupName }}</span>
       <q-btn
         label="Add New"
         unelevated
@@ -168,7 +168,6 @@ import {
   EActionPermissions,
   EUserModules,
   ICategoryDetailsData,
-  getRoleModuleDisplayName,
 } from 'src/interfaces';
 import { categoryDetailsColumn } from 'src/pages/category/utils';
 import {
@@ -179,7 +178,7 @@ import {
 } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
-const pageTitle = getRoleModuleDisplayName(EUserModules.CategoryManagement);
+
 const authStore = useAuthStore();
 const router = useRouter();
 const $q = useQuasar();
@@ -200,6 +199,7 @@ const selectedStatus = ref('');
 const isCategoryDetailsModalVisible = ref<boolean>(false);
 const categoryDetailsRecord = ref<ICategoryDetailsData[]>([]);
 const selectedGroupName = router.currentRoute.value.params.id;
+const parentGroupName = router.currentRoute.value.params.name;
 const categoryAction = ref<string>('');
 const category = ref<{ name: string; id: number }>({
   name: '',

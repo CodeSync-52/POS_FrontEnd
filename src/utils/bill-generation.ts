@@ -14,13 +14,13 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     align: 'left',
     field: (row) => row.billId,
   },
-  {
-    name: 'userid',
-    required: true,
-    label: 'User Id',
-    align: 'left',
-    field: (row) => row.userId,
-  },
+  // {
+  //   name: 'userid',
+  //   required: true,
+  //   label: 'User Id',
+  //   align: 'left',
+  //   field: (row) => row.userId,
+  // },
   {
     name: 'name',
     required: true,

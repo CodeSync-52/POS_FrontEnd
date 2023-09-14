@@ -47,17 +47,18 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     field: (row) => row.costPrice,
   },
   {
-    name: 'status',
-    label: 'Status',
-    align: 'left',
-    field: (row) => row.status,
-  },
-  {
     name: 'mstock',
     label: 'M.Stock',
     align: 'left',
     field: (row) => row.masterStock,
   },
+  {
+    name: 'status',
+    label: 'Status',
+    align: 'left',
+    field: (row) => row.status,
+  },
+
   {
     name: 'action',
     label: 'Action',

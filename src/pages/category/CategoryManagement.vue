@@ -58,7 +58,7 @@
               dense
               size="sm"
               class="hover:text-btn-primary"
-              @click="handleManageClick(props.row.categoryId)"
+              @click="handleManageClick(props.row.categoryId, props.row.name)"
               label="Manage"
               :disable="
                 !authStore.checkUserHasPermission(
@@ -262,8 +262,8 @@ const AddNewCategory = () => {
   CategoryAction.value = 'Add';
   isCategoryModalVisible.value = true;
 };
-const handleManageClick = (id: number) => {
-  router.push(`/category/${id}`);
+const handleManageClick = (id: number, name: string) => {
+  router.push(`/category/${name}/${id}`);
 };
 const updateOrAddCategory = async (
   newName: string,

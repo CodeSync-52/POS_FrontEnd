@@ -25,14 +25,16 @@
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-select
-                :options="UserList"
+                :options="options"
                 :loading="isLoading"
+                use-input
                 dense
                 map-options
                 outlined
+                @filter="filterFn"
                 v-model="addNewReceipt.userId"
                 @update:model-value="addNewReceipt.userId = $event.userId"
-                label="User Name"
+                label="Select User"
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
@@ -284,6 +286,7 @@ import { useAuthStore } from 'src/stores';
 import moment from 'moment';
 const authStore = useAuthStore();
 const route = useRoute();
+const options = ref<IUserResponse[]>([]);
 const router = useRouter();
 const isLoading = ref(false);
 const isAddingPurchase = ref(false);
@@ -441,6 +444,7 @@ const getUserList = async () => {
     });
     if (res?.data) {
       UserList.value = res.data.items;
+      options.value = res.data.items;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -516,6 +520,7 @@ const getArticleList = async (data?: {
     const res = await articleListApi({
       PageNumber: pagination.value.page,
       PageSize: pagination.value.rowsPerPage,
+      Status: 'Active',
     });
     if (res.type === 'Success') {
       if (res.data) {
@@ -696,10 +701,10 @@ function downloadPdfData() {
       heading: 'Created By',
       content: addNewReceipt.value.createdBy,
     },
-    {
-      heading: 'Discount',
-      content: addNewReceipt.value.userDiscount,
-    },
+    // {
+    //   heading: 'Discount',
+    //   content: addNewReceipt.value.userDiscount,
+    // },
   ];
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
@@ -710,4 +715,12 @@ function downloadPdfData() {
     title: fileTitle,
   });
 }
+const filterFn = (val: string, update: any) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = UserList.value.filter((v) =>
+      v.fullName.toLowerCase().includes(needle)
+    );
+  });
+};
 </script>

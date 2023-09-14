@@ -10,12 +10,12 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
     field: (row) => row.wholeSaleId,
     align: 'left',
   },
-  {
-    name: 'userId',
-    label: 'User Id',
-    field: (row) => row.userId,
-    align: 'left',
-  },
+  // {
+  //   name: 'userId',
+  //   label: 'User Id',
+  //   field: (row) => row.userId,
+  //   align: 'left',
+  // },
   {
     name: 'fullName',
     label: 'Full Name',
