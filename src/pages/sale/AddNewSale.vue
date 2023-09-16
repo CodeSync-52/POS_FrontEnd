@@ -43,7 +43,7 @@
               type="number"
               dense
               label="Discount"
-              v-model="selectedSaleRecord.discount"
+              v-model="selectedUserDiscount"
             />
           </div>
           <div class="col-md-6 col-sm-12">
@@ -245,7 +245,13 @@
                 <div>
                   Discount:
                   {{
-                    selectedSaleRecord.discount * saleGenerationTotalQuantity
+                    action === 'Add New'
+                      ? selectedSaleRecord.discount *
+                        saleGenerationTotalQuantity
+                      : action === 'Edit'
+                      ? (selectedUserDiscount ?? 0) *
+                        saleGenerationTotalQuantity
+                      : selectedSaleRecord.discount
                   }}
                 </div>
               </q-td>
@@ -255,7 +261,15 @@
               <q-td>
                 <div>
                   Net Total:
-                  {{ saleGenerationNetAmount(selectedArticleData) }}
+                  {{
+                    action === 'Add New'
+                      ? saleGenerationNetAmount(selectedArticleData)
+                      : action === 'Edit'
+                      ? saleGenerationTotalAmount -
+                        (selectedUserDiscount ?? 0) *
+                          saleGenerationTotalQuantity
+                      : selectedSaleRecord.netAmount
+                  }}
                 </div>
               </q-td>
             </q-tr>
@@ -453,6 +467,7 @@ const addNewSale = ref<IAddNewSale>({
   userOutstandingBalance: 0,
   productList: [],
 });
+const selectedUserDiscount = ref<number | undefined>(0);
 watch(addNewSale.value, (newVal: IAddNewSale) => {
   const selectedUser = UserList.value.find(
     (row) => newVal.userId === row.userId
@@ -461,6 +476,7 @@ watch(addNewSale.value, (newVal: IAddNewSale) => {
     addNewSale.value.userOutstandingBalance =
       selectedUser.outStandingBalance ?? 0;
     addNewSale.value.userDiscount = selectedUser.discount ?? 0;
+    selectedUserDiscount.value = selectedUser.discount;
     selectedSaleRecord.value.discount = selectedUser.discount ?? 0;
   }
 });
@@ -669,6 +685,9 @@ const getUserList = async () => {
     if (res?.data) {
       UserList.value = res.data.items;
       options.value = res.data.items;
+      selectedUserDiscount.value = UserList.value.find(
+        (user) => selectedSaleRecord.value.userId === user.userId
+      )?.discount;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -744,6 +763,9 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
         selectedSaleRecord.value.updatedDate = moment(
           res.data.updatedDate
         ).format('DD/MM/YYYY');
+        selectedUserDiscount.value = UserList.value.find(
+          (user) => selectedSaleRecord.value.userId === user.userId
+        )?.discount;
         selectedArticleData.value = res.data.wholeSaleDetails;
         tableItems.value = await convertArrayToPdfData(
           res.data.wholeSaleDetails
@@ -795,10 +817,10 @@ async function saveUpdatedData(row: IWholeSaleDetailsData) {
       type: 'negative',
       message,
     });
-    getSelectedWholesaleDetail(selectedId.value);
-    if (selectedArticleData.value) {
-      tableItems.value = await convertArrayToPdfData(selectedArticleData.value);
-    }
+  }
+  getSelectedWholesaleDetail(selectedId.value);
+  if (selectedArticleData.value) {
+    tableItems.value = await convertArrayToPdfData(selectedArticleData.value);
   }
 }
 const convertToBase64 = (file: File): Promise<string> => {
@@ -856,7 +878,7 @@ async function convertArrayToPdfData(
     '',
     {
       text: `${saleGenerationTotalQuantity.value}`,
-      margin: 5,
+      margin: [0, 5],
     },
     '',
     { text: `${totalAmount}`, margin: 5 },
@@ -868,14 +890,14 @@ async function convertArrayToPdfData(
     '',
     {
       text: 'Discount:',
-      margin: 5,
+      margin: [5, 0],
       width: 10,
     },
     {
       text: `${
-        selectedSaleRecord.value.discount * saleGenerationTotalQuantity.value
+        (selectedUserDiscount.value ?? 0) * saleGenerationTotalQuantity.value
       }`,
-      margin: 5,
+      margin: [5, 0],
       width: 10,
     },
   ];
@@ -889,7 +911,7 @@ async function convertArrayToPdfData(
       margin: 5,
     },
     {
-      text: `${saleGenerationNetAmount(selectedArticleData.value)}`,
+      text: `${selectedSaleRecord.value.netAmount}`,
       margin: 5,
     },
   ];
@@ -946,10 +968,6 @@ function downloadPdfData() {
     {
       heading: 'Created By',
       content: selectedSaleRecord.value.createdBy,
-    },
-    {
-      heading: 'Discount',
-      content: selectedSaleRecord.value.discount,
     },
   ];
   const fileTitle = 'Sale';

@@ -4,7 +4,15 @@
       <div class="text-lg text-center md:text-left font-medium">
         <span>{{ billAction }}</span>
       </div>
+      <q-btn
+        v-if="billAction === 'Preview Bill'"
+        color="btn-primary"
+        unelevated
+        label="Download PDF"
+        @click="downloadPdfData"
+      />
     </div>
+
     <q-card v-if="billAction === 'Generate Receipt'">
       <q-card-section>
         <div class="row q-mb-md q-col-gutter-md">
@@ -114,7 +122,7 @@
             <template v-slot:no-data>
               <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
                 <q-icon name="warning" size="xs" />
-                <span class="text-md font-medium"> No data available. </span>
+                <span class="text-h5 font-medium"> No data available. </span>
               </div>
             </template>
           </q-table>
@@ -219,7 +227,7 @@
                 <q-popup-edit
                   :disable="
                     router.currentRoute.value.path.includes('preview') ||
-                    billAction === 'Preview Receipt'
+                    billAction === 'Preview Bill'
                   "
                   v-model="props.row.amount"
                   color="btn-primary"
@@ -279,12 +287,19 @@
       </q-card-section>
       <q-card-actions class="row justify-end">
         <q-btn
-          :label="billAction !== 'Preview Receipt' ? 'Cancel' : 'Close'"
+          v-if="billAction === 'Update bill'"
+          unelevated
+          label="Print"
+          color="btn-primary"
+          @click="billAction = 'Preview Bill'"
+        />
+        <q-btn
+          :label="billAction !== 'Preview Bill' ? 'Cancel' : 'Close'"
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/bill-generation')"
         />
         <q-btn
-          v-if="billAction !== 'Preview Receipt'"
+          v-if="billAction !== 'Preview Bill'"
           label="Update"
           :loading="isUpdating"
           :disable="
@@ -320,6 +335,7 @@ import {
   editBillGenerationRecordsColumn,
   isPosError,
   BillGenerationDetailsInfoColumn,
+  ITableHeaders,
 } from 'src/utils';
 import {
   billDetailsApi,
@@ -336,6 +352,7 @@ import {
   IBillGenerationDetailsInfoProductList,
   IUpdatedBillProductList,
 } from 'src/interfaces';
+import { downloadPdf } from 'src/utils/pdf-make/pdf-make';
 const billAction = ref('');
 const router = useRouter();
 const isLoading = ref(false);
@@ -363,10 +380,11 @@ const billGenerationData = ref<IBillDetail>({
 });
 const selectedId = router.currentRoute.value.params.id;
 const path = router.currentRoute.value.fullPath;
+const tableItems = ref<string[][]>([]);
 onMounted(() => {
   if (selectedId) {
     if (path.includes('preview')) {
-      billAction.value = 'Preview Receipt';
+      billAction.value = 'Preview Bill';
       getBillDetailInfo(Number(selectedId));
     } else if (path.includes('generate-receipt-bill')) {
       billAction.value = 'Generate Receipt';
@@ -474,6 +492,8 @@ const getBillDetailInfo = async (BillId: number) => {
         billGenerationDetailsInfoData.value.createdDate = moment(
           res.data.createdDate
         ).format('YYYY-MM-DD');
+
+        tableItems.value = await convertArray(res.data.productList);
       }
     }
   } catch (e) {
@@ -557,5 +577,88 @@ function handleAmountUpdate(newVal: unknown, scope: { value: string }) {
       setScopeValue(0);
     }
   }
+}
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+const defaultImage = ref<string | null>(null);
+async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+  const tableStuff = [];
+  const headerRow = ['Image', 'Article Name', 'Quantity', 'Amount', 'Total'];
+  tableStuff.push(headerRow);
+  const netTotalAmount = array.reduce(
+    (total, row: IBillGenerationDetailsInfoProductList) => {
+      return total + row.amount * row.quantity;
+    },
+    0
+  );
+  const footerRow = ['', '', '', '', `Net Total: ${netTotalAmount}`];
+  array.forEach((item: IBillGenerationDetailsInfoProductList) => {
+    const row = [
+      {
+        image: 'data:image/png;base64,' + (item.image || defaultImage.value),
+        width: 50,
+        height: 50,
+        margin: 2,
+      },
+      { text: item.name, margin: [0, 20] },
+      { text: item.quantity, bold: true, margin: [0, 20] },
+      { text: item.amount, margin: [0, 20] },
+      { text: item.amount * item.quantity, margin: [0, 20] },
+    ];
+    tableStuff.push(row);
+  });
+  tableStuff.push(footerRow);
+  return tableStuff;
+}
+function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'Bill Id',
+      content: Number(router.currentRoute.value.params.id),
+    },
+    {
+      heading: 'User Name',
+      content: billGenerationDetailsInfoData.value.fullName,
+    },
+    {
+      heading: 'Bill Status',
+      content: billGenerationDetailsInfoData.value.billStatus,
+    },
+  ];
+  const fileTitle = 'Bill';
+  const myFileName = 'Bill.pdf';
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableItems.value)),
+    tableHeaders: headers,
+    title: fileTitle,
+  });
 }
 </script>

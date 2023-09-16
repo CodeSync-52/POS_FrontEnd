@@ -711,10 +711,6 @@ function downloadPdfData() {
       heading: 'Created By',
       content: addNewReceipt.value.createdBy,
     },
-    // {
-    //   heading: 'Discount',
-    //   content: addNewReceipt.value.userDiscount,
-    // },
   ];
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
