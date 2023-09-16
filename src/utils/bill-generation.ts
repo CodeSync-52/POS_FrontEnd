@@ -38,7 +38,7 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     name: 'date',
     label: 'Date',
     align: 'left',
-    field: (row) => moment(row.createdDate).format('Do MMM YYYY'),
+    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
   },
   {
     name: 'recordStatus',

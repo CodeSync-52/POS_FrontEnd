@@ -55,7 +55,7 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
   {
     name: 'createdDate',
     label: 'Created Date',
-    field: (row) => moment(row.createdDate).format('Do MMM YYYY'),
+    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
     align: 'left',
   },
   {

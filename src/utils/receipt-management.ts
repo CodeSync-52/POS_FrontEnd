@@ -49,7 +49,7 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
     required: true,
     label: 'Created Date',
     align: 'left',
-    field: (row) => moment(row.createdDate).format('Do MMM YYYY'),
+    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
   },
   {
     name: 'action',

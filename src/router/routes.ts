@@ -25,7 +25,7 @@ export const routeList = [
     },
   },
   {
-    path: '/variant/:id',
+    path: '/variant/:name/:id',
     component: () => import('src/pages/variant/SelectedVariantDetails.vue'),
     meta: {
       module: EUserModules.VariantManagement,

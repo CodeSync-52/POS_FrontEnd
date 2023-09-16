@@ -3,7 +3,7 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4 w-full"
     >
-      <span class="text-lg font-medium">{{ pageTitle }}</span>
+      <span class="text-lg font-medium"> Variant : {{variantGroupName}} </span>
       <q-btn
         v-if="
           authStore.checkUserHasPermission(
@@ -194,6 +194,7 @@ const variantAction = ref<string>('');
 const isVariantStatusModalVisible = ref(false);
 const isLoading = ref(false);
 const variantGroupId = Number(router.currentRoute.value.params.id);
+const variantGroupName = router.currentRoute.value.params.name;
 const variant = ref<{ displayName: string; name: string; id: number | null }>({
   displayName: '',
   name: '',

@@ -963,7 +963,7 @@ function downloadPdfData() {
     },
     {
       heading: 'Date',
-      content: moment(selectedSaleRecord?.value?.createdDate).format('LLL'),
+      content: moment(selectedSaleRecord?.value?.createdDate).format('DD/MM/YYYY'),
     },
     {
       heading: 'Created By',

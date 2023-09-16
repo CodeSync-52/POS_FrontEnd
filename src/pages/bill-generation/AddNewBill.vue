@@ -423,7 +423,7 @@ const handleBillSaveAsDraft = () => {
 };
 const formattedPurchaseDate = computed(() => {
   if (billGenerationData.value.purchaseDate) {
-    return moment(billGenerationData.value.purchaseDate).format('YYYY-MM-DD');
+    return moment(billGenerationData.value.purchaseDate).format('DD/MM/YYYY');
   }
   return '';
 });
@@ -491,7 +491,7 @@ const getBillDetailInfo = async (BillId: number) => {
         billGenerationDetailsInfoData.value = res.data;
         billGenerationDetailsInfoData.value.createdDate = moment(
           res.data.createdDate
-        ).format('YYYY-MM-DD');
+        ).format('DD-MM-YYYY');
 
         tableItems.value = await convertArray(res.data.productList);
       }

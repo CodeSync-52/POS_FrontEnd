@@ -705,7 +705,7 @@ function downloadPdfData() {
     },
     {
       heading: 'Date',
-      content: moment(addNewReceipt.value.createdDate).format('LLL'),
+      content: moment(addNewReceipt.value.createdDate).format('DD-MM-YYYY'),
     },
     {
       heading: 'Created By',
