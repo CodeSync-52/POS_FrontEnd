@@ -14,7 +14,9 @@
         style="min-width: 200px"
         v-model="filterSearch.userId"
         @update:model-value="filterSearch.userId = $event.userId"
-        :options="UserList"
+        use-input
+        @filter="filterFn"
+        :options="options"
         map-options
         option-label="fullName"
         option-value="userId"
@@ -294,6 +296,7 @@ onUnmounted(() => {
   }
 });
 const UserList = ref<IUserResponse[]>([]);
+const options = ref<IUserResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
@@ -303,6 +306,7 @@ const getUserList = async () => {
     });
     if (res?.data) {
       UserList.value = res.data.items;
+      options.value = res.data.items;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -431,5 +435,13 @@ const getBillList = async (data?: {
     });
   }
   isLoading.value = false;
+};
+const filterFn = (val: string, update: any) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = UserList.value.filter((v) =>
+      v.fullName.toLowerCase().includes(needle)
+    );
+  });
 };
 </script>

@@ -15,9 +15,11 @@
                   dense
                   outlined
                   map-options
+                  use-input
+                  @filter="filterSU"
                   option-label="userName"
                   option-value="userId"
-                  :options="userList"
+                  :options="optionsSU"
                   @update:model-value="
                     addNewFlow.sourceOutstandingBalance =
                       $event.outStandingBalance
@@ -41,14 +43,16 @@
                   label="Target"
                   dense
                   outlined
+                  use-input
+                  map-options
+                  @filter="filterFn"
                   @update:model-value="
                     addNewFlow.targetOutstandingBalance =
                       $event.outStandingBalance
                   "
-                  map-options
                   option-label="userName"
                   option-value="userId"
-                  :options="userList"
+                  :options="options"
                   v-model="addNewFlow.target"
                 />
               </div>
@@ -144,6 +148,8 @@ const addNewFlow = ref<{
   targetOutstandingBalance: null,
 });
 const userList = ref<IUserResponse[]>([]);
+const options = ref<IUserResponse[]>([]);
+const optionsSU = ref<IUserResponse[]>([]);
 const handleAddNewFlow = async () => {
   if (isAdding.value) return;
   isAdding.value = true;
@@ -187,6 +193,7 @@ const getUserList = async () => {
     });
     if (res?.data) {
       userList.value = res.data.items;
+      options.value = res.data.items;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -200,5 +207,21 @@ const getUserList = async () => {
       icon: 'error',
     });
   }
+};
+const filterFn = (val: string, update: any) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = userList.value.filter((v) =>
+      v.userName.toLowerCase().includes(needle)
+    );
+  });
+};
+const filterSU = (val: string, update: any) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    optionsSU.value = userList.value.filter((v) =>
+      v.userName.toLowerCase().includes(needle)
+    );
+  });
 };
 </script>

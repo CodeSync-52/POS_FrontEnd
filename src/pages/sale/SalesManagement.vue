@@ -27,7 +27,9 @@
         dense
         outlined
         style="min-width: 200px"
-        :options="UserList"
+        :options="options"
+        use-input
+        @filter="filterFn"
         v-model="filterSearch.userId"
         @update:model-value="filterSearch.userId = $event.userId"
         map-options
@@ -287,6 +289,7 @@ const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const selectedRowData = ref<ISalesManagementData | null>(null);
 const UserList = ref<IUserResponse[]>([]);
+const options = ref<IUserResponse[]>([]);
 onMounted(() => {
   getSalesManagementList();
   getUserList();
@@ -417,6 +420,7 @@ const getUserList = async () => {
     });
     if (res?.data) {
       UserList.value = res.data.items;
+      options.value = res.data.items;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -431,5 +435,13 @@ const getUserList = async () => {
     });
   }
   isLoading.value = false;
+};
+const filterFn = (val: string, update: any) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = UserList.value.filter((v) =>
+      v.fullName.toLowerCase().includes(needle)
+    );
+  });
 };
 </script>

@@ -651,6 +651,10 @@ function downloadPdfData() {
       heading: 'Bill Status',
       content: billGenerationDetailsInfoData.value.billStatus,
     },
+    {
+      heading: 'Date',
+      content: billGenerationDetailsInfoData.value.createdDate,
+    },
   ];
   const fileTitle = 'Bill';
   const myFileName = 'Bill.pdf';
