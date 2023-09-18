@@ -263,6 +263,7 @@ import {
 } from 'src/utils';
 import GenerateOrCancelSaleModal from 'src/components/sales-management/GenerateOrCancelSaleModal.vue';
 import { CanceledError } from 'axios';
+import { date } from 'quasar';
 const pageTitle = getRoleModuleDisplayName(EUserModules.SalesManagement);
 const authStore = useAuthStore();
 const $q = useQuasar();
@@ -274,11 +275,15 @@ const defaultPagination = {
   rowsPerPage: 50,
   rowsNumber: 0,
 };
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filterSearch = ref<ISalesFilterSearch>({
   userId: null,
   userName: null,
-  startDate: null,
-  endDate: null,
+  startDate: formattedFromDate,
+  endDate: formattedToDate,
   wholeSaleStatus: null,
 });
 const isGenerateOrCancelSaleModalVisible = ref(false);

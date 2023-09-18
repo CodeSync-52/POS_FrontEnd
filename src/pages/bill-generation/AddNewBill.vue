@@ -122,7 +122,7 @@
             <template v-slot:no-data>
               <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
                 <q-icon name="warning" size="xs" />
-                <span class="text-h5 font-medium"> No data available. </span>
+                <span class="text-md font-medium"> No data available. </span>
               </div>
             </template>
           </q-table>

@@ -17,7 +17,7 @@
                   map-options
                   use-input
                   @filter="filterSU"
-                  option-label="userName"
+                  option-label="fullName"
                   option-value="userId"
                   :options="optionsSU"
                   @update:model-value="
@@ -50,7 +50,7 @@
                     addNewFlow.targetOutstandingBalance =
                       $event.outStandingBalance
                   "
-                  option-label="userName"
+                  option-label="fullName"
                   option-value="userId"
                   :options="options"
                   v-model="addNewFlow.target"

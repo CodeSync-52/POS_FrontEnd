@@ -320,7 +320,6 @@ import {
 } from 'src/services';
 const $q = useQuasar();
 const authStore = useAuthStore();
-console.log(authStore.loggedInUser?.rolePermissions.roleName);
 const customerGroupList = ref<ICustomerListResponse[]>([]);
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
@@ -480,7 +479,9 @@ const getUserList = async (paginationData?: {
       apiController.value
     );
     if (res?.data) {
-      UserRows.value = res.data.items;
+      if (Object.values(filterSearch.value).some((item) => item !== null)) {
+        UserRows.value = res.data.items;
+      }
       pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {

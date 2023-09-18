@@ -370,6 +370,7 @@
             productId: item.productId !== null ? item.productId : -1,
             productName: item?.productName || '',
             productImage: item.productImage || '',
+            masterStock: item.masterStock || 0,
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"
@@ -963,7 +964,9 @@ function downloadPdfData() {
     },
     {
       heading: 'Date',
-      content: moment(selectedSaleRecord?.value?.createdDate).format('DD/MM/YYYY'),
+      content: moment(selectedSaleRecord?.value?.createdDate).format(
+        'DD/MM/YYYY'
+      ),
     },
     {
       heading: 'Created By',

@@ -75,7 +75,9 @@
               unelevated
               dense
               size="sm"
-              @click="handleManageClick(props.row.variantGroupId,props.row.name)"
+              @click="
+                handleManageClick(props.row.variantGroupId, props.row.name)
+              "
               label="Manage"
               class="hover:text-btn-primary"
             />
@@ -322,7 +324,7 @@ const AddNewVariant = () => {
   variantAction.value = 'Add';
   isVariantModalVisible.value = true;
 };
-const handleManageClick = (id: number,name:string) => {
+const handleManageClick = (id: number, name: string) => {
   router.push(`/variant/${name}/${id}`);
 };
 const updateOrAddVariant = async (

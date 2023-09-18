@@ -270,6 +270,11 @@
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
+import { date } from 'quasar';
+import { useRouter } from 'vue-router';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { CanceledError } from 'axios';
 import {
   EActionPermissions,
   EUserModules,
@@ -278,13 +283,9 @@ import {
   IPagination,
   IUserResponse,
 } from 'src/interfaces';
-import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { onMounted, onUnmounted, ref } from 'vue';
 import { receiptListApi, cancelReceiptApi, getUserListApi } from 'src/services';
 import { isPosError, receiptColumn, purchaseStatusOptions } from 'src/utils';
-import { useRouter } from 'vue-router';
-import { CanceledError } from 'axios';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const pageTitle = getRoleModuleDisplayName(EUserModules.ReceiptManagement);
@@ -303,6 +304,10 @@ const defaultPagination = {
 const pagination = ref<IPagination>(defaultPagination);
 const isCancellingReceipt = ref(false);
 const apiController = ref<AbortController | null>(null);
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filterSearch = ref<{
   userId: null | number;
   userName: null | string;
@@ -312,10 +317,11 @@ const filterSearch = ref<{
 }>({
   userId: null,
   userName: null,
-  startDate: null,
-  endDate: null,
+  startDate: formattedFromDate,
+  endDate: formattedToDate,
   purchaseStatus: null,
 });
+
 onMounted(() => {
   getReceiptList();
   getUserList();

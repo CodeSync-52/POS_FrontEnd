@@ -28,6 +28,7 @@
               >
                 <div class="text-lg font-medium"><span> Article </span></div>
                 <q-space />
+
                 <q-input
                   borderless
                   dense
@@ -37,6 +38,7 @@
                   debounce="300"
                   color="btn-primary"
                   v-model="filter"
+                  @keypress.enter="handleSelectFilteredArticle"
                 >
                   <template v-slot:append>
                     <q-icon name="search" />
@@ -96,13 +98,14 @@
 </template>
 <script lang="ts" setup>
 import { IArticleData, IPagination } from 'src/interfaces';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { articleListColumn } from 'src/utils';
 interface propTypes {
   currentData: {
     productId: number;
     productName?: string;
     productImage: string;
+    masterStock: number;
   }[];
   articleList: IArticleData[];
   isFetchingArticleList: boolean;
@@ -120,12 +123,14 @@ const props = withDefaults(defineProps<propTypes>(), {
   articleList: () => [],
   isFetchingArticleList: false,
 });
+
 const selectedArticles = ref<
   {
     productId: number;
     productName?: string;
     unitWholeSalePrice?: number;
     productImage: string | null;
+    masterStock: number;
   }[]
 >([...props.currentData]);
 const selected = ref<IArticleData[]>([]);
@@ -140,6 +145,7 @@ const emit = defineEmits<{
       productId: number;
       productName?: string;
       productImage: string | null;
+      masterStock: number;
     }[]
   ): void;
   (event: 'handle-pagination', pagination: IPagination): void;
@@ -149,14 +155,21 @@ const emit = defineEmits<{
   ): void;
   (event: 'filtered-rows', isFilterChanged: boolean): void;
 }>();
-watch(selected, (newSelected: IArticleData[]) => {
-  selectedArticles.value = newSelected.map((article) => ({
-    productId: article.productId,
-    productName: article.name,
-    unitWholeSalePrice: article.wholeSalePrice,
-    productImage: article.productImage,
-  }));
-});
+watch(
+  selected,
+  (newSelected: IArticleData[]) => {
+    selectedArticles.value = newSelected.map((article) => ({
+      productId: article.productId,
+      productName: article.name,
+      unitWholeSalePrice: article.wholeSalePrice,
+      productImage: article.productImage,
+      masterStock: article.masterStock,
+    }));
+  },
+  {
+    deep: true,
+  }
+);
 function setFilteredData() {
   filterChanged.value = true;
   if (filter.value) {
@@ -189,8 +202,38 @@ onMounted(() => {
   }
   articlePagination.value = props.pagination;
   filteredRows.value = props.articleList;
-});
 
+  window.addEventListener('keypress', handleGlobalKeypress);
+});
+function handleGlobalKeypress(event: KeyboardEvent) {
+  const idList = selected.value.map((item) => item.productId);
+  if (
+    event.key === 'Enter' &&
+    filteredRows.value.length > selected.value.length
+  ) {
+    const firstUnselectedItem = filteredRows.value.findIndex(
+      (item) => !idList.includes(item.productId)
+    );
+    if (firstUnselectedItem !== -1) {
+      selected.value.push(filteredRows.value[firstUnselectedItem]);
+    }
+  }
+}
+
+function handleSelectFilteredArticle(event: KeyboardEvent) {
+  event.stopPropagation();
+  if (filter.value !== '' && filteredRows.value.length > 0) {
+    const oldIdList = selected.value.map((item) => item.productId);
+    const arrToAdd = filteredRows.value.filter(
+      (item) => !oldIdList.includes(item.productId)
+    );
+    selected.value = [...selected.value, ...arrToAdd];
+  }
+}
+
+onUnmounted(() => {
+  window.removeEventListener('keypress', handleGlobalKeypress);
+});
 watch(filter, setFilteredData);
 watch(props, setFilteredData, {
   deep: true,

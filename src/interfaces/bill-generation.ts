@@ -31,6 +31,7 @@ export interface IProductInfoDetailList {
   productName: string;
   purchaseDate: string;
   quantity: number;
+  wholeSaleAmount: number;
 }
 export interface INewBillData {
   purchaseId: number;

@@ -262,6 +262,7 @@ import {
   getUserListApi,
 } from 'src/services';
 import { CanceledError } from 'axios';
+import { date } from 'quasar';
 const authStore = useAuthStore();
 const router = useRouter();
 const billGenerationData = ref<IBillGenerationData[]>([]);
@@ -279,11 +280,15 @@ const isCancel = ref(false);
 const isCancelOrGenerateBillModalVisible = ref(false);
 const selectedRowData = ref<IBillGenerationData | null>(null);
 const apiController = ref<AbortController | null>(null);
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filterSearch = ref<IBillGenerationFilter>({
   userId: null,
   userName: null,
-  ToDate: null,
-  FromDate: null,
+  ToDate: formattedToDate,
+  FromDate: formattedFromDate,
   billStatus: null,
 });
 onMounted(() => {

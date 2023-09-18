@@ -63,4 +63,5 @@ export interface ISelectedWholeSaleArticleData {
   productImage: string | null;
   unitWholeSalePrice?: number;
   totalAmount?: number;
+  masterStock?: number;
 }
