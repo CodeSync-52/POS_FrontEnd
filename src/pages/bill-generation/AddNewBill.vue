@@ -48,6 +48,33 @@
             />
           </div>
         </div>
+        <q-separator class="mb-2" color="orange" inset />
+        <div class="row q-mb-md q-col-gutter-md">
+          <div class="col-12 text-bold text-base">
+            Enter to Claim or Freight:
+          </div>
+          <div class="col-6">
+            <q-input
+              :min="0"
+              type="number"
+              v-model="billGenerationData.claim"
+              dense
+              label="Claim Amount"
+              outlined
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              type="number"
+              maxlength="250"
+              v-model="billGenerationData.freight"
+              dense
+              :min="0"
+              label="Freight User"
+              outlined
+            />
+          </div>
+        </div>
         <div class="updateBillTable">
           <q-table
             :loading="isLoading"
@@ -114,6 +141,24 @@
               </q-td>
             </template>
             <template v-slot:bottom-row="props">
+              <q-tr :props="props">
+                <q-td colspan="4" />
+                <q-td>
+                  <div>
+                    Claim:
+                    {{ billGenerationData.claim || 0 }}
+                  </div>
+                </q-td>
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="4" />
+                <q-td>
+                  <div>
+                    Freight:
+                    {{ billGenerationData.freight || 0 }}
+                  </div>
+                </q-td>
+              </q-tr>
               <q-tr :props="props">
                 <q-td colspan="4" />
                 <q-td>
@@ -207,6 +252,33 @@
             />
           </div>
         </div>
+        <q-separator class="mb-2" color="orange" inset />
+        <div class="row q-mb-md q-col-gutter-md">
+          <div class="col-12 text-bold text-base">
+            Enter to Edit Claim or Freight:
+          </div>
+          <div class="col-6">
+            <q-input
+              :min="0"
+              type="number"
+              v-model="billGenerationDetailsInfoData.claim"
+              dense
+              label="Claim Amount"
+              outlined
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              type="number"
+              maxlength="250"
+              v-model="billGenerationDetailsInfoData.freight"
+              dense
+              :min="0"
+              label="Freight User"
+              outlined
+            />
+          </div>
+        </div>
         <div class="updateBillTable">
           <q-table
             :loading="isLoading"
@@ -296,13 +368,6 @@
       </q-card-section>
       <q-card-actions class="row justify-end">
         <q-btn
-          v-if="billAction === 'Update bill'"
-          unelevated
-          label="Print"
-          color="btn-primary"
-          @click="billAction = 'Preview Bill'"
-        />
-        <q-btn
           :label="billAction !== 'Preview Bill' ? 'Cancel' : 'Close'"
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/bill-generation')"
@@ -386,6 +451,8 @@ const billGenerationData = ref<IBillDetail>({
   purchaseDate: '',
   totalPurchaseQuantity: 0,
   quantity: 0,
+  claim: 0,
+  freight: 0,
 });
 const selectedId = router.currentRoute.value.params.id;
 const path = router.currentRoute.value.fullPath;
@@ -419,6 +486,8 @@ const handleUpdateBill = () => {
 const handleBillSaveAsDraft = () => {
   const newBillInfo = {
     purchaseId: Number(selectedId),
+    claim: Number(billGenerationData.value.claim) || 0,
+    freight: Number(billGenerationData.value.freight) || 0,
     productList: billGenerationData.value.productInfoDetailList.map(
       ({ productId, amount, image, productName }) => ({
         productId,
@@ -437,12 +506,28 @@ const formattedPurchaseDate = computed(() => {
   }
   return '';
 });
+
 const BillGenerationTotalAmount = computed(() => {
   const rows = billGenerationData.value.productInfoDetailList;
-  return rows.reduce((total: number, row: IProductInfoDetailList) => {
-    return total + row.quantity * row.amount;
+  let total = rows.reduce((subtotal: number, row: IProductInfoDetailList) => {
+    return subtotal + row.quantity * row.amount;
   }, 0);
+
+  if (billGenerationData.value.claim && billGenerationData.value.claim > 0) {
+    const claimAsNumber = Number(billGenerationData.value.claim);
+    total -= claimAsNumber;
+  }
+  if (
+    billGenerationData.value.freight &&
+    billGenerationData.value.freight > 0
+  ) {
+    const freightAsNumber = Number(billGenerationData.value.freight);
+    total += freightAsNumber;
+  }
+
+  return total;
 });
+
 const BillGenerationDetailsInfoTotalAmount = computed(() => {
   const rows = billGenerationDetailsInfoData.value.productList;
   return rows.reduce(
@@ -573,23 +658,13 @@ const updateExistingBill = async (
   }
   isUpdating.value = false;
 };
-function handleAmountUpdate(
-  newVal: unknown,
-  scope: { value: string },
-  wholeSaleAmount: number
-) {
+function handleAmountUpdate(newVal: unknown, scope: { value: string }) {
   function setScopeValue(val: number) {
     scope.value = `${val}`;
   }
   if (typeof newVal === 'string') {
     const val = parseFloat(newVal);
-    if (val >= 0 && val <= wholeSaleAmount) {
-      setScopeValue(val);
-    } else if (val > wholeSaleAmount) {
-      setScopeValue(wholeSaleAmount);
-    } else {
-      setScopeValue(0);
-    }
+    setScopeValue(val);
   }
 }
 const convertToBase64 = (file: File): Promise<string> => {
