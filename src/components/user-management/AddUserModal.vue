@@ -70,6 +70,20 @@
               ]"
             />
           </div>
+          <div
+            :class="action !== 'Add New User' ? 'col-md-6' : 'col-md-4'"
+            class="col-md-4 w-full col-sm-12"
+          >
+            <q-input
+              dense
+              outlined
+              v-model="userData.address"
+              type="text"
+              color="btn-primary"
+              label="Address"
+              maxlength="250"
+            />
+          </div>
         </div>
         <div v-if="action === 'Add New User'" class="row px-2 q-col-gutter-xs">
           <div class="col-md-6 w-full col-sm-12">
@@ -193,6 +207,7 @@ const userData = ref<IUserResponse>({
   userId: -1,
   fullName: '',
   status: '',
+  address: '',
   phoneNumber: '',
   userName: '',
 });

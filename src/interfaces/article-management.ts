@@ -9,7 +9,8 @@ export interface IArticleData {
   status: string;
   costPrice: number;
   productImage: string | null;
-  masterStock: null | any;
+  masterStock: null | number;
+  commission: number;
 }
 export interface IArticleInfo {
   categoryName: string;

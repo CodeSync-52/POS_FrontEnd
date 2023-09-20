@@ -53,6 +53,12 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     field: (row) => row.masterStock,
   },
   {
+    name: 'commission',
+    label: 'Commission',
+    align: 'left',
+    field: (row) => row.commission,
+  },
+  {
     name: 'status',
     label: 'Status',
     align: 'left',

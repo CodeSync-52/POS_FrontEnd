@@ -167,6 +167,7 @@
                   </q-tooltip>
                 </q-btn>
               </router-link>
+
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -174,7 +175,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.wholeSaleStatus !== 'Cancelled' &&
-                  props.row.wholeSaleStatus !== 'Completed'
+                  props.row.wholeSaleStatus !== 'Completed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -195,7 +202,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.wholeSaleStatus !== 'Cancelled' &&
-                  props.row.wholeSaleStatus !== 'Completed'
+                  props.row.wholeSaleStatus !== 'Completed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -210,6 +223,7 @@
               >
             </div>
           </q-td>
+          <q-td v-else />
         </template>
         <template v-slot:body-cell-fullName="props">
           <q-td
@@ -247,6 +261,7 @@ import {
   getRoleModuleDisplayName,
   ISalesFilterSearch,
   IUserResponse,
+  EUserRoles,
 } from 'src/interfaces';
 import { onMounted, ref } from 'vue';
 import {
@@ -264,6 +279,7 @@ import {
 import GenerateOrCancelSaleModal from 'src/components/sales-management/GenerateOrCancelSaleModal.vue';
 import { CanceledError } from 'axios';
 import { date } from 'quasar';
+import moment from 'moment';
 const pageTitle = getRoleModuleDisplayName(EUserModules.SalesManagement);
 const authStore = useAuthStore();
 const $q = useQuasar();

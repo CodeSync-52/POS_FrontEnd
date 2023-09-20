@@ -79,12 +79,17 @@
                   v-slot="scope"
                 >
                   <q-input
-                    type="tel"
+                    :max="props.row.wholeSaleAmount"
                     :min="0"
-                    :max="9999"
-                    mask="####"
+                    type="number"
                     v-model="scope.value"
-                    @update:model-value="handleAmountUpdate($event, scope)"
+                    @update:model-value="
+                      handleAmountUpdate(
+                        $event,
+                        scope,
+                        props.row.wholeSaleAmount
+                      )
+                    "
                     dense
                     autofocus
                   />
@@ -145,7 +150,7 @@
           :loading="isSavingDraft"
           :disable="
             billGenerationData.productInfoDetailList.some(
-              (row) => row.amount === 0
+              (row) => Number(row.amount) === 0
             )
           "
           color="btn-primary"
@@ -236,12 +241,16 @@
                   v-slot="scope"
                 >
                   <q-input
-                    type="tel"
                     :min="0"
-                    :max="9999"
-                    mask="####"
+                    :max="props.row.wholeSaleAmount"
                     v-model="scope.value"
-                    @update:model-value="handleAmountUpdate($event, scope)"
+                    @update:model-value="
+                      handleAmountUpdate(
+                        $event,
+                        scope,
+                        props.row.wholeSaleAmount
+                      )
+                    "
                     dense
                     autofocus
                   />
@@ -413,7 +422,7 @@ const handleBillSaveAsDraft = () => {
     productList: billGenerationData.value.productInfoDetailList.map(
       ({ productId, amount, image, productName }) => ({
         productId,
-        amount,
+        amount: Number(amount),
         image,
         name: productName,
       })
@@ -423,7 +432,8 @@ const handleBillSaveAsDraft = () => {
 };
 const formattedPurchaseDate = computed(() => {
   if (billGenerationData.value.purchaseDate) {
-    return moment(billGenerationData.value.purchaseDate).format('DD/MM/YYYY');
+    const date = moment(billGenerationData.value.purchaseDate);
+    return date.format('YYYY-MM-DD');
   }
   return '';
 });
@@ -563,16 +573,20 @@ const updateExistingBill = async (
   }
   isUpdating.value = false;
 };
-function handleAmountUpdate(newVal: unknown, scope: { value: string }) {
+function handleAmountUpdate(
+  newVal: unknown,
+  scope: { value: string },
+  wholeSaleAmount: number
+) {
   function setScopeValue(val: number) {
     scope.value = `${val}`;
   }
   if (typeof newVal === 'string') {
     const val = parseFloat(newVal);
-    if (val >= 0 && val <= 9999) {
+    if (val >= 0 && val <= wholeSaleAmount) {
       setScopeValue(val);
-    } else if (val > 9999) {
-      setScopeValue(9999);
+    } else if (val > wholeSaleAmount) {
+      setScopeValue(wholeSaleAmount);
     } else {
       setScopeValue(0);
     }

@@ -92,6 +92,23 @@
                 color="btn-primary"
               />
             </div>
+            <div v-if="isUpdate" class="col-12 col-md-6">
+              <span class="text-base">Commission</span>
+              <q-input
+                v-model="newArticle.commission"
+                dense
+                type="tel"
+                mask="######"
+                :min="0"
+                label="Commission"
+                outlined
+                color="btn-primary"
+                @update:model-value="
+                  typeof $event === 'string' &&
+                    (newArticle.commission = parseInt($event))
+                "
+              />
+            </div>
             <div class="col-12 col-md-6">
               <span class="text-base">Image</span>
               <q-file
@@ -243,6 +260,7 @@ const defaultArticleValue: INewArticleData = {
   retailPrice: 0,
   status: 'InActive',
   wholeSalePrice: 0,
+  commission: 0,
 };
 const isUpdate = ref(false);
 const isFetching = ref(false);
@@ -404,6 +422,7 @@ const handleUpdateArticle = async () => {
     wholeSalePrice,
     retailPrice,
     costPrice,
+    commission,
   } = newArticle.value;
 
   if (productImage) {
@@ -421,6 +440,7 @@ const handleUpdateArticle = async () => {
       retailPrice,
       costPrice,
       name,
+      commission,
     });
     if (res.type === 'Success') {
       $q.notify({

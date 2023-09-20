@@ -44,6 +44,12 @@ export const UserColumn: QTableColumn<IUserData>[] = [
     align: 'left',
   },
   {
+    name: 'address',
+    label: 'Address',
+    field: (row) => row.address,
+    align: 'left',
+  },
+  {
     name: 'discount',
     label: 'Discount',
     field: (row) => row.discount,

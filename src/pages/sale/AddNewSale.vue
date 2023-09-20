@@ -174,6 +174,14 @@
               </div>
             </q-td>
           </template>
+          <!-- <template v-slot:body-cell-unitWholeSalePrice="props">
+            <q-td :props="props">
+              {{ props.row.unitWholeSalePrice }}
+              <span class="ml-2">
+                <q-btn flat unelevated icon="edit" dense size="sm" />
+              </span>
+            </q-td>
+          </template> -->
           <template v-slot:body-cell-action="props" v-if="action !== 'Preview'">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
@@ -479,6 +487,11 @@ watch(addNewSale.value, (newVal: IAddNewSale) => {
     addNewSale.value.userDiscount = selectedUser.discount ?? 0;
     selectedUserDiscount.value = selectedUser.discount;
     selectedSaleRecord.value.discount = selectedUser.discount ?? 0;
+  }
+});
+window.addEventListener('keypress', function (e) {
+  if (e.key === 'n' || e.key === 'N') {
+    isArticleListModalVisible.value = true;
   }
 });
 onMounted(() => {

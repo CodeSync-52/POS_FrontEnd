@@ -14,14 +14,6 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
     sortable: true,
     field: (row) => row.purchaseId,
   },
-  // {
-  //   name: 'userid',
-  //   required: true,
-  //   label: 'User Id',
-  //   align: 'left',
-  //   sortable: true,
-  //   field: (row) => row.userId,
-  // },
   {
     name: 'fullName',
     required: true,
@@ -88,6 +80,13 @@ export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
     label: 'Quantity',
     align: 'left',
     field: (row) => row.quantity,
+  },
+  {
+    name: 'masterStock',
+    required: true,
+    label: 'Master Stock',
+    align: 'left',
+    field: (row) => row.masterStock,
   },
   {
     name: 'action',

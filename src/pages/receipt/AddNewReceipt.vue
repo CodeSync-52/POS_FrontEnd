@@ -147,15 +147,6 @@
           <template v-slot:body-cell-quantity="props">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
-                <!-- @update:model-value="
-                  typeof $event === 'string' &&
-                  (props.row.quantity = parseInt($event))
-                  @update:model-value="handleData($event,props.row.masterStock):" -->
-
-                <!-- @update:model-value="
-                  typeof $event === 'string' ?
-                      (props.row.quantity = parseInt($event)): ($event ?? 0) > props.row.masterStock ? props.row.masterStock : $event
-                  " -->
                 <q-input
                   ref="firstRow"
                   :disable="

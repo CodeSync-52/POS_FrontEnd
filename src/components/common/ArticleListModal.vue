@@ -217,9 +217,11 @@ function handleGlobalKeypress(event: KeyboardEvent) {
     if (firstUnselectedItem !== -1) {
       selected.value.push(filteredRows.value[firstUnselectedItem]);
     }
+    setTimeout(() => {
+      emit('selected-data', selectedArticles.value);
+    }, 300);
   }
 }
-
 function handleSelectFilteredArticle(event: KeyboardEvent) {
   event.stopPropagation();
   if (filter.value !== '' && filteredRows.value.length > 0) {
@@ -229,6 +231,9 @@ function handleSelectFilteredArticle(event: KeyboardEvent) {
     );
     selected.value = [...selected.value, ...arrToAdd];
   }
+  setTimeout(() => {
+    emit('selected-data', selectedArticles.value);
+  }, 300);
 }
 
 onUnmounted(() => {

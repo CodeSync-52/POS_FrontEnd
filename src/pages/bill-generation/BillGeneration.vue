@@ -172,7 +172,13 @@
                     EActionPermissions.Delete
                   ) &&
                   props.row.billStatus !== 'Cancelled' &&
-                  props.row.billStatus !== 'Completed'
+                  props.row.billStatus !== 'Completed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -197,7 +203,13 @@
                     EActionPermissions.Delete
                   ) &&
                   props.row.billStatus !== 'Cancelled' &&
-                  props.row.billStatus !== 'Completed'
+                  props.row.billStatus !== 'Completed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -254,6 +266,7 @@ import {
   IBillGenerationData,
   IBillGenerationFilter,
   IUserResponse,
+  EUserRoles,
 } from 'src/interfaces';
 import {
   billListApi,
@@ -263,6 +276,7 @@ import {
 } from 'src/services';
 import { CanceledError } from 'axios';
 import { date } from 'quasar';
+import moment from 'moment';
 const authStore = useAuthStore();
 const router = useRouter();
 const billGenerationData = ref<IBillGenerationData[]>([]);

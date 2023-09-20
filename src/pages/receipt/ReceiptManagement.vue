@@ -181,7 +181,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.purchaseStatus !== 'Cancelled' &&
-                  props.row.purchaseStatus !== 'Billed'
+                  props.row.purchaseStatus !== 'Billed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -205,7 +211,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.purchaseStatus !== 'Cancelled' &&
-                  props.row.purchaseStatus !== 'Billed'
+                  props.row.purchaseStatus !== 'Billed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -220,6 +232,7 @@
               >
             </div>
           </q-td>
+          <q-td v-else />
         </template>
         <template v-slot:no-data>
           <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
@@ -282,10 +295,12 @@ import {
   IReceiptData,
   IPagination,
   IUserResponse,
+  EUserRoles,
 } from 'src/interfaces';
 import { useAuthStore } from 'src/stores';
 import { receiptListApi, cancelReceiptApi, getUserListApi } from 'src/services';
 import { isPosError, receiptColumn, purchaseStatusOptions } from 'src/utils';
+import moment from 'moment';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const pageTitle = getRoleModuleDisplayName(EUserModules.ReceiptManagement);
