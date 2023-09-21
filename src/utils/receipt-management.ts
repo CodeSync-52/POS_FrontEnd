@@ -82,13 +82,6 @@ export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
     field: (row) => row.quantity,
   },
   {
-    name: 'masterStock',
-    required: true,
-    label: 'Master Stock',
-    align: 'left',
-    field: (row) => row.masterStock,
-  },
-  {
     name: 'action',
     label: 'Action',
     field: () => '',

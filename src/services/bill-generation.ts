@@ -111,3 +111,23 @@ export const billListApi = async (
   });
   return res;
 };
+export const updateClaimFreightApi = async ({
+  billId,
+  claim,
+  freight,
+}: {
+  billId: number;
+  claim: number;
+  freight: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: 'api/bill/claimfreight',
+    params: {
+      billId,
+      claim,
+      freight,
+    },
+  });
+  return res;
+};

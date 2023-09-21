@@ -164,7 +164,6 @@
                   "
                   filled
                   :min="1"
-                  :max="props.row.masterStock"
                   color="btn-primary"
                   style="max-width: 200px; min-width: 200px"
                 />
@@ -299,10 +298,10 @@ const isFilterChanged = ref(false);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const handleUpdateQuantity = (data: number, row: ISelectedArticleData) => {
-  if (data >= (row.masterStock ?? 0)) {
-    row.quantity = row.masterStock;
-  }
-  if (!data) {
+  // if (data >= (row.masterStock ?? 0)) {
+  //   row.quantity = row.masterStock;
+  // }
+  if (!data || data <= 0) {
     row.quantity = 0;
   }
 };

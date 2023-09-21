@@ -86,6 +86,12 @@ export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
       align: 'left',
     },
     {
+      name: 'masterStock',
+      label: 'Master Stock',
+      field: (row) => row.masterStock,
+      align: 'left',
+    },
+    {
       name: 'unitWholeSalePrice',
       label: 'Unit Wholesale Price',
       field: (row) => row.unitWholeSalePrice,

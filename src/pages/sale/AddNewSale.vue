@@ -147,185 +147,211 @@
             />
           </div>
         </div>
-        <q-table
-          v-if="selectedArticleData.length > 0"
-          :loading="isLoading"
-          tabindex="0"
-          :rows="selectedArticleData"
-          align="left"
-          :columns="selectedSalesArticleColumn"
-          row-key="name"
-        >
-          <template v-slot:body-cell-productImage="props">
-            <q-td :props="props">
-              <div
-                @click="handlePreviewImage(props.row.productImage)"
-                class="w-[50px] h-[50px] min-w-[2rem] overflow-hidden rounded-full"
-                :class="props.row.productImage ? 'cursor-pointer' : ''"
-              >
-                <img
-                  class="w-full h-full object-cover"
-                  :src="
-                    getImageUrl(props.row.productImage) ||
-                    'assets/default-image.png'
-                  "
-                  alt="img"
-                />
-              </div>
-            </q-td>
-          </template>
-          <!-- <template v-slot:body-cell-unitWholeSalePrice="props">
-            <q-td :props="props">
-              {{ props.row.unitWholeSalePrice }}
-              <span class="ml-2">
-                <q-btn flat unelevated icon="edit" dense size="sm" />
-              </span>
-            </q-td>
-          </template> -->
-          <template v-slot:body-cell-action="props" v-if="action !== 'Preview'">
-            <q-td :props="props">
-              <div class="flex gap-2 flex-nowrap">
-                <q-btn
-                  @click="saveUpdatedData(props.row)"
-                  v-if="
-                    action === 'Edit' &&
-                    authStore.checkUserHasPermission(
-                      EUserModules.SalesManagement,
-                      EActionPermissions.Update
-                    )
-                  "
-                  size="sm"
-                  flat
-                  dense
-                  unelevated
-                  :disable="props.row.quantity < 1"
-                  icon="check"
-                  color="green"
-                />
-                <q-btn
-                  v-if="
-                    action !== 'Edit' ||
-                    (action === 'Edit' &&
+        <div class="updateSaleTable">
+          <q-table
+            v-if="selectedArticleData.length > 0"
+            :loading="isLoading"
+            tabindex="0"
+            :rows="selectedArticleData"
+            align="left"
+            :columns="selectedSalesArticleColumn"
+            row-key="name"
+          >
+            <template v-slot:body-cell-productImage="props">
+              <q-td :props="props">
+                <div
+                  @click="handlePreviewImage(props.row.productImage)"
+                  class="w-[50px] h-[50px] min-w-[2rem] overflow-hidden rounded-full"
+                  :class="props.row.productImage ? 'cursor-pointer' : ''"
+                >
+                  <img
+                    class="w-full h-full object-cover"
+                    :src="
+                      getImageUrl(props.row.productImage) ||
+                      'assets/default-image.png'
+                    "
+                    alt="img"
+                  />
+                </div>
+              </q-td>
+            </template>
+            <template v-slot:body-cell-unitWholeSalePrice="props">
+              <q-td :props="props">
+                {{ props.row.unitWholeSalePrice }}
+                <span
+                  class="ml-2 updateArticleAmount"
+                  v-if="action === 'Add New'"
+                >
+                  <q-btn flat unelevated icon="edit" dense size="sm" />
+                </span>
+                <q-popup-edit
+                  :disable="action !== 'Add New'"
+                  v-model="props.row.unitWholeSalePrice"
+                  color="btn-primary"
+                  title="Update Amount"
+                  buttons
+                  v-slot="scope"
+                >
+                  <q-input
+                    :min="0"
+                    type="number"
+                    v-model="scope.value"
+                    @update:model-value="handleUpdateAmount($event, scope)"
+                    dense
+                    autofocus
+                  />
+                </q-popup-edit>
+              </q-td>
+            </template>
+            <template
+              v-slot:body-cell-action="props"
+              v-if="action !== 'Preview'"
+            >
+              <q-td :props="props">
+                <div class="flex gap-2 flex-nowrap">
+                  <q-btn
+                    @click="saveUpdatedData(props.row)"
+                    v-if="
+                      action === 'Edit' &&
                       authStore.checkUserHasPermission(
                         EUserModules.SalesManagement,
-                        EActionPermissions.Delete
-                      ))
-                  "
-                  size="sm"
-                  flat
-                  dense
-                  unelevated
-                  icon="delete"
-                  color="red"
-                  @click="onDeleteButtonClick(props.row)"
-                />
-              </div>
-            </q-td>
-          </template>
-          <template v-slot:header-cell-action v-if="action === 'Preview'">
-            <q-th> </q-th>
-          </template>
-          <template v-slot:body-cell-totalAmount="props">
-            <q-td :props="props">
-              {{ props.row.quantity * props.row.unitWholeSalePrice }}
-            </q-td>
-          </template>
-          <template v-slot:bottom-row="props">
-            <q-tr :props="props">
-              <q-td colspan="3" />
-              <q-td>
-                <div>
-                  Total Quantity:
-                  {{ saleGenerationTotalQuantity }}
-                </div>
-              </q-td>
-              <q-td colspan="2" />
-              <q-td>
-                <div>
-                  Total Amount:
-                  {{ saleGenerationTotalAmount }}
-                </div>
-              </q-td>
-            </q-tr>
-            <q-tr :props="props">
-              <q-td colspan="6" />
-              <q-td>
-                <div>
-                  Discount:
-                  {{
-                    action === 'Add New'
-                      ? selectedSaleRecord.discount *
-                        saleGenerationTotalQuantity
-                      : action === 'Edit'
-                      ? (selectedUserDiscount ?? 0) *
-                        saleGenerationTotalQuantity
-                      : selectedSaleRecord.discount
-                  }}
-                </div>
-              </q-td>
-            </q-tr>
-            <q-tr :props="props">
-              <q-td colspan="6" />
-              <q-td>
-                <div>
-                  Net Total:
-                  {{
-                    action === 'Add New'
-                      ? saleGenerationNetAmount(selectedArticleData)
-                      : action === 'Edit'
-                      ? saleGenerationTotalAmount -
-                        (selectedUserDiscount ?? 0) *
-                          saleGenerationTotalQuantity
-                      : selectedSaleRecord.netAmount
-                  }}
-                </div>
-              </q-td>
-            </q-tr>
-          </template>
-          <template v-slot:body-cell-quantity="props">
-            <q-td :props="props">
-              <div class="flex gap-2 flex-nowrap">
-                <q-input
-                  :disable="
-                    (action === 'Edit' &&
-                      !authStore.checkUserHasPermission(
-                        EUserModules.SalesManagement,
                         EActionPermissions.Update
-                      )) ||
-                    action === 'Preview'
-                  "
-                  v-model="props.row.quantity"
-                  @update:model-value="
-                    props.row.quantity = $event
-                      ? typeof $event === 'string'
-                        ? parseInt($event)
-                        : $event
-                      : 0
-                  "
-                  type="number"
-                  filled
-                  :min="1"
-                  color="btn-primary"
-                  style="max-width: 200px"
-                />
+                      )
+                    "
+                    size="sm"
+                    flat
+                    dense
+                    unelevated
+                    :disable="props.row.quantity < 1"
+                    icon="check"
+                    color="green"
+                  />
+                  <q-btn
+                    v-if="
+                      action !== 'Edit' ||
+                      (action === 'Edit' &&
+                        authStore.checkUserHasPermission(
+                          EUserModules.SalesManagement,
+                          EActionPermissions.Delete
+                        ))
+                    "
+                    size="sm"
+                    flat
+                    dense
+                    unelevated
+                    icon="delete"
+                    color="red"
+                    @click="onDeleteButtonClick(props.row)"
+                  />
+                </div>
+              </q-td>
+            </template>
+            <template v-slot:header-cell-action v-if="action === 'Preview'">
+              <q-th> </q-th>
+            </template>
+            <template v-slot:body-cell-totalAmount="props">
+              <q-td :props="props">
+                {{ props.row.quantity * props.row.unitWholeSalePrice }}
+              </q-td>
+            </template>
+            <template v-slot:bottom-row="props">
+              <q-tr :props="props">
+                <q-td colspan="3" />
+                <q-td>
+                  <div>
+                    Total Quantity:
+                    {{ saleGenerationTotalQuantity }}
+                  </div>
+                </q-td>
+
+                <q-td colspan="2" />
+                <q-td>
+                  <div>
+                    Total Amount:
+                    {{ saleGenerationTotalAmount }}
+                  </div>
+                </q-td>
+                <q-td />
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="6" />
+                <q-td>
+                  <div>
+                    Discount:
+                    {{
+                      action === 'Add New'
+                        ? selectedSaleRecord.discount *
+                          saleGenerationTotalQuantity
+                        : action === 'Edit'
+                        ? (selectedUserDiscount ?? 0) *
+                          saleGenerationTotalQuantity
+                        : selectedSaleRecord.discount
+                    }}
+                  </div>
+                </q-td>
+                <q-td />
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="6" />
+                <q-td>
+                  <div>
+                    Net Total:
+                    {{
+                      action === 'Add New'
+                        ? saleGenerationNetAmount(selectedArticleData)
+                        : action === 'Edit'
+                        ? saleGenerationTotalAmount -
+                          (selectedUserDiscount ?? 0) *
+                            saleGenerationTotalQuantity
+                        : selectedSaleRecord.netAmount
+                    }}
+                  </div>
+                </q-td>
+                <q-td />
+              </q-tr>
+            </template>
+            <template v-slot:body-cell-quantity="props">
+              <q-td :props="props">
+                <div class="flex gap-2 flex-nowrap">
+                  <q-input
+                    :disable="
+                      (action === 'Edit' &&
+                        !authStore.checkUserHasPermission(
+                          EUserModules.SalesManagement,
+                          EActionPermissions.Update
+                        )) ||
+                      action === 'Preview'
+                    "
+                    :max="props.row.masterStock"
+                    v-model="props.row.quantity"
+                    @update:model-value="
+                      handleUpdateQuantity($event, props.row)
+                    "
+                    type="number"
+                    filled
+                    :min="1"
+                    color="btn-primary"
+                    style="max-width: 200px"
+                  />
+                </div>
+              </q-td>
+            </template>
+            <template v-slot:body-cell-productName="props">
+              <q-td
+                :props="props"
+                class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+              >
+                {{ props.row.productName }}
+              </q-td>
+            </template>
+            <template v-slot:no-data>
+              <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+                <q-icon name="warning" size="xs" />
+                <span class="text-md font-medium"> No data available. </span>
               </div>
-            </q-td>
-          </template>
-          <template v-slot:body-cell-productName="props">
-            <q-td
-              :props="props"
-              class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
-            >
-              {{ props.row.productName }}
-            </q-td>
-          </template>
-          <template v-slot:no-data>
-            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-              <q-icon name="warning" size="xs" />
-              <span class="text-md font-medium"> No data available. </span>
-            </div>
-          </template>
-        </q-table>
+            </template>
+          </q-table>
+        </div>
       </q-card-section>
       <q-card-actions align="right" class="q-gutter-x-sm">
         <q-btn
@@ -356,6 +382,10 @@
             !selectedArticleData.every((item) => item.quantity) ||
             selectedArticleData.some(
               (item) => item.quantity && item.quantity < 0
+            ) ||
+            selectedArticleData.some(
+              (item) =>
+                item.unitWholeSalePrice && Number(item.unitWholeSalePrice) <= 0
             )
           "
           unelevated
@@ -510,6 +540,35 @@ onMounted(() => {
   getUserList();
   getArticleList();
 });
+function handleUpdateAmount(newVal: unknown, scope: { value: string }) {
+  function setScopeValue(val: number) {
+    scope.value = `${val}`;
+  }
+  if (typeof newVal === 'string') {
+    const val = parseFloat(newVal);
+    if (val <= 0) {
+      setScopeValue(0);
+    } else if (val > 0) {
+      setScopeValue(val);
+    }
+  }
+}
+const handleUpdateQuantity = (
+  newVal: unknown,
+  row: ISelectedWholeSaleArticleData
+) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (val >= 0 && val <= (row.masterStock ?? 0)) {
+      row.quantity = val;
+    }
+    if (val >= (row.masterStock ?? 0)) {
+      row.quantity = row.masterStock;
+    } else if (val < 0 || !val) {
+      row.quantity = 0;
+    }
+  }
+};
 const handleFilterRows = (filterChanged: boolean) => {
   if (filterChanged) {
     isFilterChanged.value = filterChanged;
@@ -550,6 +609,7 @@ const saveNewSale = async () => {
     return {
       productId: item.productId,
       quantity: item.quantity || 0,
+      unitWholeSalePrice: item.unitWholeSalePrice,
     };
   });
   addNewSale.value.productList = productList;
@@ -584,6 +644,7 @@ const selectedData = (
     productName?: string;
     unitWholeSalePrice?: number;
     productImage: string | null;
+    masterStock: number;
   }[]
 ) => {
   if (action.value !== 'Edit') {
@@ -601,7 +662,9 @@ const selectedData = (
         totalAmount: 0,
         wholeSaleDetailId: -1,
         productImage: item.productImage,
+        masterStock: item.masterStock,
       });
+
       if (action.value === 'Edit') {
         addWholeSaleDetailApi({
           productId: item.productId,

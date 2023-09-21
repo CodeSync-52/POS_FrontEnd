@@ -23,8 +23,6 @@ export interface IBillDetail {
   purchaseDate: string;
   totalPurchaseQuantity: number;
   quantity: number;
-  claim?: number;
-  freight?: number;
 }
 export interface IProductInfoDetailList {
   amount: number;
@@ -56,8 +54,8 @@ export interface IBillGenerationDetailsInfoData {
   fullName: string;
   productList: IBillGenerationDetailsInfoProductList[];
   totalAmount: number;
-  claim?: number;
-  freight?: number;
+  claim: number;
+  freight: number;
 }
 export interface IBillGenerationDetailsInfoProductList {
   amount: number;

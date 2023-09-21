@@ -40,6 +40,7 @@ export interface IWholeSaleDetailsData {
   wholeSaleDetailId: number;
   productName?: string;
   productImage: string | null;
+  masterStock?: number;
 }
 export interface IWholesaleProductList {
   productId: number;
