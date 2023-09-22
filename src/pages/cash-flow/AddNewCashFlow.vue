@@ -69,16 +69,12 @@
               <span class="text-base font-medium">Amount</span>
               <q-input
                 :min="0"
-                type="tel"
+                type="number"
                 label="Amount"
-                mask="#######"
                 dense
                 outlined
                 v-model="addNewFlow.amount"
-                @update:model-value="
-                  typeof $event === 'string' &&
-                    (addNewFlow.amount = parseInt($event))
-                "
+                @update:model-value="handleUpdateAmount($event)"
               />
             </div>
           </div>
@@ -150,6 +146,16 @@ const addNewFlow = ref<{
 const userList = ref<IUserResponse[]>([]);
 const options = ref<IUserResponse[]>([]);
 const optionsSU = ref<IUserResponse[]>([]);
+const handleUpdateAmount = (newVal: string | number | null) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (!val || val <= 0) {
+      addNewFlow.value.amount = 0;
+    } else if (val > 0) {
+      addNewFlow.value.amount = val;
+    }
+  }
+};
 const handleAddNewFlow = async () => {
   if (isAdding.value) return;
   isAdding.value = true;

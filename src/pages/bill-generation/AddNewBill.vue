@@ -61,6 +61,7 @@
               dense
               label="Claim Amount"
               outlined
+              @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
             />
           </div>
           <div class="col-6">
@@ -72,6 +73,9 @@
               :min="0"
               label="Freight User"
               outlined
+              @update:model-value="
+                handleUpdateClaimOrFreight($event, 'freight')
+              "
             />
           </div>
         </div>
@@ -267,6 +271,7 @@
               dense
               label="Claim Amount"
               outlined
+              @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
             />
           </div>
           <div class="col-6">
@@ -279,6 +284,9 @@
               :min="0"
               label="Freight User"
               outlined
+              @update:model-value="
+                handleUpdateClaimOrFreight($event, 'freight')
+              "
             />
           </div>
         </div>
@@ -375,7 +383,7 @@
           :loading="isUpdating"
           :disable="
             billGenerationDetailsInfoData.productList.some(
-              (row) => row.amount === 0
+              (row) => Number(row.amount) === 0
             )
           "
           color="btn-primary"
@@ -471,6 +479,19 @@ onMounted(() => {
     billAction.value = 'Add New';
   }
 });
+const handleUpdateClaimOrFreight = (
+  newVal: unknown,
+  selectedKey: 'claim' | 'freight'
+) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (val <= 0 || !val) {
+      billGenerationDetailsInfoData.value[selectedKey] = 0;
+    } else {
+      billGenerationDetailsInfoData.value[selectedKey] = val;
+    }
+  }
+};
 const handleUpdateBill = () => {
   const { billId, claim, freight } = billGenerationDetailsInfoData.value;
   const productList = billGenerationDetailsInfoData.value.productList.map(
@@ -588,7 +609,7 @@ const getBillDetailInfo = async (BillId: number) => {
         billGenerationDetailsInfoData.value = res.data;
         billGenerationDetailsInfoData.value.createdDate = moment(
           res.data.createdDate
-        ).format('DD-MM-YYYY');
+        ).format('YYYY-MM-DD');
 
         tableItems.value = await convertArray(res.data.productList);
       }
@@ -693,7 +714,7 @@ function handleAmountUpdate(newVal: unknown, scope: { value: string }) {
     const val = parseFloat(newVal);
     if (val > 0) {
       setScopeValue(val);
-    } else if (val <= 0) {
+    } else if (val <= 0 || !val) {
       setScopeValue(0);
     }
   }
@@ -774,6 +795,14 @@ function downloadPdfData() {
     {
       heading: 'Date',
       content: billGenerationDetailsInfoData.value.createdDate,
+    },
+    {
+      heading: 'Claim Amount',
+      content: billGenerationDetailsInfoData.value.claim,
+    },
+    {
+      heading: 'Freight Amount',
+      content: billGenerationDetailsInfoData.value.freight,
     },
   ];
   const fileTitle = 'Bill';

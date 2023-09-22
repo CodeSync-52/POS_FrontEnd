@@ -24,8 +24,30 @@
     >
       <q-select
         dense
-        outlined
         style="min-width: 200px"
+        outlined
+        v-model="filterSearch.customerGroupId"
+        :options="customerGroupList"
+        map-options
+        @update:model-value="
+          filterSearch.customerGroupId = $event.customerGroupId
+        "
+        :loading="isCustomerGroupListLoading"
+        label="Customer Group"
+        option-label="name"
+        option-value="customerGroupId"
+        color="btn-primary"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <q-select
+        dense
+        outlined
+        style="min-width: 200px; max-width: 200px"
         use-input
         @filter="filterFn"
         v-model="filterSearch.userId"
@@ -296,9 +318,15 @@ import {
   IPagination,
   IUserResponse,
   EUserRoles,
+  ICustomerListResponse,
 } from 'src/interfaces';
 import { useAuthStore } from 'src/stores';
-import { receiptListApi, cancelReceiptApi, getUserListApi } from 'src/services';
+import {
+  receiptListApi,
+  cancelReceiptApi,
+  getUserListApi,
+  getCustomerGroupList,
+} from 'src/services';
 import { isPosError, receiptColumn, purchaseStatusOptions } from 'src/utils';
 import moment from 'moment';
 const authStore = useAuthStore();
@@ -329,17 +357,20 @@ const filterSearch = ref<{
   startDate: null | string;
   endDate: null | string;
   purchaseStatus: null | string;
+  customerGroupId: null | number;
 }>({
   userId: null,
   userName: null,
   startDate: formattedFromDate,
   endDate: formattedToDate,
   purchaseStatus: null,
+  customerGroupId: null,
 });
 
 onMounted(() => {
   getReceiptList();
   getUserList();
+  getCustomerListOption();
 });
 onUnmounted(() => {
   if (apiController.value) {
@@ -348,6 +379,7 @@ onUnmounted(() => {
 });
 const UserList = ref<IUserResponse[]>([]);
 const options = ref<IUserResponse[]>([]);
+const customerGroupList = ref<ICustomerListResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
@@ -356,7 +388,9 @@ const getUserList = async () => {
       pageSize: 500,
     });
     if (res?.data) {
-      UserList.value = res.data.items;
+      UserList.value = res.data.items.filter(
+        (user) => user.status === 'Active'
+      );
       options.value = res.data.items;
     }
   } catch (e) {
@@ -383,6 +417,7 @@ const handleResetFilter = () => {
     startDate: null,
     endDate: null,
     purchaseStatus: null,
+    customerGroupId: null,
   };
   getReceiptList();
 };
@@ -393,6 +428,7 @@ const handleCancelReceiptPopup = (selectedRow: IReceiptData) => {
   selectedRowData.value = selectedRow;
   isCancelReceiptModalVisible.value = true;
 };
+const isCustomerGroupListLoading = ref(false);
 const handleCancelReceipt = async () => {
   if (isCancellingReceipt.value) return;
   isCancellingReceipt.value = true;
@@ -473,4 +509,31 @@ const filterFn = (val: string, update: any) => {
     );
   });
 };
+async function getCustomerListOption() {
+  if (isCustomerGroupListLoading.value) return;
+  isCustomerGroupListLoading.value = true;
+  try {
+    const res = await getCustomerGroupList({
+      pageNumber: 1,
+      pageSize: 200,
+    });
+    if (res?.data) {
+      customerGroupList.value = res?.data.items.filter(
+        (customerGroup) => customerGroup.status === 'Active'
+      );
+    }
+    isCustomerGroupListLoading.value = false;
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+    isCustomerGroupListLoading.value = false;
+  }
+}
 </script>

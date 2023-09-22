@@ -15,6 +15,7 @@ export interface ISalesFilterSearch {
   startDate: null | string;
   endDate: null | string;
   wholeSaleStatus: null | string;
+  customerGroupId: null | number;
 }
 export interface ISelectedSalesDetailData {
   createdBy: string;

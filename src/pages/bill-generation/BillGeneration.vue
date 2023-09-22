@@ -10,8 +10,30 @@
     >
       <q-select
         dense
-        outlined
         style="min-width: 200px"
+        outlined
+        v-model="filterSearch.customerGroupId"
+        :options="customerGroupList"
+        map-options
+        @update:model-value="
+          filterSearch.customerGroupId = $event.customerGroupId
+        "
+        :loading="isCustomerGroupListLoading"
+        label="Customer Group"
+        option-label="name"
+        option-value="customerGroupId"
+        color="btn-primary"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <q-select
+        dense
+        outlined
+        style="min-width: 200px; max-width: 200px"
         v-model="filterSearch.userId"
         @update:model-value="filterSearch.userId = $event.userId"
         use-input
@@ -267,11 +289,13 @@ import {
   IBillGenerationFilter,
   IUserResponse,
   EUserRoles,
+  ICustomerListResponse,
 } from 'src/interfaces';
 import {
   billListApi,
   cancelBillApi,
   completeBillApi,
+  getCustomerGroupList,
   getUserListApi,
 } from 'src/services';
 import { CanceledError } from 'axios';
@@ -295,6 +319,8 @@ const isCancelOrGenerateBillModalVisible = ref(false);
 const selectedRowData = ref<IBillGenerationData | null>(null);
 const apiController = ref<AbortController | null>(null);
 const timeStamp = Date.now();
+const isCustomerGroupListLoading = ref(false);
+const customerGroupList = ref<ICustomerListResponse[]>([]);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
@@ -304,10 +330,12 @@ const filterSearch = ref<IBillGenerationFilter>({
   ToDate: formattedToDate,
   FromDate: formattedFromDate,
   billStatus: null,
+  customerGroupId: null,
 });
 onMounted(() => {
   getBillList();
   getUserList();
+  getCustomerListOption();
 });
 onUnmounted(() => {
   if (apiController.value) {
@@ -324,7 +352,9 @@ const getUserList = async () => {
       pageSize: 500,
     });
     if (res?.data) {
-      UserList.value = res.data.items;
+      UserList.value = res.data.items.filter(
+        (user) => user.status === 'Active'
+      );
       options.value = res.data.items;
     }
   } catch (e) {
@@ -351,6 +381,7 @@ const resetFilter = () => {
     ToDate: null,
     FromDate: null,
     billStatus: null,
+    customerGroupId: null,
   };
   getBillList();
 };
@@ -463,4 +494,31 @@ const filterFn = (val: string, update: any) => {
     );
   });
 };
+async function getCustomerListOption() {
+  if (isCustomerGroupListLoading.value) return;
+  isCustomerGroupListLoading.value = true;
+  try {
+    const res = await getCustomerGroupList({
+      pageNumber: 1,
+      pageSize: 200,
+    });
+    if (res?.data) {
+      customerGroupList.value = res?.data.items.filter(
+        (customerGroup) => customerGroup.status === 'Active'
+      );
+    }
+    isCustomerGroupListLoading.value = false;
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+    isCustomerGroupListLoading.value = false;
+  }
+}
 </script>

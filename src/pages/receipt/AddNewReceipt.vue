@@ -81,7 +81,6 @@
           align="left"
           :columns="selectedArticleColumn"
           row-key="name"
-          hide-pagination
         >
           <template v-slot:body-cell-image="props">
             <q-td :props="props" class="!h-[71px]">
@@ -199,13 +198,6 @@
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
         <q-btn
-          v-if="isEdit"
-          unelevated
-          label="Print"
-          color="btn-primary"
-          @click="handlePrintReceipt"
-        />
-        <q-btn
           unelevated
           :label="isReceiptPreview ? 'Close' : 'Go Back'"
           color="btn-cancel hover:bg-btn-cancel-hover"
@@ -298,9 +290,6 @@ const isFilterChanged = ref(false);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const handleUpdateQuantity = (data: number, row: ISelectedArticleData) => {
-  // if (data >= (row.masterStock ?? 0)) {
-  //   row.quantity = row.masterStock;
-  // }
   if (!data || data <= 0) {
     row.quantity = 0;
   }
@@ -342,10 +331,6 @@ const getImageUrl = (base64Image: string | null) => {
     return `data:image/png;base64,${base64Image}`;
   }
   return '';
-};
-const handlePrintReceipt = () => {
-  isEdit.value = false;
-  isReceiptPreview.value = true;
 };
 const selectedData = (
   payload: {
@@ -462,7 +447,9 @@ const getUserList = async () => {
       pageSize: 500,
     });
     if (res?.data) {
-      UserList.value = res.data.items;
+      UserList.value = res.data.items.filter(
+        (user) => user.status === 'Active'
+      );
       options.value = res.data.items;
     }
   } catch (e) {

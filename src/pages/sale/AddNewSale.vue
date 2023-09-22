@@ -354,13 +354,6 @@
         </div>
       </q-card-section>
       <q-card-actions align="right" class="q-gutter-x-sm">
-        <q-btn
-          v-if="action === 'Edit'"
-          unelevated
-          label="Print"
-          color="btn-primary"
-          @click="action = 'Preview'"
-        />
         <router-link to="/sale">
           <q-btn
             unelevated
@@ -546,7 +539,7 @@ function handleUpdateAmount(newVal: unknown, scope: { value: string }) {
   }
   if (typeof newVal === 'string') {
     const val = parseFloat(newVal);
-    if (val <= 0) {
+    if (val <= 0 || !val) {
       setScopeValue(0);
     } else if (val > 0) {
       setScopeValue(val);
@@ -736,7 +729,9 @@ const getArticleList = async (data?: {
     });
     if (res.type === 'Success') {
       if (res.data) {
-        articleList.value = res.data.items;
+        articleList.value = res.data.items.filter(
+          (article) => article.status === 'Active'
+        );
         pagination.value.rowsNumber = res.data.totalItemCount;
       }
     }

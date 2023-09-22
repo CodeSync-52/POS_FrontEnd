@@ -48,7 +48,7 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
   },
   {
     name: 'mstock',
-    label: 'M.Stock',
+    label: 'Available Stock',
     align: 'left',
     field: (row) => row.masterStock,
   },

@@ -607,7 +607,9 @@ async function getCustomerListOption() {
       pageSize: 200,
     });
     if (res?.data) {
-      customerGroupList.value = res?.data.items;
+      customerGroupList.value = res?.data.items.filter(
+        (customerGroup) => customerGroup.status === 'Active'
+      );
     }
     isCustomerGroupListLoading.value = false;
   } catch (e) {

@@ -28,6 +28,7 @@
         :max="filterSearch.ToDate"
         type="date"
         dense
+        style="min-width: 150px; max-width: 150px"
         label="From Date"
         outlined
         color="btn-primary"
@@ -35,6 +36,7 @@
       <q-input
         :min="filterSearch.FromDate"
         v-model="filterSearch.ToDate"
+        style="min-width: 150px; max-width: 150px"
         type="date"
         dense
         outlined

@@ -87,7 +87,7 @@ export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
     },
     {
       name: 'masterStock',
-      label: 'Master Stock',
+      label: 'Available Stock',
       field: (row) => row.masterStock,
       align: 'left',
     },

@@ -160,10 +160,10 @@ watch(
   (newSelected: IArticleData[]) => {
     selectedArticles.value = newSelected.map((article) => ({
       productId: article.productId,
-      productName: article.name,
-      unitWholeSalePrice: article.wholeSalePrice,
+      productName: article.name ?? '',
+      unitWholeSalePrice: article.wholeSalePrice ?? 0,
       productImage: article.productImage,
-      masterStock: article.masterStock,
+      masterStock: article.masterStock ?? 0,
     }));
   },
   {
