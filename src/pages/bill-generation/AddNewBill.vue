@@ -262,7 +262,7 @@
           >
             Enter to Edit Claim or Freight:
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <q-input
               :min="0"
               :disable="router.currentRoute.value.fullPath.includes('preview')"
@@ -274,7 +274,7 @@
               @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
             />
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <q-input
               type="number"
               maxlength="250"
@@ -287,6 +287,15 @@
               @update:model-value="
                 handleUpdateClaimOrFreight($event, 'freight')
               "
+            />
+          </div>
+          <div class="col-4">
+            <q-btn
+              v-if="billAction !== 'Preview Bill'"
+              label="Update Claim Freight"
+              :loading="isUpdating"
+              color="btn-primary"
+              @click="handleUpdateClaimFreight"
             />
           </div>
         </div>
@@ -493,7 +502,7 @@ const handleUpdateClaimOrFreight = (
   }
 };
 const handleUpdateBill = () => {
-  const { billId, claim, freight } = billGenerationDetailsInfoData.value;
+  const { billId } = billGenerationDetailsInfoData.value;
   const productList = billGenerationDetailsInfoData.value.productList.map(
     ({ productId, amount }) => ({
       productId,
@@ -501,6 +510,9 @@ const handleUpdateBill = () => {
     })
   );
   updateExistingBill(billId, productList);
+};
+const handleUpdateClaimFreight = () => {
+  const { billId, claim, freight } = billGenerationDetailsInfoData.value;
   updateClaimFreight({ billId, claim, freight });
 };
 const handleBillSaveAsDraft = () => {
@@ -663,7 +675,10 @@ const updateClaimFreight = async ({
   try {
     const res = await updateClaimFreightApi({ billId, claim, freight });
     if (res.type === 'Success') {
-      router.push('/bill-generation');
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred updating Freight and Claim';

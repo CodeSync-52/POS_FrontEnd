@@ -84,12 +84,6 @@
           label="Clear"
           @click="resetFilter"
         />
-        <q-btn
-          unelevated
-          color=""
-          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-          label="Export as CSV"
-        />
       </div>
     </div>
 
