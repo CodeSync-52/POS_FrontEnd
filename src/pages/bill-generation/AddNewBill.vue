@@ -679,6 +679,7 @@ const updateClaimFreight = async ({
         message: res.message,
         color: 'green',
       });
+      getBillDetailInfo(billId);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred updating Freight and Claim';
