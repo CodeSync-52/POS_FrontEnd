@@ -48,6 +48,37 @@
             />
           </div>
         </div>
+        <q-separator class="mb-2" color="orange" inset />
+        <div class="row q-mb-md q-col-gutter-md">
+          <div class="col-12 text-bold text-base">
+            Enter to Claim or Freight:
+          </div>
+          <div class="col-6">
+            <q-input
+              :min="0"
+              type="number"
+              v-model="billGenerationDetailsInfoData.claim"
+              dense
+              label="Claim Amount"
+              outlined
+              @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              type="number"
+              maxlength="250"
+              v-model="billGenerationDetailsInfoData.freight"
+              dense
+              :min="0"
+              label="Freight User"
+              outlined
+              @update:model-value="
+                handleUpdateClaimOrFreight($event, 'freight')
+              "
+            />
+          </div>
+        </div>
         <div class="updateBillTable">
           <q-table
             :loading="isLoading"
@@ -79,10 +110,8 @@
                   v-slot="scope"
                 >
                   <q-input
-                    type="tel"
                     :min="0"
-                    :max="9999"
-                    mask="####"
+                    type="number"
                     v-model="scope.value"
                     @update:model-value="handleAmountUpdate($event, scope)"
                     dense
@@ -113,6 +142,24 @@
                 <q-td colspan="4" />
                 <q-td>
                   <div>
+                    Claim:
+                    {{ billGenerationDetailsInfoData.claim || 0 }}
+                  </div>
+                </q-td>
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="4" />
+                <q-td>
+                  <div>
+                    Freight:
+                    {{ billGenerationDetailsInfoData.freight || 0 }}
+                  </div>
+                </q-td>
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="4" />
+                <q-td>
+                  <div>
                     Total:
                     {{ BillGenerationTotalAmount }}
                   </div>
@@ -122,7 +169,7 @@
             <template v-slot:no-data>
               <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
                 <q-icon name="warning" size="xs" />
-                <span class="text-h5 font-medium"> No data available. </span>
+                <span class="text-md font-medium"> No data available. </span>
               </div>
             </template>
           </q-table>
@@ -145,7 +192,7 @@
           :loading="isSavingDraft"
           :disable="
             billGenerationData.productInfoDetailList.some(
-              (row) => row.amount === 0
+              (row) => Number(row.amount) === 0
             )
           "
           color="btn-primary"
@@ -202,6 +249,47 @@
             />
           </div>
         </div>
+        <q-separator
+          v-if="!router.currentRoute.value.fullPath.includes('preview')"
+          class="mb-2"
+          color="orange"
+          inset
+        />
+        <div class="row q-mb-md q-col-gutter-md">
+          <div
+            v-if="!router.currentRoute.value.fullPath.includes('preview')"
+            class="col-12 text-bold text-base"
+          >
+            Enter to Edit Claim or Freight:
+          </div>
+          <div class="col-6">
+            <q-input
+              :min="0"
+              :disable="router.currentRoute.value.fullPath.includes('preview')"
+              type="number"
+              v-model="billGenerationDetailsInfoData.claim"
+              dense
+              label="Claim Amount"
+              outlined
+              @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              type="number"
+              maxlength="250"
+              :disable="router.currentRoute.value.fullPath.includes('preview')"
+              v-model="billGenerationDetailsInfoData.freight"
+              dense
+              :min="0"
+              label="Freight User"
+              outlined
+              @update:model-value="
+                handleUpdateClaimOrFreight($event, 'freight')
+              "
+            />
+          </div>
+        </div>
         <div class="updateBillTable">
           <q-table
             :loading="isLoading"
@@ -236,10 +324,8 @@
                   v-slot="scope"
                 >
                   <q-input
-                    type="tel"
                     :min="0"
-                    :max="9999"
-                    mask="####"
+                    type="number"
                     v-model="scope.value"
                     @update:model-value="handleAmountUpdate($event, scope)"
                     dense
@@ -287,13 +373,6 @@
       </q-card-section>
       <q-card-actions class="row justify-end">
         <q-btn
-          v-if="billAction === 'Update bill'"
-          unelevated
-          label="Print"
-          color="btn-primary"
-          @click="billAction = 'Preview Bill'"
-        />
-        <q-btn
           :label="billAction !== 'Preview Bill' ? 'Cancel' : 'Close'"
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/bill-generation')"
@@ -304,7 +383,7 @@
           :loading="isUpdating"
           :disable="
             billGenerationDetailsInfoData.productList.some(
-              (row) => row.amount === 0
+              (row) => Number(row.amount) === 0
             )
           "
           color="btn-primary"
@@ -342,6 +421,7 @@ import {
   addBillApi,
   billDetailInfoApi,
   updateBillApi,
+  updateClaimFreightApi,
 } from 'src/services';
 import moment from 'moment';
 import {
@@ -368,6 +448,8 @@ const billGenerationDetailsInfoData = ref<IBillGenerationDetailsInfoData>({
   fullName: '',
   productList: [],
   totalAmount: 0,
+  claim: 0,
+  freight: 0,
 });
 const billGenerationData = ref<IBillDetail>({
   userId: 0,
@@ -397,8 +479,21 @@ onMounted(() => {
     billAction.value = 'Add New';
   }
 });
+const handleUpdateClaimOrFreight = (
+  newVal: unknown,
+  selectedKey: 'claim' | 'freight'
+) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (val <= 0 || !val) {
+      billGenerationDetailsInfoData.value[selectedKey] = 0;
+    } else {
+      billGenerationDetailsInfoData.value[selectedKey] = val;
+    }
+  }
+};
 const handleUpdateBill = () => {
-  const billId = billGenerationDetailsInfoData.value.billId;
+  const { billId, claim, freight } = billGenerationDetailsInfoData.value;
   const productList = billGenerationDetailsInfoData.value.productList.map(
     ({ productId, amount }) => ({
       productId,
@@ -406,14 +501,17 @@ const handleUpdateBill = () => {
     })
   );
   updateExistingBill(billId, productList);
+  updateClaimFreight({ billId, claim, freight });
 };
 const handleBillSaveAsDraft = () => {
   const newBillInfo = {
     purchaseId: Number(selectedId),
+    claim: Number(billGenerationDetailsInfoData.value.claim) || 0,
+    freight: Number(billGenerationDetailsInfoData.value.freight) || 0,
     productList: billGenerationData.value.productInfoDetailList.map(
       ({ productId, amount, image, productName }) => ({
         productId,
-        amount,
+        amount: Number(amount),
         image,
         name: productName,
       })
@@ -423,16 +521,36 @@ const handleBillSaveAsDraft = () => {
 };
 const formattedPurchaseDate = computed(() => {
   if (billGenerationData.value.purchaseDate) {
-    return moment(billGenerationData.value.purchaseDate).format('DD/MM/YYYY');
+    const date = moment(billGenerationData.value.purchaseDate);
+    return date.format('YYYY-MM-DD');
   }
   return '';
 });
+
 const BillGenerationTotalAmount = computed(() => {
   const rows = billGenerationData.value.productInfoDetailList;
-  return rows.reduce((total: number, row: IProductInfoDetailList) => {
-    return total + row.quantity * row.amount;
+  let total = rows.reduce((subtotal: number, row: IProductInfoDetailList) => {
+    return subtotal + row.quantity * row.amount;
   }, 0);
+
+  if (
+    billGenerationDetailsInfoData.value.claim &&
+    billGenerationDetailsInfoData.value.claim > 0
+  ) {
+    const claimAsNumber = Number(billGenerationDetailsInfoData.value.claim);
+    total -= claimAsNumber;
+  }
+  if (
+    billGenerationDetailsInfoData.value.freight &&
+    billGenerationDetailsInfoData.value.freight > 0
+  ) {
+    const freightAsNumber = Number(billGenerationDetailsInfoData.value.freight);
+    total += freightAsNumber;
+  }
+
+  return total;
 });
+
 const BillGenerationDetailsInfoTotalAmount = computed(() => {
   const rows = billGenerationDetailsInfoData.value.productList;
   return rows.reduce(
@@ -491,7 +609,7 @@ const getBillDetailInfo = async (BillId: number) => {
         billGenerationDetailsInfoData.value = res.data;
         billGenerationDetailsInfoData.value.createdDate = moment(
           res.data.createdDate
-        ).format('DD-MM-YYYY');
+        ).format('YYYY-MM-DD');
 
         tableItems.value = await convertArray(res.data.productList);
       }
@@ -533,6 +651,31 @@ const getBillDetails = async (purchaseId: number) => {
   }
   isLoading.value = false;
 };
+const updateClaimFreight = async ({
+  billId,
+  claim,
+  freight,
+}: {
+  billId: number;
+  claim: number;
+  freight: number;
+}) => {
+  try {
+    const res = await updateClaimFreightApi({ billId, claim, freight });
+    if (res.type === 'Success') {
+      router.push('/bill-generation');
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred updating Freight and Claim';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+};
 const updateExistingBill = async (
   billId: number,
   productList: IUpdatedBillProductList[]
@@ -569,11 +712,9 @@ function handleAmountUpdate(newVal: unknown, scope: { value: string }) {
   }
   if (typeof newVal === 'string') {
     const val = parseFloat(newVal);
-    if (val >= 0 && val <= 9999) {
+    if (val > 0) {
       setScopeValue(val);
-    } else if (val > 9999) {
-      setScopeValue(9999);
-    } else {
+    } else if (val <= 0 || !val) {
       setScopeValue(0);
     }
   }
@@ -654,6 +795,14 @@ function downloadPdfData() {
     {
       heading: 'Date',
       content: billGenerationDetailsInfoData.value.createdDate,
+    },
+    {
+      heading: 'Claim Amount',
+      content: billGenerationDetailsInfoData.value.claim,
+    },
+    {
+      heading: 'Freight Amount',
+      content: billGenerationDetailsInfoData.value.freight,
     },
   ];
   const fileTitle = 'Bill';

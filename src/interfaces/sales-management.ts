@@ -15,6 +15,7 @@ export interface ISalesFilterSearch {
   startDate: null | string;
   endDate: null | string;
   wholeSaleStatus: null | string;
+  customerGroupId: null | number;
 }
 export interface ISelectedSalesDetailData {
   createdBy: string;
@@ -40,6 +41,7 @@ export interface IWholeSaleDetailsData {
   wholeSaleDetailId: number;
   productName?: string;
   productImage: string | null;
+  masterStock?: number;
 }
 export interface IWholesaleProductList {
   productId: number;
@@ -63,4 +65,5 @@ export interface ISelectedWholeSaleArticleData {
   productImage: string | null;
   unitWholeSalePrice?: number;
   totalAmount?: number;
+  masterStock?: number;
 }

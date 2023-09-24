@@ -10,12 +10,6 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
     field: (row) => row.wholeSaleId,
     align: 'left',
   },
-  // {
-  //   name: 'userId',
-  //   label: 'User Id',
-  //   field: (row) => row.userId,
-  //   align: 'left',
-  // },
   {
     name: 'fullName',
     label: 'Full Name',
@@ -89,6 +83,12 @@ export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
       name: 'quantity',
       label: 'Quantity',
       field: (row) => row.quantity,
+      align: 'left',
+    },
+    {
+      name: 'masterStock',
+      label: 'Available Stock',
+      field: (row) => row.masterStock,
       align: 'left',
     },
     {

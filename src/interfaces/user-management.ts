@@ -31,6 +31,7 @@ export type IUserData = {
   isPhnNumberAsUserNumber?: boolean; // do not post
   status: string;
   discount: number;
+  address: string;
   customerGroup: null | any;
 } & IUserManagementData;
 export interface IUserResponse {
@@ -45,6 +46,7 @@ export interface IUserResponse {
   status?: string;
   userId?: number;
   userName: string;
+  address: string;
 }
 export interface IUserFilterList {
   customerGroupId: number | null;

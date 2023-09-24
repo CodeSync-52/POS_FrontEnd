@@ -68,21 +68,35 @@ export const downloadPdf = async ({
     }
   });
 
-  const docData = {
-    content: [
-      content,
-      {
-        marginTop: 10,
-        layout: 'lightHorizontalLines',
-        table: {
-          headerRows: 1,
-          widths: tableData[0].map(() => '*'),
-          body: tableData,
-        },
-      },
-    ],
-  };
+  // const docData = {
+  //   content: [
+  //     content,
+  //     {
+  //       marginTop: 10,
+  //       layout: 'lightHorizontalLines',
+  //       table: {
+  //         headerRows: 1,
+  //         widths: tableData[0].map(() => '*'),
+  //         body: tableData,
+  //       },
+  //     },
+  //   ],
+  // };
 
+  // replace this code if you want to print only headers and not table
+
+  if (tableData && tableData.length > 0) {
+    content.push({
+      marginTop: 10,
+      layout: 'lightHorizontalLines',
+      table: {
+        headerRows: 1,
+        widths: tableData[0].map(() => '*'),
+        body: tableData,
+      },
+    });
+  }
+  const docData = { content };
   if (title !== '') {
     docData.content.unshift({
       text: title,

@@ -14,14 +14,6 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
     sortable: true,
     field: (row) => row.purchaseId,
   },
-  // {
-  //   name: 'userid',
-  //   required: true,
-  //   label: 'User Id',
-  //   align: 'left',
-  //   sortable: true,
-  //   field: (row) => row.userId,
-  // },
   {
     name: 'fullName',
     required: true,

@@ -28,6 +28,7 @@
         :max="filterSearch.ToDate"
         type="date"
         dense
+        style="min-width: 150px; max-width: 150px"
         label="From Date"
         outlined
         color="btn-primary"
@@ -35,6 +36,7 @@
       <q-input
         :min="filterSearch.FromDate"
         v-model="filterSearch.ToDate"
+        style="min-width: 150px; max-width: 150px"
         type="date"
         dense
         outlined
@@ -148,6 +150,7 @@ import {
   getRoleModuleDisplayName,
   ICashFlowRecords,
 } from 'src/interfaces';
+import { date } from 'quasar';
 import { cashFlowListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
@@ -158,10 +161,14 @@ const pageTitle = getRoleModuleDisplayName(
 );
 const isPreviewCashFlowModalVisible = ref(false);
 const isLoading = ref(false);
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const $q = useQuasar();
 const filterSearch = ref({
-  FromDate: null,
-  ToDate: null,
+  FromDate: formattedFromDate || null,
+  ToDate: formattedToDate || null,
 });
 const cashFlowRecords = ref<ICashFlowRecords[]>([]);
 const handleResetFilter = () => {

@@ -16,7 +16,6 @@
           row-key="categoryId"
           :rows="articleCategory"
           align="left"
-          hide-bottom
         >
           <template v-slot:header="props">
             <q-tr :props="props">

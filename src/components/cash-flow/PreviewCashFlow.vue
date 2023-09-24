@@ -1,5 +1,5 @@
 <template>
-  <q-card class="">
+  <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="text-lg font-medium row justify-between mb-2">
         <span>Preview Cash Flow</span>
@@ -73,6 +73,12 @@
     </q-card-section>
     <q-card-actions align="right">
       <q-btn
+        label="download Pdf"
+        unelevated
+        color="btn-primary"
+        @click="downloadPdfData"
+      />
+      <q-btn
         label="close"
         color=""
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
@@ -86,22 +92,29 @@
 import { onMounted, ref } from 'vue';
 import { ICashFlowRecords } from '../../interfaces';
 import moment from 'moment';
+import {
+  ITableHeaders,
+  ITableItems,
+  downloadPdf,
+} from 'src/utils/pdf-make/pdf-make';
 interface IProps {
   selectedData: ICashFlowRecords | null;
 }
 const props = withDefaults(defineProps<IProps>(), {
   selectedData: null,
 });
-const previewCashFlow = ref({
-  amount: 0,
-  cashFlowStatus: '',
-  createdBy: null,
+const previewCashFlow = ref<ICashFlowRecords>({
+  targetUserId: -1,
   sourceUserId: -1,
   sourceUserName: '',
-  targetUserId: -1,
   targetUserName: '',
+  cashFlowStatus: '',
   transactionDate: '',
+  createdBy: null,
+  amount: 0,
+  comments: '',
 });
+const tableItems = ref<ITableItems[][]>([]);
 onMounted(() => {
   if (props.selectedData) {
     previewCashFlow.value = props.selectedData;
@@ -109,5 +122,76 @@ onMounted(() => {
       props.selectedData.transactionDate
     ).format('YYYY-MM-DD');
   }
+  async () => {
+    if (props.selectedData) {
+      tableItems.value = await convertArrayToPdfData([props.selectedData]);
+    }
+  };
 });
+async function convertArrayToPdfData(array: ICashFlowRecords[]) {
+  const tableStuff = [];
+  const headerRow = [
+    'Source Username',
+    'Target Name',
+    'Amount',
+    'Transaction Date',
+    'Comments',
+  ];
+  tableStuff.push(headerRow);
+  array.forEach((item: ICashFlowRecords) => {
+    const row = [
+      item.sourceUserName,
+      item.targetUserName,
+      item.amount,
+      item.transactionDate,
+      item.comments,
+    ];
+    tableStuff.push(row);
+  });
+  return tableStuff;
+}
+function downloadPdfData() {
+  const {
+    amount,
+    transactionDate,
+    comments,
+    targetUserName,
+    sourceUserName,
+    cashFlowStatus,
+  } = previewCashFlow.value;
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'Source Username',
+      content: sourceUserName,
+    },
+    {
+      heading: 'target Username',
+      content: targetUserName,
+    },
+    {
+      heading: 'Amount',
+      content: amount,
+    },
+    {
+      heading: 'Transaction Date',
+      content: moment(transactionDate).format('DD-MM-YYYY'),
+    },
+    {
+      heading: 'Comments',
+      content: comments || 'N/A',
+    },
+    {
+      heading: 'CashFlow Status',
+      content: cashFlowStatus,
+    },
+  ];
+  const fileTitle = 'CashFlow Report';
+  const myFileName = 'CashFlow.pdf';
+  downloadPdf({
+    filename: myFileName,
+    tableHeaders: headers,
+    tableData: [],
+    title: fileTitle,
+  });
+}
 </script>

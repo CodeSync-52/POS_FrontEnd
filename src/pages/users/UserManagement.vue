@@ -119,6 +119,14 @@
         >
           <q-th></q-th>
         </template>
+        <template v-slot:body-cell-address="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.address || '-' }}
+          </q-td>
+        </template>
         <template
           v-if="
             !authStore.checkUserHasPermission(
@@ -199,6 +207,7 @@
             {{ props.row.customerGroup ?? '-' }}
           </q-td>
         </template>
+
         <template
           v-if="
             authStore.checkUserHasPermission(
@@ -213,7 +222,10 @@
           v-slot:body-cell-reset="props"
         >
           <q-td
-            v-if="authStore.loggedInUser?.rolePermissions.roleName"
+            v-if="
+              authStore.loggedInUser?.rolePermissions.roleName ===
+              EUserRoles.SuperAdmin.toLowerCase()
+            "
             :props="props"
           >
             <q-btn
@@ -320,7 +332,6 @@ import {
 } from 'src/services';
 const $q = useQuasar();
 const authStore = useAuthStore();
-console.log(authStore.loggedInUser?.rolePermissions.roleName);
 const customerGroupList = ref<ICustomerListResponse[]>([]);
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
 const showAddNewAdminRolePopup = ref(false);
@@ -420,8 +431,8 @@ const handleResetPasswordPopup = (selectedRow: IUserResponse) => {
   isResetPasswordModalVisible.value = true;
 };
 const editUserInfo = async (userData: IUserPayload) => {
-  const { userId, fullName, phoneNumber } = userData;
-  let data: Partial<IUserResponse> = { userId, fullName, phoneNumber };
+  const { userId, fullName, phoneNumber, address } = userData;
+  let data: Partial<IUserResponse> = { userId, fullName, phoneNumber, address };
   try {
     if (userData.roleName === EUserRoles.Customer) {
       const { customerGroupId, discount } = userData;
@@ -480,7 +491,11 @@ const getUserList = async (paginationData?: {
       apiController.value
     );
     if (res?.data) {
-      UserRows.value = res.data.items;
+      if (Object.values(filterSearch.value).some((item) => item !== null)) {
+        UserRows.value = res.data.items;
+      } else {
+        UserRows.value = [];
+      }
       pagination.value.rowsNumber = res.data.totalItemCount;
     }
   } catch (e) {
@@ -592,7 +607,9 @@ async function getCustomerListOption() {
       pageSize: 200,
     });
     if (res?.data) {
-      customerGroupList.value = res?.data.items;
+      customerGroupList.value = res?.data.items.filter(
+        (customerGroup) => customerGroup.status === 'Active'
+      );
     }
     isCustomerGroupListLoading.value = false;
   } catch (e) {

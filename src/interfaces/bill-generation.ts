@@ -14,6 +14,7 @@ export interface IBillGenerationFilter {
   ToDate: null | string;
   FromDate: null | string;
   billStatus: null | string;
+  customerGroupId: null | number;
 }
 export interface IBillDetail {
   userId: number;
@@ -31,6 +32,7 @@ export interface IProductInfoDetailList {
   productName: string;
   purchaseDate: string;
   quantity: number;
+  wholeSaleAmount: number;
 }
 export interface INewBillData {
   purchaseId: number;
@@ -53,6 +55,8 @@ export interface IBillGenerationDetailsInfoData {
   fullName: string;
   productList: IBillGenerationDetailsInfoProductList[];
   totalAmount: number;
+  claim: number;
+  freight: number;
 }
 export interface IBillGenerationDetailsInfoProductList {
   amount: number;

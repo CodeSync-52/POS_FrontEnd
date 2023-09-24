@@ -16,9 +16,11 @@
 .roleManagementTable tr:first-child th:last-child {
   padding-right: 2.5rem;
 }
-.updateBillTable tr .updateArticleAmount {
+.updateBillTable tr .updateArticleAmount,
+.updateSaleTable tr .updateArticleAmount {
   opacity: 0;
 }
-.updateBillTable tr:hover .updateArticleAmount {
+.updateBillTable tr:hover .updateArticleAmount,
+.updateSaleTable tr:hover .updateArticleAmount {
   opacity: 1;
 }

@@ -3,7 +3,9 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4 w-full"
     >
-      <span class="text-lg font-medium"> Variant : {{variantGroupName}} </span>
+      <span class="text-lg font-medium">
+        Variant : {{ variantGroupName }}
+      </span>
       <q-btn
         v-if="
           authStore.checkUserHasPermission(
@@ -171,7 +173,6 @@ import {
   EActionPermissions,
   EUserModules,
   IVariantDetailsData,
-  getRoleModuleDisplayName,
 } from 'src/interfaces';
 import { variantDetailsColumn } from './utils';
 import { useQuasar } from 'quasar';
@@ -183,7 +184,6 @@ import {
   variantListApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
-const pageTitle = getRoleModuleDisplayName(EUserModules.VariantManagement);
 const authStore = useAuthStore();
 const router = useRouter();
 const $q = useQuasar();

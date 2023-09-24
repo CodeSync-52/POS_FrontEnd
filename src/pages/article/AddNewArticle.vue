@@ -61,11 +61,14 @@
               <q-input
                 v-model="newArticle.wholeSalePrice"
                 dense
-                type="tel"
-                mask="######"
+                type="number"
+                :min="0"
                 label="Wholesale Price"
                 outlined
                 color="btn-primary"
+                @update:model-value="
+                  handleUpdateAmount($event, 'wholeSalePrice')
+                "
               />
             </div>
             <div v-if="isUpdate" class="col-12 col-md-6">
@@ -73,11 +76,12 @@
               <q-input
                 v-model="newArticle.retailPrice"
                 dense
-                type="tel"
-                mask="######"
+                type="number"
+                :min="0"
                 label="Retail Price"
                 outlined
                 color="btn-primary"
+                @update:model-value="handleUpdateAmount($event, 'retailPrice')"
               />
             </div>
             <div v-if="isUpdate" class="col-12 col-md-6">
@@ -85,11 +89,25 @@
               <q-input
                 v-model="newArticle.costPrice"
                 dense
-                type="tel"
-                mask="######"
+                type="number"
+                :min="0"
                 label="Cost Price"
                 outlined
                 color="btn-primary"
+                @update:model-value="handleUpdateAmount($event, 'costPrice')"
+              />
+            </div>
+            <div v-if="isUpdate" class="col-12 col-md-6">
+              <span class="text-base">Commission</span>
+              <q-input
+                v-model="newArticle.commission"
+                dense
+                type="number"
+                :min="0"
+                label="Commission"
+                outlined
+                color="btn-primary"
+                @update:model-value="handleUpdateAmount($event, 'commission')"
               />
             </div>
             <div class="col-12 col-md-6">
@@ -155,9 +173,9 @@
               !newArticle.name ||
               !newArticle.categoryName ||
               (isUpdate &&
-                (newArticle.retailPrice < 0 ||
-                  newArticle.wholeSalePrice < 0 ||
-                  newArticle.costPrice < 0 ||
+                (newArticle.retailPrice <= 0 ||
+                  newArticle.wholeSalePrice <= 0 ||
+                  newArticle.costPrice <= 0 ||
                   !newArticle.retailPrice ||
                   !newArticle.wholeSalePrice ||
                   !newArticle.costPrice)) ||
@@ -243,6 +261,7 @@ const defaultArticleValue: INewArticleData = {
   retailPrice: 0,
   status: 'InActive',
   wholeSalePrice: 0,
+  commission: 0,
 };
 const isUpdate = ref(false);
 const isFetching = ref(false);
@@ -260,6 +279,19 @@ onMounted(() => {
 });
 const addCategory = () => {
   isCategoryModalVisible.value = true;
+};
+const handleUpdateAmount = (
+  newVal: unknown,
+  selectedKey: 'costPrice' | 'wholeSalePrice' | 'commission' | 'retailPrice'
+) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (val < 0 || !val) {
+      newArticle.value[selectedKey] = 0;
+    } else {
+      newArticle.value[selectedKey] = val;
+    }
+  }
 };
 const cancelNewArticle = () => {
   newArticle.value = defaultArticleValue;
@@ -404,6 +436,7 @@ const handleUpdateArticle = async () => {
     wholeSalePrice,
     retailPrice,
     costPrice,
+    commission,
   } = newArticle.value;
 
   if (productImage) {
@@ -421,6 +454,7 @@ const handleUpdateArticle = async () => {
       retailPrice,
       costPrice,
       name,
+      commission,
     });
     if (res.type === 'Success') {
       $q.notify({

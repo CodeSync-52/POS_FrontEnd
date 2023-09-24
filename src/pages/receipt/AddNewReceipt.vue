@@ -21,7 +21,7 @@
     </div>
     <q-card>
       <q-card-section class="q-gutter-y-md">
-        <div class="row q-col-gutter-md">
+        <div class="row q-col-gutter-md items-center">
           <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-select
@@ -57,7 +57,7 @@
                   icon="add"
                   rounded
                   dense
-                  @click="handleSelectArticle"
+                  @click="isArticleListModalVisible = true"
                   color="btn-primary"
                 />
               </div>
@@ -81,7 +81,6 @@
           align="left"
           :columns="selectedArticleColumn"
           row-key="name"
-          hide-pagination
         >
           <template v-slot:body-cell-image="props">
             <q-td :props="props" class="!h-[71px]">
@@ -148,6 +147,7 @@
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
                 <q-input
+                  ref="firstRow"
                   :disable="
                     (isEdit &&
                       !authStore.checkUserHasPermission(
@@ -157,15 +157,14 @@
                     isReceiptPreview
                   "
                   v-model="props.row.quantity"
-                  @update:model-value="
-                    typeof $event === 'string' &&
-                      (props.row.quantity = parseInt($event))
-                  "
                   type="number"
+                  @update:model-value="
+                    handleUpdateQuantity(Number($event) ?? 0, props.row)
+                  "
                   filled
                   :min="1"
                   color="btn-primary"
-                  style="max-width: 200px"
+                  style="max-width: 200px; min-width: 200px"
                 />
               </div>
             </q-td>
@@ -198,13 +197,6 @@
         </q-table>
       </q-card-section>
       <q-card-actions class="row items-center justify-end">
-        <q-btn
-          v-if="isEdit"
-          unelevated
-          label="Print"
-          color="btn-primary"
-          @click="handlePrintReceipt"
-        />
         <q-btn
           unelevated
           :label="isReceiptPreview ? 'Close' : 'Go Back'"
@@ -240,6 +232,7 @@
             productId: item.productId !== null ? item.productId : -1,
             productName: item?.productName || '',
             productImage: item.productImage || '',
+            masterStock: item.masterStock ?? 0,
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"
@@ -257,7 +250,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import {
@@ -296,9 +289,24 @@ const isArticleListModalVisible = ref(false);
 const isFilterChanged = ref(false);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
-const handleSelectArticle = () => {
-  isArticleListModalVisible.value = true;
+const handleUpdateQuantity = (data: number, row: ISelectedArticleData) => {
+  if (!data || data <= 0) {
+    row.quantity = 0;
+  }
 };
+const pagination = ref<IPagination>({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
+});
+window.addEventListener('keypress', function (e) {
+  if (e.key === 'n' || e.key === 'N') {
+    isArticleListModalVisible.value = true;
+  }
+});
+const firstRow = ref<HTMLElement | null>(null);
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   getArticleList();
@@ -307,17 +315,10 @@ const addNewReceiptTotalQuantity = computed(() => {
   const row = selectedArticleData.value;
   return row.reduce((total: number, row: ISelectedArticleData) => {
     if (row.quantity) {
-      return total + row.quantity;
+      return total + Number(row.quantity);
     }
     return total;
   }, 0);
-});
-const pagination = ref<IPagination>({
-  sortBy: 'desc',
-  descending: false,
-  page: 1,
-  rowsPerPage: 50,
-  rowsNumber: 0,
 });
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
@@ -331,15 +332,12 @@ const getImageUrl = (base64Image: string | null) => {
   }
   return '';
 };
-const handlePrintReceipt = () => {
-  isEdit.value = false;
-  isReceiptPreview.value = true;
-};
 const selectedData = (
   payload: {
     productId: number;
     productName?: string;
     productImage: string | null;
+    masterStock: number;
   }[]
 ) => {
   if (!isEdit.value) {
@@ -355,6 +353,11 @@ const selectedData = (
         ...item,
         quantity: 0,
         productImage: item.productImage ?? '',
+      });
+      nextTick(() => {
+        if (firstRow.value) {
+          firstRow.value.focus();
+        }
       });
       if (isEdit.value) {
         addReceiptRow({
@@ -444,7 +447,9 @@ const getUserList = async () => {
       pageSize: 500,
     });
     if (res?.data) {
-      UserList.value = res.data.items;
+      UserList.value = res.data.items.filter(
+        (user) => user.status === 'Active'
+      );
       options.value = res.data.items;
     }
   } catch (e) {

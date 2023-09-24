@@ -24,8 +24,30 @@
     >
       <q-select
         dense
-        outlined
         style="min-width: 200px"
+        outlined
+        v-model="filterSearch.customerGroupId"
+        :options="customerGroupList"
+        map-options
+        @update:model-value="
+          filterSearch.customerGroupId = $event.customerGroupId
+        "
+        :loading="isCustomerGroupListLoading"
+        label="Customer Group"
+        option-label="name"
+        option-value="customerGroupId"
+        color="btn-primary"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <q-select
+        dense
+        outlined
+        style="min-width: 200px; max-width: 200px"
         use-input
         @filter="filterFn"
         v-model="filterSearch.userId"
@@ -181,7 +203,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.purchaseStatus !== 'Cancelled' &&
-                  props.row.purchaseStatus !== 'Billed'
+                  props.row.purchaseStatus !== 'Billed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -205,7 +233,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.purchaseStatus !== 'Cancelled' &&
-                  props.row.purchaseStatus !== 'Billed'
+                  props.row.purchaseStatus !== 'Billed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -220,6 +254,7 @@
               >
             </div>
           </q-td>
+          <q-td v-else />
         </template>
         <template v-slot:no-data>
           <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
@@ -270,6 +305,11 @@
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
+import { date } from 'quasar';
+import { useRouter } from 'vue-router';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { CanceledError } from 'axios';
 import {
   EActionPermissions,
   EUserModules,
@@ -277,14 +317,18 @@ import {
   IReceiptData,
   IPagination,
   IUserResponse,
+  EUserRoles,
+  ICustomerListResponse,
 } from 'src/interfaces';
-import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { onMounted, onUnmounted, ref } from 'vue';
-import { receiptListApi, cancelReceiptApi, getUserListApi } from 'src/services';
+import {
+  receiptListApi,
+  cancelReceiptApi,
+  getUserListApi,
+  getCustomerGroupList,
+} from 'src/services';
 import { isPosError, receiptColumn, purchaseStatusOptions } from 'src/utils';
-import { useRouter } from 'vue-router';
-import { CanceledError } from 'axios';
+import moment from 'moment';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const pageTitle = getRoleModuleDisplayName(EUserModules.ReceiptManagement);
@@ -303,22 +347,30 @@ const defaultPagination = {
 const pagination = ref<IPagination>(defaultPagination);
 const isCancellingReceipt = ref(false);
 const apiController = ref<AbortController | null>(null);
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filterSearch = ref<{
   userId: null | number;
   userName: null | string;
   startDate: null | string;
   endDate: null | string;
   purchaseStatus: null | string;
+  customerGroupId: null | number;
 }>({
   userId: null,
   userName: null,
-  startDate: null,
-  endDate: null,
+  startDate: formattedFromDate,
+  endDate: formattedToDate,
   purchaseStatus: null,
+  customerGroupId: null,
 });
+
 onMounted(() => {
   getReceiptList();
   getUserList();
+  getCustomerListOption();
 });
 onUnmounted(() => {
   if (apiController.value) {
@@ -327,6 +379,7 @@ onUnmounted(() => {
 });
 const UserList = ref<IUserResponse[]>([]);
 const options = ref<IUserResponse[]>([]);
+const customerGroupList = ref<ICustomerListResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
@@ -335,7 +388,9 @@ const getUserList = async () => {
       pageSize: 500,
     });
     if (res?.data) {
-      UserList.value = res.data.items;
+      UserList.value = res.data.items.filter(
+        (user) => user.status === 'Active'
+      );
       options.value = res.data.items;
     }
   } catch (e) {
@@ -362,6 +417,7 @@ const handleResetFilter = () => {
     startDate: null,
     endDate: null,
     purchaseStatus: null,
+    customerGroupId: null,
   };
   getReceiptList();
 };
@@ -372,6 +428,7 @@ const handleCancelReceiptPopup = (selectedRow: IReceiptData) => {
   selectedRowData.value = selectedRow;
   isCancelReceiptModalVisible.value = true;
 };
+const isCustomerGroupListLoading = ref(false);
 const handleCancelReceipt = async () => {
   if (isCancellingReceipt.value) return;
   isCancellingReceipt.value = true;
@@ -452,4 +509,31 @@ const filterFn = (val: string, update: any) => {
     );
   });
 };
+async function getCustomerListOption() {
+  if (isCustomerGroupListLoading.value) return;
+  isCustomerGroupListLoading.value = true;
+  try {
+    const res = await getCustomerGroupList({
+      pageNumber: 1,
+      pageSize: 200,
+    });
+    if (res?.data) {
+      customerGroupList.value = res?.data.items.filter(
+        (customerGroup) => customerGroup.status === 'Active'
+      );
+    }
+    isCustomerGroupListLoading.value = false;
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+    isCustomerGroupListLoading.value = false;
+  }
+}
 </script>

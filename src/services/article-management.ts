@@ -79,6 +79,7 @@ export const updateProductApi = async ({
   wholeSalePrice,
   retailPrice,
   costPrice,
+  commission,
 }: {
   productId: number;
   name: string;
@@ -88,6 +89,7 @@ export const updateProductApi = async ({
   wholeSalePrice: number;
   retailPrice: number;
   costPrice: number;
+  commission: number;
 }) => {
   const id = categoryId === null ? undefined : categoryId;
   const res = await makeApiCall<IGenericResponse<null>>({
@@ -104,6 +106,7 @@ export const updateProductApi = async ({
       wholeSalePrice,
       retailPrice,
       costPrice,
+      commission,
     },
   });
   return res;

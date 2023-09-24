@@ -25,6 +25,28 @@
     >
       <q-select
         dense
+        style="min-width: 200px"
+        outlined
+        v-model="filterSearch.customerGroupId"
+        :options="customerGroupList"
+        map-options
+        @update:model-value="
+          filterSearch.customerGroupId = $event.customerGroupId
+        "
+        :loading="isCustomerGroupListLoading"
+        label="Customer Group"
+        option-label="name"
+        option-value="customerGroupId"
+        color="btn-primary"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <q-select
+        dense
         outlined
         style="min-width: 200px"
         :options="options"
@@ -167,6 +189,7 @@
                   </q-tooltip>
                 </q-btn>
               </router-link>
+
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -174,7 +197,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.wholeSaleStatus !== 'Cancelled' &&
-                  props.row.wholeSaleStatus !== 'Completed'
+                  props.row.wholeSaleStatus !== 'Completed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -195,7 +224,13 @@
                     EActionPermissions.Update
                   ) &&
                   props.row.wholeSaleStatus !== 'Cancelled' &&
-                  props.row.wholeSaleStatus !== 'Completed'
+                  props.row.wholeSaleStatus !== 'Completed' &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
+                  moment(
+                    date.addToDate(props.row.createdDate, { date: 5 })
+                  ).format('DD-MM-YYYY') >
+                    moment(timeStamp).format('DD-MM-YYYY')
                 "
                 size="sm"
                 flat
@@ -210,6 +245,7 @@
               >
             </div>
           </q-td>
+          <q-td v-else />
         </template>
         <template v-slot:body-cell-fullName="props">
           <q-td
@@ -247,6 +283,8 @@ import {
   getRoleModuleDisplayName,
   ISalesFilterSearch,
   IUserResponse,
+  EUserRoles,
+  ICustomerListResponse,
 } from 'src/interfaces';
 import { onMounted, ref } from 'vue';
 import {
@@ -254,6 +292,7 @@ import {
   completeWholeSaleApi,
   cancelWholeSaleApi,
   getUserListApi,
+  getCustomerGroupList,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import {
@@ -263,6 +302,8 @@ import {
 } from 'src/utils';
 import GenerateOrCancelSaleModal from 'src/components/sales-management/GenerateOrCancelSaleModal.vue';
 import { CanceledError } from 'axios';
+import { date } from 'quasar';
+import moment from 'moment';
 const pageTitle = getRoleModuleDisplayName(EUserModules.SalesManagement);
 const authStore = useAuthStore();
 const $q = useQuasar();
@@ -274,15 +315,22 @@ const defaultPagination = {
   rowsPerPage: 50,
   rowsNumber: 0,
 };
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filterSearch = ref<ISalesFilterSearch>({
   userId: null,
   userName: null,
-  startDate: null,
-  endDate: null,
+  startDate: formattedFromDate,
+  endDate: formattedToDate,
   wholeSaleStatus: null,
+  customerGroupId: null,
 });
 const isGenerateOrCancelSaleModalVisible = ref(false);
 const isGeneratingSale = ref(false);
+const isCustomerGroupListLoading = ref(false);
+const customerGroupList = ref<ICustomerListResponse[]>([]);
 const salesManagementRecords = ref<ISalesManagementData[]>([]);
 const pagination = ref<IPagination>(defaultPagination);
 const isLoading = ref(false);
@@ -293,6 +341,7 @@ const options = ref<IUserResponse[]>([]);
 onMounted(() => {
   getSalesManagementList();
   getUserList();
+  getCustomerListOption();
 });
 const handleResetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -304,6 +353,7 @@ const handleResetFilter = () => {
     startDate: null,
     endDate: null,
     wholeSaleStatus: null,
+    customerGroupId: null,
   };
   getSalesManagementList();
 };
@@ -419,7 +469,9 @@ const getUserList = async () => {
       pageSize: 500,
     });
     if (res?.data) {
-      UserList.value = res.data.items;
+      UserList.value = res.data.items.filter(
+        (user) => user.status === 'Active'
+      );
       options.value = res.data.items;
     }
   } catch (e) {
@@ -444,4 +496,31 @@ const filterFn = (val: string, update: any) => {
     );
   });
 };
+async function getCustomerListOption() {
+  if (isCustomerGroupListLoading.value) return;
+  isCustomerGroupListLoading.value = true;
+  try {
+    const res = await getCustomerGroupList({
+      pageNumber: 1,
+      pageSize: 200,
+    });
+    if (res?.data) {
+      customerGroupList.value = res?.data.items.filter(
+        (customerGroup) => customerGroup.status === 'Active'
+      );
+    }
+    isCustomerGroupListLoading.value = false;
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+    isCustomerGroupListLoading.value = false;
+  }
+}
 </script>
