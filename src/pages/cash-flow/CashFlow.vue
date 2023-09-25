@@ -99,16 +99,26 @@
             )
           "
         >
-          <q-td :props="props">
-            <q-btn
-              icon="visibility"
-              dense
-              flat
-              unelevated
-              color="green"
-              size="sm"
-              @click="handleShowCashFlow(props.row)"
-            />
+          <q-td class="flex justify-start" :props="props">
+            <div class="flex gap-2 flex-nowrap">
+              <q-btn
+                icon="visibility"
+                dense
+                flat
+                unelevated
+                color="green"
+                size="sm"
+                @click="handleShowCashFlow(props.row)"
+                ><q-tooltip class="bg-green" :offset="[10, 10]">
+                  Preview Cashflow
+                </q-tooltip></q-btn
+              >
+              <q-btn icon="undo" dense flat unelevated color="blue" size="sm"
+                ><q-tooltip class="bg-blue" :offset="[10, 10]">
+                  Undo Cashflow
+                </q-tooltip></q-btn
+              >
+            </div>
           </q-td>
         </template>
         <template v-slot:body-cell-comments="props">

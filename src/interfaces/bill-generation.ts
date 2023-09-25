@@ -14,7 +14,7 @@ export interface IBillGenerationFilter {
   ToDate: null | string;
   FromDate: null | string;
   billStatus: null | string;
-  customerGroupId: null | number;
+  CustomerGroupId: null | number;
 }
 export interface IBillDetail {
   userId: number;
