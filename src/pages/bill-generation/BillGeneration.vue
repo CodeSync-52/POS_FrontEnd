@@ -211,7 +211,7 @@
                 @click="handleGenerateBillPopup(props.row)"
               >
                 <q-tooltip class="bg-green" :offset="[10, 10]">
-                  Generate Bill
+                  Complete Bill
                 </q-tooltip>
               </q-btn>
               <q-btn
