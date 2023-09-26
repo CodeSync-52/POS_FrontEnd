@@ -365,6 +365,24 @@
                 <q-td colspan="4" />
                 <q-td>
                   <div>
+                    Claim:
+                    {{ billGenerationDetailsInfoData.claim || 0 }}
+                  </div>
+                </q-td>
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="4" />
+                <q-td>
+                  <div>
+                    Freight:
+                    {{ billGenerationDetailsInfoData.freight || 0 }}
+                  </div>
+                </q-td>
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="4" />
+                <q-td>
+                  <div>
                     Total:
                     {{ BillGenerationDetailsInfoTotalAmount }}
                   </div>
@@ -567,7 +585,12 @@ const BillGenerationDetailsInfoTotalAmount = computed(() => {
   const rows = billGenerationDetailsInfoData.value.productList;
   return rows.reduce(
     (total: number, row: IBillGenerationDetailsInfoProductList) => {
-      return total + row.quantity * row.amount;
+      return (
+        total +
+        row.quantity * row.amount -
+        billGenerationDetailsInfoData.value.claim +
+        billGenerationDetailsInfoData.value.freight
+      );
     },
     0
   );

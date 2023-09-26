@@ -36,8 +36,14 @@ export const salesManagementListApi = async (
   },
   controller?: AbortController
 ) => {
-  const { startDate, userId, userName, wholeSaleStatus, endDate } =
-    filterSearch;
+  const {
+    startDate,
+    userId,
+    userName,
+    wholeSaleStatus,
+    endDate,
+    customerGroupId,
+  } = filterSearch;
   const res = await makeApiCall<
     IGenericResponse<{ items: ISalesManagementData[]; totalItemCount: number }>
   >({
@@ -51,6 +57,7 @@ export const salesManagementListApi = async (
       FullName: userName?.trim(),
       wholeSaleStatus,
       ToDate: endDate,
+      CustomerGroupId: customerGroupId,
     },
     signal: controller?.signal,
   });

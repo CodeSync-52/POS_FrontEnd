@@ -106,6 +106,7 @@ export const billListApi = async (
       PageNumber,
       PageSize,
       BillStatus: filterSearch?.billStatus,
+      CustomerGroupId: filterSearch?.CustomerGroupId,
     },
     signal: controller?.signal,
   });
