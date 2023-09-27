@@ -3,13 +3,14 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
-      <span class="text-lg font-medium">{{ pageTitle }}</span>
+      <h1 class="text-lg font-medium">{{ pageTitle }}</h1>
 
       <q-btn
         label="Add New"
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         color=""
+        @click="handleAddNewUser"
       />
     </div>
     <div
@@ -74,13 +75,23 @@
       <q-table :rows="shopRows" :columns="shopColumn" row-key="name" />
     </div>
   </div>
+  <q-dialog
+    v-model="showAddNewAdminRolePopup"
+    @update:model-value="selectedUser = null"
+  >
+    <add-user-modal :action="action" :selected-user="selectedUser" />
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
 import { date } from 'quasar';
 import { ref } from 'vue';
-import { EUserModules, getRoleModuleDisplayName } from 'src/interfaces';
-
+import {
+  EUserModules,
+  IUserResponse,
+  getRoleModuleDisplayName,
+} from 'src/interfaces';
+import AddUserModal from 'components/user-management/AddUserModal.vue';
 import {
   shopMangerOptions,
   shopNmaeOptions,
@@ -110,4 +121,16 @@ const filterSearch = ref<{
   purchaseStatus: null,
   customerGroupId: null,
 });
+const action = ref<string>('');
+const selectedUser = ref<IUserResponse | null>(null);
+const showAddNewAdminRolePopup = ref(false);
+
+const handleAddNewUser = () => {
+  action.value = 'Add New User';
+  selectedUser.value = null;
+  showAddUserModal(true);
+};
+const showAddUserModal = (isVisible: boolean) => {
+  showAddNewAdminRolePopup.value = isVisible;
+};
 </script>

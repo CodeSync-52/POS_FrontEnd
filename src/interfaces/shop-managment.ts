@@ -11,3 +11,9 @@ export interface IShopData {
   createdById: number;
   updatedBy: null;
 }
+export interface IUserShopResponse {
+  shopName: string;
+  shopAddress: string;
+  shopPhoneNumber?: number;
+  shopManagerName?: number;
+}
