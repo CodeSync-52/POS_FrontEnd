@@ -1,16 +1,22 @@
 <template>
   <div class="col-12 col-md-4">
-    <div class="q-gutter-y-xs">
-      <div class="row gap-6 items-center">
-        <span class="text-base">Article</span>
-        <q-btn
-          icon="add"
-          rounded
-          dense
-          @click="isArticleListModalVisible = true"
-          color="btn-primary"
-        />
-      </div>
+    <div
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+    >
+      <span class="text-lg font-medium">{{ pageTitle }}</span>
+      <q-btn
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.InventoryManagement,
+            EActionPermissions.Create
+          )
+        "
+        label="Add New"
+        icon="add"
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+        color=""
+        @click="isArticleListModalVisible = true"
+      />
     </div>
   </div>
   <q-dialog v-model="isArticleListModalVisible">
@@ -41,15 +47,21 @@ import { computed, onMounted, ref } from 'vue';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import InventoryManagmentStep2Modal from 'src/components/common/InventoryManagmentStep2Modal.vue';
 import {
+  EActionPermissions,
+  EUserModules,
   IArticleData,
   IPagination,
   ISelectedArticle,
   ISelectedArticleData,
+  getRoleModuleDisplayName,
 } from 'src/interfaces';
 import { articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
+import { useAuthStore } from 'src/stores';
+const authStore = useAuthStore();
 const isArticleListModalVisible = ref(false);
+const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const isFilterChanged = ref(false);
 const isFetchingArticleList = ref(false);
 const isInventoryManagementStepTwoVisible = ref(false);

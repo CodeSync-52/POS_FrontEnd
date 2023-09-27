@@ -8,22 +8,108 @@
           </div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
-        <div class="col-md-4 col-sm-12 mb-4">
-          <div>
+        <div class="row items-center q-col-gutter-x-md q-col-gutter-y-lg">
+          <div class="col-6 q-gutter-y-xs">
+            <span class="text-base font-medium"
+              >Select First Variant Group</span
+            >
             <q-select
-              :options="options"
+              :options="optionData"
               :loading="isLoading"
               use-input
               dense
               map-options
+              clearable
               outlined
               @filter="filterFn"
-              v-model="variantGroupID"
-              @update:model-value="variantGroupID = $event.variantGroupId"
-              label="Select Variant Group"
+              v-model="variantGroup.firstVariant"
+              label="Select First Variant Group"
               color="btn-primary"
               option-label="name"
               option-value="variantGroupId"
+              @update:model-value="getSelectedVariantDetails($event, false)"
+              ><template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template></q-select
+            >
+          </div>
+          <div class="col-6 q-gutter-y-xs">
+            <span v-if="variantGroup.firstVariant" class="text-base font-medium"
+              >Select First Variant</span
+            >
+            <q-select
+              multiple
+              outlined
+              clearable
+              dense
+              map-options
+              option-label="name"
+              option-value="variantId"
+              color="btn-primary"
+              label="Select First Variant"
+              v-if="variantGroup.firstVariant"
+              :options="selectedVariantOptions.firstVariantOptions"
+              v-model="selectedDetailsData.firstVariantSelection"
+              ><template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template></q-select
+            >
+          </div>
+          <div class="col-6 q-gutter-y-xs">
+            <span class="text-base font-medium"
+              >Select Second Variant Group</span
+            >
+            <q-select
+              :options="optionData"
+              :loading="isLoading"
+              use-input
+              clearable
+              dense
+              map-options
+              outlined
+              @filter="filterFn"
+              v-model="variantGroup.secondVariant"
+              label="Select Second Variant Group"
+              color="btn-primary"
+              option-label="name"
+              option-value="variantGroupId"
+              @update:model-value="getSelectedVariantDetails($event, true)"
+              ><template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template></q-select
+            >
+          </div>
+          <div class="col-6 q-gutter-y-xs">
+            <span
+              v-if="variantGroup.secondVariant"
+              class="text-base font-medium"
+              >Select Second Variant</span
+            >
+            <q-select
+              outlined
+              dense
+              map-options
+              option-label="name"
+              option-value="variantId"
+              color="btn-primary"
+              label="Select Second Variant"
+              multiple
+              clearable
+              v-if="variantGroup.secondVariant"
+              :options="selectedVariantOptions.secondVariantOptions"
+              v-model="selectedDetailsData.secondVariantSelection"
               ><template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -34,7 +120,7 @@
             >
           </div>
         </div>
-        <div>
+        <!-- <div>
           <q-table
             class="max-h-[400px] h-full"
             :rows="filteredRows"
@@ -75,11 +161,11 @@
               </div>
             </template>
           </q-table>
-        </div>
+        </div> -->
       </div>
     </q-card-section>
     <q-card-actions align="right">
-      <div class="row justify-end gap-4">
+      <div class="row justify-end gap-2">
         <q-btn
           label="Cancel"
           flat
@@ -90,12 +176,11 @@
         />
         <q-btn
           flat
-          :disabled="selected.length === 0"
-          label="Next"
-          @click="handleSave"
+          label="Add"
           unelevated
           color="signature"
           class="bg-btn-primary hover:bg-btn-primary-hover"
+          @click="handleShowVariantDetails"
         />
       </div>
     </q-card-actions>
@@ -104,22 +189,62 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { IVariantData, IVariantDetailsData } from 'src/interfaces';
-import { variantDetails } from './utils';
-import { variantGroupListApi, variantListApi } from 'src/services';
+import {
+  IVariantData,
+  IVariantDetailsData,
+  IVariantGroup,
+} from 'src/interfaces';
+import {
+  variantGroupListApi,
+  variantListApi,
+  variantListByIdApi,
+} from 'src/services';
 import { isPosError } from 'src/utils';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { CanceledError } from 'axios';
 const variantDetailsRecord = ref<IVariantDetailsData[]>([]);
 const filteredRows = ref<IVariantDetailsData[]>([]);
-const variantGroupID = ref('');
-const selected = ref<any>([]);
+const variantGroup = ref<{
+  firstVariant: null | IVariantGroup;
+  secondVariant: null | IVariantGroup;
+}>({ firstVariant: null, secondVariant: null });
+// const selected = ref<any>([]);
+
 const filterChanged = ref(false);
 const $q = useQuasar();
 const filter = ref('');
 const options = ref<IVariantData[]>([]);
+const selectedDetailsData = ref<{
+  firstVariantSelection: IVariantDetailsData | null;
+  secondVariantSelection: IVariantDetailsData | null;
+}>({
+  firstVariantSelection: null,
+  secondVariantSelection: null,
+});
+const selectedVariantOptions = ref<{
+  firstVariantOptions: IVariantDetailsData[];
+  secondVariantOptions: IVariantDetailsData[];
+}>({
+  firstVariantOptions: [],
+  secondVariantOptions: [],
+});
 const variantData = ref<IVariantData[]>([]);
 const isLoading = ref(false);
+const optionData = computed(() => {
+  let idList: number[] = [];
+  if (variantGroup.value.firstVariant) {
+    idList.push(variantGroup.value.firstVariant.variantGroupId);
+  }
+  if (variantGroup.value.secondVariant) {
+    idList.push(variantGroup.value.secondVariant.variantGroupId);
+  }
+  if (idList.length > 0) {
+    return options.value.filter(
+      (option) => !idList.includes(option.variantGroupId)
+    );
+  }
+  return options.value;
+});
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -127,11 +252,43 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-console.log(selected);
 onMounted(() => {
   getVariantList();
   getVariantGroupList();
 });
+const getSelectedVariantDetails = async (
+  selectedVariantGroup: {
+    status: string;
+    variantGroupId: number;
+    name: string;
+  },
+  isSecond: boolean
+) => {
+  try {
+    const res = await variantListByIdApi({
+      status: selectedVariantGroup?.status,
+      variantGroupId: selectedVariantGroup?.variantGroupId,
+    });
+    if (res.type === 'Success') {
+      if (isSecond) {
+        selectedDetailsData.value.secondVariantSelection = null;
+        selectedVariantOptions.value.secondVariantOptions = res.data;
+      } else {
+        selectedVariantOptions.value.firstVariantOptions = res.data;
+        selectedDetailsData.value.firstVariantSelection = null;
+      }
+    }
+  } catch (e) {
+    let message = 'Error Occurred During Fetching variant Group Details';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+};
 const getVariantList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
@@ -201,6 +358,7 @@ const getVariantGroupList = async () => {
   }
   isLoading.value = false;
 };
+
 const filterFn = (val: string, update: any) => {
   update(() => {
     const needle = val.toLowerCase();
@@ -208,5 +366,8 @@ const filterFn = (val: string, update: any) => {
       v.name.toLowerCase().includes(needle)
     );
   });
+};
+const handleShowVariantDetails = () => {
+  console.log(variantGroup.value, selectedDetailsData.value);
 };
 </script>

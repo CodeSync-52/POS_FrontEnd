@@ -30,7 +30,6 @@
                 <q-space />
 
                 <q-input
-                  autofocus
                   borderless
                   dense
                   maxlength="250"

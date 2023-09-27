@@ -137,3 +137,20 @@ export const variantListApi = async ({
   });
   return res;
 };
+export const variantListByIdApi = async ({
+  status,
+  variantGroupId,
+}: {
+  status: string;
+  variantGroupId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<IVariantDetailsData[]>>({
+    method: 'GET',
+    url: 'api/variant/listbyvariantgroup',
+    params: {
+      variantGroupId,
+      status,
+    },
+  });
+  return res;
+};
