@@ -19,7 +19,7 @@
             :filter="filter"
             row-key="productId"
             @request="handlePagination($event.pagination)"
-            selection="multiple"
+            :selection="props.isSelectionSingle ? 'single' : 'multiple'"
             v-model:selected="selected"
           >
             <template v-slot:top>
@@ -110,6 +110,7 @@ interface propTypes {
   articleList: IArticleData[];
   isFetchingArticleList: boolean;
   pagination: IPagination;
+  isSelectionSingle?: boolean;
 }
 const articlePagination = ref({
   sortBy: 'desc',
@@ -122,6 +123,7 @@ const props = withDefaults(defineProps<propTypes>(), {
   currentData: () => [],
   articleList: () => [],
   isFetchingArticleList: false,
+  isSelectionSingle: false,
 });
 
 const selectedArticles = ref<

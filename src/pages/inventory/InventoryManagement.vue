@@ -35,10 +35,14 @@
         }))
       "
       :is-fetching-article-list="isFetchingArticleList"
+      :is-selection-single="isSelectionSingle"
     />
   </q-dialog>
   <q-dialog v-model="isInventoryManagementStepTwoVisible">
-    <inventory-managment-step-2-modal />
+    <inventory-managment-step-2-modal
+      :selected-article="selectedArticle"
+      @selected-Variants="handleSelectedVariant"
+    />
   </q-dialog>
 </template>
 
@@ -54,20 +58,34 @@ import {
   ISelectedArticle,
   ISelectedArticleData,
   getRoleModuleDisplayName,
+  IVariantDetailsData,
 } from 'src/interfaces';
 import { articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
-import { useQuasar } from 'quasar';
+import { QTableColumn, useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 const authStore = useAuthStore();
 const isArticleListModalVisible = ref(false);
 const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const isFilterChanged = ref(false);
 const isFetchingArticleList = ref(false);
+const isSelectionSingle = ref(true);
 const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticle = ref<ISelectedArticle[]>([]);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
+const rowColumnData = ref<{
+  firstVariantSelection: IVariantDetailsData | null;
+  secondVariantSelection: IVariantDetailsData | null;
+}>({
+  firstVariantSelection: null,
+  secondVariantSelection: null,
+});
+const firstVariantSelection: IVariantDetailsData[] = rowColumnData.value
+  .firstVariantSelection
+  ? [rowColumnData.value.firstVariantSelection]
+  : [];
+
 const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
@@ -75,6 +93,7 @@ const pagination = ref<IPagination>({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+
 const $q = useQuasar();
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
@@ -89,6 +108,7 @@ const handleFilterRows = (filterChanged: boolean) => {
     }, 200);
   }
 };
+
 const articleListComputed = computed(() => {
   articleList.value;
   return articleList.value.filter((item) => {
@@ -158,6 +178,30 @@ const selectedData = (
       isInventoryManagementStepTwoVisible.value = true;
     }
   }
+};
+const handleSelectedVariant = (payload: {
+  firstVariantSelection: {
+    variantId: number;
+    name: string;
+    displayName: string;
+    status: string;
+    variantGroupName: string;
+    variantGroupId: number;
+  } | null;
+  secondVariantSelection: {
+    variantId: number;
+    name: string;
+    displayName: string;
+    status: string;
+    variantGroupName: string;
+    variantGroupId: number;
+  } | null;
+}) => {
+  rowColumnData.value = {
+    firstVariantSelection: payload.firstVariantSelection,
+    secondVariantSelection: payload.secondVariantSelection,
+  };
+  isInventoryManagementStepTwoVisible.value = false;
 };
 onMounted(() => {
   getArticleList();

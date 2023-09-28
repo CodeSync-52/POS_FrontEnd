@@ -1,25 +1,40 @@
 <template>
   <q-card class="min-w-[310px] md:min-w-[750px] h-[600px]">
     <q-card-section class="h-[calc(100%-52px)]">
-      <div>
+      <div class="p-4">
         <div class="row items-center q-mb-md justify-between">
-          <div class="text-h6">
-            <span>Additional Details</span>
-          </div>
+          <div class="text-h6">Additional Details</div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
+        <div class="text-h6 flex gap-3 pb-5 items-center">
+          <!-- <span>Additional Details</span> -->
+          <div
+            @click="handlePreviewImage(props.selectedArticle[0]?.productImage)"
+            class="h-[100px] w-[100px] min-w-[3rem] overflow-hidden rounded-full"
+            :class="
+              props.selectedArticle[0].productImage ? 'cursor-pointer' : ''
+            "
+          >
+            <img
+              class="w-full h-full object-cover"
+              :src="
+                getImageUrl(props.selectedArticle[0].productImage) ||
+                'assets/default-image.png'
+              "
+              alt="img"
+            />
+          </div>
+          <div>{{ props.selectedArticle[0].productName }}</div>
+        </div>
         <div class="row items-center q-col-gutter-x-md q-col-gutter-y-lg">
-          <div class="col-6 q-gutter-y-xs">
-            <span class="text-base font-medium"
-              >Select First Variant Group</span
-            >
+          <div class="col-4 q-gutter-y-xs">
+            <span class="text-base font-medium">Select Variant Group</span>
             <q-select
               :options="optionData"
               :loading="isLoading"
               use-input
               dense
               map-options
-              clearable
               outlined
               @filter="filterFn"
               v-model="variantGroup.firstVariant"
@@ -37,9 +52,9 @@
               </template></q-select
             >
           </div>
-          <div class="col-6 q-gutter-y-xs">
+          <div class="col-8 q-gutter-y-xs">
             <span v-if="variantGroup.firstVariant" class="text-base font-medium"
-              >Select First Variant</span
+              >Select Variant</span
             >
             <q-select
               multiple
@@ -63,15 +78,12 @@
               </template></q-select
             >
           </div>
-          <div class="col-6 q-gutter-y-xs">
-            <span class="text-base font-medium"
-              >Select Second Variant Group</span
-            >
+          <div class="col-4 q-gutter-y-xs">
+            <span class="text-base font-medium">Select Variant Group</span>
             <q-select
               :options="optionData"
               :loading="isLoading"
               use-input
-              clearable
               dense
               map-options
               outlined
@@ -91,11 +103,11 @@
               </template></q-select
             >
           </div>
-          <div class="col-6 q-gutter-y-xs">
+          <div class="col-8 q-gutter-y-xs">
             <span
               v-if="variantGroup.secondVariant"
               class="text-base font-medium"
-              >Select Second Variant</span
+              >Select Variant</span
             >
             <q-select
               outlined
@@ -120,48 +132,6 @@
             >
           </div>
         </div>
-        <!-- <div>
-          <q-table
-            class="max-h-[400px] h-full"
-            :rows="filteredRows"
-            :columns="variantDetails"
-            :loading="isLoading"
-            row-key="name"
-            :filter="filter"
-            v-model:pagination="pagination"
-            @request="getVariantList"
-            selection="multiple"
-            @update:selected="console.log(selected, 'sd')"
-            v-model:selected="selected"
-          >
-            <template v-slot:top>
-              <div
-                class="flex md:flex-row md:gap-0 md:justify-between sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4 w-full"
-              >
-                <div class="font-medium text-lg"><span>Variant</span></div>
-                <q-input
-                  maxlength="250"
-                  outlined
-                  dense
-                  debounce="300"
-                  color="btn-primary"
-                  label="Name"
-                  v-model="filter"
-                >
-                  <template v-slot:append>
-                    <q-icon name="search" />
-                  </template>
-                </q-input>
-              </div>
-            </template>
-            <template v-slot:no-data>
-              <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-                <q-icon name="warning" size="xs" />
-                <span class="text-md font-medium"> No data available. </span>
-              </div>
-            </template>
-          </q-table>
-        </div> -->
       </div>
     </q-card-section>
     <q-card-actions align="right">
@@ -190,6 +160,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import {
+  ISelectedArticle,
   IVariantData,
   IVariantDetailsData,
   IVariantGroup,
@@ -202,14 +173,33 @@ import {
 import { isPosError } from 'src/utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { CanceledError } from 'axios';
+
+interface propTypes {
+  selectedArticle: ISelectedArticle[];
+}
+
+const emit = defineEmits<{
+  (
+    event: 'selected-Variants',
+    data: {
+      firstVariantSelection: IVariantDetailsData | null;
+      secondVariantSelection: IVariantDetailsData | null;
+    }
+  ): void;
+}>();
+
+const selectedPreviewImage = ref('');
+
+const props = withDefaults(defineProps<propTypes>(), {
+  selectedArticle: () => [],
+});
+
 const variantDetailsRecord = ref<IVariantDetailsData[]>([]);
 const filteredRows = ref<IVariantDetailsData[]>([]);
 const variantGroup = ref<{
   firstVariant: null | IVariantGroup;
   secondVariant: null | IVariantGroup;
 }>({ firstVariant: null, secondVariant: null });
-// const selected = ref<any>([]);
-
 const filterChanged = ref(false);
 const $q = useQuasar();
 const filter = ref('');
@@ -369,5 +359,20 @@ const filterFn = (val: string, update: any) => {
 };
 const handleShowVariantDetails = () => {
   console.log(variantGroup.value, selectedDetailsData.value);
+  setTimeout(() => {
+    emit('selected-Variants', selectedDetailsData.value);
+  }, 300);
+};
+
+const handlePreviewImage = (selectedImage: string | null) => {
+  if (selectedImage) {
+    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+  }
+};
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+  return '';
 };
 </script>
