@@ -76,7 +76,11 @@
               dense
               size="sm"
               @click="
-                handleManageClick(props.row.variantGroupId, props.row.name)
+                handleManageClick(
+                  props.row.variantGroupId,
+                  props.row.name,
+                  props.row.status
+                )
               "
               label="Manage"
               class="hover:text-btn-primary"
@@ -324,8 +328,8 @@ const AddNewVariant = () => {
   variantAction.value = 'Add';
   isVariantModalVisible.value = true;
 };
-const handleManageClick = (id: number, name: string) => {
-  router.push(`/variant/${name}/${id}`);
+const handleManageClick = (id: number, name: string, status: string) => {
+  router.push(`/variant/${name}/${id}/${status}`);
 };
 const updateOrAddVariant = async (
   name: string,

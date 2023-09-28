@@ -7,7 +7,6 @@
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
         <div class="text-h6 flex gap-3 pb-5 items-center">
-          <!-- <span>Additional Details</span> -->
           <div
             @click="handlePreviewImage(props.selectedArticle[0]?.productImage)"
             class="h-[100px] w-[100px] min-w-[3rem] overflow-hidden rounded-full"
@@ -150,7 +149,7 @@
           unelevated
           color="signature"
           class="bg-btn-primary hover:bg-btn-primary-hover"
-          @click="handleShowVariantDetails"
+          @click="handleAddVariantDetails"
         />
       </div>
     </q-card-actions>
@@ -357,7 +356,7 @@ const filterFn = (val: string, update: any) => {
     );
   });
 };
-const handleShowVariantDetails = () => {
+const handleAddVariantDetails = () => {
   console.log(variantGroup.value, selectedDetailsData.value);
   setTimeout(() => {
     emit('selected-Variants', selectedDetailsData.value);

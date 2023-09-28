@@ -18,6 +18,29 @@
         @click="isArticleListModalVisible = true"
       />
     </div>
+    <!-- <q-markup-table
+      v-if="Object.values(rowColumnData).some((variant) => variant !== null)"
+    >
+      <thead>
+        <tr>
+          <th></th>
+          <th
+            v-for="variant in rowColumnData.firstVariantSelection"
+            :key="variant.variantId"
+          >
+            {{ variant.displayName }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="secondVariant in rowColumnData.secondVariantSelection"
+          :key="secondVariant.variantId"
+        >
+          <td class="text-left">{{ secondVariant.displayName }}</td>
+        </tr>
+      </tbody>
+    </q-markup-table> -->
   </div>
   <q-dialog v-model="isArticleListModalVisible">
     <article-list-modal
@@ -62,7 +85,7 @@ import {
 } from 'src/interfaces';
 import { articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
-import { QTableColumn, useQuasar } from 'quasar';
+import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 const authStore = useAuthStore();
 const isArticleListModalVisible = ref(false);
@@ -81,10 +104,10 @@ const rowColumnData = ref<{
   firstVariantSelection: null,
   secondVariantSelection: null,
 });
-const firstVariantSelection: IVariantDetailsData[] = rowColumnData.value
-  .firstVariantSelection
-  ? [rowColumnData.value.firstVariantSelection]
-  : [];
+// const firstVariantSelection: IVariantDetailsData[] = rowColumnData.value
+//   .firstVariantSelection
+//   ? [rowColumnData.value.firstVariantSelection]
+//   : [];
 
 const pagination = ref<IPagination>({
   sortBy: 'desc',
@@ -180,14 +203,7 @@ const selectedData = (
   }
 };
 const handleSelectedVariant = (payload: {
-  firstVariantSelection: {
-    variantId: number;
-    name: string;
-    displayName: string;
-    status: string;
-    variantGroupName: string;
-    variantGroupId: number;
-  } | null;
+  firstVariantSelection: IVariantDetailsData | null;
   secondVariantSelection: {
     variantId: number;
     name: string;

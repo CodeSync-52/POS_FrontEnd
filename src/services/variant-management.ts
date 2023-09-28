@@ -141,7 +141,7 @@ export const variantListByIdApi = async ({
   status,
   variantGroupId,
 }: {
-  status: string;
+  status: string | string[];
   variantGroupId: number;
 }) => {
   const res = await makeApiCall<IGenericResponse<IVariantDetailsData[]>>({
