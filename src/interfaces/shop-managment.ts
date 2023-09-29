@@ -1,19 +1,22 @@
+export interface IShopResponse {
+  items: IShopData[];
+  totalItemCount: number;
+}
+
 export interface IShopData {
-  ShopId: number;
-  userId: number;
-  shopName: string;
-  shopAddress: string;
-  shopcode: number;
-  closingBalance: string;
-  createdBy: null | string;
-  outStandingBalance: number;
-  updatedDate: string;
-  createdById: number;
-  updatedBy: null;
+  shopId: number;
+  closingBalance: number;
+  status: string;
+  isWareHouse: string;
+  name: string;
+  phone: string;
+  address: string;
+  code: string;
 }
-export interface IUserShopResponse {
-  shopName: string;
-  shopAddress: string;
-  shopPhoneNumber?: number;
-  shopManagerName?: number;
+export interface IShopAddNew {
+  name: string;
+  phone: string;
+  address: string;
+  code: string;
 }
+export type IAddNewShopPayload = Omit<IShopAddNew, 'status'>;
