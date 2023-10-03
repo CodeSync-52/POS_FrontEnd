@@ -1,9 +1,4 @@
 export interface IShopResponse {
-  items: IShopData[];
-  totalItemCount: number;
-}
-
-export interface IShopData {
   shopId: number;
   closingBalance: number;
   status: string;

@@ -53,18 +53,26 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="getShopList"
+          @click="getShopList()"
         />
 
         <q-btn
           color=""
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
+          @click="handleResetFilter"
         />
       </div>
     </div>
     <div class="py-4">
-      <q-table :rows="ShopRows" :columns="shopColumn" row-key="name">
+      <q-table
+        :rows="ShopRows"
+        :columns="shopColumn"
+        row-key="name"
+        :loading="isLoading"
+        v-model:pagination="pagination"
+        @request="getShopList"
+      >
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
             <q-btn
@@ -78,6 +86,14 @@
             />
           </q-td>
         </template>
+        <template v-slot:body-cell-address="props">
+          <q-td
+            :props="props"
+            class="whitespace-nowrap max-w-[160px] text-ellipsis overflow-hidden"
+          >
+            {{ props.row.address }}
+          </q-td>
+        </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn
@@ -86,32 +102,32 @@
               size="sm"
               unelevated
               dense
-              @click="showAddNewShopPopup = true"
+              @click="handleEditShopPopup(props.row)"
             />
           </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
         </template>
       </q-table>
     </div>
   </div>
-  <q-dialog
-    v-model="showAddNewShopPopup"
-    @update:model-value="selectedUser = null"
-  >
+  <q-dialog v-model="showAddNewShopPopup">
     <add-shop-modal
       :action="action"
-      :selected-user="selectedUser"
+      :selected-shop="selectedRowData"
       @user-add="handleAddNewShop"
+      @user-edit="handleEditShop"
     />
-    <!-- @user-edit="handleEditShop" -->
   </q-dialog>
 
   <q-dialog v-model="isShopStatusModalVisible">
     <shop-status-modal
-      :selected-status="selectedStatus"
-      :shopId="shopId"
-      @updated-status="
-        (newVal, callback) => updatingStatus(newVal, shopId, callback)
-      "
+      :selected-status="selectedRowData?.status"
+      @updated-status="updatingStatus"
     />
   </q-dialog>
 </template>
@@ -121,21 +137,19 @@ import { useQuasar } from 'quasar';
 import { ref, onMounted } from 'vue';
 import {
   EUserModules,
-  IGenericResponse,
   IShopAddNew,
   getRoleModuleDisplayName,
-  IShopData,
+  IShopResponse,
 } from 'src/interfaces';
 import AddShopModal from 'components/shop-managment/AddShopModal.vue';
 import ShopStatusModal from 'components/shop-managment/ShopStatusModal.vue';
+import { OrderBy, shopStatusOptions, shopColumn, isPosError } from 'src/utils';
 import {
-  OrderBy,
-  shopStatusOptions,
-  shopColumn,
-  isPosError,
-  makeApiCall,
-} from 'src/utils';
-import { shopListApi } from 'src/services';
+  shopListApi,
+  changeShopStatusApi,
+  AddShopApi,
+  updateShopApi,
+} from 'src/services';
 const pageTitle = getRoleModuleDisplayName(EUserModules.ShopManagement);
 const isLoading = ref(false);
 const isShopStatusModalVisible = ref(false);
@@ -148,154 +162,170 @@ const filterSearch = ref<{
   Status: null,
   OrderBy: null,
 });
+const pagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 50,
+  rowsNumber: 0,
+});
+const handleEditShopPopup = (selectedRow: IShopResponse) => {
+  selectedRowData.value = Object.assign({}, selectedRow);
+  action.value = 'Edit Shop';
+  showAddNewShopPopup.value = true;
+};
+const handleResetFilter = () => {
+  if (Object.values(filterSearch.value).every((value) => value === null))
+    return;
+  filterSearch.value = {
+    ShopName: null,
+    Status: null,
+    OrderBy: null,
+  };
+  getShopList();
+};
 const action = ref<string>('');
-const selectedUser = ref<IShopAddNew | null>(null);
-const ShopRows = ref<IShopData[]>([]);
+const ShopRows = ref<IShopResponse[]>([]);
 const showAddNewShopPopup = ref(false);
-const selectedStatus = ref<string>('');
-const shopId = ref<number>(0);
 const $q = useQuasar();
+const selectedRowData = ref<IShopResponse | null>(null);
 const handleAddNewUser = () => {
   action.value = 'Add New Shop';
-  selectedUser.value = null;
-  showAddShopModal(true);
+  selectedRowData.value = null;
+  showAddNewShopPopup.value = true;
 };
-const showAddShopModal = (isVisible: boolean) => {
-  showAddNewShopPopup.value = isVisible;
-};
-const handleEditStatusPopup = (selectedRow: IShopData) => {
-  selectedStatus.value = selectedRow.status;
-  shopId.value = selectedRow.shopId;
+const handleEditStatusPopup = (selectedRow: IShopResponse) => {
+  selectedRowData.value = selectedRow;
   isShopStatusModalVisible.value = true;
 };
-
-async function handleAddNewShop(shopData: IShopAddNew) {
+onMounted(() => {
+  getShopList();
+});
+async function handleAddNewShop(shopData: IShopAddNew, callback: () => void) {
   try {
-    const response: IGenericResponse = await makeApiCall({
-      url: 'api/shop/add', // Use the correct API endpoint
-      method: 'POST',
-      data: shopData,
-    });
-
+    const response = await AddShopApi(shopData);
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,
         type: 'positive',
       });
       getShopList();
-    } else {
-      console.error('Failed to add shop:', response.message);
-      $q.notify({
-        message: response.message || 'Failed to add shop',
-        type: 'negative',
-      });
     }
   } catch (error) {
-    console.error('Unexpected error occurred:', error);
-    let errorMessage = 'Unexpected Error Occurred';
+    let message = 'Unexpected Error Occurred Adding Shop';
 
     if (isPosError(error)) {
-      errorMessage = error.message;
+      message = error.message;
     }
     $q.notify({
-      message: errorMessage,
+      message,
       color: 'red',
       icon: 'error',
     });
   }
-
-  // Close the dialog or take any other necessary action
+  callback();
   showAddNewShopPopup.value = false;
 }
-onMounted(() => {
-  getShopList();
-});
-const getShopList = async () => {
+const getShopList = async (data?: {
+  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
+}) => {
   if (isLoading.value) return;
   isLoading.value = true;
-  const PageNumber = 1;
-  const PageSize = 50;
+  if (data) {
+    pagination.value = { ...pagination.value, ...data.pagination };
+  }
   try {
     const response = await shopListApi({
-      PageSize,
-      PageNumber,
+      PageNumber: pagination.value.page,
+      PageSize: pagination.value.rowsPerPage,
       filterSearch: filterSearch.value,
     });
-    // makeApiCall<IGenericResponse<IShopResponse>>({
-    //   url: 'api/shop/list?PageNumber=1&PageSize=50',
-    //   method: 'GET',
-    // });
-    if (response.type === 'Success') {
+    if (response.data) {
       ShopRows.value = response.data.items;
+      pagination.value.rowsNumber = response.data.totalItemCount;
     }
   } catch (error) {
-    console.error('Unexpected error occurred:', error);
-    let errorMessage = 'Unexpected Error Occurred';
+    let message = 'Unexpected Error Occurred';
 
     if (isPosError(error)) {
-      errorMessage = error.message;
+      message = error.message;
     }
     $q.notify({
-      message: errorMessage,
-      color: 'red',
-      icon: 'error',
+      message,
+      type: 'negative',
     });
   } finally {
     isLoading.value = false;
   }
 };
-const updatingStatus = async (
-  updatedStatus: string,
-  shopId: number,
-  callback: () => void
-) => {
+const updatingStatus = async (updatedStatus: string, callback: () => void) => {
+  if (selectedRowData.value?.status === updatedStatus) {
+    callback();
+    isShopStatusModalVisible.value = false;
+    return;
+  }
+  const id = selectedRowData.value?.shopId ?? -1;
   try {
-    const response: IGenericResponse = await makeApiCall({
-      url: `api/shop/changestatus?shopId=${shopId}`, // Update with the correct API endpoint
-      method: 'PUT', // Use 'PUT' method
-      data: { status: updatedStatus },
-    });
-
+    const response = await changeShopStatusApi(id);
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,
         type: 'positive',
       });
-
-      // Optionally, update the shop status locally
-      const shopToUpdate = ShopRows.value.find(
-        (shop) => shop.shopId === shopId
-      );
-      if (shopToUpdate) {
-        shopToUpdate.status = updatedStatus;
+      if (selectedRowData.value && selectedRowData.value.status === 'Active') {
+        selectedRowData.value.status = 'InActive';
+      } else if (
+        selectedRowData.value &&
+        selectedRowData.value.status === 'InActive'
+      ) {
+        selectedRowData.value.status = 'Active';
       }
-    } else {
-      console.error('Failed to update shop status:', response.message);
-      $q.notify({
-        message: response.message || 'Failed to update shop status',
-        type: 'negative',
-      });
     }
   } catch (error) {
-    console.error(
-      'Unexpected error occurred while updating shop status:',
-      error
-    );
-    let errorMessage = 'Unexpected Error Occurred';
+    let message = 'Unexpected error occurred while updating shop status';
 
     if (isPosError(error)) {
-      errorMessage = error.message;
+      message = error.message;
     }
     $q.notify({
-      message: errorMessage,
-      color: 'red',
-      icon: 'error',
+      message,
+      type: 'negative',
     });
   }
 
   callback();
-
-  // Close the status modal or take any other necessary action
   isShopStatusModalVisible.value = false;
+};
+const handleEditShop = async (data: IShopResponse, callback: () => void) => {
+  const { name, phone, code, shopId, address } = data;
+  try {
+    const response = await updateShopApi({
+      name,
+      phone,
+      code,
+      shopId,
+      address,
+    });
+    if (response.type === 'Success') {
+      $q.notify({
+        message: response.message,
+        type: 'positive',
+      });
+      getShopList();
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred Editing Shop Info';
+
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  callback();
+  showAddNewShopPopup.value = false;
 };
 </script>

@@ -1,10 +1,10 @@
 import { QTableColumn } from 'quasar';
-import { IShopData } from 'src/interfaces/shop-managment';
+import { IShopResponse } from 'src/interfaces/shop-managment';
 export const OrderBy = ['Ascending', 'Descending '];
 export const shopNmaeOptions = ['Shop name1', 'Shop name2', 'Billed'];
 export const shopStatusOptions = ['Active', 'InActive'];
 
-export const shopColumn: QTableColumn<IShopData>[] = [
+export const shopColumn: QTableColumn<IShopResponse>[] = [
   {
     name: 'shopId',
     required: true,

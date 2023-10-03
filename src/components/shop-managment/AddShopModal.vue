@@ -22,7 +22,7 @@
                 dense
                 outlined
                 maxlength="250"
-                v-model="userData.name"
+                v-model="shopData.name"
                 label="Full Name"
                 color="btn-primary"
               />
@@ -33,7 +33,7 @@
             <q-input
               dense
               outlined
-              v-model="userData.phone"
+              v-model="shopData.phone"
               type="tel"
               color="btn-primary"
               mask="+92###-########"
@@ -44,7 +44,7 @@
             <q-input
               dense
               outlined
-              v-model="userData.address"
+              v-model="shopData.address"
               type="text"
               color="btn-primary"
               label="Address"
@@ -55,7 +55,7 @@
             <q-input
               dense
               outlined
-              v-model="userData.code"
+              v-model="shopData.code"
               type="text"
               color="btn-primary"
               label="Code"
@@ -78,6 +78,7 @@
         :label="action === 'Add New Shop' ? 'Add' : 'Save'"
         color="signature"
         :disable="isButtonDisabled"
+        :loading="isLoading"
         @click="
           action === 'Add New Shop' ? handleAddNewShop() : handleEditShop()
         "
@@ -88,87 +89,87 @@
 </template>
 
 <script setup lang="ts">
+import { IShopResponse } from 'src/interfaces';
 import { onMounted, computed, ref } from 'vue';
-import { IShopAddNew, IAddNewShopPayload } from 'src/interfaces';
-type PropType = {
-  selectedUser: IShopAddNew | null;
+interface PropType {
   action: string;
-};
-onMounted(() => {
-  if (props.selectedUser) {
-    userData.value = props.selectedUser;
-  }
-});
-const userData = ref<IShopAddNew>({
+  selectedShop: IShopResponse | null;
+}
+const isLoading = ref(false);
+const shopData = ref<IShopResponse>({
+  address: '',
+  closingBalance: 0,
+  code: '',
+  isWareHouse: '',
   name: '',
   phone: '',
-  address: '',
-  code: '',
+  shopId: 0,
+  status: '',
+});
+onMounted(() => {
+  if (props.selectedShop) {
+    shopData.value = props.selectedShop;
+  }
 });
 
 const isButtonDisabled = computed(() => {
-  const { name, phone, address, code } = userData.value;
-  const validations = ref<boolean[]>([]); // Initialize an array to store validation results
-
-  // Validate Full Name: Check if it's empty
+  const { name, phone, address, code } = shopData.value;
+  const validations = ref<boolean[]>([]);
   validations.value.push(!name);
-
-  // Validate Phone Number: Check if it doesn't meet the length criteria (14-15 characters)
   validations.value.push(!(phone.length >= 14 && phone.length <= 15));
-
-  // Validate Address: Check if it's empty
   validations.value.push(!address);
-
-  // Validate Code: Check if it's empty
   validations.value.push(!code);
-
-  // Return true if any of the validations fail (resulting in a true value in the array)
   return validations.value.some((validation) => validation);
 });
 
 const emit = defineEmits<{
-  (event: 'user-add', data: IAddNewShopPayload): void;
-  (event: 'user-edit', data: IAddNewShopPayload): void;
+  (event: 'user-add', shopData: IShopResponse, callback: () => void): void;
+  (event: 'user-edit', shopData: IShopResponse, callback: () => void): void;
 }>();
-const props = defineProps<PropType>();
+const props = withDefaults(defineProps<PropType>(), {
+  selectedShop: null,
+  action: 'Add',
+});
 const handleEditShop = () => {
-  if (userData.value.phone) {
-    if (userData.value.phone.charAt(3) === '0') {
-      const userPhoneNumber = userData.value.phone;
-      userData.value.phone =
+  if (shopData.value.phone) {
+    if (shopData.value.phone.charAt(3) === '0') {
+      const userPhoneNumber = shopData.value.phone;
+      shopData.value.phone =
         userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
-      userData.value.phone =
-        userData.value.phone.substring(0, 3) +
-        userData.value.phone.substring(4);
+      shopData.value.phone =
+        shopData.value.phone.substring(0, 3) +
+        shopData.value.phone.substring(4);
     } else if (
-      userData.value.phone.charAt(3) !== '0' &&
-      (userData.value.phone.length === 14 || userData.value.phone.length === 15)
+      shopData.value.phone.charAt(3) !== '0' &&
+      (shopData.value.phone.length === 14 || shopData.value.phone.length === 15)
     ) {
-      const userPhoneNumber = userData.value.phone;
-      userData.value.phone =
+      const userPhoneNumber = shopData.value.phone;
+      shopData.value.phone =
         userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
     }
   }
-  emit('user-edit', userData.value);
+  isLoading.value = true;
+  emit('user-edit', shopData.value, () => (isLoading.value = false));
 };
 function handleAddNewShop() {
-  if (userData.value.phone) {
-    if (userData.value.phone.charAt(3) === '0') {
-      const userPhoneNumber = userData.value.phone;
-      userData.value.phone =
+  if (shopData.value.phone) {
+    if (shopData.value.phone.charAt(3) === '0') {
+      const userPhoneNumber = shopData.value.phone;
+      shopData.value.phone =
         userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
-      userData.value.phone =
-        userData.value.phone.substring(0, 3) +
-        userData.value.phone.substring(4);
+      shopData.value.phone =
+        shopData.value.phone.substring(0, 3) +
+        shopData.value.phone.substring(4);
     } else if (
-      userData.value.phone.charAt(3) !== '0' &&
-      (userData.value.phone.length === 14 || userData.value.phone.length === 15)
+      shopData.value.phone.charAt(3) !== '0' &&
+      (shopData.value.phone.length === 14 || shopData.value.phone.length === 15)
     ) {
-      const userPhoneNumber = userData.value.phone;
-      userData.value.phone =
+      const userPhoneNumber = shopData.value.phone;
+      shopData.value.phone =
         userPhoneNumber.substring(0, 6) + userPhoneNumber.substring(7);
     }
   }
-  emit('user-add', userData.value);
+  isLoading.value = true;
+  emit('user-add', shopData.value, () => (isLoading.value = false));
 }
 </script>

@@ -45,7 +45,6 @@
 import { ref, onMounted } from 'vue';
 interface IProps {
   selectedStatus: string;
-  shopId: number;
 }
 const isLoading = ref<boolean>(false);
 const emit = defineEmits<{
@@ -54,7 +53,6 @@ const emit = defineEmits<{
 const statusVal = ref<string>('');
 const props = withDefaults(defineProps<IProps>(), {
   selectedStatus: '',
-  shopId: 0,
 });
 function savingEditedStatus() {
   isLoading.value = true;

@@ -18,7 +18,7 @@
         :rows="filteredRows"
         v-model:pagination="pagination"
         :columns="customerGroupColumns"
-        row-key="name"
+        row-key="shopId"
         :filter="filter"
         @request="fetchingCustomerGroupList"
       >
