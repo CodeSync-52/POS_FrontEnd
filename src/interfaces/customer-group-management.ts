@@ -14,3 +14,13 @@ export interface ICustomerListResponse {
   updatedDate: string;
 }
 [];
+
+export interface ICustomerListResponse {
+  createdBy: number;
+  createdDate: string;
+  customerGroupId: number;
+  name: string;
+  status: string;
+  updatedBy: number;
+  updatedDate: string;
+}

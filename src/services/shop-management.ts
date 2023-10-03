@@ -8,26 +8,42 @@ export const shopListApi = async ({
 }: {
   PageNumber?: number;
   PageSize?: number;
-  filterSearch: {
-    ShopName: string | null;
-    Status: string | null;
-    OrderBy: string | null;
-  };
+  filterSearch?:
+    | {
+        ShopName: string | null;
+        Status: string | null;
+        OrderBy: string | null;
+      }
+    | undefined;
 }) => {
-  const { ShopName, Status } = filterSearch;
-  const res = await makeApiCall<
-    IGenericResponse<{ totalItemCount: number; items: IShopResponse[] }>
-  >({
-    url: 'api/shop/list',
-    method: 'GET',
-    params: {
-      PageNumber,
-      PageSize,
-      Status,
-      ShopName,
-    },
-  });
-  return res;
+  if (filterSearch) {
+    const { ShopName, Status } = filterSearch;
+    const res = await makeApiCall<
+      IGenericResponse<{ totalItemCount: number; items: IShopResponse[] }>
+    >({
+      url: 'api/shop/list',
+      method: 'GET',
+      params: {
+        PageNumber,
+        PageSize,
+        Status,
+        ShopName,
+      },
+    });
+    return res;
+  } else {
+    const res = await makeApiCall<
+      IGenericResponse<{ totalItemCount: number; items: IShopResponse[] }>
+    >({
+      url: 'api/shop/list',
+      method: 'GET',
+      params: {
+        PageNumber,
+        PageSize,
+      },
+    });
+    return res;
+  }
 };
 export const changeShopStatusApi = async (id: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({

@@ -72,7 +72,7 @@
           </div>
           <div
             :class="action !== 'Add New User' ? 'col-md-6' : 'col-md-4'"
-            class="col-md-4 w-full col-sm-12"
+            class="col-md-6 w-full col-sm-12"
           >
             <q-input
               dense
@@ -105,7 +105,10 @@
           v-if="userData.roleName === EUserRoles.Customer"
           class="row px-2 q-col-gutter-sm"
         >
-          <div class="col-md-4 w-full col-sm-12">
+          <div
+            v-if="action === 'Add New User'"
+            class="col-md-6 w-full col-sm-12"
+          >
             <div>
               <q-select
                 :options="customerGroupList"
@@ -131,7 +134,7 @@
               >
             </div>
           </div>
-          <div class="col-md-4 w-full col-sm-12">
+          <div class="col-md-6 w-full col-sm-12">
             <div>
               <q-input
                 type="number"
@@ -148,6 +151,56 @@
               />
             </div>
           </div>
+        </div>
+        <div
+          v-if="
+            (userData.roleName === EUserRoles.ShopManager ||
+              userData.roleName === EUserRoles.ShopOfficer) &&
+            action === 'Add New User'
+          "
+          class="row px-2 q-col-gutter-sm"
+        >
+          <div class="col-md-6 w-full col-sm-12">
+            <div>
+              <q-select
+                :options="ShopList"
+                :loading="isLoading"
+                dense
+                map-options
+                outlined
+                v-model="userData.shopId"
+                @update:model-value="userData.shopId = $event.shopId"
+                label="Shop Name"
+                color="btn-primary"
+                option-label="name"
+                option-value="shopId"
+                ><template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template></q-select
+              >
+            </div>
+          </div>
+          <!-- <div class="col-md-4 w-full col-sm-12">
+            <div>
+              <q-input
+                type="number"
+                dense
+                outlined
+                :min="0"
+                :max="5000000"
+                v-model="userData.discount"
+                fill-mask="0"
+                reverse-fill-mask
+                input-class="text-right"
+                label="Discount"
+                color="btn-primary"
+              />
+            </div>
+          </div> -->
         </div>
       </div>
     </q-card-section>
@@ -180,10 +233,11 @@ import { roleOptions } from 'src/constants';
 import {
   EUserRoles,
   ICustomerListResponse,
+  IShopResponse,
   IUserPayload,
   IUserResponse,
 } from 'src/interfaces';
-import { getCustomerGroupList } from 'src/services';
+import { getCustomerGroupList, shopListApi } from 'src/services';
 import { isPosError } from 'src/utils';
 type PropType = {
   selectedUser: IUserResponse | null;
@@ -193,11 +247,12 @@ onMounted(() => {
   if (props.selectedUser) {
     userData.value = props.selectedUser;
   }
-  getCustomerListOption();
+  getCustomerAndShopListOption();
 });
 const $q = useQuasar();
 const isLoading = ref(false);
 const customerGroupList = ref<ICustomerListResponse[]>([]);
+const ShopList = ref<IShopResponse[]>([]);
 const userData = ref<IUserResponse>({
   roleName: EUserRoles.Customer,
   customerGroupId: null,
@@ -210,13 +265,16 @@ const userData = ref<IUserResponse>({
   address: '',
   phoneNumber: '',
   userName: '',
+  shopId: null,
 });
 const roleDropdownOptions = computed(() =>
   roleOptions.filter(
     (role) =>
       role.value === EUserRoles.Customer ||
       role.value === EUserRoles.Admin ||
-      role.value === EUserRoles.SuperAdmin
+      role.value === EUserRoles.SuperAdmin ||
+      role.value === EUserRoles.ShopOfficer ||
+      role.value === EUserRoles.ShopManager
   )
 );
 const isButtonDisabled = computed(() => {
@@ -317,7 +375,7 @@ function handleAddNewUser() {
   }
   emit('user-add', userData.value);
 }
-async function getCustomerListOption() {
+async function getCustomerAndShopListOption() {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
@@ -338,6 +396,27 @@ async function getCustomerListOption() {
       color: 'red',
       icon: 'error',
     });
+  }
+  try {
+    const response = await shopListApi({
+      PageNumber: 1,
+      PageSize: 200,
+    });
+    if (response.data) {
+      ShopList.value = response.data.items;
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
   }
   isLoading.value = false;
 }
