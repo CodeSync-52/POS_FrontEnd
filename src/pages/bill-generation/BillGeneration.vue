@@ -12,11 +12,11 @@
         dense
         style="min-width: 200px"
         outlined
-        v-model="filterSearch.customerGroupId"
+        v-model="filterSearch.CustomerGroupId"
         :options="customerGroupList"
         map-options
         @update:model-value="
-          filterSearch.customerGroupId = $event.customerGroupId
+          filterSearch.CustomerGroupId = $event.customerGroupId
         "
         :loading="isCustomerGroupListLoading"
         label="Customer Group"
@@ -211,7 +211,7 @@
                 @click="handleGenerateBillPopup(props.row)"
               >
                 <q-tooltip class="bg-green" :offset="[10, 10]">
-                  Generate Bill
+                  Complete Bill
                 </q-tooltip>
               </q-btn>
               <q-btn
@@ -330,7 +330,7 @@ const filterSearch = ref<IBillGenerationFilter>({
   ToDate: formattedToDate,
   FromDate: formattedFromDate,
   billStatus: null,
-  customerGroupId: null,
+  CustomerGroupId: null,
 });
 onMounted(() => {
   getBillList();
@@ -381,7 +381,7 @@ const resetFilter = () => {
     ToDate: null,
     FromDate: null,
     billStatus: null,
-    customerGroupId: null,
+    CustomerGroupId: null,
   };
   getBillList();
 };

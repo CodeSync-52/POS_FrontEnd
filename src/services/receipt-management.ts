@@ -2,6 +2,7 @@ import { IAddNewReceipt, IGenericResponse, IReceiptData } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const receiptListApi = async (
   {
+    customerGroupId,
     ToDate,
     PageNumber = 1,
     PageSize = 50,
@@ -10,6 +11,7 @@ export const receiptListApi = async (
     FullName,
     PurchaseStatus,
   }: {
+    customerGroupId: null | number;
     ToDate: string | null;
     FromDate: string | null;
     UserId: number | null;
@@ -33,6 +35,7 @@ export const receiptListApi = async (
       PageNumber,
       PageSize,
       PurchaseStatus,
+      customerGroupId,
     },
     signal: controller?.signal,
   });

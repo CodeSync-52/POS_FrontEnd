@@ -481,6 +481,7 @@ const getReceiptList = async (data?: {
         PageNumber: pagination.value.page,
         PageSize: pagination.value.rowsPerPage,
         PurchaseStatus: filterSearch.value.purchaseStatus,
+        customerGroupId: filterSearch.value.customerGroupId,
       },
       apiController.value
     );
