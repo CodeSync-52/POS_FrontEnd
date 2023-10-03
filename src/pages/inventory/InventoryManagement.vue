@@ -13,34 +13,91 @@
         "
         label="Add New"
         icon="add"
+        unelevated
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         color=""
         @click="isArticleListModalVisible = true"
       />
     </div>
-    <!-- <q-markup-table
+    <div
       v-if="Object.values(rowColumnData).some((variant) => variant !== null)"
     >
-      <thead>
-        <tr>
-          <th></th>
-          <th
-            v-for="variant in rowColumnData.firstVariantSelection"
-            :key="variant.variantId"
+      <q-markup-table
+        v-for="(product, productIndex) in rowColumnData"
+        :key="productIndex"
+        class="q-mb-md"
+      >
+        <thead align="left">
+          <tr>
+            <th>
+              <div class="row items-center gap-1">
+                <span
+                  >Product:
+                  <span class="font-semibold">{{
+                    product.productName
+                  }}</span></span
+                >
+                <div class="w-8 h-8 rounded-full overflow-hidden">
+                  <img
+                    :src="
+                      getImageUrl(product.productImage) ||
+                      'assets/default-image.png'
+                    "
+                    alt="img"
+                  />
+                </div>
+              </div>
+            </th>
+            <th
+              v-for="(header, headerIndex) in product.firstVariantSelection"
+              :key="headerIndex"
+            >
+              {{ header.displayName }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(
+              secondItem, secondItemIndex
+            ) in product.secondVariantSelection"
+            :key="secondItemIndex"
           >
-            {{ variant.displayName }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="secondVariant in rowColumnData.secondVariantSelection"
-          :key="secondVariant.variantId"
-        >
-          <td class="text-left">{{ secondVariant.displayName }}</td>
-        </tr>
-      </tbody>
-    </q-markup-table> -->
+            <td>{{ secondItem.displayName }}</td>
+            <td
+              v-for="(
+                firstItem, firstItemIndex
+              ) in product.firstVariantSelection"
+              :key="firstItemIndex"
+            >
+              <q-input
+                type="number"
+                dense
+                color="btn-primary"
+                outlined
+                min="0"
+                v-model="
+                  selectedInventoryPayload[
+                    `${product.productId}-${firstItem.variantId}-${secondItem.variantId}`
+                  ].stockQuantity
+                "
+                @update:model-value="
+                  selectedInventoryPayload[
+                    `${product.productId}-${firstItem.variantId}-${secondItem.variantId}`
+                  ].stockQuantity = $event
+                "
+              >
+              </q-input>
+            </td>
+          </tr>
+        </tbody>
+      </q-markup-table>
+      {{ selectedArticle }}
+      <div class="row q-gutter-x-sm justify-end items-center">
+        <q-btn label="Cancel" color="btn-cancel" unelevated />
+        <q-btn @click="mySaveFn" label="Save" unelevated color="btn-primary" />
+      </div>
+    </div>
   </div>
   <q-dialog v-model="isArticleListModalVisible">
     <article-list-modal
@@ -61,6 +118,7 @@
       :is-selection-single="isSelectionSingle"
     />
   </q-dialog>
+
   <q-dialog v-model="isInventoryManagementStepTwoVisible">
     <inventory-managment-step-2-modal
       :selected-article="selectedArticle"
@@ -82,8 +140,9 @@ import {
   ISelectedArticleData,
   getRoleModuleDisplayName,
   IVariantDetailsData,
+  IProductWithVariantDTOs,
 } from 'src/interfaces';
-import { articleListApi } from 'src/services';
+import { articleListApi, addInventoryApi } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
@@ -97,18 +156,17 @@ const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticle = ref<ISelectedArticle[]>([]);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
-const rowColumnData = ref<{
-  firstVariantSelection: IVariantDetailsData | null;
-  secondVariantSelection: IVariantDetailsData | null;
-}>({
-  firstVariantSelection: null,
-  secondVariantSelection: null,
-});
-// const firstVariantSelection: IVariantDetailsData[] = rowColumnData.value
-//   .firstVariantSelection
-//   ? [rowColumnData.value.firstVariantSelection]
-//   : [];
+const rowColumnData = ref<
+  {
+    firstVariantSelection: IVariantDetailsData[] | null;
+    secondVariantSelection: IVariantDetailsData[] | null;
+    productId: number | null;
+    productName: string | null;
+    productImage: string | null;
+  }[]
+>([]);
 
+const selectedInventoryPayload = ref<Record<string, any>>({});
 const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
@@ -116,7 +174,6 @@ const pagination = ref<IPagination>({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-
 const $q = useQuasar();
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
@@ -133,7 +190,8 @@ const handleFilterRows = (filterChanged: boolean) => {
 };
 
 const articleListComputed = computed(() => {
-  articleList.value;
+  // articleList.value;
+  // const selectedProducts= rowColumnData.value.map(product=>product.productId)
   return articleList.value.filter((item) => {
     const index = selectedArticleData.value.findIndex(
       (art) => art.productId === item.productId
@@ -202,24 +260,94 @@ const selectedData = (
     }
   }
 };
-const handleSelectedVariant = (payload: {
-  firstVariantSelection: IVariantDetailsData | null;
-  secondVariantSelection: {
-    variantId: number;
-    name: string;
-    displayName: string;
-    status: string;
-    variantGroupName: string;
-    variantGroupId: number;
-  } | null;
-}) => {
-  rowColumnData.value = {
-    firstVariantSelection: payload.firstVariantSelection,
-    secondVariantSelection: payload.secondVariantSelection,
-  };
+const handleSelectedVariant = (
+  payload: {
+    firstVariantSelection: IVariantDetailsData[] | null;
+    secondVariantSelection: IVariantDetailsData[] | null;
+  },
+  productId: number,
+  productName: string,
+  productImage: string
+) => {
+  rowColumnData.value = [
+    ...rowColumnData.value,
+    {
+      firstVariantSelection: payload.firstVariantSelection,
+      secondVariantSelection: payload.secondVariantSelection,
+      productId,
+      productName,
+      productImage,
+    },
+  ];
+  rowColumnData.value.forEach((product) => {
+    product.firstVariantSelection?.forEach((variantA) => {
+      product.secondVariantSelection?.forEach((variantB) => {
+        selectedInventoryPayload.value[
+          `${product.productId}-${variantA.variantId}-${variantB.variantId}`
+        ] = {
+          variantId_1: variantA.variantId,
+          variantId_2: variantB.variantId,
+          stockQuantity: 0,
+        };
+      });
+    });
+  });
   isInventoryManagementStepTwoVisible.value = false;
 };
 onMounted(() => {
   getArticleList();
 });
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+  return '';
+};
+
+const mySaveFn = () => {
+  const selectedInventorylist: IProductWithVariantDTOs[] = [];
+  Object.keys(selectedInventoryPayload.value).forEach((key) => {
+    const productId = Number(key.split('-')[0]);
+    const index = selectedInventorylist.findIndex(
+      (item) => item.productId === productId
+    );
+    if (index === -1) {
+      selectedInventorylist.push({
+        productId,
+        variantStocks: [selectedInventoryPayload.value[key]],
+      });
+    } else {
+      selectedInventorylist[index].variantStocks.push(
+        selectedInventoryPayload.value[key]
+      );
+    }
+  });
+  handleAddInventory(selectedInventorylist);
+};
+const handleAddInventory = async (
+  productWithVariantDTOs: IProductWithVariantDTOs[]
+) => {
+  const shopId = 1;
+  try {
+    const res = await addInventoryApi({
+      shopId,
+      productWithVariantDTOs,
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        type: 'positive',
+      });
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred Add Inventory';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'positive',
+    });
+  }
+};
 </script>

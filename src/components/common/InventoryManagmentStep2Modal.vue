@@ -183,7 +183,10 @@ const emit = defineEmits<{
     data: {
       firstVariantSelection: IVariantDetailsData | null;
       secondVariantSelection: IVariantDetailsData | null;
-    }
+    },
+    productId: number,
+    productName: string,
+    productImage: string | null
   ): void;
 }>();
 
@@ -357,9 +360,15 @@ const filterFn = (val: string, update: any) => {
   });
 };
 const handleAddVariantDetails = () => {
-  console.log(variantGroup.value, selectedDetailsData.value);
+  const selectedArticle = props.selectedArticle[0];
   setTimeout(() => {
-    emit('selected-Variants', selectedDetailsData.value);
+    emit(
+      'selected-Variants',
+      selectedDetailsData.value,
+      selectedArticle.productId,
+      selectedArticle.productName ?? '',
+      selectedArticle.productImage
+    );
   }, 300);
 };
 
