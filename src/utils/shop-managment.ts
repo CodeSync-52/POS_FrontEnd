@@ -1,46 +1,70 @@
 import { QTableColumn } from 'quasar';
 import { IShopData } from 'src/interfaces/shop-managment';
-export const shopMangerOptions = ['Shop Manager', 'Shop Keeper', 'Billed'];
+export const OrderBy = ['Ascending', 'Descending '];
 export const shopNmaeOptions = ['Shop name1', 'Shop name2', 'Billed'];
-export const shopNumberOptions = ['Shop Number', 'Shop Number2', 'Billed'];
+export const shopStatusOptions = ['Active', 'InActive'];
 
 export const shopColumn: QTableColumn<IShopData>[] = [
   {
-    name: 'ShopId',
+    name: 'shopId',
     required: true,
     label: 'Shop Id',
     align: 'left',
     sortable: true,
-    field: (row) => row.ShopId,
+    field: (row) => row.shopId,
   },
   {
-    name: 'shopName',
+    name: 'name',
     required: true,
     label: 'Shop Name',
     align: 'left',
     sortable: true,
-    field: (row) => row.shopName,
+    field: (row) => row.name,
   },
   {
-    name: 'shopAddress',
+    name: 'address',
     required: true,
     label: 'Shop Address',
     align: 'left',
-    field: (row) => row.shopAddress,
+    field: (row) => {
+      const address = row.address || '';
+      return address.length > 100 ? `${address.slice(0, 50)}...` : address;
+    },
   },
   {
-    name: 'shopcode',
+    name: 'phone',
+    required: true,
+    label: 'Phone Number',
+    align: 'left',
+    field: (row) => row.phone,
+  },
+  {
+    name: 'code',
     required: true,
     label: 'Shop Code',
     align: 'left',
-    field: (row) => row.shopcode,
+    field: (row) => row.code,
   },
   {
     name: 'closingBalance',
     required: true,
-    label: 'Created Date',
+    label: 'Closing Balance',
     align: 'left',
     field: (row) => row.closingBalance,
+  },
+  {
+    name: 'status',
+    required: true,
+    label: 'Shop Status',
+    align: 'left',
+    field: (row) => row.status,
+  },
+  {
+    name: 'isWareHouse',
+    required: true,
+    label: 'WareHouse',
+    align: 'left',
+    field: (row) => row.isWareHouse,
   },
   {
     name: 'action',
@@ -53,11 +77,13 @@ export const shopColumn: QTableColumn<IShopData>[] = [
 
 export const shopRows = [
   {
-    ShopId: 12456,
-    shopName: 'ABC',
-    shopAddress: 'Shop Id',
-    shopcode: 'NUMBER',
-    closingBalance: '123',
-    action: 'EDIT DELETE',
+    shopId: 12456,
+    name: 'ABC',
+    address: 'Shop Id',
+    code: 'NUMBER',
+    closingBalance: 123,
+    status: 'Active',
+    isWareHouse: 'No',
+    phone: '12345678',
   },
 ];
