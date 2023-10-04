@@ -74,7 +74,7 @@
       </div>
     </q-card-section>
     <q-card-actions align="right" v-if="articleList.length">
-      <div class="row justify-end gap-4">
+      <div class="row justify-end gap-2">
         <q-btn
           label="Cancel"
           flat

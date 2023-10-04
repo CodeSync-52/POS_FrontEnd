@@ -1,8 +1,8 @@
 <template>
   <q-card class="min-w-[310px] md:min-w-[750px] h-[600px]">
     <q-card-section class="h-[calc(100%-52px)]">
-      <div class="p-4">
-        <div class="row items-center q-mb-md justify-between">
+      <div class="px-4">
+        <div class="row items-center q-mb-lg justify-between">
           <div class="text-h6">Additional Details</div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
@@ -147,6 +147,7 @@
           flat
           label="Add"
           unelevated
+          :disable="isButtonDisabled"
           color="signature"
           class="bg-btn-primary hover:bg-btn-primary-hover"
           @click="handleAddVariantDetails"
@@ -180,7 +181,7 @@ interface propTypes {
 const emit = defineEmits<{
   (
     event: 'selected-Variants',
-    data: {
+    payload: {
       firstVariantSelection: IVariantDetailsData | null;
       secondVariantSelection: IVariantDetailsData | null;
     },
@@ -236,6 +237,15 @@ const optionData = computed(() => {
     );
   }
   return options.value;
+});
+const isButtonDisabled = computed(() => {
+  const validations = [
+    Object.values(variantGroup.value).some((variant) => variant === null),
+    Object.values(selectedDetailsData.value).some(
+      (variant) => variant === null || Object.values(variant).length === 0
+    ),
+  ];
+  return validations.some((validation) => validation === true);
 });
 const pagination = ref({
   sortBy: 'desc',

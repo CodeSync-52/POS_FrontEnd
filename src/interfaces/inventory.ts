@@ -11,3 +11,14 @@ export interface IVariantStocks {
   variantId_2: number;
   stockQuantity: number;
 }
+export interface IInventoryFilterSearch {
+  FromDate: string | null;
+  ToDate: string | null;
+}
+export interface IInventoryListResponse {
+  shopId: number;
+  totalProducts: number;
+  addedBy: string;
+  createdBy: number;
+  addedDate: string;
+}

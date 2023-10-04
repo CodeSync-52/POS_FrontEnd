@@ -153,6 +153,13 @@ export const routeList = [
     },
   },
   {
+    path: '/inventory/add-new',
+    component: () => import('src/pages/inventory/AddNewInventory.vue'),
+    meta: {
+      module: EUserModules.InventoryManagement,
+    },
+  },
+  {
     path: '/goods-receipt',
     component: () => import('src/pages/goods-receipt/GoodReceiptNotes.vue'),
     meta: {
