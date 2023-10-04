@@ -2,7 +2,6 @@ import { EUserRoles } from './general';
 
 interface IUserCustomer {
   roleName: EUserRoles.Customer;
-
   flatDiscount: number;
   customerGroupId: number | null;
   status: string;
@@ -47,6 +46,7 @@ export interface IUserResponse {
   userId?: number;
   userName: string;
   address: string;
+  shopId: null | number;
 }
 export interface IUserFilterList {
   customerGroupId: number | null;

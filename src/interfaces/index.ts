@@ -10,3 +10,4 @@ export * from './bill-generation';
 export * from './sales-management';
 export * from './cash-flow';
 export * from './inventory';
+export * from './shop-managment';

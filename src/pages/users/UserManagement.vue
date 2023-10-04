@@ -366,7 +366,9 @@ const roleDropdownOptions = computed(() =>
     (role) =>
       role.value === EUserRoles.Customer ||
       role.value === EUserRoles.Admin ||
-      role.value === EUserRoles.SuperAdmin
+      role.value === EUserRoles.SuperAdmin ||
+      role.value === EUserRoles.ShopManager ||
+      role.value === EUserRoles.ShopOfficer
   )
 );
 onMounted(() => {
