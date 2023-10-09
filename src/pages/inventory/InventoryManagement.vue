@@ -114,6 +114,7 @@ const $q = useQuasar();
 const filterSearch = ref<IInventoryFilterSearch>({
   FromDate: null,
   ToDate: null,
+  ShopId: null,
 });
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -122,6 +123,7 @@ const resetFilter = () => {
   filterSearch.value = {
     FromDate: null,
     ToDate: null,
+    ShopId: null,
   };
   getInventoryList();
 };
@@ -148,8 +150,12 @@ const getInventoryList = async (data?: {
       apiController.value
     );
     if (res.data) {
-      InventoryListRecords.value = res.data.items;
-      pagination.value.rowsNumber = res.data.totalItemCount;
+      if (Object.values(filterSearch.value).some((item) => item !== null)) {
+        InventoryListRecords.value = res.data.items;
+        pagination.value.rowsNumber = res.data.totalItemCount;
+      } else {
+        InventoryListRecords.value = [];
+      }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

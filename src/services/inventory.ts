@@ -13,7 +13,9 @@ export const addInventoryApi = async ({
   shopId: number;
   productWithVariantDTOs: IProductWithVariantDTOs[];
 }) => {
-  const res = await makeApiCall<IGenericResponse<null>>({
+  const res = await makeApiCall<
+    IGenericResponse<{ productLabel: string; quantity: number }[]>
+  >({
     url: 'api/inventory/add',
     method: 'POST',
     data: {
@@ -35,7 +37,7 @@ export const inventoryListApi = async (
   },
   controller?: AbortController
 ) => {
-  const { FromDate, ToDate } = filterSearch;
+  const { FromDate, ToDate, ShopId } = filterSearch;
   const res = await makeApiCall<
     IGenericResponse<{
       items: IInventoryListResponse[];
@@ -49,6 +51,7 @@ export const inventoryListApi = async (
       PageSize,
       FromDate,
       ToDate,
+      ShopId,
     },
     signal: controller?.signal,
   });

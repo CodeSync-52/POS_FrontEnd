@@ -14,6 +14,7 @@ export interface IVariantStocks {
 export interface IInventoryFilterSearch {
   FromDate: string | null;
   ToDate: string | null;
+  ShopId: string | null;
 }
 export interface IInventoryListResponse {
   shopId: number;

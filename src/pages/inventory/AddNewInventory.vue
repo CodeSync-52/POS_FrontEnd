@@ -14,7 +14,7 @@
         unelevated
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         color=""
-        @click="isArticleListModalVisible = true"
+        @click="handleAddArticle"
       />
     </div>
     <div
@@ -114,6 +114,58 @@
         />
       </div>
     </div>
+    <div v-if="selectedProductBarcodes.length" class="column gap-3">
+      <div class="row items-center justify-between">
+        <span class="text-lg font-semibold">Printed Barcodes:</span>
+        <q-btn
+          :label="
+            showfirstBarcodePreview
+              ? 'Show Second Preview '
+              : 'Show First Preview'
+          "
+          color="btn-primary"
+          unelevated
+          @click="handleToggleBarcodePreview"
+        />
+      </div>
+      <q-card
+        class="border-btn-primary border"
+        v-for="barcode in selectedProductBarcodes"
+        :key="barcode.productLabel"
+      >
+        <q-card-section
+          ><div class="grid grid-cols-3 justify-items-center gap-3">
+            <div
+              v-for="index in barcode.quantity"
+              :key="index"
+              class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_6px_3px_rgba(0,0,0,0.2)]"
+              :class="showfirstBarcodePreview && 'grid grid-cols-[2fr_5fr]'"
+            >
+              <span
+                v-if="showfirstBarcodePreview"
+                class="column items-center justify-center font-semibold"
+              >
+                <span
+                  v-for="labelPiece in barcode.productLabel.split('-')"
+                  :key="labelPiece"
+                  >{{ labelPiece }}</span
+                >
+              </span>
+              <span v-else class="row justify-around font-semibold">
+                <span
+                  v-for="labelPiece in barcode.productLabel.split('-')"
+                  :key="labelPiece"
+                >
+                  {{ labelPiece }}
+                </span>
+              </span>
+              <div>
+                <img :class="'barcode-' + barcode.productLabel" />
+              </div>
+            </div></div
+        ></q-card-section>
+      </q-card>
+    </div>
 
     <q-dialog v-model="isArticleListModalVisible">
       <article-list-modal
@@ -157,8 +209,9 @@ import {
 } from 'src/interfaces';
 import { addInventoryApi, articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import JsBarcode from 'jsbarcode';
 const isSelectionSingle = ref(true);
 const isFilterChanged = ref(false);
 const isFetchingArticleList = ref(false);
@@ -166,6 +219,7 @@ const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticle = ref<ISelectedArticle[]>([]);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
+const showfirstBarcodePreview = ref(true);
 const rowColumnData = ref<
   {
     firstVariantSelection: IVariantDetailsData[] | null;
@@ -192,6 +246,10 @@ const pagination = ref<IPagination>({
 const isArticleListModalVisible = ref(false);
 const $q = useQuasar();
 const router = useRouter();
+const selectedProductBarcodes = ref<
+  { productLabel: string; quantity: number }[]
+>([]);
+
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
@@ -201,6 +259,14 @@ onMounted(() => {
   isArticleListModalVisible.value = true;
   getArticleList();
 });
+const handleAddArticle = () => {
+  selectedProductBarcodes.value = [];
+  isArticleListModalVisible.value = true;
+};
+const handleToggleBarcodePreview = () => {
+  showfirstBarcodePreview.value = !showfirstBarcodePreview.value;
+  setBarcodeProps();
+};
 const handleRemoveProduct = (selectedProduct: {
   firstVariantSelection: IVariantDetailsData[] | null;
   secondVariantSelection: IVariantDetailsData[] | null;
@@ -222,7 +288,6 @@ const handleFilterRows = (filterChanged: boolean) => {
     }, 200);
   }
 };
-
 const articleListComputed = computed(() => {
   const selectedItemIdList = rowColumnData.value.map((item) => item.productId);
   return articleList.value.filter(
@@ -332,16 +397,17 @@ const handleSelectedVariant = (
   isInventoryManagementStepTwoVisible.value = false;
 };
 function setProductKeys() {
+  const oldData = { ...selectedInventoryPayload.value };
   selectedInventoryPayload.value = {};
   rowColumnData.value.forEach((product) => {
     product.firstVariantSelection?.forEach((variantA) => {
       product.secondVariantSelection?.forEach((variantB) => {
-        selectedInventoryPayload.value[
-          `${product.productId}-${variantA.variantId}-${variantB.variantId}`
-        ] = {
+        const key = `${product.productId}-${variantA.variantId}-${variantB.variantId}`;
+
+        selectedInventoryPayload.value[key] = {
           variantId_1: variantA.variantId,
           variantId_2: variantB.variantId,
-          stockQuantity: 0,
+          stockQuantity: oldData[key]?.stockQuantity || 0,
         };
       });
     });
@@ -373,6 +439,7 @@ const handleSaveInventory = () => {
   });
   handleAddInventory(selectedInventorylist);
 };
+
 const handleAddInventory = async (
   productWithVariantDTOs: IProductWithVariantDTOs[]
 ) => {
@@ -387,7 +454,11 @@ const handleAddInventory = async (
         message: res.message,
         type: 'positive',
       });
-      router.push('/inventory');
+      rowColumnData.value = [];
+      selectedProductBarcodes.value = res.data;
+      nextTick(() => {
+        setBarcodeProps();
+      });
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Inventory';
@@ -399,5 +470,27 @@ const handleAddInventory = async (
       type: 'positive',
     });
   }
+};
+const setBarcodeProps = () => {
+  selectedProductBarcodes.value.forEach((barcode) => {
+    showfirstBarcodePreview.value
+      ? JsBarcode('.barcode-' + barcode.productLabel, barcode.productLabel, {
+          format: 'CODE128',
+          width: 1,
+          height: 40,
+          displayValue: true,
+          textPosition: 'top',
+          text: 'KIT Shoes',
+          textAlign: 'right',
+          fontOptions: 'bold',
+        })
+      : JsBarcode('.barcode-' + barcode.productLabel, barcode.productLabel, {
+          format: 'CODE128',
+          width: 1,
+          height: 40,
+          displayValue: false,
+          text: '',
+        });
+  });
 };
 </script>
