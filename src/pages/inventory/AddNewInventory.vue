@@ -1,13 +1,19 @@
 <template>
   <div>
-    <div class="row justify-between items-center q-mb-md">
+    <div class="row justify-between items-center q-mb-md gap-3">
       <q-btn
         unelevated
         color="btn-cancel"
         label="Go Back"
         @click="router.push('/inventory')"
       />
-
+      <q-btn
+        label="Custom Label"
+        unelevated
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary ml-auto"
+        color=""
+        @click="handleCustomLabel"
+      />
       <q-btn
         label="Add New Article"
         icon="add"
@@ -128,43 +134,46 @@
           @click="handleToggleBarcodePreview"
         />
       </div>
-      <q-card
-        class="border-btn-primary border"
-        v-for="barcode in selectedProductBarcodes"
-        :key="barcode.productLabel"
-      >
-        <q-card-section
-          ><div class="grid grid-cols-3 justify-items-center gap-3">
-            <div
-              v-for="index in barcode.quantity"
-              :key="index"
-              class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_6px_3px_rgba(0,0,0,0.2)]"
-              :class="showfirstBarcodePreview && 'grid grid-cols-[2fr_5fr]'"
-            >
-              <span
-                v-if="showfirstBarcodePreview"
-                class="column items-center justify-center font-semibold"
+      <div class="grid grid-cols-4 gap-4">
+        <div
+          v-for="barcode in selectedProductBarcodes"
+          :key="barcode.productLabel"
+        >
+          <q-card-section>
+            <div class="grid grid-cols-1 gap-3 w-fit">
+              <div
+                class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_3px_1px_rgba(0,0,0,0.2)]"
               >
-                <span
-                  v-for="labelPiece in barcode.productLabel.split('-')"
-                  :key="labelPiece"
-                  >{{ labelPiece }}</span
+                <div
+                  :class="
+                    showfirstBarcodePreview
+                      ? 'grid grid-cols-[2fr_5fr] font-semibold'
+                      : 'flex flex-col font-semibold'
+                  "
                 >
-              </span>
-              <span v-else class="row justify-around font-semibold">
-                <span
-                  v-for="labelPiece in barcode.productLabel.split('-')"
-                  :key="labelPiece"
-                >
-                  {{ labelPiece }}
-                </span>
-              </span>
-              <div>
-                <img :class="'barcode-' + barcode.productLabel" />
+                  <div
+                    :class="
+                      showfirstBarcodePreview
+                        ? 'flex flex-col justify-center items-center gap-2  '
+                        : 'flex justify-center gap-2'
+                    "
+                  >
+                    <span
+                      v-for="labelPiece in barcode.productLabel.split('-')"
+                      :key="labelPiece"
+                    >
+                      {{ labelPiece }}
+                    </span>
+                  </div>
+                  <div>
+                    <img :class="'barcode-' + barcode.productLabel" />
+                  </div>
+                </div>
               </div>
-            </div></div
-        ></q-card-section>
-      </q-card>
+            </div>
+          </q-card-section>
+        </div>
+      </div>
     </div>
 
     <q-dialog v-model="isArticleListModalVisible">
@@ -193,12 +202,21 @@
         @selected-variants="handleSelectedVariant"
       />
     </q-dialog>
+    <q-dialog v-model="isCustomLabelModalVisible">
+      <custom-label
+        :selected-article="selectedArticle"
+        :article-list="articleListComputed"
+        :pagination="pagination"
+        @selected-custom="handleCustomSelectedLabel"
+      />
+    </q-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import SelectVariantModal from 'src/components/inventory/SelectVariantModal.vue';
+import CustomLabel from 'src/components/inventory/CustomLabel.vue';
 import {
   IArticleData,
   IPagination,
@@ -244,17 +262,17 @@ const pagination = ref<IPagination>({
   rowsNumber: 0,
 });
 const isArticleListModalVisible = ref(false);
+const isCustomLabelModalVisible = ref(false);
 const $q = useQuasar();
 const router = useRouter();
-const selectedProductBarcodes = ref<
-  { productLabel: string; quantity: number }[]
->([]);
+const selectedProductBarcodes = ref<{ productLabel: string }[]>([]);
 
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
   }
 });
+
 onMounted(() => {
   isArticleListModalVisible.value = true;
   getArticleList();
@@ -262,6 +280,11 @@ onMounted(() => {
 const handleAddArticle = () => {
   selectedProductBarcodes.value = [];
   isArticleListModalVisible.value = true;
+};
+const handleCustomLabel = () => {
+  getArticleList();
+  selectedProductBarcodes.value = [];
+  isCustomLabelModalVisible.value = true;
 };
 const handleToggleBarcodePreview = () => {
   showfirstBarcodePreview.value = !showfirstBarcodePreview.value;
@@ -309,8 +332,8 @@ const getArticleList = async (data?: {
   }
   try {
     const res = await articleListApi({
-      PageNumber: pagination.value.page,
-      PageSize: pagination.value.rowsPerPage,
+      PageNumber: 1,
+      PageSize: 2000,
       Status: 'Active',
     });
     if (res.type === 'Success') {
@@ -374,6 +397,18 @@ const handleUpdateQuantity = (
     }
   }
 };
+const handleCustomSelectedLabel = (
+  payload: {
+    firstVariantSelection: IVariantDetailsData | null;
+    secondVariantSelection: IVariantDetailsData | null;
+  },
+  name: string
+) => {
+  // Your function logic here
+  console.log(payload, name, 'k');
+  isCustomLabelModalVisible.value = false;
+};
+
 const handleSelectedVariant = (
   payload: {
     firstVariantSelection: IVariantDetailsData[] | null;
@@ -455,7 +490,8 @@ const handleAddInventory = async (
         type: 'positive',
       });
       rowColumnData.value = [];
-      selectedProductBarcodes.value = res.data;
+      const modifiedArray = modifyArray(res.data);
+      selectedProductBarcodes.value = modifiedArray;
       nextTick(() => {
         setBarcodeProps();
       });
@@ -493,4 +529,17 @@ const setBarcodeProps = () => {
         });
   });
 };
+function modifyArray(inputArray: { productLabel: string; quantity: number }[]) {
+  const modifiedArray: { productLabel: string }[] = [];
+
+  inputArray.forEach((item) => {
+    const { productLabel, quantity } = item;
+
+    for (let i = 0; i < quantity; i++) {
+      modifiedArray.push({ productLabel });
+    }
+  });
+
+  return modifiedArray;
+}
 </script>
