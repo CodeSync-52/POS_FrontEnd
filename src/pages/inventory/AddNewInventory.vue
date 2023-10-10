@@ -397,15 +397,12 @@ const handleUpdateQuantity = (
     }
   }
 };
-const handleCustomSelectedLabel = (
-  payload: {
-    firstVariantSelection: IVariantDetailsData | null;
-    secondVariantSelection: IVariantDetailsData | null;
-  },
-  name: string
-) => {
-  // Your function logic here
-  console.log(payload, name, 'k');
+const handleCustomSelectedLabel = (payload: {
+  productLabel: string | null;
+  productBarcode: string | null;
+  quantity: number | null;
+}) => {
+  console.log(payload, 'g');
   isCustomLabelModalVisible.value = false;
 };
 

@@ -9,7 +9,6 @@
         <div class="row items-center q-col-gutter-x-md q-col-gutter-y-lg">
           <div class="col-12 q-gutter-y-xs">
             <span class="text-base font-medium">Select Product</span>
-            {{ optionsProduct }}
             <q-select
               :options="optionsProduct"
               :loading="isLoading"
@@ -18,7 +17,8 @@
               map-options
               outlined
               @filter="filterProduct"
-              v-model="selectedArticles"
+              v-model="selectedProduct.productLabel"
+              @update:model-value="selectedProduct.productLabel = $event.name"
               label="Select Product"
               color="btn-primary"
               option-label="name"
@@ -134,6 +134,17 @@
               </template></q-select
             >
           </div>
+          <div class="col-6 q-gutter-y-xs">
+            <span class="text-base font-medium">Select Quantity</span>
+            <q-input
+              v-model="selectedProduct.quantity"
+              :min="0"
+              outlined
+              dense
+              type="number"
+              @update:model-value="handleUpdateQuantity($event)"
+            />
+          </div>
         </div>
       </div>
     </q-card-section>
@@ -193,10 +204,10 @@ const emit = defineEmits<{
   (
     event: 'selected-custom',
     payload: {
-      firstVariantSelection: IVariantDetailsData | null;
-      secondVariantSelection: IVariantDetailsData | null;
-    },
-    name: string
+      productLabel: string | null;
+      productBarcode: string | null;
+      quantity: number | null;
+    }
   ): void;
 }>();
 
@@ -204,7 +215,15 @@ const props = withDefaults(defineProps<propTypes>(), {
   selectedArticle: () => [],
   articleList: () => [],
 });
-
+const selectedProduct = ref<{
+  productLabel: string | null;
+  productBarcode: string | null;
+  quantity: number | null;
+}>({
+  productLabel: null,
+  productBarcode: null,
+  quantity: null,
+});
 const variantDetailsRecord = ref<IVariantDetailsData[]>([]);
 const filteredRows = ref<IVariantDetailsData[]>([]);
 const variantGroup = ref<{
@@ -214,7 +233,6 @@ const variantGroup = ref<{
 const filterChanged = ref(false);
 const $q = useQuasar();
 const filter = ref('');
-const selectedArticles = ref<IArticleData>({} as IArticleData);
 const options = ref<IVariantData[]>([]);
 const optionsProduct = ref<IArticleData[]>([]);
 const selectedDetailsData = ref<{
@@ -254,9 +272,21 @@ const isButtonDisabled = computed(() => {
     Object.values(selectedDetailsData.value).some(
       (variant) => variant === null || Object.values(variant).length === 0
     ),
+    selectedProduct.value.quantity === null,
+    selectedProduct.value.productLabel === null,
   ];
   return validations.some((validation) => validation === true);
 });
+const handleUpdateQuantity = (newVal: number | string | null) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (!val || val < 0) {
+      selectedProduct.value.quantity = 0;
+    } else {
+      selectedProduct.value.quantity = val;
+    }
+  }
+};
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -381,13 +411,9 @@ const filterFn = (val: string, update: any) => {
   });
 };
 const handleAddVariantDetails = () => {
-  console.log(selectedArticles.value.name);
+  selectedProduct.value.productBarcode = `${selectedProduct.value.productLabel}-${selectedDetailsData.value.firstVariantSelection?.displayName}-${selectedDetailsData.value.secondVariantSelection?.displayName}`;
   setTimeout(() => {
-    emit(
-      'selected-custom',
-      selectedDetailsData.value,
-      selectedArticles.value.name ?? ''
-    );
+    emit('selected-custom', selectedProduct.value);
   }, 300);
 };
 
