@@ -25,33 +25,35 @@ export const addInventoryApi = async ({
   });
   return res;
 };
-export const inventoryListApi = async (
+export const inventoryDetailApi = async (
   {
     PageNumber = 1,
+    ShopId,
     PageSize = 50,
     filterSearch,
   }: {
     PageNumber: number;
     PageSize: number;
+    ShopId: number;
     filterSearch: IInventoryFilterSearch;
   },
   controller?: AbortController
 ) => {
-  const { FromDate, ToDate, ShopId } = filterSearch;
+  const { ProductId } = filterSearch;
   const res = await makeApiCall<
     IGenericResponse<{
-      items: IInventoryListResponse[];
-      totalItemCount: number;
+      inventoryDetails: IInventoryListResponse[];
+      shopId: number;
+      shopName: string;
     }>
   >({
-    url: 'api/inventory/list',
+    url: 'api/inventory/detail',
     method: 'GET',
     params: {
       PageNumber,
       PageSize,
-      FromDate,
-      ToDate,
       ShopId,
+      ProductId,
     },
     signal: controller?.signal,
   });

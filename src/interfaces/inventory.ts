@@ -12,14 +12,15 @@ export interface IVariantStocks {
   stockQuantity: number;
 }
 export interface IInventoryFilterSearch {
-  FromDate: string | null;
-  ToDate: string | null;
-  ShopId: string | null;
+  ProductId: number | null;
 }
 export interface IInventoryListResponse {
-  shopId: number;
-  totalProducts: number;
-  addedBy: string;
-  createdBy: number;
+  productId: number;
+  productName: string;
+  productImage: string;
+  productLabel: string;
+  variantId_1: number;
+  variantId_2: number;
+  quantity: number;
   addedDate: string;
 }

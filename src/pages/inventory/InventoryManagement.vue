@@ -22,26 +22,27 @@
     <div
       class="row flex md:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
-      <q-input
-        v-model="filterSearch.FromDate"
-        label="From"
-        style="min-width: 200px"
-        type="date"
-        :max="filterSearch.ToDate"
-        outlined
-        color="btn-primary"
+      <q-select
+        class="max-h-[200px]"
+        @filter="filterProduct"
+        :options="articleList"
+        :loading="isFetchingArticleList"
+        use-input
         dense
-      />
-      <q-input
-        v-model="filterSearch.ToDate"
-        label="To"
-        color="btn-primary"
-        type="date"
-        style="min-width: 200px"
-        :min="filterSearch.FromDate"
+        map-options
         outlined
-        dense
-      />
+        v-model="filterSearch.ProductId"
+        @update:model-value="filterSearch.ProductId = $event.productId"
+        label="Select Product"
+        color="btn-primary"
+        option-label="name"
+        option-value="productId"
+        ><template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template></q-select
+      >
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           unelevated
@@ -84,11 +85,12 @@ import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
   EUserModules,
+  IArticleData,
   IInventoryFilterSearch,
   IInventoryListResponse,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { inventoryListApi } from 'src/services';
+import { articleListApi, inventoryDetailApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
@@ -100,8 +102,10 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const InventoryListRecords = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
+const articleList = ref<IArticleData[]>([]);
 onMounted(() => {
   getInventoryList();
+  getArticleList();
 });
 const pagination = ref({
   sortBy: 'desc',
@@ -112,18 +116,14 @@ const pagination = ref({
 });
 const $q = useQuasar();
 const filterSearch = ref<IInventoryFilterSearch>({
-  FromDate: null,
-  ToDate: null,
-  ShopId: null,
+  ProductId: null,
 });
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
   }
   filterSearch.value = {
-    FromDate: null,
-    ToDate: null,
-    ShopId: null,
+    ProductId: null,
   };
   getInventoryList();
 };
@@ -141,8 +141,9 @@ const getInventoryList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await inventoryListApi(
+    const res = await inventoryDetailApi(
       {
+        ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
         PageNumber: pagination.value.page,
         PageSize: pagination.value.rowsPerPage,
         filterSearch: filterSearch.value,
@@ -150,12 +151,12 @@ const getInventoryList = async (data?: {
       apiController.value
     );
     if (res.data) {
-      if (Object.values(filterSearch.value).some((item) => item !== null)) {
-        InventoryListRecords.value = res.data.items;
-        pagination.value.rowsNumber = res.data.totalItemCount;
-      } else {
-        InventoryListRecords.value = [];
-      }
+      // if (Object.values(filterSearch.value).some((item) => item !== null)) {
+      InventoryListRecords.value = res.data.inventoryDetails;
+      // pagination.value.rowsNumber = res.data.totalItemCount;
+      // } else {
+      //   InventoryListRecords.value = [];
+      // }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -168,5 +169,39 @@ const getInventoryList = async (data?: {
     });
   }
   isLoading.value = false;
+};
+const isFetchingArticleList = ref(false);
+const getArticleList = async (productName?: string) => {
+  if (isFetchingArticleList.value) return;
+  isFetchingArticleList.value = true;
+  try {
+    const res = await articleListApi({
+      PageNumber: 1,
+      PageSize: 50,
+      Status: 'Active',
+      Name: productName,
+    });
+    if (res.type === 'Success') {
+      if (res.data) {
+        articleList.value = res.data.items;
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  isFetchingArticleList.value = false;
+};
+const filterProduct = (val: string, update: any) => {
+  update(() => {
+    getArticleList(val);
+  });
 };
 </script>

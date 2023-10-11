@@ -3,7 +3,7 @@
     <q-card-section class="h-[calc(100%-52px)]">
       <div class="px-4">
         <div class="row items-center q-mb-lg justify-between">
-          <div class="text-h6">Custom Labels</div>
+          <div class="text-h6">Custom Label</div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
         <div class="row items-center q-col-gutter-x-md q-col-gutter-y-lg">
@@ -138,9 +138,10 @@
             <span class="text-base font-medium">Select Quantity</span>
             <q-input
               v-model="selectedProduct.quantity"
-              :min="0"
+              :min="1"
               outlined
               dense
+              color="btn-primary"
               type="number"
               @update:model-value="handleUpdateQuantity($event)"
             />
@@ -273,6 +274,7 @@ const isButtonDisabled = computed(() => {
       (variant) => variant === null || Object.values(variant).length === 0
     ),
     selectedProduct.value.quantity === null,
+    selectedProduct.value.quantity === 0,
     selectedProduct.value.productLabel === null,
   ];
   return validations.some((validation) => validation === true);

@@ -1,31 +1,33 @@
 <template>
   <div>
-    <div class="row justify-between items-center q-mb-md gap-3">
+    <div
+      class="flex flex-col md:flex-row justify-between items-center q-mb-md gap-3"
+    >
       <q-btn
         unelevated
         color="btn-cancel"
         label="Go Back"
         @click="router.push('/inventory')"
       />
-      <q-btn
-        label="Custom Label"
-        unelevated
-        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary ml-auto"
-        color=""
-        @click="handleCustomLabel"
-      />
-      <q-btn
-        label="Add New Article"
-        icon="add"
-        unelevated
-        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
-        color=""
-        @click="handleAddArticle"
-      />
+      <div class="q-gutter-md flex flex-col md:flex-row">
+        <q-btn
+          label="Custom Label"
+          unelevated
+          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+          color=""
+          @click="handleCustomLabel"
+        />
+        <q-btn
+          label="Add New Article"
+          icon="add"
+          unelevated
+          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+          color=""
+          @click="handleAddArticle"
+        />
+      </div>
     </div>
-    <div
-      v-if="Object.values(rowColumnData).some((variant) => variant !== null)"
-    >
+    <div v-if="!showBarcodeScreen">
       <div v-for="(product, productIndex) in rowColumnData" :key="productIndex">
         <div class="row justify-between mb-2 items-center">
           <span
@@ -110,7 +112,10 @@
           </tbody>
         </q-markup-table>
       </div>
-      <div class="row q-gutter-x-sm justify-end items-center">
+      <div
+        v-if="rowColumnData.length"
+        class="row q-gutter-x-sm justify-end items-center"
+      >
         <q-btn label="Cancel" color="btn-cancel" unelevated />
         <q-btn
           @click="handleSaveInventory"
@@ -120,8 +125,10 @@
         />
       </div>
     </div>
-    <div v-if="selectedProductBarcodes.length" class="column gap-3">
-      <div class="row items-center justify-between">
+    <div v-else class="column gap-3">
+      <div
+        class="flex flex-col md:flex-row items-center justify-center md:justify-between"
+      >
         <span class="text-lg font-semibold">Printed Barcodes:</span>
         <q-btn
           :label="
@@ -134,13 +141,14 @@
           @click="handleToggleBarcodePreview"
         />
       </div>
-      <div class="grid grid-cols-4 gap-4">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
         <div
           v-for="barcode in selectedProductBarcodes"
           :key="barcode.productLabel"
+          class="mx-auto"
         >
           <q-card-section>
-            <div class="grid grid-cols-1 gap-3 w-fit">
+            <div class="grid grid-cols-1 gap-3 min-w-[210px] max-w-[210px]">
               <div
                 class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_3px_1px_rgba(0,0,0,0.2)]"
               >
@@ -148,13 +156,13 @@
                   :class="
                     showfirstBarcodePreview
                       ? 'grid grid-cols-[2fr_5fr] font-semibold'
-                      : 'flex flex-col font-semibold'
+                      : 'flex flex-col font-semibold items-center'
                   "
                 >
                   <div
                     :class="
                       showfirstBarcodePreview
-                        ? 'flex flex-col justify-center items-center gap-2  '
+                        ? 'flex flex-col justify-center items-center gap-2'
                         : 'flex justify-center gap-2'
                     "
                   >
@@ -165,7 +173,7 @@
                       {{ labelPiece }}
                     </span>
                   </div>
-                  <div>
+                  <div class="min-w-[155px] max-w-[155px]">
                     <img :class="'barcode-' + barcode.productLabel" />
                   </div>
                 </div>
@@ -217,6 +225,7 @@ import { useQuasar } from 'quasar';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import SelectVariantModal from 'src/components/inventory/SelectVariantModal.vue';
 import CustomLabel from 'src/components/inventory/CustomLabel.vue';
+import { useAuthStore } from 'src/stores';
 import {
   IArticleData,
   IPagination,
@@ -232,6 +241,7 @@ import { useRouter } from 'vue-router';
 import JsBarcode from 'jsbarcode';
 const isSelectionSingle = ref(true);
 const isFilterChanged = ref(false);
+const authStore = useAuthStore();
 const isFetchingArticleList = ref(false);
 const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
@@ -266,7 +276,6 @@ const isCustomLabelModalVisible = ref(false);
 const $q = useQuasar();
 const router = useRouter();
 const selectedProductBarcodes = ref<{ productLabel: string }[]>([]);
-
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
@@ -402,7 +411,15 @@ const handleCustomSelectedLabel = (payload: {
   productBarcode: string | null;
   quantity: number | null;
 }) => {
-  console.log(payload, 'g');
+  if (payload.productBarcode !== null && payload.quantity !== null) {
+    const modifiedArray = modifyArray([
+      { productLabel: payload.productBarcode, quantity: payload.quantity },
+    ]);
+    selectedProductBarcodes.value = modifiedArray;
+    nextTick(() => {
+      setBarcodeProps();
+    });
+  }
   isCustomLabelModalVisible.value = false;
 };
 
@@ -415,6 +432,10 @@ const handleSelectedVariant = (
   productName: string,
   productImage: string
 ) => {
+  if (showBarcodeScreen.value) {
+    selectedInventoryPayload.value = {};
+    showBarcodeScreen.value = false;
+  }
   rowColumnData.value = [
     ...rowColumnData.value,
     {
@@ -435,7 +456,6 @@ function setProductKeys() {
     product.firstVariantSelection?.forEach((variantA) => {
       product.secondVariantSelection?.forEach((variantB) => {
         const key = `${product.productId}-${variantA.variantId}-${variantB.variantId}`;
-
         selectedInventoryPayload.value[key] = {
           variantId_1: variantA.variantId,
           variantId_2: variantB.variantId,
@@ -451,6 +471,7 @@ const getImageUrl = (base64Image: string | null) => {
   }
   return '';
 };
+const showBarcodeScreen = ref(false);
 const handleSaveInventory = () => {
   const selectedInventorylist: IProductWithVariantDTOs[] = [];
   Object.keys(selectedInventoryPayload.value).forEach((key) => {
@@ -475,7 +496,7 @@ const handleSaveInventory = () => {
 const handleAddInventory = async (
   productWithVariantDTOs: IProductWithVariantDTOs[]
 ) => {
-  const shopId = 1;
+  const shopId = authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
   try {
     const res = await addInventoryApi({
       shopId,
@@ -489,6 +510,8 @@ const handleAddInventory = async (
       rowColumnData.value = [];
       const modifiedArray = modifyArray(res.data);
       selectedProductBarcodes.value = modifiedArray;
+      showBarcodeScreen.value = true;
+
       nextTick(() => {
         setBarcodeProps();
       });
