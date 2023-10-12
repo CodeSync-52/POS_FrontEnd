@@ -13,13 +13,15 @@
                 <q-select
                   label="Source"
                   dense
+                  color="btn-primary"
                   outlined
                   map-options
                   use-input
-                  @filter="filterSU"
+                  popup-content-class="!max-h-[200px]"
+                  @filter="filterUser"
                   option-label="fullName"
                   option-value="userId"
-                  :options="optionsSU"
+                  :options="userListOptions"
                   @update:model-value="
                     addNewFlow.sourceOutstandingBalance =
                       $event.outStandingBalance
@@ -31,6 +33,7 @@
               <q-input
                 v-model="addNewFlow.sourceOutstandingBalance"
                 disable
+                color="btn-primary"
                 label="Source Outstanding Balance"
                 dense
                 outlined
@@ -41,18 +44,20 @@
                 <span class="text-base font-medium">Target</span>
                 <q-select
                   label="Target"
+                  color="btn-primary"
                   dense
                   outlined
                   use-input
+                  popup-content-class="!max-h-[200px]"
                   map-options
-                  @filter="filterFn"
+                  @filter="filterUser"
                   @update:model-value="
                     addNewFlow.targetOutstandingBalance =
                       $event.outStandingBalance
                   "
                   option-label="fullName"
                   option-value="userId"
-                  :options="options"
+                  :options="userListOptions"
                   v-model="addNewFlow.target"
                 />
               </div>
@@ -63,6 +68,7 @@
                 label="Target Outstanding Balance"
                 dense
                 outlined
+                color="btn-primary"
               />
             </div>
             <div class="col-md-4 col-12">
@@ -72,6 +78,7 @@
                 type="number"
                 label="Amount"
                 dense
+                color="btn-primary"
                 outlined
                 v-model="addNewFlow.amount"
                 @update:model-value="handleUpdateAmount($event)"
@@ -144,8 +151,7 @@ const addNewFlow = ref<{
   targetOutstandingBalance: null,
 });
 const userList = ref<IUserResponse[]>([]);
-const options = ref<IUserResponse[]>([]);
-const optionsSU = ref<IUserResponse[]>([]);
+const userListOptions = ref<IUserResponse[]>([]);
 const handleUpdateAmount = (newVal: string | number | null) => {
   if (typeof newVal === 'string') {
     const val = parseInt(newVal);
@@ -199,7 +205,7 @@ const getUserList = async () => {
     });
     if (res?.data) {
       userList.value = res.data.items;
-      options.value = res.data.items;
+      userListOptions.value = res.data.items;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -214,19 +220,10 @@ const getUserList = async () => {
     });
   }
 };
-const filterFn = (val: string, update: any) => {
+const filterUser = (val: string, update: CallableFunction) => {
   update(() => {
-    const needle = val.toLowerCase();
-    options.value = userList.value.filter((v) =>
-      v.userName.toLowerCase().includes(needle)
-    );
-  });
-};
-const filterSU = (val: string, update: any) => {
-  update(() => {
-    const needle = val.toLowerCase();
-    optionsSU.value = userList.value.filter((v) =>
-      v.userName.toLowerCase().includes(needle)
+    userListOptions.value = userList.value.filter((user) =>
+      user.fullName.toLowerCase().includes(val.toLowerCase())
     );
   });
 };
