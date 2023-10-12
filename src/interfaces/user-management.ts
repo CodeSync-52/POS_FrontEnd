@@ -43,6 +43,7 @@ export interface IUserResponse {
   phoneNumber: string;
   roleName: string;
   status?: string;
+  shopName: string;
   userId?: number;
   userName: string;
   address: string;

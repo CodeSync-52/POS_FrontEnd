@@ -1,6 +1,6 @@
 import { QTableColumn } from 'quasar';
-import { IUserData } from 'src/interfaces';
-export const UserColumn: QTableColumn<IUserData>[] = [
+import { IUserResponse } from 'src/interfaces';
+export const UserColumn: QTableColumn<IUserResponse>[] = [
   {
     name: 'fullname',
     required: true,
@@ -38,6 +38,12 @@ export const UserColumn: QTableColumn<IUserData>[] = [
     align: 'left',
   },
   {
+    name: 'shopName',
+    label: 'Shop Name',
+    field: (row) => row.shopName,
+    align: 'left',
+  },
+  {
     name: 'status',
     label: 'Status',
     field: (row) => row.status,
@@ -65,7 +71,7 @@ export const UserColumn: QTableColumn<IUserData>[] = [
   {
     name: 'reset',
     label: 'Reset Password',
-    field: (row) => row.password,
+    field: () => '',
     align: 'left',
   },
   {
