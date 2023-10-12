@@ -1,16 +1,13 @@
 <template>
   <div>
     <div
+      v-if="!isPrintingBarcodeScreenVisible"
       class="flex flex-col md:flex-row justify-between items-center q-mb-md gap-3"
     >
-      <q-btn
-        unelevated
-        color="btn-cancel"
-        label="Go Back"
-        @click="router.push('/inventory')"
-      />
+      <q-btn unelevated color="btn-cancel" label="Go Back" to="/inventory" />
       <div class="q-gutter-md flex flex-col md:flex-row">
         <q-btn
+          v-if="!rowColumnData.length"
           label="Custom Label"
           unelevated
           class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
@@ -116,16 +113,16 @@
         v-if="rowColumnData.length"
         class="row q-gutter-x-sm justify-end items-center"
       >
-        <q-btn label="Cancel" color="btn-cancel" unelevated />
         <q-btn
           @click="handleSaveInventory"
           label="Save"
           unelevated
+          :disable="isSaveButtonDisable"
           color="btn-primary"
         />
       </div>
     </div>
-    <div v-else class="column gap-3">
+    <div v-if="isPrintingBarcodeScreenVisible" class="column gap-3">
       <div
         class="flex flex-col md:flex-row items-center justify-center md:justify-between"
       >
@@ -148,7 +145,9 @@
           class="mx-auto"
         >
           <q-card-section>
-            <div class="grid grid-cols-1 gap-3 min-w-[210px] max-w-[210px]">
+            <div
+              class="grid grid-cols-1 h-[85px] gap-3 min-w-[210px] max-w-[210px]"
+            >
               <div
                 class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_3px_1px_rgba(0,0,0,0.2)]"
               >
@@ -182,6 +181,14 @@
           </q-card-section>
         </div>
       </div>
+      <q-card-actions align="right">
+        <q-btn
+          label="Go Back"
+          unelevated
+          color="btn-cancel"
+          @click="isPrintingBarcodeScreenVisible = false"
+        />
+      </q-card-actions>
     </div>
 
     <q-dialog v-model="isArticleListModalVisible">
@@ -237,12 +244,12 @@ import {
 import { addInventoryApi, articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
 import { computed, nextTick, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import JsBarcode from 'jsbarcode';
 const isSelectionSingle = ref(true);
 const isFilterChanged = ref(false);
 const authStore = useAuthStore();
 const isFetchingArticleList = ref(false);
+const isPrintingBarcodeScreenVisible = ref(false);
 const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticle = ref<ISelectedArticle[]>([]);
@@ -274,7 +281,6 @@ const pagination = ref<IPagination>({
 const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
 const $q = useQuasar();
-const router = useRouter();
 const selectedProductBarcodes = ref<{ productLabel: string }[]>([]);
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
@@ -312,6 +318,12 @@ const handleRemoveProduct = (selectedProduct: {
   rowColumnData.value.splice(selectedProductIndex, 1);
   setProductKeys();
 };
+const isSaveButtonDisable = computed(() => {
+  const validations = Object.values(selectedInventoryPayload.value).map(
+    (payload) => payload.stockQuantity === 0
+  );
+  return validations.some((validations) => validations === true);
+});
 const handleFilterRows = (filterChanged: boolean) => {
   if (filterChanged) {
     isFilterChanged.value = filterChanged;
@@ -416,6 +428,8 @@ const handleCustomSelectedLabel = (payload: {
       { productLabel: payload.productBarcode, quantity: payload.quantity },
     ]);
     selectedProductBarcodes.value = modifiedArray;
+    showBarcodeScreen.value = true;
+    isPrintingBarcodeScreenVisible.value = true;
     nextTick(() => {
       setBarcodeProps();
     });
@@ -511,7 +525,7 @@ const handleAddInventory = async (
       const modifiedArray = modifyArray(res.data);
       selectedProductBarcodes.value = modifiedArray;
       showBarcodeScreen.value = true;
-
+      isPrintingBarcodeScreenVisible.value = true;
       nextTick(() => {
         setBarcodeProps();
       });
@@ -551,7 +565,6 @@ const setBarcodeProps = () => {
 };
 function modifyArray(inputArray: { productLabel: string; quantity: number }[]) {
   const modifiedArray: { productLabel: string }[] = [];
-
   inputArray.forEach((item) => {
     const { productLabel, quantity } = item;
 

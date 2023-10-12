@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { QTableColumn } from 'quasar';
 import { IInventoryListResponse } from 'src/interfaces';
 export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
@@ -48,6 +49,6 @@ export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
     name: 'addedDate',
     label: 'Added Date',
     align: 'left',
-    field: (row) => row.addedDate,
+    field: (row) => moment(row.addedDate).format('DD-MM-YYYY'),
   },
 ];

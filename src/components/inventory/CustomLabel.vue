@@ -10,6 +10,7 @@
           <div class="col-12 q-gutter-y-xs">
             <span class="text-base font-medium">Select Product</span>
             <q-select
+              popup-content-class="!max-h-[200px]"
               :options="optionsProduct"
               :loading="isLoading"
               use-input
@@ -39,6 +40,7 @@
               :loading="isLoading"
               use-input
               dense
+              popup-content-class="!max-h-[200px]"
               map-options
               outlined
               @filter="filterFn"
@@ -64,6 +66,7 @@
             <q-select
               outlined
               clearable
+              popup-content-class="!max-h-[200px]"
               dense
               map-options
               option-label="name"
@@ -88,6 +91,7 @@
               :options="optionData"
               :loading="isLoading"
               use-input
+              popup-content-class="!max-h-[200px]"
               dense
               map-options
               outlined
@@ -116,6 +120,7 @@
             <q-select
               outlined
               dense
+              popup-content-class="!max-h-[200px]"
               map-options
               option-label="name"
               option-value="variantId"

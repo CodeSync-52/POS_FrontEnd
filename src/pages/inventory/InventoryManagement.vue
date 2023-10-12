@@ -23,7 +23,7 @@
       class="row flex md:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
       <q-select
-        class="max-h-[200px]"
+        popup-content-class="!max-h-[200px]"
         @filter="filterShop"
         :options="ShopOptionData"
         :loading="isLoading"
@@ -44,7 +44,7 @@
         </template></q-select
       >
       <q-select
-        class="max-h-[200px]"
+        popup-content-class="!max-h-[200px]"
         @filter="filterProduct"
         :options="articleList"
         :loading="isFetchingArticleList"
@@ -157,7 +157,6 @@ const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 onMounted(() => {
-  // getInventoryList();
   getArticleList();
   getShopList();
 });
@@ -230,12 +229,7 @@ const getInventoryList = async (data?: {
       apiController.value
     );
     if (res.data) {
-      // if (Object.values(filterSearch.value).some((item) => item !== null)) {
       InventoryListRecords.value = res.data.inventoryDetails;
-      // pagination.value.rowsNumber = res.data.totalItemCount;
-      // } else {
-      //   InventoryListRecords.value = [];
-      // }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

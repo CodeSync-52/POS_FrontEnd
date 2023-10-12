@@ -32,6 +32,7 @@
               :options="optionData"
               :loading="isLoading"
               use-input
+              popup-content-class="!max-h-[200px]"
               dense
               map-options
               outlined
@@ -58,6 +59,7 @@
             <q-select
               multiple
               outlined
+              popup-content-class="!max-h-[200px]"
               clearable
               dense
               map-options
@@ -84,6 +86,7 @@
               :loading="isLoading"
               use-input
               dense
+              popup-content-class="!max-h-[200px]"
               map-options
               outlined
               @filter="filterFn"
@@ -110,6 +113,7 @@
             >
             <q-select
               outlined
+              popup-content-class="!max-h-[200px]"
               dense
               map-options
               option-label="name"
