@@ -13,6 +13,7 @@ export interface IVariantStocks {
 }
 export interface IInventoryFilterSearch {
   ProductId: number | null;
+  ShopId: number | null;
 }
 export interface IInventoryListResponse {
   productId: number;

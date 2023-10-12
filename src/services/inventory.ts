@@ -34,7 +34,7 @@ export const inventoryDetailApi = async (
   }: {
     PageNumber: number;
     PageSize: number;
-    ShopId: number;
+    ShopId: number | null;
     filterSearch: IInventoryFilterSearch;
   },
   controller?: AbortController

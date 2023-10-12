@@ -24,6 +24,27 @@
     >
       <q-select
         class="max-h-[200px]"
+        @filter="filterShop"
+        :options="ShopOptionData"
+        :loading="isLoading"
+        use-input
+        dense
+        map-options
+        outlined
+        v-model="filterSearch.ShopId"
+        @update:model-value="filterSearch.ShopId = $event.shopId"
+        label="Select Shop"
+        color="btn-primary"
+        option-label="name"
+        option-value="shopId"
+        ><template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template></q-select
+      >
+      <q-select
+        class="max-h-[200px]"
         @filter="filterProduct"
         :options="articleList"
         :loading="isFetchingArticleList"
@@ -75,9 +96,36 @@
             <span class="text-md font-medium"> No data available. </span>
           </div>
         </template>
+        <template v-slot:body-cell-productImage="props">
+          <q-td :props="props">
+            <div
+              @click="handlePreviewImage(props.row.productImage)"
+              class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
+              :class="props.row.productImage ? 'cursor-pointer' : ''"
+            >
+              <img
+                class="w-full h-full object-cover"
+                :src="
+                  getImageUrl(props.row.productImage) ||
+                  'assets/default-image.png'
+                "
+                alt="img"
+              />
+            </div>
+          </q-td>
+        </template>
       </q-table>
     </div>
   </div>
+  <q-dialog v-model="isPreviewImageModalVisible">
+    <q-card class="min-w-[400px]">
+      <q-card-section>
+        <div class="w-full max-h-[350px] overflow-hidden">
+          <img :src="selectedPreviewImage" alt="image" class="mx-auto" />
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -88,9 +136,10 @@ import {
   IArticleData,
   IInventoryFilterSearch,
   IInventoryListResponse,
+  IShopResponse,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { articleListApi, inventoryDetailApi } from 'src/services';
+import { articleListApi, inventoryDetailApi, shopListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
@@ -103,9 +152,14 @@ const InventoryListRecords = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const articleList = ref<IArticleData[]>([]);
+const ShopData = ref<IShopResponse[]>([]);
+const ShopOptionData = ref<IShopResponse[]>([]);
+const selectedPreviewImage = ref('');
+const isPreviewImageModalVisible = ref(false);
 onMounted(() => {
-  getInventoryList();
+  // getInventoryList();
   getArticleList();
+  getShopList();
 });
 const pagination = ref({
   sortBy: 'desc',
@@ -117,6 +171,7 @@ const pagination = ref({
 const $q = useQuasar();
 const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
+  ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
 });
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -124,8 +179,32 @@ const resetFilter = () => {
   }
   filterSearch.value = {
     ProductId: null,
+    ShopId: null,
   };
   getInventoryList();
+};
+const getShopList = async () => {
+  try {
+    const response = await shopListApi({
+      PageNumber: 1,
+      PageSize: 200,
+    });
+    if (response.data) {
+      ShopData.value = response.data.items;
+      ShopOptionData.value = response.data.items;
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
 };
 const getInventoryList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -143,7 +222,7 @@ const getInventoryList = async (data?: {
     apiController.value = new AbortController();
     const res = await inventoryDetailApi(
       {
-        ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+        ShopId: filterSearch.value.ShopId,
         PageNumber: pagination.value.page,
         PageSize: pagination.value.rowsPerPage,
         filterSearch: filterSearch.value,
@@ -203,5 +282,25 @@ const filterProduct = (val: string, update: any) => {
   update(() => {
     getArticleList(val);
   });
+};
+const filterShop = (val: string, update: any) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    ShopOptionData.value = ShopData.value.filter((v) =>
+      v.name.toLowerCase().includes(needle)
+    );
+  });
+};
+const handlePreviewImage = (selectedImage: string) => {
+  if (selectedImage) {
+    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    isPreviewImageModalVisible.value = true;
+  }
+};
+const getImageUrl = (base64Image: string | null) => {
+  if (base64Image) {
+    return `data:image/png;base64,${base64Image}`;
+  }
+  return '';
 };
 </script>
