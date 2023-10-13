@@ -1,13 +1,39 @@
 <template>
-  <div class="row column items-center justify-center h-[calc(100vh-80px)]">
-    <q-card class="bg-btn-primary text-signature w-[400px]">
-      <q-card-section>
-        <div class="text-center p-2 text-lg">
-          <span> Coming Soon... </span>
-        </div>
-      </q-card-section>
-    </q-card>
+  <div>
+    <div
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+    >
+      <span class="text-lg font-medium">{{ pageTitle }}</span>
+      <q-btn
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.GoodsReceiptNotes,
+            EActionPermissions.Create
+          )
+        "
+        label="Add New"
+        icon="add"
+        unelevated
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+        color=""
+        @click="isAddGRNModalVisible = true"
+      />
+    </div>
   </div>
+  <q-dialog v-model="isAddGRNModalVisible">
+    <add-new-grn />
+  </q-dialog>
 </template>
-
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import AddNewGrn from 'src/components/goods-receipt-notes/AddNewGrn.vue';
+import {
+  EActionPermissions,
+  EUserModules,
+  getRoleModuleDisplayName,
+} from 'src/interfaces';
+import { useAuthStore } from 'src/stores';
+import { ref } from 'vue';
+const authStore = useAuthStore();
+const pageTitle = getRoleModuleDisplayName(EUserModules.GoodsReceiptNotes);
+const isAddGRNModalVisible = ref(false);
+</script>
