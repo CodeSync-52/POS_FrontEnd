@@ -65,12 +65,49 @@
     <div class="py-4">
       <q-table
         :columns="cashFlowColumn"
-        :rows="cashFlowRecords"
+        :rows="filteredRows"
         v-model:pagination="pagination"
         align="left"
         :loading="isLoading"
         @request="getCashFlowRecords"
       >
+        <template v-slot:top>
+          <div
+            class="flex flex-col sm:flex-row justify-center md:justify-between gap-4 item-center w-full"
+          >
+            <div class="font-medium text-lg flex items-center">
+              <span>Cash Flow</span>
+            </div>
+            <div class="row gap-2">
+              <q-input
+                outlined
+                dense
+                maxlength="250"
+                debounce="300"
+                color="btn-primary"
+                label="Source"
+                v-model="filter.source"
+              >
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+              <q-input
+                outlined
+                dense
+                maxlength="250"
+                debounce="300"
+                color="btn-primary"
+                label="Target"
+                v-model="filter.target"
+              >
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
+          </div>
+        </template>
         <template v-slot:body-cell-sourceUserName="props">
           <q-td
             :props="props"
@@ -152,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
@@ -175,12 +212,36 @@ const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
+const filter = ref({
+  target: '',
+  source: '',
+});
 const $q = useQuasar();
 const filterSearch = ref({
   FromDate: formattedFromDate || null,
   ToDate: formattedToDate || null,
 });
+const filterChanged = ref(false);
 const cashFlowRecords = ref<ICashFlowRecords[]>([]);
+const filteredRows = ref<ICashFlowRecords[]>([]);
+function setFilteredData() {
+  filterChanged.value = true;
+  filterChanged.value = true;
+  filteredRows.value = cashFlowRecords.value.filter((row) => {
+    const sourceMatch = row.sourceUserName
+      .toLowerCase()
+      .includes(filter.value.source.toLowerCase().trim());
+    const targetMatch = row.targetUserName
+      .toLowerCase()
+      .includes(filter.value.target.toLowerCase().trim());
+    return sourceMatch && targetMatch;
+  });
+  setTimeout(() => {
+    filterChanged.value = false;
+  }, 200);
+}
+watch(filter, setFilteredData, { deep: true });
+watch(cashFlowRecords, setFilteredData);
 const handleResetFilter = () => {
   if (Object.values(filterSearch.value).every((item) => item === null)) return;
   filterSearch.value = {
@@ -208,6 +269,7 @@ onMounted(() => {
 const getCashFlowRecords = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
+  if (filterChanged.value) return;
   if (isLoading.value) return;
   isLoading.value = true;
   if (data) {
