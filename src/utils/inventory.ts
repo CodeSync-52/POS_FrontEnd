@@ -22,28 +22,16 @@ export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
     field: (row) => row.productImage,
   },
   {
-    name: 'productLabel',
-    label: 'Product Label',
+    name: 'productCode',
+    label: 'Product Code',
     align: 'left',
-    field: (row) => row.productLabel,
+    field: (row) => row.productCode,
   },
   {
     name: 'quantity',
     label: 'Quantity',
     align: 'left',
     field: (row) => row.quantity,
-  },
-  {
-    name: 'variantId_1',
-    label: 'First Variant',
-    align: 'left',
-    field: (row) => row.variantId_1,
-  },
-  {
-    name: 'variantId_2',
-    label: 'Second Variant',
-    align: 'left',
-    field: (row) => row.variantId_2,
   },
   {
     name: 'addedDate',

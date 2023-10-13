@@ -52,6 +52,7 @@
                   >
                   <div class="w-8 h-8 rounded-full overflow-hidden">
                     <img
+                      class="h-full object-cover"
                       :src="
                         getImageUrl(product.productImage) ||
                         'assets/default-image.png'
@@ -138,47 +139,54 @@
           @click="handleToggleBarcodePreview"
         />
       </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
-        <div
-          v-for="barcode in selectedProductBarcodes"
-          :key="barcode.productLabel"
-          class="mx-auto"
-        >
-          <q-card-section>
-            <div
-              class="grid grid-cols-1 h-[85px] gap-3 min-w-[210px] max-w-[210px]"
-            >
+      <div class="overflow-auto h-[calc(100vh_-_224px)]">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div
+            v-for="barcode in selectedProductBarcodes"
+            :key="barcode.productCode"
+            class="mx-auto"
+          >
+            <q-card-section>
               <div
-                class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_3px_1px_rgba(0,0,0,0.2)]"
+                class="grid grid-cols-1 h-[85px] gap-3 min-w-[210px] max-w-[210px]"
               >
                 <div
-                  :class="
-                    showfirstBarcodePreview
-                      ? 'grid grid-cols-[2fr_5fr] font-semibold'
-                      : 'flex flex-col font-semibold items-center'
-                  "
+                  class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_3px_1px_rgba(0,0,0,0.2)]"
                 >
                   <div
                     :class="
                       showfirstBarcodePreview
-                        ? 'flex flex-col justify-center items-center gap-2'
-                        : 'flex justify-center gap-2'
+                        ? 'grid grid-cols-[2fr_5fr] font-semibold'
+                        : 'flex flex-col font-semibold items-center'
                     "
                   >
-                    <span
-                      v-for="labelPiece in barcode.productLabel.split('-')"
-                      :key="labelPiece"
+                    <div
+                      :class="
+                        showfirstBarcodePreview
+                          ? 'flex flex-col justify-center items-center gap-2'
+                          : 'flex justify-center gap-2'
+                      "
                     >
-                      {{ labelPiece }}
-                    </span>
-                  </div>
-                  <div class="min-w-[155px] max-w-[155px]">
-                    <img :class="'barcode-' + barcode.productLabel" />
+                      <span
+                        v-for="labelPiece in barcode.productCode
+                          .split(',')[0]
+                          .split('-')"
+                        :key="labelPiece"
+                      >
+                        {{ labelPiece }}
+                      </span>
+                    </div>
+                    <div class="min-w-[155px] max-w-[155px]">
+                      <img
+                        id="barcode-image"
+                        :class="'barcode-' + barcode.productCode"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </q-card-section>
+            </q-card-section>
+          </div>
         </div>
       </div>
       <q-card-actions align="right">
@@ -281,7 +289,7 @@ const pagination = ref<IPagination>({
 const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
 const $q = useQuasar();
-const selectedProductBarcodes = ref<{ productLabel: string }[]>([]);
+const selectedProductBarcodes = ref<{ productCode: string }[]>([]);
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
@@ -425,7 +433,7 @@ const handleCustomSelectedLabel = (payload: {
 }) => {
   if (payload.productBarcode !== null && payload.quantity !== null) {
     const modifiedArray = modifyArray([
-      { productLabel: payload.productBarcode, quantity: payload.quantity },
+      { productCode: payload.productBarcode, quantity: payload.quantity },
     ]);
     selectedProductBarcodes.value = modifiedArray;
     showBarcodeScreen.value = true;
@@ -544,7 +552,7 @@ const handleAddInventory = async (
 const setBarcodeProps = () => {
   selectedProductBarcodes.value.forEach((barcode) => {
     showfirstBarcodePreview.value
-      ? JsBarcode('.barcode-' + barcode.productLabel, barcode.productLabel, {
+      ? JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
           format: 'CODE128',
           width: 1,
           height: 40,
@@ -554,7 +562,7 @@ const setBarcodeProps = () => {
           textAlign: 'right',
           fontOptions: 'bold',
         })
-      : JsBarcode('.barcode-' + barcode.productLabel, barcode.productLabel, {
+      : JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
           format: 'CODE128',
           width: 1,
           height: 40,
@@ -563,13 +571,13 @@ const setBarcodeProps = () => {
         });
   });
 };
-function modifyArray(inputArray: { productLabel: string; quantity: number }[]) {
-  const modifiedArray: { productLabel: string }[] = [];
+function modifyArray(inputArray: { productCode: string; quantity: number }[]) {
+  const modifiedArray: { productCode: string }[] = [];
   inputArray.forEach((item) => {
-    const { productLabel, quantity } = item;
+    const { productCode, quantity } = item;
 
     for (let i = 0; i < quantity; i++) {
-      modifiedArray.push({ productLabel });
+      modifiedArray.push({ productCode });
     }
   });
 

@@ -22,8 +22,17 @@
     <div
       class="row flex md:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
+      <q-input
+        v-model="filterSearch.ProductCode"
+        maxlength="250"
+        outlined
+        dense
+        color="btn-primary"
+        label="Product Code"
+      />
       <q-select
         popup-content-class="!max-h-[200px]"
+        class="max-w-[220px] min-w-[220px]"
         @filter="filterShop"
         :options="ShopOptionData"
         :loading="isLoading"
@@ -45,6 +54,7 @@
       >
       <q-select
         popup-content-class="!max-h-[200px]"
+        class="max-w-[220px] min-w-[220px]"
         @filter="filterProduct"
         :options="articleList"
         :loading="isFetchingArticleList"
@@ -95,6 +105,11 @@
             <q-icon name="warning" size="xs" />
             <span class="text-md font-medium"> No data available. </span>
           </div>
+        </template>
+        <template v-slot:body-cell-productCode="props">
+          <q-td :props="props">
+            {{ props.row.productCode || '-' }}
+          </q-td>
         </template>
         <template v-slot:body-cell-productImage="props">
           <q-td :props="props">
@@ -170,6 +185,7 @@ const pagination = ref({
 const $q = useQuasar();
 const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
+  ProductCode: null,
   ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
 });
 const resetFilter = () => {
@@ -178,6 +194,7 @@ const resetFilter = () => {
   }
   filterSearch.value = {
     ProductId: null,
+    ProductCode: null,
     ShopId: null,
   };
   getInventoryList();
