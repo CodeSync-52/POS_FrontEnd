@@ -12,6 +12,12 @@ export interface IArticleData {
   masterStock: null | number;
   commission: number;
 }
+
+export interface ISelectedArticle {
+  productId: number;
+  productName?: string;
+  productImage: string | null;
+}
 export interface IArticleInfo {
   categoryName: string;
   categoryId: number;

@@ -119,7 +119,7 @@ export const addWholeSaleDetailApi = async ({
   productId: number;
   quantity: number;
 }) => {
-  const res = await makeApiCall<IGenericResponse<any>>({
+  const res = await makeApiCall<IGenericResponse<number>>({
     url: 'api/wholesale/detail/add',
     method: 'PUT',
     params: {

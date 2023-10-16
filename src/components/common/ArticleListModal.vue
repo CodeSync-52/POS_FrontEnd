@@ -19,7 +19,7 @@
             :filter="filter"
             row-key="productId"
             @request="handlePagination($event.pagination)"
-            selection="multiple"
+            :selection="props.isSelectionSingle ? 'single' : 'multiple'"
             v-model:selected="selected"
           >
             <template v-slot:top>
@@ -30,7 +30,6 @@
                 <q-space />
 
                 <q-input
-                  autofocus
                   borderless
                   dense
                   maxlength="250"
@@ -75,7 +74,7 @@
       </div>
     </q-card-section>
     <q-card-actions align="right" v-if="articleList.length">
-      <div class="row justify-end gap-4">
+      <div class="row justify-end gap-2">
         <q-btn
           label="Cancel"
           flat
@@ -111,6 +110,7 @@ interface propTypes {
   articleList: IArticleData[];
   isFetchingArticleList: boolean;
   pagination: IPagination;
+  isSelectionSingle?: boolean;
 }
 const articlePagination = ref({
   sortBy: 'desc',
@@ -123,6 +123,7 @@ const props = withDefaults(defineProps<propTypes>(), {
   currentData: () => [],
   articleList: () => [],
   isFetchingArticleList: false,
+  isSelectionSingle: false,
 });
 
 const selectedArticles = ref<

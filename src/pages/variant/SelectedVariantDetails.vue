@@ -27,8 +27,8 @@
         :loading="isLoading"
         row-key="name"
         :filter="filter"
+        hide-pagination
         v-model:pagination="pagination"
-        @request="getVariantList"
       >
         <template v-slot:top>
           <div
@@ -181,7 +181,7 @@ import {
   addVariantApi,
   changeVariantStatus,
   updateVariantApi,
-  variantListApi,
+  variantListByIdApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 const authStore = useAuthStore();
@@ -195,6 +195,7 @@ const isVariantStatusModalVisible = ref(false);
 const isLoading = ref(false);
 const variantGroupId = Number(router.currentRoute.value.params.id);
 const variantGroupName = router.currentRoute.value.params.name;
+const variantGroupStatus = router.currentRoute.value.params.status;
 const variant = ref<{ displayName: string; name: string; id: number | null }>({
   displayName: '',
   name: '',
@@ -222,7 +223,7 @@ watch(filter, setFilteredData);
 watch(variantDetailsRecord, setFilteredData);
 const selectedRowData = ref<IVariantDetailsData | null>(null);
 onMounted(() => {
-  getVariantList();
+  getSelectedVariantDetails();
 });
 const addNewVariant = () => {
   variantAction.value = 'Add';
@@ -310,7 +311,7 @@ const updateOrAddVariant = async (
         message: res.message,
         color: 'green',
       });
-      getVariantList();
+      getSelectedVariantDetails();
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -327,37 +328,26 @@ const updateOrAddVariant = async (
   selectedRowData.value = null;
   isVariantDetailsModalVisible.value = false;
   callback();
-  getVariantList();
+  getSelectedVariantDetails();
 };
-const getVariantList = async (data?: {
-  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
-}) => {
-  if (filterChanged.value) return;
-  if (isLoading.value) return;
-  isLoading.value = true;
-  if (data) {
-    pagination.value = { ...pagination.value, ...data.pagination };
-  }
+const getSelectedVariantDetails = async () => {
   try {
-    const res = await variantListApi({
-      pageNumber: pagination.value.page,
-      pageSize: pagination.value.rowsPerPage,
+    const res = await variantListByIdApi({
+      status: variantGroupStatus,
+      variantGroupId,
     });
-    if (res.data) {
-      variantDetailsRecord.value = res.data.items;
-      pagination.value.rowsNumber = res.data.totalItemCount;
+    if (res.type === 'Success') {
+      variantDetailsRecord.value = res.data;
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred';
+    let message = 'Error Occurred During Fetching variant Group Details';
     if (isPosError(e)) {
       message = e.message;
     }
     $q.notify({
       message,
-      color: 'red',
-      icon: 'error',
+      type: 'negative',
     });
   }
-  isLoading.value = false;
 };
 </script>
