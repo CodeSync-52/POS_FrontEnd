@@ -72,7 +72,7 @@
           </div>
           <div
             :class="action !== 'Add New User' ? 'col-md-6' : 'col-md-4'"
-            class="col-md-6 w-full col-sm-12"
+            class="col-md-6 mb-2 w-full col-sm-12"
           >
             <q-input
               dense
@@ -84,12 +84,12 @@
               maxlength="250"
             />
           </div>
-        </div>
-        <div v-if="action === 'Add New User'" class="row px-2 q-col-gutter-xs">
           <div class="col-md-6 w-full col-sm-12">
             <div>
               <q-select
                 dense
+                popup-content-class="!max-h-[200px]"
+                :disable="action !== 'Add New User'"
                 :options="roleDropdownOptions"
                 outlined
                 v-model="userData.roleName"
@@ -101,6 +101,7 @@
             </div>
           </div>
         </div>
+        <div class="row px-2 q-col-gutter-xs"></div>
         <div
           v-if="userData.roleName === EUserRoles.Customer"
           class="row px-2 q-col-gutter-sm"
@@ -114,12 +115,14 @@
                 :options="customerGroupList"
                 :loading="isLoading"
                 dense
+                popup-content-class="!max-h-[200px]"
                 map-options
                 outlined
                 v-model="userData.customerGroupId"
                 @update:model-value="
                   userData.customerGroupId = $event.customerGroupId
                 "
+                :disable="action !== 'Add New User'"
                 label="Customer Group"
                 color="btn-primary"
                 option-label="name"
@@ -143,6 +146,7 @@
                 :min="0"
                 :max="5000000"
                 v-model="userData.discount"
+                @update:model-value="handleUpdateDiscount($event)"
                 fill-mask="0"
                 reverse-fill-mask
                 input-class="text-right"
@@ -154,9 +158,8 @@
         </div>
         <div
           v-if="
-            (userData.roleName === EUserRoles.ShopManager ||
-              userData.roleName === EUserRoles.ShopOfficer) &&
-            action === 'Add New User'
+            userData.roleName === EUserRoles.ShopManager ||
+            userData.roleName === EUserRoles.ShopOfficer
           "
           class="row px-2 q-col-gutter-sm"
         >
@@ -168,6 +171,8 @@
                 dense
                 map-options
                 outlined
+                :disable="action !== 'Add New User'"
+                popup-content-class="!max-h-[200px]"
                 v-model="userData.shopId"
                 @update:model-value="userData.shopId = $event.shopId"
                 label="Shop Name"
@@ -184,23 +189,6 @@
               >
             </div>
           </div>
-          <!-- <div class="col-md-4 w-full col-sm-12">
-            <div>
-              <q-input
-                type="number"
-                dense
-                outlined
-                :min="0"
-                :max="5000000"
-                v-model="userData.discount"
-                fill-mask="0"
-                reverse-fill-mask
-                input-class="text-right"
-                label="Discount"
-                color="btn-primary"
-              />
-            </div>
-          </div> -->
         </div>
       </div>
     </q-card-section>
@@ -259,12 +247,13 @@ const userData = ref<IUserResponse>({
   customerGroup: null,
   discount: 0,
   outStandingBalance: 0,
-  userId: -1,
   fullName: '',
   status: '',
-  address: '',
   phoneNumber: '',
+  shopName: '',
+  userId: -1,
   userName: '',
+  address: '',
   shopId: null,
 });
 const roleDropdownOptions = computed(() =>
@@ -277,6 +266,16 @@ const roleDropdownOptions = computed(() =>
       role.value === EUserRoles.ShopManager
   )
 );
+const handleUpdateDiscount = (newVal: string | number | null) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (val < 0 || !val) {
+      userData.value.discount = 0;
+    } else {
+      userData.value.discount = val;
+    }
+  }
+};
 const isButtonDisabled = computed(() => {
   const {
     fullName,
@@ -285,6 +284,7 @@ const isButtonDisabled = computed(() => {
     userName,
     customerGroupId,
     discount,
+    shopId,
   } = userData.value;
   const validations = ref<boolean[]>([]);
   if (
@@ -294,6 +294,7 @@ const isButtonDisabled = computed(() => {
   ) {
     validations.value = [
       !fullName,
+      !userName,
       !(phoneNumber.length >= 14 && phoneNumber.length <= 15),
     ];
   } else if (
@@ -304,12 +305,12 @@ const isButtonDisabled = computed(() => {
       !fullName,
       !(phoneNumber.length >= 14 && phoneNumber.length <= 15),
       !userName,
+      shopId === null,
     ];
     validations.value = shopValidation;
-  } else if (roleName === EUserRoles.Customer && discount) {
+  } else if (roleName === EUserRoles.Customer) {
     const customerValidation = [
-      discount < 0,
-      discount > 5000000,
+      discount !== undefined && discount > 5000000,
       !fullName,
       !(phoneNumber.length >= 14 && phoneNumber.length <= 15),
       !userName,
@@ -355,6 +356,14 @@ function handleAddNewUser() {
     delete userData.value.customerGroupId;
     delete userData.value.discount;
   }
+  if (
+    userData.value.roleName !== EUserRoles.ShopOfficer &&
+    userData.value.roleName !== EUserRoles.ShopManager
+  ) {
+    delete userData.value.shopId;
+    delete userData.value.shopName;
+  }
+
   if (userData.value.phoneNumber) {
     if (userData.value.phoneNumber.charAt(3) === '0') {
       const userPhoneNumber = userData.value.phoneNumber;

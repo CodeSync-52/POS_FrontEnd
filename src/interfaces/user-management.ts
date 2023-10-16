@@ -43,10 +43,11 @@ export interface IUserResponse {
   phoneNumber: string;
   roleName: string;
   status?: string;
+  shopName?: string;
   userId?: number;
   userName: string;
   address: string;
-  shopId: null | number;
+  shopId?: null | number;
 }
 export interface IUserFilterList {
   customerGroupId: number | null;
