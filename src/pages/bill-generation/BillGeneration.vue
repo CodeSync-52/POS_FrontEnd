@@ -105,10 +105,10 @@
     </div>
     <div class="py-4">
       <q-table
-        :loading="isLoading"
         :rows="billGenerationData"
         :columns="billGenerationColumn"
         row-key="billId"
+        :loading="isLoading"
         v-model:pagination="pagination"
         @request="getBillList"
       >

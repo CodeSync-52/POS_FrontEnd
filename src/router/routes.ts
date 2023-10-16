@@ -25,7 +25,7 @@ export const routeList = [
     },
   },
   {
-    path: '/variant/:name/:id',
+    path: '/variant/:name/:id/:status',
     component: () => import('src/pages/variant/SelectedVariantDetails.vue'),
     meta: {
       module: EUserModules.VariantManagement,
@@ -148,6 +148,13 @@ export const routeList = [
   {
     path: '/inventory',
     component: () => import('src/pages/inventory/InventoryManagement.vue'),
+    meta: {
+      module: EUserModules.InventoryManagement,
+    },
+  },
+  {
+    path: '/inventory/add-new',
+    component: () => import('src/pages/inventory/AddNewInventory.vue'),
     meta: {
       module: EUserModules.InventoryManagement,
     },

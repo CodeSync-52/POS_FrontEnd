@@ -98,6 +98,11 @@ export interface IUser {
   userId: number;
   loginTokenResponseDTO: LoginTokenResponseDTO;
   rolePermissions: RolePermissions;
+  userShopInfoDTO: IUserShopInfo;
+}
+export interface IUserShopInfo {
+  shopId: number;
+  shopName: string;
 }
 export interface LoginTokenResponseDTO {
   access_Token: string;

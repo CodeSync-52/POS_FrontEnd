@@ -12,3 +12,8 @@ export interface IVariantDetailsData {
   variantGroupName: string;
   variantGroupId: number;
 }
+export interface IVariantGroup {
+  status: string;
+  variantGroupId: number;
+  name: string;
+}
