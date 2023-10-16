@@ -31,6 +31,7 @@
         v-model="filterSearch.customerGroupId"
         :options="customerGroupList"
         map-options
+        popup-content-class="!max-h-[200px]"
         @update:model-value="
           filterSearch.customerGroupId = $event.customerGroupId
         "
@@ -52,6 +53,7 @@
         outlined
         map-options
         v-model="filterSearch.role"
+        popup-content-class="!max-h-[200px]"
         :options="roleDropdownOptions"
         @update:model-value="filterSearch.role = $event.value"
         label="Role"
@@ -98,6 +100,11 @@
         row-key="name"
         @request="getUserList"
       >
+        <template v-slot:body-cell-shopName="props">
+          <q-td :props="props">
+            {{ props.row.shopName || '-' }}
+          </q-td>
+        </template>
         <template
           v-if="
             !authStore.checkUserHasPermission(
