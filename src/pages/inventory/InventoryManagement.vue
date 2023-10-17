@@ -93,7 +93,7 @@
         />
       </div>
     </div>
-    <div>
+    <div class="py-4">
       <q-table
         :columns="InventoryListColumn"
         :rows="InventoryListRecords"
