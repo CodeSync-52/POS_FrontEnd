@@ -116,6 +116,7 @@
       >
         <q-btn
           @click="handleSaveInventory"
+          :loading="isPrintingBarcode"
           label="Save"
           unelevated
           :disable="isSaveButtonDisable"
@@ -288,6 +289,7 @@ const pagination = ref<IPagination>({
 });
 const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
+const isPrintingBarcode = ref(false);
 const $q = useQuasar();
 const selectedProductBarcodes = ref<{ productCode: string }[]>([]);
 window.addEventListener('keypress', function (e) {
@@ -426,11 +428,14 @@ const handleUpdateQuantity = (
     }
   }
 };
-const handleCustomSelectedLabel = (payload: {
-  productLabel: string | null;
-  productBarcode: string | null;
-  quantity: number | null;
-}) => {
+const handleCustomSelectedLabel = (
+  payload: {
+    productLabel: string | null;
+    productBarcode: string | null;
+    quantity: number | null;
+  },
+  callback: () => void
+) => {
   if (payload.productBarcode !== null && payload.quantity !== null) {
     const modifiedArray = modifyArray([
       { productCode: payload.productBarcode, quantity: payload.quantity },
@@ -440,6 +445,7 @@ const handleCustomSelectedLabel = (payload: {
     isPrintingBarcodeScreenVisible.value = true;
     nextTick(() => {
       setBarcodeProps();
+      callback();
     });
   }
   isCustomLabelModalVisible.value = false;
@@ -549,26 +555,32 @@ const handleAddInventory = async (
     });
   }
 };
+const progressbar = ref<number[]>([]);
 const setBarcodeProps = () => {
-  selectedProductBarcodes.value.forEach((barcode) => {
-    showfirstBarcodePreview.value
-      ? JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
-          format: 'CODE128',
-          width: 1,
-          height: 40,
-          displayValue: true,
-          textPosition: 'top',
-          text: 'KIT Shoes',
-          textAlign: 'right',
-          fontOptions: 'bold',
-        })
-      : JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
-          format: 'CODE128',
-          width: 1,
-          height: 40,
-          displayValue: false,
-          text: '',
-        });
+  progressbar.value = [];
+  selectedProductBarcodes.value.forEach((barcode, index) => {
+    nextTick(() => {
+      showfirstBarcodePreview.value
+        ? JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
+            format: 'CODE128',
+            width: 1,
+            height: 40,
+            displayValue: true,
+            textPosition: 'top',
+            text: 'KIT Shoes',
+            textAlign: 'right',
+            fontOptions: 'bold',
+          })
+        : JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
+            format: 'CODE128',
+            width: 1,
+            height: 40,
+            displayValue: false,
+            text: '',
+          });
+    });
+    progressbar.value.push(index + 1);
+    console.log(progressbar.value);
   });
 };
 function modifyArray(inputArray: { productCode: string; quantity: number }[]) {
