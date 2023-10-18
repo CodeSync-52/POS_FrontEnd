@@ -9,3 +9,4 @@ export * from './pdf-make/pdf-make';
 export * from './category-management';
 export * from './cash-flow';
 export * from './shop-managment';
+export * from './grn';

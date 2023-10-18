@@ -176,7 +176,7 @@
                 class="min-w-[100px]"
                 color="btn-primary"
               />
-              <div v-else>{{ props.row.quantity }}</div>
+              <div v-else>0</div>
             </q-td>
           </template>
           <template v-slot:body-cell-productImage="props">
@@ -324,7 +324,7 @@ const handleChangeSelectedShopRecord = (
         productId: record.productId,
         variantId_1: record.variantId_1,
         variantId_2: record.variantId_2,
-        quantity: record.quantity ?? 0,
+        quantity: 0,
       };
     }
   });
