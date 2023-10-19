@@ -11,3 +11,4 @@ export * from './sales-management';
 export * from './cash-flow';
 export * from './shop-management';
 export * from './inventory';
+export * from './grn';
