@@ -69,55 +69,6 @@
         v-model:pagination="pagination"
         @request="getGrnList"
       >
-        <template
-          v-slot:header-cell-action
-          v-if="
-            !authStore.checkUserHasPermission(
-              EUserModules.GoodsReceiptNotes,
-              EActionPermissions.Update
-            ) &&
-            !authStore.checkUserHasPermission(
-              EUserModules.GoodsReceiptNotes,
-              EActionPermissions.Delete
-            )
-          "
-        >
-          <q-th></q-th>
-        </template>
-        <template
-          v-if="
-            authStore.checkUserHasPermission(
-              EUserModules.GoodsReceiptNotes,
-              EActionPermissions.Update
-            ) &&
-            authStore.checkUserHasPermission(
-              EUserModules.GoodsReceiptNotes,
-              EActionPermissions.Delete
-            )
-          "
-          v-slot:body-cell-action="props"
-        >
-          <q-td class="flex justify-start" :props="props">
-            <div class="flex gap-2 flex-nowrap">
-              <q-btn
-                flat
-                unelevated
-                dense
-                size="sm"
-                icon="check"
-                color="green"
-              />
-              <q-btn
-                flat
-                unelevated
-                dense
-                size="sm"
-                icon="cancel"
-                color="red"
-              />
-            </div>
-          </q-td>
-        </template>
         <template v-slot:body-cell-name="props">
           <q-td
             :props="props"

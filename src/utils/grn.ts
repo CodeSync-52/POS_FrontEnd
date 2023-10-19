@@ -38,10 +38,4 @@ export const GrnTableColumn: QTableColumn<IGrnRecords>[] = [
     align: 'left',
     field: (row) => moment(row.addedDate).format('DD-MM-YYYY'),
   },
-  {
-    name: 'action',
-    label: 'Action',
-    field: () => '',
-    align: 'left',
-  },
 ];
