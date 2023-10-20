@@ -97,7 +97,13 @@
           v-slot:body-cell-action="props"
         >
           <q-td class="flex justify-start" :props="props">
-            <div class="flex gap-2 flex-nowrap">
+            <div
+              v-if="
+                props.row.grnStatus !== 'Accept' &&
+                props.row.grnStatus !== 'Reject'
+              "
+              class="flex gap-2 flex-nowrap"
+            >
               <q-btn
                 flat
                 unelevated
@@ -105,7 +111,7 @@
                 size="sm"
                 icon="check"
                 color="green"
-                @click="handleAcceptStrPopup(props.row)"
+                @click="handleAcceptOrRejectStrPopup(props.row, false)"
               />
               <q-btn
                 flat
@@ -114,6 +120,7 @@
                 size="sm"
                 icon="cancel"
                 color="red"
+                @click="handleAcceptOrRejectStrPopup(props.row, true)"
               />
             </div>
           </q-td>
@@ -135,9 +142,13 @@
       </q-table>
     </div>
   </div>
-  <!-- <q-dialog v-model="isAcceptOrRejectStrModalVisible">
-
-  </q-dialog> -->
+  <q-dialog v-model="isAcceptOrRejectStrModalVisible">
+    <accept-or-reject-str-modal
+      :is-reject="isReject"
+      @reject-str="handleRejectStr"
+      @accept-str="handleAcceptStr"
+    />
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
@@ -149,7 +160,8 @@ import {
   IPagination,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { grnListApi } from 'src/services';
+import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
+import { grnListApi, rejectStrApi, acceptStrApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { GrnTableColumn } from 'src/utils';
@@ -166,6 +178,7 @@ const $q = useQuasar();
 const strRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
 const selectedRowData = ref<IGrnRecords | null>(null);
+const isReject = ref(false);
 const filterSearch = ref<IGrnListFilter>({
   FromDate: null,
   ToDate: null,
@@ -179,7 +192,11 @@ const pagination = ref<IPagination>({
 });
 const isAcceptOrRejectStrModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
-const handleAcceptStrPopup = (selectedRow: IGrnRecords) => {
+const handleAcceptOrRejectStrPopup = (
+  selectedRow: IGrnRecords,
+  isRejected: boolean
+) => {
+  isReject.value = isRejected;
   selectedRowData.value = selectedRow;
   isAcceptOrRejectStrModalVisible.value = true;
 };
@@ -238,5 +255,58 @@ const getGrnList = async (data?: {
     });
   }
   isLoading.value = false;
+};
+const handleRejectStr = async (reason: string, callback: () => void) => {
+  try {
+    const res = await rejectStrApi({
+      grnId: selectedRowData.value?.grnId ?? -1,
+      reason,
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        type: 'positive',
+        message: res.message,
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.grnStatus = 'Reject';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected error occurred rejecting Str';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
+  }
+  callback();
+  isAcceptOrRejectStrModalVisible.value = false;
+};
+const handleAcceptStr = async (callback: () => void) => {
+  try {
+    const res = await acceptStrApi(selectedRowData.value?.grnId ?? -1);
+    if (res.type === 'Success') {
+      $q.notify({
+        type: 'positive',
+        message: res.message,
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.grnStatus = 'Accept';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected error occurred accepting Str';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
+  }
+  callback();
+  isAcceptOrRejectStrModalVisible.value = false;
 };
 </script>

@@ -11,12 +11,19 @@ export const acceptStrApi = async (grnId: number) => {
   });
   return res;
 };
-export const rejectStrApi = async (grnId: number) => {
+export const rejectStrApi = async ({
+  grnId,
+  reason,
+}: {
+  grnId: number;
+  reason: string;
+}) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/str/reject',
     method: 'POST',
     data: {
       grnId,
+      reason,
     },
   });
   return res;
