@@ -9,6 +9,13 @@ export interface IGrnDetails {
   variantId_2: number;
   quantity: number;
 }
+export interface IGrnDetailsWithId {
+  productId: number;
+  variantId_1: number;
+  variantId_2: number;
+  quantity: number;
+  id?: number;
+}
 export interface IGrnListFilter {
   ToDate: number | null;
   FromDate: number | null;

@@ -167,6 +167,13 @@ export const routeList = [
     },
   },
   {
+    path: '/goods-receipt/add-new',
+    component: () => import('src/pages/goods-receipt/AddNewGrn.vue'),
+    meta: {
+      module: EUserModules.GoodsReceiptNotes,
+    },
+  },
+  {
     path: '/discount',
     component: () => import('src/pages/discount/ShopDiscount.vue'),
     meta: {
