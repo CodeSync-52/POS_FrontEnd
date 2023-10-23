@@ -106,11 +106,6 @@
             <span class="text-md font-medium"> No data available. </span>
           </div>
         </template>
-        <template v-slot:body-cell-productCode="props">
-          <q-td :props="props">
-            {{ props.row.productCode || '-' }}
-          </q-td>
-        </template>
         <template v-slot:body-cell-productImage="props">
           <q-td :props="props">
             <div
@@ -247,6 +242,7 @@ const getInventoryList = async (data?: {
     );
     if (res.data) {
       InventoryListRecords.value = res.data.inventoryDetails;
+      pagination.value.rowsNumber = res.data.totalCountInventoryDetails;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

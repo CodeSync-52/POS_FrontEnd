@@ -116,6 +116,7 @@
       >
         <q-btn
           @click="handleSaveInventory"
+          :loading="isPrintingBarcode"
           label="Save"
           unelevated
           :disable="isSaveButtonDisable"
@@ -127,13 +128,17 @@
       <div
         class="flex flex-col md:flex-row items-center justify-center md:justify-between"
       >
-        <span class="text-lg font-semibold">Printed Barcodes:</span>
+        <div class="flex items-center gap-1">
+          <span class="text-lg font-semibold">Printed Barcodes:</span>
+          <q-spinner v-if="isPrintingBarcode" size="2rem" color="btn-primary" />
+        </div>
         <q-btn
           :label="
             showfirstBarcodePreview
               ? 'Show Second Preview '
               : 'Show First Preview'
           "
+          :disable="isPrintingBarcode"
           color="btn-primary"
           unelevated
           @click="handleToggleBarcodePreview"
@@ -142,7 +147,7 @@
       <div class="overflow-auto h-[calc(100vh_-_224px)]">
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
           <div
-            v-for="barcode in selectedProductBarcodes"
+            v-for="(barcode, index) in selectedProductBarcodes"
             :key="barcode.productCode"
             class="mx-auto"
           >
@@ -178,8 +183,8 @@
                     </div>
                     <div class="min-w-[155px] max-w-[155px]">
                       <img
-                        id="barcode-image"
-                        :class="'barcode-' + barcode.productCode"
+                        :id="`barcode-image-${index}`"
+                        :class="`barcode-` + barcode.productCode"
                       />
                     </div>
                   </div>
@@ -195,6 +200,12 @@
           unelevated
           color="btn-cancel"
           @click="isPrintingBarcodeScreenVisible = false"
+        />
+        <q-btn
+          v-if="isPrintBarcodeButtonVisible"
+          label="Print Barcodes"
+          color="btn-primary"
+          unelevated
         />
       </q-card-actions>
     </div>
@@ -251,7 +262,7 @@ import {
 } from 'src/interfaces';
 import { addInventoryApi, articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import JsBarcode from 'jsbarcode';
 const isSelectionSingle = ref(true);
 const isFilterChanged = ref(false);
@@ -288,6 +299,7 @@ const pagination = ref<IPagination>({
 });
 const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
+const isPrintingBarcode = ref(false);
 const $q = useQuasar();
 const selectedProductBarcodes = ref<{ productCode: string }[]>([]);
 window.addEventListener('keypress', function (e) {
@@ -295,7 +307,7 @@ window.addEventListener('keypress', function (e) {
     isArticleListModalVisible.value = true;
   }
 });
-
+const isPrintBarcodeButtonVisible = ref(false);
 onMounted(() => {
   isArticleListModalVisible.value = true;
   getArticleList();
@@ -426,11 +438,14 @@ const handleUpdateQuantity = (
     }
   }
 };
-const handleCustomSelectedLabel = (payload: {
-  productLabel: string | null;
-  productBarcode: string | null;
-  quantity: number | null;
-}) => {
+const handleCustomSelectedLabel = (
+  payload: {
+    productLabel: string | null;
+    productBarcode: string | null;
+    quantity: number | null;
+  },
+  callback: () => void
+) => {
   if (payload.productBarcode !== null && payload.quantity !== null) {
     const modifiedArray = modifyArray([
       { productCode: payload.productBarcode, quantity: payload.quantity },
@@ -438,9 +453,8 @@ const handleCustomSelectedLabel = (payload: {
     selectedProductBarcodes.value = modifiedArray;
     showBarcodeScreen.value = true;
     isPrintingBarcodeScreenVisible.value = true;
-    nextTick(() => {
-      setBarcodeProps();
-    });
+    setBarcodeProps();
+    callback();
   }
   isCustomLabelModalVisible.value = false;
 };
@@ -534,9 +548,9 @@ const handleAddInventory = async (
       selectedProductBarcodes.value = modifiedArray;
       showBarcodeScreen.value = true;
       isPrintingBarcodeScreenVisible.value = true;
-      nextTick(() => {
+      setTimeout(() => {
         setBarcodeProps();
-      });
+      }, 0);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Inventory';
@@ -549,27 +563,63 @@ const handleAddInventory = async (
     });
   }
 };
-const setBarcodeProps = () => {
-  selectedProductBarcodes.value.forEach((barcode) => {
-    showfirstBarcodePreview.value
-      ? JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
-          format: 'CODE128',
-          width: 1,
-          height: 40,
-          displayValue: true,
-          textPosition: 'top',
-          text: 'KIT Shoes',
-          textAlign: 'right',
-          fontOptions: 'bold',
-        })
-      : JsBarcode('#barcode-image', barcode.productCode.split(',')[0], {
-          format: 'CODE128',
-          width: 1,
-          height: 40,
-          displayValue: false,
-          text: '',
-        });
-  });
+const progressbar = ref<number[]>([]);
+const setBarcodeProps = (callback?: () => void) => {
+  isPrintBarcodeButtonVisible.value = false;
+  isPrintingBarcode.value = true;
+  progressbar.value = [];
+  let index = 0;
+
+  const generateBarcode = () => {
+    if (index < selectedProductBarcodes.value.length) {
+      const barcode = selectedProductBarcodes.value[index];
+      showfirstBarcodePreview.value
+        ? JsBarcode(
+            `#barcode-image-${index}`,
+            barcode.productCode.split(',')[0],
+            {
+              format: 'CODE128',
+              width: 1,
+              height: 40,
+              displayValue: true,
+              textPosition: 'top',
+              text: 'KIT Shoes',
+              textAlign: 'right',
+              fontOptions: 'bold',
+            }
+          )
+        : JsBarcode(
+            `#barcode-image-${index}`,
+            barcode.productCode.split(',')[0],
+            {
+              format: 'CODE128',
+              width: 1,
+              height: 40,
+              displayValue: false,
+              text: '',
+            }
+          );
+      progressbar.value = [(index + 1) / selectedProductBarcodes.value.length];
+
+      setTimeout(() => {
+        index++;
+        generateBarcode();
+      }, 0);
+    } else {
+      $q.notify({
+        message: 'Barcode Generation Completed',
+        type: 'positive',
+      });
+      if (callback) {
+        callback();
+      }
+      isPrintingBarcode.value = false;
+      isPrintBarcodeButtonVisible.value = true;
+    }
+  };
+  setTimeout(() => {
+    generateBarcode();
+  }, 0);
 };
 function modifyArray(inputArray: { productCode: string; quantity: number }[]) {
   const modifiedArray: { productCode: string }[] = [];

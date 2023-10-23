@@ -45,6 +45,7 @@ export const inventoryDetailApi = async (
       inventoryDetails: IInventoryListResponse[];
       shopId: number;
       shopName: string;
+      totalCountInventoryDetails: number;
     }>
   >({
     url: 'api/inventory/detail',

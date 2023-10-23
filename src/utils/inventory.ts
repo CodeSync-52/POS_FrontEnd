@@ -25,11 +25,11 @@ export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
     name: 'productCode',
     label: 'Product Code',
     align: 'left',
-    field: (row) => row.productCode,
+    field: (row) => row.productCode.split(',')[0] || '-',
   },
   {
     name: 'quantity',
-    label: 'Quantity',
+    label: 'Available Quantity',
     align: 'left',
     field: (row) => row.quantity,
   },

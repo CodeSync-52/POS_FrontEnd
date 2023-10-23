@@ -170,6 +170,7 @@
           unelevated
           :disable="isButtonDisabled"
           color="signature"
+          :loading="isPrintingBarcode"
           class="bg-btn-primary hover:bg-btn-primary-hover"
           @click="handleAddVariantDetails"
         />
@@ -213,7 +214,8 @@ const emit = defineEmits<{
       productLabel: string | null;
       productBarcode: string | null;
       quantity: number | null;
-    }
+    },
+    callback: () => void
   ): void;
 }>();
 
@@ -306,6 +308,7 @@ onMounted(() => {
   getVariantGroupList();
   optionsProduct.value = props.articleList;
 });
+const isPrintingBarcode = ref(false);
 const getSelectedVariantDetails = async (
   selectedVariantGroup: {
     status: string;
@@ -419,8 +422,13 @@ const filterFn = (val: string, update: any) => {
 };
 const handleAddVariantDetails = () => {
   selectedProduct.value.productBarcode = `${selectedProduct.value.productLabel}-${selectedDetailsData.value.firstVariantSelection?.displayName}-${selectedDetailsData.value.secondVariantSelection?.displayName}`;
+  isPrintingBarcode.value = true;
   setTimeout(() => {
-    emit('selected-custom', selectedProduct.value);
+    emit(
+      'selected-custom',
+      selectedProduct.value,
+      () => (isPrintingBarcode.value = false)
+    );
   }, 300);
 };
 
