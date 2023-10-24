@@ -21,11 +21,9 @@ export interface IInventoryListResponse {
   productId: number;
   productName: string;
   productImage: string;
+  inventoryId: number;
   productCode: string;
   variantId_1: number;
   variantId_2: number;
   quantity: number;
-}
-export interface IInventoryListResponseWithId extends IInventoryListResponse {
-  id: number;
 }
