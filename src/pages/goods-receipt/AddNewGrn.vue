@@ -2,10 +2,10 @@
   <div>
     <div class="mb-4 row justify-between items-center">
       <div class="text-xl text-center md:text-left font-medium">
-        <span>Add New Grn</span>
+        <span>Add New GRN</span>
       </div>
     </div>
-    <q-card>
+    <q-card flat>
       <q-card-section v-if="isSecondScreenVisible">
         <div class="flex justify-end mb-2">
           <q-btn
@@ -59,6 +59,24 @@
                   unelevated
                   color="red"
                   @click="handleRemoveSelectedInventory(props.row)"
+                />
+              </div>
+            </q-td>
+          </template>
+          <template v-slot:body-cell-productImage="props">
+            <q-td :props="props">
+              <div
+                @click="handlePreviewImage(props.row.productImage)"
+                class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
+                :class="props.row.productImage ? 'cursor-pointer' : ''"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  :src="
+                    getImageUrl(props.row.productImage) ||
+                    'assets/default-image.png'
+                  "
+                  alt="img"
                 />
               </div>
             </q-td>
@@ -122,6 +140,48 @@
               </template></q-select
             >
           </div>
+          <div class="col-12 col-sm-6">
+            <div class="text-base mb-1"><span>Filter by Product</span></div>
+            <q-select
+              popup-content-class="!max-h-[200px]"
+              class="min-w-[220px]"
+              @filter="filterProduct"
+              :options="articleList"
+              :loading="isFetchingArticleList"
+              use-input
+              dense
+              map-options
+              clearable
+              outlined
+              v-model="filterSearch.ProductId"
+              @update:model-value="filterSearch.ProductId = $event?.productId"
+              label="Select Product"
+              color="btn-primary"
+              option-label="name"
+              option-value="productId"
+              ><template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template></q-select
+            >
+          </div>
+          <div class="col-12 col-sm-6">
+            <div class="text-base mb-1">
+              <span>Filter by Product Code</span>
+            </div>
+            <q-input
+              v-model="filterSearch.ProductCode"
+              maxlength="250"
+              outlined
+              clearable
+              dense
+              color="btn-primary"
+              label="Product Code"
+            />
+          </div>
         </div>
         <div class="row items-center q-col-gutter-md">
           <div class="col-12">
@@ -149,15 +209,13 @@
         </div>
         <div v-if="isSelectedShopDetailTableVisible" class="w-full pt-4">
           <q-table
-            class="max-h-[500px]"
             :columns="selectedShopDetailRecordsColumn"
             @update:selected="handleChangeSelectedShopRecord"
-            :rows="filteredRows"
+            :rows="selectedShopDetailRecords"
             v-model:pagination="pagination"
             @request="inventoryDetailList"
-            row-key="id"
+            row-key="inventoryId"
             selection="multiple"
-            :filter="filter"
             v-model:selected="selectedShopRecords"
             align="left"
             :loading="isFetchingRecords"
@@ -167,31 +225,12 @@
                 <span class="text-md font-medium"> No data available.</span>
               </div>
             </template>
-            <template v-slot:top>
-              <div class="font-semibold text-lg">
-                <span>Inventory Records</span>
-              </div>
-              <q-space />
-              <q-input
-                outlined
-                dense
-                maxlength="250"
-                debounce="300"
-                color="btn-primary"
-                label="Name"
-                v-model="filter"
-              >
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-            </template>
             <template v-slot:body-cell-dispatchedQuantity="props">
               <q-td :props="props">
                 <q-input
                   v-if="
                     selectedInventoryPayload[
-                      `${props.row.id}-${props.row.productId}-${props.row.variantId_1}-${props.row.variantId_2}`
+                      `${props.row.inventoryId}-${props.row.productId}-${props.row.variantId_1}-${props.row.variantId_2}`
                     ]
                   "
                   type="number"
@@ -203,13 +242,13 @@
                   :max="props.row.quantity"
                   v-model="
                     selectedInventoryPayload[
-                      `${props.row.id}-${props.row.productId}-${props.row.variantId_1}-${props.row.variantId_2}`
+                      `${props.row.inventoryId}-${props.row.productId}-${props.row.variantId_1}-${props.row.variantId_2}`
                     ].quantity
                   "
                   @update:model-value="
                     handleUpdateQuantity(
                       $event,
-                      props.row.id,
+                      props.row.inventoryId,
                       props.row.quantity,
                       props.row.productId,
                       props.row.variantId_1,
@@ -266,19 +305,32 @@
         />
       </q-card-actions>
     </q-card>
+    <q-dialog v-model="isPreviewImageModalVisible">
+      <q-card class="max-w-[400px]">
+        <q-card-section>
+          <div class="min-w-[2rem]">
+            <img
+              class="w-full h-full object-cover"
+              :src="selectedPreviewImage"
+              alt="img"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import {
   EActionPermissions,
   EUserModules,
   IArticleData,
   IInventoryFilterSearch,
-  IInventoryListResponseWithId,
   IShopResponse,
   IGrnDetailsWithId,
+  IInventoryListResponse,
 } from 'src/interfaces';
 import {
   addGrnApi,
@@ -308,27 +360,33 @@ const selectedShopDetailRecordsColumn = InventoryListColumn.concat({
   align: 'left',
   field: (row) => row.quantity,
 });
-const selectedShopDetailRecords = ref<IInventoryListResponseWithId[]>([]);
+const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
-const selectedShopRecords = ref<IInventoryListResponseWithId[]>([]);
+const selectedShopRecords = ref<IInventoryListResponse[]>([]);
 const isSelectedShopDetailTableVisible = ref(false);
 const selectedPreviewImage = ref('');
-const filteredRows = ref<IInventoryListResponseWithId[]>([]);
-const filter = ref('');
+const isPreviewImageModalVisible = ref(false);
+const apiController = ref<AbortController | null>(null);
 const isSecondScreenVisible = ref(false);
 const isFetchingRecords = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedInventoryPayload = ref<Record<string, IGrnDetailsWithId>>({});
+
+onUnmounted(() => {
+  if (apiController.value) {
+    apiController.value.abort();
+  }
+});
 const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 1000,
+  rowsPerPage: 50,
   rowsNumber: 0,
 });
 const filterSearch = ref<IInventoryFilterSearch>({
@@ -352,26 +410,15 @@ onMounted(() => {
   };
   inventoryDetailList();
 });
-watch(filter, setFilteredData);
-watch(selectedShopDetailRecords, setFilteredData);
 const handleRemoveSelectedInventory = (selectedRowData: IGrnDetailsWithId) => {
-  const { id, productId, variantId_1, variantId_2 } = selectedRowData;
-  const key = `${id}-${productId}-${variantId_1}-${variantId_2}`;
+  const { inventoryId, productId, variantId_1, variantId_2 } = selectedRowData;
+  const key = `${inventoryId}-${productId}-${variantId_1}-${variantId_2}`;
   delete selectedInventoryPayload.value[key];
   const selectedRecordIndex = selectedShopRecords.value.findIndex(
-    (record) => record.id === id
+    (record) => record.inventoryId === inventoryId
   );
   selectedShopRecords.value.splice(selectedRecordIndex, 1);
 };
-function setFilteredData() {
-  filterChanged.value = true;
-  filteredRows.value = selectedShopDetailRecords.value.filter((row) =>
-    row.productName.toLowerCase().includes(filter.value.toLowerCase().trim())
-  );
-  setTimeout(() => {
-    filterChanged.value = false;
-  }, 200);
-}
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -383,22 +430,28 @@ const resetFilter = () => {
   };
   inventoryDetailList();
 };
-
+const filterProduct = (val: string, update: CallableFunction) => {
+  update(() => {
+    getArticleList(val);
+  });
+};
 const handleChangeSelectedShopRecord = (
-  selectedRecord: readonly IInventoryListResponseWithId[]
+  selectedRecord: readonly IInventoryListResponse[]
 ) => {
   const keysToDelete = Object.keys(selectedInventoryPayload.value);
   selectedRecord.forEach((record) => {
-    const key = `${record.id}-${record.productId}-${record.variantId_1}-${record.variantId_2}`;
+    const key = `${record.inventoryId}-${record.productId}-${record.variantId_1}-${record.variantId_2}`;
     if (keysToDelete.includes(key)) {
       keysToDelete.splice(keysToDelete.indexOf(key), 1);
     }
     if (selectedInventoryPayload.value[key] === undefined) {
       selectedInventoryPayload.value[key] = {
-        id: record.id,
+        inventoryId: record.inventoryId,
         productId: record.productId,
         variantId_1: record.variantId_1,
         variantId_2: record.variantId_2,
+        productName: record.productName,
+        productImage: record.productImage,
         quantity: 0,
       };
     }
@@ -410,6 +463,7 @@ const handleChangeSelectedShopRecord = (
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
     selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    isPreviewImageModalVisible.value = true;
   }
 };
 const getImageUrl = (base64Image: string) => {
@@ -419,13 +473,21 @@ const getImageUrl = (base64Image: string) => {
   return '';
 };
 const handleSaveNewGrn = async () => {
+  const selectedGrnDetailsPayload = ref<Record<string, IGrnDetailsWithId>>({});
+  selectedGrnDetailsPayload.value = JSON.parse(
+    JSON.stringify(selectedInventoryPayload.value)
+  );
   const payload = {
     fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
     toShopId: selectedShop.value.toShop?.shopId ?? -1,
-    grnDetails: Object.values(selectedInventoryPayload.value).map((records) => {
-      delete records.id;
-      return records;
-    }),
+    grnDetails: Object.values(selectedGrnDetailsPayload.value).map(
+      (records) => {
+        delete records.inventoryId;
+        delete records.productImage;
+        delete records.productName;
+        return records;
+      }
+    ),
   };
   isSavingNewGrn.value = true;
   try {
@@ -522,18 +584,22 @@ const inventoryDetailList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
-    const res = await inventoryDetailApi({
-      ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
-      PageNumber: pagination.value.page,
-      PageSize: pagination.value.rowsPerPage,
-      filterSearch: filterSearch.value,
-    });
+    if (isFetchingRecords.value && apiController.value) {
+      apiController.value.abort();
+      apiController.value = null;
+    }
+    apiController.value = new AbortController();
+    const res = await inventoryDetailApi(
+      {
+        ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+        PageNumber: pagination.value.page,
+        PageSize: pagination.value.rowsPerPage,
+        filterSearch: filterSearch.value,
+      },
+      apiController.value
+    );
     if (res.data) {
-      selectedShopDetailRecords.value = res.data.inventoryDetails.map(
-        (record, index) => {
-          return { ...record, id: index + 1 };
-        }
-      );
+      selectedShopDetailRecords.value = res.data.inventoryDetails;
       pagination.value.rowsNumber = res.data.totalCountInventoryDetails;
       isSelectedShopDetailTableVisible.value = true;
     }

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { QTableColumn } from 'quasar';
-import { IGrnRecords, IGrnDetails } from 'src/interfaces';
+import { IGrnRecords, IGrnDetailsWithId } from 'src/interfaces';
 
 export const GrnTableColumn: QTableColumn<IGrnRecords>[] = [
   {
@@ -39,23 +39,17 @@ export const GrnTableColumn: QTableColumn<IGrnRecords>[] = [
     field: (row) => moment(row.addedDate).format('DD-MM-YYYY'),
   },
 ];
-export const PreviewGrnTableColumn: QTableColumn<IGrnDetails>[] = [
+export const PreviewGrnTableColumn: QTableColumn<IGrnDetailsWithId>[] = [
   {
-    name: 'productId',
-    label: 'Product Id',
-    field: (row) => row.productId,
+    name: 'productImage',
+    label: 'Product Image',
+    field: (row) => row.productImage,
     align: 'left',
   },
   {
-    name: 'firstvariant',
-    label: 'First Variant',
-    field: (row) => row.variantId_1,
-    align: 'left',
-  },
-  {
-    name: 'secondVariant',
-    label: 'Second Variant',
-    field: (row) => row.variantId_2,
+    name: 'productName',
+    label: 'Product Name',
+    field: (row) => row.productName,
     align: 'left',
   },
   {
