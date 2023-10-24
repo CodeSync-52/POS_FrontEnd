@@ -16,7 +16,7 @@
         unelevated
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         color=""
-        @click="isAddGRNModalVisible = true"
+        to="/goods-receipt/add-new"
       />
     </div>
     <div
@@ -86,30 +86,24 @@
       </q-table>
     </div>
   </div>
-  <q-dialog v-model="isAddGRNModalVisible">
-    <add-new-grn @selected-inventory="handleSelectedinventory" />
-  </q-dialog>
 </template>
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import AddNewGrn from 'src/components/goods-receipt-notes/AddNewGrn.vue';
 import {
   EActionPermissions,
   EUserModules,
   IGrnListFilter,
   IGrnRecords,
   IPagination,
-  ISelectedPayload,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { addGrnApi, grnListApi } from 'src/services';
+import { grnListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { GrnTableColumn } from 'src/utils';
 import { onMounted, onUnmounted, ref } from 'vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.GoodsReceiptNotes);
-const isAddGRNModalVisible = ref(false);
 const $q = useQuasar();
 const GrnRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
@@ -180,31 +174,5 @@ const getGrnList = async (data?: {
     });
   }
   isLoading.value = false;
-};
-const handleSelectedinventory = async (
-  payload: ISelectedPayload,
-  callback: () => void
-) => {
-  try {
-    const res = await addGrnApi(payload);
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        type: 'positive',
-      });
-    }
-  } catch (e) {
-    let message = 'Unexpected error occurred adding Grn';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  }
-  callback();
-  isAddGRNModalVisible.value = false;
-  getGrnList();
 };
 </script>
