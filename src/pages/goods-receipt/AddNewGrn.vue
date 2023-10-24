@@ -7,7 +7,7 @@
     </div>
     <q-card>
       <q-card-section v-if="isSecondScreenVisible">
-        <div class="flex justify-end">
+        <div class="flex justify-end mb-2">
           <q-btn
             label="Add New"
             icon="add"
@@ -16,7 +16,6 @@
             @click="isSecondScreenVisible = false"
           />
         </div>
-        second screen
         <q-table
           :rows="Object.values(selectedInventoryPayload)"
           :columns="PreviewGrnTableColumn"
