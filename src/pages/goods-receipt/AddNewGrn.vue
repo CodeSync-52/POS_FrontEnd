@@ -7,7 +7,7 @@
     </div>
     <q-card>
       <q-card-section v-if="isSecondScreenVisible">
-        <div class="flex justify-end">
+        <div class="flex justify-end mb-2">
           <q-btn
             label="Add New"
             icon="add"
@@ -16,7 +16,6 @@
             @click="isSecondScreenVisible = false"
           />
         </div>
-        second screen
         <q-table
           :rows="Object.values(selectedInventoryPayload)"
           :columns="PreviewGrnTableColumn"
@@ -125,46 +124,6 @@
           </div>
         </div>
         <div class="row items-center q-col-gutter-md">
-          <!-- <div class="col-12 col-sm-6">
-            <div class="text-base mb-1"><span>Filter by Product</span></div>
-            <q-select
-              popup-content-class="!max-h-[200px]"
-              class="min-w-[220px]"
-              @filter="filterProduct"
-              :options="articleList"
-              :loading="isFetchingArticleList"
-              use-input
-              dense
-              map-options
-              outlined
-              v-model="filterSearch.ProductId"
-              @update:model-value="filterSearch.ProductId = $event.productId"
-              label="Select Product"
-              color="btn-primary"
-              option-label="name"
-              option-value="productId"
-              ><template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template></q-select
-            >
-          </div>
-          <div class="col-12 col-sm-6">
-            <div class="text-base mb-1">
-              <span>Filter by Product Code</span>
-            </div>
-            <q-input
-              v-model="filterSearch.ProductCode"
-              maxlength="250"
-              outlined
-              dense
-              color="btn-primary"
-              label="Product Code"
-            />
-          </div> -->
           <div class="col-12">
             <div
               class="flex justify-center md:justify-end w-full items-end h-full gap-2"
@@ -189,7 +148,6 @@
           </div>
         </div>
         <div v-if="isSelectedShopDetailTableVisible" class="w-full pt-4">
-          {{ selectedShopRecords }}
           <q-table
             class="max-h-[500px]"
             :columns="selectedShopDetailRecordsColumn"
