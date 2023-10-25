@@ -31,8 +31,10 @@
         map-options
         outlined
         :disable="
-          authStore.loggedInUser?.rolePermissions.roleName !== 'superadmin' &&
-          authStore.loggedInUser?.rolePermissions.roleName !== 'admin'
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.SuperAdmin.toLowerCase() &&
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.Admin.toLowerCase()
         "
         v-model="selectedShop.fromShop"
         @update:model-value="handleUpdateFromShop($event)"
@@ -210,6 +212,7 @@ import {
   IPagination,
   getRoleModuleDisplayName,
   IShopResponse,
+  EUserRoles,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
 import {
@@ -285,8 +288,11 @@ const resetFilter = () => {
       address: '',
       code: '',
     },
+    toShop: null,
   };
-  filterSearch.value.FromShop = selectedShop.value.fromShop.shopId;
+  if (selectedShop.value.fromShop) {
+    filterSearch.value.FromShop = selectedShop.value.fromShop?.shopId;
+  }
   getGrnList();
 };
 onMounted(() => {
@@ -360,11 +366,11 @@ const shopOptionRecords = computed(() => {
   }
   return shopData.value;
 });
-const handleUpdateToShop = (newVal) => {
+const handleUpdateToShop = (newVal: IShopResponse) => {
   selectedShop.value.toShop = newVal;
   filterSearch.value.ToShop = newVal?.shopId;
 };
-const handleUpdateFromShop = (newVal) => {
+const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShop = newVal;
   filterSearch.value.FromShop = newVal?.shopId;
 };
