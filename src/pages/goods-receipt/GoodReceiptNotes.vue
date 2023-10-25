@@ -22,6 +22,55 @@
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
+      <q-select
+        popup-content-class="!max-h-[200px]"
+        :options="shopOptionRecords"
+        :loading="isLoading"
+        use-input
+        class="min-w-[220px] max-w-[220px]"
+        dense
+        map-options
+        outlined
+        :disable="
+          authStore.loggedInUser.rolePermissions.roleName !== 'superadmin' &&
+          authStore.loggedInUser.rolePermissions.roleName !== 'admin'
+        "
+        v-model="selectedShop.fromShop"
+        @update:model-value="handleUpdateFromShop($event)"
+        label="Select Shop"
+        color="btn-primary"
+        option-label="name"
+        option-value="shopId"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template></q-select
+      >
+      <q-select
+        popup-content-class="!max-h-[200px]"
+        :options="shopOptionRecords"
+        :loading="isLoading"
+        use-input
+        dense
+        class="min-w-[220px] max-w-[220px]"
+        clearable
+        map-options
+        outlined
+        v-model="selectedShop.toShop"
+        @update:model-value="handleUpdateToShop($event)"
+        label="Select Shop"
+        color="btn-primary"
+        option-label="name"
+        option-value="shopId"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template></q-select
+      >
       <q-input
         v-model="filterSearch.FromDate"
         label="From"
@@ -83,33 +132,100 @@
             <span class="text-md font-medium"> No data available. </span>
           </div>
         </template>
+        <template
+          v-slot:header-cell-action
+          v-if="
+            authStore.loggedInUser?.rolePermissions.roleName !== 'superadmin' &&
+            authStore.loggedInUser?.rolePermissions.roleName !== 'admin'
+          "
+        >
+          <q-th></q-th>
+        </template>
+        <template
+          v-if="
+            authStore.loggedInUser?.rolePermissions.roleName === 'superadmin' ||
+            authStore.loggedInUser?.rolePermissions.roleName === 'admin'
+          "
+          v-slot:body-cell-action="props"
+        >
+          <q-td class="flex justify-start" :props="props">
+            <div
+              v-if="
+                props.row.grnStatus !== 'Accept' &&
+                props.row.grnStatus !== 'Reject'
+              "
+              class="flex gap-2 flex-nowrap"
+            >
+              <q-btn
+                flat
+                unelevated
+                dense
+                size="sm"
+                icon="check"
+                color="green"
+                @click="handleAcceptOrRejectStrPopup(props.row, false)"
+              />
+              <q-btn
+                flat
+                unelevated
+                dense
+                size="sm"
+                icon="cancel"
+                color="red"
+                @click="handleAcceptOrRejectStrPopup(props.row, true)"
+              />
+            </div>
+          </q-td>
+        </template>
       </q-table>
     </div>
+    <q-dialog v-model="isAcceptOrRejectStrModalVisible">
+      <accept-or-reject-str-modal
+        :is-reject="isReject"
+        @reject-str="handleRejectStr"
+        @accept-str="handleAcceptStr"
+      />
+    </q-dialog>
   </div>
 </template>
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { useQuasar, date } from 'quasar';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import {
   EActionPermissions,
   EUserModules,
   IGrnListFilter,
   IGrnRecords,
   IPagination,
+  IShopResponse,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { grnListApi } from 'src/services';
+import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
+import {
+  grnListApi,
+  shopListApi,
+  acceptStrApi,
+  rejectStrApi,
+} from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { GrnTableColumn } from 'src/utils';
-import { onMounted, onUnmounted, ref } from 'vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.GoodsReceiptNotes);
 const $q = useQuasar();
 const GrnRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
+const shopData = ref<IShopResponse[]>([]);
+const ShopOptionData = ref<IShopResponse[]>([]);
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filterSearch = ref<IGrnListFilter>({
-  FromDate: null,
-  ToDate: null,
+  FromDate: formattedFromDate,
+  ToDate: formattedToDate,
+  FromShop: null,
+  ToShop: null,
 });
 const pagination = ref<IPagination>({
   sortBy: 'desc',
@@ -118,7 +234,17 @@ const pagination = ref<IPagination>({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const selectedShop = ref<{
+  fromShop: IShopResponse | null;
+  toShop: IShopResponse | null;
+}>({
+  fromShop: null,
+  toShop: null,
+});
 const apiController = ref<AbortController | null>(null);
+const selectedRowData = ref<IGrnRecords | null>(null);
+const isAcceptOrRejectStrModalVisible = ref(false);
+const isReject = ref(false);
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -126,10 +252,37 @@ const resetFilter = () => {
   filterSearch.value = {
     ToDate: null,
     FromDate: null,
+    ToShop: null,
+    FromShop: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+  };
+  selectedShop.value = {
+    toShop: null,
+    fromShop: {
+      shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+      closingBalance: 0,
+      status: '',
+      isWareHouse: '',
+      name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
+      phone: '',
+      address: '',
+      code: '',
+    },
   };
   getGrnList();
 };
 onMounted(() => {
+  getShopList();
+  selectedShop.value.fromShop = {
+    shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    closingBalance: 0,
+    status: '',
+    isWareHouse: '',
+    name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
+    phone: '',
+    address: '',
+    code: '',
+  };
+  filterSearch.value.FromShop = selectedShop.value.fromShop.shopId;
   getGrnList();
 }),
   onUnmounted(() => {
@@ -137,6 +290,36 @@ onMounted(() => {
       apiController.value.abort();
     }
   });
+const handleAcceptOrRejectStrPopup = (
+  selectedRow: IGrnRecords,
+  isRejected: boolean
+) => {
+  isReject.value = isRejected;
+  selectedRowData.value = selectedRow;
+  isAcceptOrRejectStrModalVisible.value = true;
+};
+const shopOptionRecords = computed(() => {
+  let idList: number[] = [];
+  if (selectedShop.value.fromShop) {
+    idList.push(selectedShop.value.fromShop.shopId);
+  }
+  if (selectedShop.value.toShop) {
+    idList.push(selectedShop.value.toShop.shopId);
+  }
+  if (idList.length > 0) {
+    return shopData.value.filter((shop) => !idList.includes(shop.shopId));
+  }
+  return shopData.value;
+});
+const handleUpdateToShop = (newVal) => {
+  selectedShop.value.toShop = newVal;
+  filterSearch.value.ToShop = newVal?.shopId;
+};
+const handleUpdateFromShop = (newVal) => {
+  selectedShop.value.fromShop = newVal;
+  filterSearch.value.FromShop = newVal?.shopId;
+};
+
 const getGrnList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
@@ -174,5 +357,82 @@ const getGrnList = async (data?: {
     });
   }
   isLoading.value = false;
+};
+const getShopList = async () => {
+  isLoading.value = true;
+  try {
+    const response = await shopListApi({
+      PageNumber: 1,
+      PageSize: 200,
+    });
+    if (response.data) {
+      shopData.value = response.data.items;
+      ShopOptionData.value = response.data.items;
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+const handleRejectStr = async (reason: string, callback: () => void) => {
+  try {
+    const res = await rejectStrApi({
+      grnId: selectedRowData.value?.grnId ?? -1,
+      reason,
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        type: 'positive',
+        message: res.message,
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.grnStatus = 'Reject';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected error occurred rejecting Str';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
+  }
+  callback();
+  isAcceptOrRejectStrModalVisible.value = false;
+};
+const handleAcceptStr = async (callback: () => void) => {
+  try {
+    const res = await acceptStrApi(selectedRowData.value?.grnId ?? -1);
+    if (res.type === 'Success') {
+      $q.notify({
+        type: 'positive',
+        message: res.message,
+      });
+      if (selectedRowData.value) {
+        selectedRowData.value.grnStatus = 'Accept';
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected error occurred accepting Str';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
+  }
+  callback();
+  isAcceptOrRejectStrModalVisible.value = false;
 };
 </script>

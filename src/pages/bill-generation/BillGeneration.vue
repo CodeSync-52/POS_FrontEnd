@@ -319,11 +319,11 @@ const isCancelOrGenerateBillModalVisible = ref(false);
 const selectedRowData = ref<IBillGenerationData | null>(null);
 const apiController = ref<AbortController | null>(null);
 const timeStamp = Date.now();
-const isCustomerGroupListLoading = ref(false);
-const customerGroupList = ref<ICustomerListResponse[]>([]);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
+const isCustomerGroupListLoading = ref(false);
+const customerGroupList = ref<ICustomerListResponse[]>([]);
 const filterSearch = ref<IBillGenerationFilter>({
   userId: null,
   userName: null,
