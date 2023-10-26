@@ -1,23 +1,41 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:items-center justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
     >
       <span class="text-lg font-medium">{{ pageTitle }}</span>
-      <q-btn
-        v-if="
-          authStore.checkUserHasPermission(
-            EUserModules.InventoryManagement,
-            EActionPermissions.Create
-          )
-        "
-        label="Add New"
-        icon="add"
-        unelevated
-        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
-        color=""
-        @click="router.push('/inventory/add-new')"
-      />
+      <div
+        class="flex flex-col items-center justify-center md:flex-row q-gutter-sm"
+      >
+        <q-btn
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.InventoryManagement,
+              EActionPermissions.Create
+            )
+          "
+          label="Add Custom Barcode"
+          icon="add"
+          unelevated
+          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+          color=""
+          to="/inventory/add-custom"
+        />
+        <q-btn
+          v-if="
+            authStore.checkUserHasPermission(
+              EUserModules.InventoryManagement,
+              EActionPermissions.Create
+            )
+          "
+          label="Add New"
+          icon="add"
+          unelevated
+          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+          color=""
+          to="/inventory/add-new"
+        />
+      </div>
     </div>
     <div
       class="row flex md:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -139,6 +157,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
@@ -153,10 +172,7 @@ import { articleListApi, inventoryDetailApi, shopListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
-const router = useRouter();
 const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const InventoryListRecords = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
@@ -190,7 +206,7 @@ const resetFilter = () => {
   filterSearch.value = {
     ProductId: null,
     ProductCode: null,
-    ShopId: null,
+    ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
   };
   getInventoryList();
 };

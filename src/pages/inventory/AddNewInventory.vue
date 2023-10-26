@@ -248,6 +248,9 @@
 </template>
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import JsBarcode from 'jsbarcode';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import SelectVariantModal from 'src/components/inventory/SelectVariantModal.vue';
 import CustomLabel from 'src/components/inventory/CustomLabel.vue';
@@ -262,8 +265,7 @@ import {
 } from 'src/interfaces';
 import { addInventoryApi, articleListApi } from 'src/services';
 import { isPosError } from 'src/utils';
-import { computed, onMounted, ref } from 'vue';
-import JsBarcode from 'jsbarcode';
+const router = useRouter();
 const isSelectionSingle = ref(true);
 const isFilterChanged = ref(false);
 const authStore = useAuthStore();
@@ -309,7 +311,11 @@ window.addEventListener('keypress', function (e) {
 });
 const isPrintBarcodeButtonVisible = ref(false);
 onMounted(() => {
-  isArticleListModalVisible.value = true;
+  if (router.currentRoute.value.fullPath.includes('add-custom')) {
+    isCustomLabelModalVisible.value = true;
+  } else {
+    isArticleListModalVisible.value = true;
+  }
   getArticleList();
 });
 const handleAddArticle = () => {
