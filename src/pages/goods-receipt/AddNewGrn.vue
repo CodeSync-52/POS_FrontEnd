@@ -342,6 +342,12 @@ const selectedInventoryData = ref<IInventoryListResponseWithDispatchQuantity[]>(
 );
 const handleSelectedData = (payload: IInventoryListResponse[]) => {
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
+  const filteredOldIdList = oldIdList.filter((oldId) =>
+    payload.map((record) => record.inventoryId).includes(oldId)
+  );
+  selectedInventoryData.value = selectedInventoryData.value.filter((item) =>
+    filteredOldIdList.includes(item.inventoryId)
+  );
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
       selectedInventoryData.value.push({ ...item, dispatchQuantity: 0 });
