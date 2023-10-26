@@ -52,13 +52,19 @@
                   >
                   <div class="w-8 h-8 rounded-full overflow-hidden">
                     <img
-                      class="h-full object-cover"
+                      class="w-full h-full object-cover"
                       :src="
                         getImageUrl(product.productImage) ||
                         'assets/default-image.png'
                       "
                       alt="img"
                     />
+                  </div>
+                  <div class="ml-1">
+                    <span>Available Stock:</span>
+                    <span class="font-semibold">
+                      {{ product.masterStock }}
+                    </span>
                   </div>
                 </div>
               </th>
@@ -283,6 +289,7 @@ const rowColumnData = ref<
     productId: number | null;
     productName: string | null;
     productImage: string | null;
+    masterStock: number;
   }[]
 >([]);
 
@@ -472,7 +479,8 @@ const handleSelectedVariant = (
   },
   productId: number,
   productName: string,
-  productImage: string
+  productImage: string,
+  masterStock: number
 ) => {
   if (showBarcodeScreen.value) {
     selectedInventoryPayload.value = {};
@@ -486,6 +494,7 @@ const handleSelectedVariant = (
       productId,
       productName,
       productImage,
+      masterStock,
     },
   ];
   setProductKeys();

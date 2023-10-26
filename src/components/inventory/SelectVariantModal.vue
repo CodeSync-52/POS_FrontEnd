@@ -191,7 +191,8 @@ const emit = defineEmits<{
     },
     productId: number,
     productName: string,
-    productImage: string | null
+    productImage: string | null,
+    masterStock: number
   ): void;
 }>();
 
@@ -381,7 +382,8 @@ const handleAddVariantDetails = () => {
       selectedDetailsData.value,
       selectedArticle.productId,
       selectedArticle.productName ?? '',
-      selectedArticle.productImage
+      selectedArticle.productImage,
+      selectedArticle.masterStock
     );
   }, 300);
 };
