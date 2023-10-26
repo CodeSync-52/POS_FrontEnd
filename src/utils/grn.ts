@@ -59,8 +59,14 @@ export const PreviewGrnTableColumn: QTableColumn<IGrnDetailsWithId>[] = [
     align: 'left',
   },
   {
-    name: 'dispatchedQuantity',
-    label: 'Dispatched Quantity',
+    name: 'availableQuantity',
+    label: 'Available Quantity',
+    field: (row) => row.quantity,
+    align: 'left',
+  },
+  {
+    name: 'dispatchQuantity',
+    label: 'Dispatch Quantity',
     field: (row) => row.quantity,
     align: 'left',
   },

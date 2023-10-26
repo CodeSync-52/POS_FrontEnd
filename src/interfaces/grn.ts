@@ -19,8 +19,8 @@ export interface IGrnDetailsWithId {
   productImage?: string;
 }
 export interface IGrnListFilter {
-  ToDate: number | null;
-  FromDate: number | null;
+  ToDate: string | null;
+  FromDate: string | null;
   FromShop: null | number;
   ToShop: null | number;
 }

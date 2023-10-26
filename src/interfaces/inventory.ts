@@ -27,3 +27,7 @@ export interface IInventoryListResponse {
   variantId_2: number;
   quantity: number;
 }
+export interface IInventoryListResponseWithDispatchQuantity
+  extends IInventoryListResponse {
+  dispatchQuantity: number;
+}

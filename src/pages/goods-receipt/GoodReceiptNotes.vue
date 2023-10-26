@@ -32,8 +32,10 @@
         map-options
         outlined
         :disable="
-          authStore.loggedInUser.rolePermissions.roleName !== 'superadmin' &&
-          authStore.loggedInUser.rolePermissions.roleName !== 'admin'
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.SuperAdmin.toLowerCase() &&
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.Admin.toLowerCase()
         "
         v-model="selectedShop.fromShop"
         @update:model-value="handleUpdateFromShop($event)"
@@ -135,16 +137,20 @@
         <template
           v-slot:header-cell-action
           v-if="
-            authStore.loggedInUser?.rolePermissions.roleName !== 'superadmin' &&
-            authStore.loggedInUser?.rolePermissions.roleName !== 'admin'
+            authStore.loggedInUser?.rolePermissions.roleName !==
+              EUserRoles.SuperAdmin.toLowerCase() &&
+            authStore.loggedInUser?.rolePermissions.roleName !==
+              EUserRoles.Admin.toLowerCase()
           "
         >
           <q-th></q-th>
         </template>
         <template
           v-if="
-            authStore.loggedInUser?.rolePermissions.roleName === 'superadmin' ||
-            authStore.loggedInUser?.rolePermissions.roleName === 'admin'
+            authStore.loggedInUser?.rolePermissions.roleName ===
+              EUserRoles.SuperAdmin.toLowerCase() ||
+            authStore.loggedInUser?.rolePermissions.roleName ===
+              EUserRoles.Admin.toLowerCase()
           "
           v-slot:body-cell-action="props"
         >
@@ -194,6 +200,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import {
   EActionPermissions,
   EUserModules,
+  EUserRoles,
   IGrnListFilter,
   IGrnRecords,
   IPagination,
@@ -311,11 +318,11 @@ const shopOptionRecords = computed(() => {
   }
   return shopData.value;
 });
-const handleUpdateToShop = (newVal) => {
+const handleUpdateToShop = (newVal: IShopResponse) => {
   selectedShop.value.toShop = newVal;
   filterSearch.value.ToShop = newVal?.shopId;
 };
-const handleUpdateFromShop = (newVal) => {
+const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShop = newVal;
   filterSearch.value.FromShop = newVal?.shopId;
 };
