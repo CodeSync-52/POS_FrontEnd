@@ -39,7 +39,7 @@
         "
         v-model="selectedShop.fromShop"
         @update:model-value="handleUpdateFromShop($event)"
-        label="Select Shop"
+        label="From Shop"
         color="btn-primary"
         option-label="name"
         option-value="shopId"
@@ -62,7 +62,7 @@
         outlined
         v-model="selectedShop.toShop"
         @update:model-value="handleUpdateToShop($event)"
-        label="Select Shop"
+        label="To Shop"
         color="btn-primary"
         option-label="name"
         option-value="shopId"
@@ -167,18 +167,18 @@
                 unelevated
                 dense
                 size="sm"
-                icon="check"
-                color="green"
-                @click="handleAcceptOrRejectStrPopup(props.row, false)"
+                icon="cancel"
+                color="red"
+                @click="handleRejectStrPopup(props.row)"
               />
               <q-btn
                 flat
                 unelevated
                 dense
                 size="sm"
-                icon="cancel"
-                color="red"
-                @click="handleAcceptOrRejectStrPopup(props.row, true)"
+                icon="visibility"
+                color="green"
+                @click="handlePreviewGrn(props.row.grnId)"
               />
             </div>
           </q-td>
@@ -187,10 +187,12 @@
     </div>
     <q-dialog v-model="isAcceptOrRejectStrModalVisible">
       <accept-or-reject-str-modal
-        :is-reject="isReject"
+        :is-reject="true"
         @reject-str="handleRejectStr"
-        @accept-str="handleAcceptStr"
       />
+    </q-dialog>
+    <q-dialog v-model="isPreviewStrModalVisible">
+      <str-preview-modal :preview-data="previewResponseData" />
     </q-dialog>
   </div>
 </template>
@@ -206,13 +208,15 @@ import {
   IPagination,
   IShopResponse,
   getRoleModuleDisplayName,
+  IGrnPreviewResponse,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
+import StrPreviewModal from 'src/components/str/StrPreview.vue';
 import {
   grnListApi,
   shopListApi,
-  acceptStrApi,
   rejectStrApi,
+  viewGrnApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -224,6 +228,17 @@ const GrnRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
+const previewResponseData = ref<IGrnPreviewResponse>({
+  grnId: 0,
+  fromShopId: 0,
+  toShopId: 0,
+  fromShopName: '',
+  toShopName: '',
+  quantity: 0,
+  grnStatus: '',
+  addedDate: '',
+  grnDetails: [],
+});
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
@@ -251,7 +266,7 @@ const selectedShop = ref<{
 const apiController = ref<AbortController | null>(null);
 const selectedRowData = ref<IGrnRecords | null>(null);
 const isAcceptOrRejectStrModalVisible = ref(false);
-const isReject = ref(false);
+const isPreviewStrModalVisible = ref(false);
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -297,11 +312,7 @@ onMounted(() => {
       apiController.value.abort();
     }
   });
-const handleAcceptOrRejectStrPopup = (
-  selectedRow: IGrnRecords,
-  isRejected: boolean
-) => {
-  isReject.value = isRejected;
+const handleRejectStrPopup = (selectedRow: IGrnRecords) => {
   selectedRowData.value = selectedRow;
   isAcceptOrRejectStrModalVisible.value = true;
 };
@@ -417,20 +428,15 @@ const handleRejectStr = async (reason: string, callback: () => void) => {
   callback();
   isAcceptOrRejectStrModalVisible.value = false;
 };
-const handleAcceptStr = async (callback: () => void) => {
+const handlePreviewGrn = async (selectedRowId: number) => {
   try {
-    const res = await acceptStrApi(selectedRowData.value?.grnId ?? -1);
+    const res = await viewGrnApi(selectedRowId);
+    previewResponseData.value = res.data;
     if (res.type === 'Success') {
-      $q.notify({
-        type: 'positive',
-        message: res.message,
-      });
-      if (selectedRowData.value) {
-        selectedRowData.value.grnStatus = 'Accept';
-      }
+      isPreviewStrModalVisible.value = true;
     }
   } catch (e) {
-    let message = 'Unexpected error occurred accepting Str';
+    let message = 'Unexpected error occurred Preview Grn';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -439,7 +445,5 @@ const handleAcceptStr = async (callback: () => void) => {
       message,
     });
   }
-  callback();
-  isAcceptOrRejectStrModalVisible.value = false;
 };
 </script>

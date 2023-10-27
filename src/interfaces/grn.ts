@@ -34,3 +34,26 @@ export interface IGrnRecords {
   grnStatus: string;
   addedDate: string;
 }
+
+export interface IGrnPreviewResponse {
+  grnId: number;
+  fromShopId: number;
+  toShopId: number;
+  fromShopName: string;
+  toShopName: string;
+  quantity: number;
+  grnStatus: string;
+  addedDate: string;
+  grnDetails: IPreviewGrnDetail[];
+}
+
+export interface IPreviewGrnDetail {
+  productName: string;
+  productImage: string;
+  variant_1_Name: string;
+  variant_2_Name: string;
+  productId: number;
+  variantId_1: number;
+  variantId_2: number;
+  quantity: number;
+}

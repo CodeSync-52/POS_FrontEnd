@@ -3,6 +3,7 @@ import {
   IGrnListFilter,
   IGrnRecords,
   ISelectedPayload,
+  IGrnPreviewResponse,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -12,6 +13,17 @@ export const addGrnApi = async (payload: ISelectedPayload) => {
     method: 'POST',
     data: {
       ...payload,
+    },
+  });
+  return res;
+};
+
+export const viewGrnApi = async (grnId: number) => {
+  const res = await makeApiCall<IGenericResponse<IGrnPreviewResponse>>({
+    url: 'api/grn/detail',
+    method: 'GET',
+    params: {
+      grnId,
     },
   });
   return res;
