@@ -17,38 +17,9 @@
         dense
         map-options
         outlined
-        :disable="
-          authStore.loggedInUser?.rolePermissions.roleName !==
-            EUserRoles.SuperAdmin.toLowerCase() &&
-          authStore.loggedInUser?.rolePermissions.roleName !==
-            EUserRoles.Admin.toLowerCase()
-        "
         v-model="selectedShop.fromShop"
         @update:model-value="handleUpdateFromShop($event)"
         label="From Shop"
-        color="btn-primary"
-        option-label="name"
-        option-value="shopId"
-      >
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section class="text-grey"> No results </q-item-section>
-          </q-item>
-        </template></q-select
-      >
-      <q-select
-        popup-content-class="!max-h-[200px]"
-        :options="shopOptionRecords"
-        :loading="isLoading"
-        use-input
-        dense
-        class="min-w-[220px] max-w-[220px]"
-        clearable
-        map-options
-        outlined
-        v-model="selectedShop.toShop"
-        @update:model-value="handleUpdateToShop($event)"
-        label="To Shop"
         color="btn-primary"
         option-label="name"
         option-value="shopId"
@@ -199,7 +170,6 @@ import {
   IPagination,
   getRoleModuleDisplayName,
   IShopResponse,
-  EUserRoles,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
 import {
@@ -353,10 +323,7 @@ const shopOptionRecords = computed(() => {
   }
   return shopData.value;
 });
-const handleUpdateToShop = (newVal: IShopResponse) => {
-  selectedShop.value.toShop = newVal;
-  filterSearch.value.ToShop = newVal?.shopId;
-};
+
 const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShop = newVal;
   filterSearch.value.FromShop = newVal?.shopId;
