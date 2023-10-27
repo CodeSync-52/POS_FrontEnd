@@ -18,6 +18,9 @@ export interface ISelectedArticle {
   productName?: string;
   productImage: string | null;
 }
+export interface ISelectedArticleWithMasterStock extends ISelectedArticle {
+  masterStock: number;
+}
 export interface IArticleInfo {
   categoryName: string;
   categoryId: number;

@@ -123,34 +123,7 @@
                 />
               </q-td>
             </template>
-            <template
-              v-if="
-                !authStore.checkUserHasPermission(
-                  EUserModules.GoodsReceiptNotes,
-                  EActionPermissions.Update
-                ) ||
-                !authStore.checkUserHasPermission(
-                  EUserModules.GoodsReceiptNotes,
-                  EActionPermissions.Update
-                )
-              "
-              v-slot:header-cell-action
-            >
-              <q-th> </q-th>
-            </template>
-            <template
-              v-slot:body-cell-action="props"
-              v-if="
-                authStore.checkUserHasPermission(
-                  EUserModules.GoodsReceiptNotes,
-                  EActionPermissions.Update
-                ) &&
-                authStore.checkUserHasPermission(
-                  EUserModules.GoodsReceiptNotes,
-                  EActionPermissions.Update
-                )
-              "
-            >
+            <template v-slot:body-cell-action="props">
               <q-td :props="props">
                 <div>
                   <q-btn
@@ -216,8 +189,6 @@
 import { ref, onMounted, computed, onUnmounted } from 'vue';
 import InventoryListModal from 'src/components/inventory/InventoryListModal.vue';
 import {
-  EActionPermissions,
-  EUserModules,
   IArticleData,
   IInventoryFilterSearch,
   IShopResponse,
