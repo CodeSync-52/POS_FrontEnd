@@ -39,7 +39,7 @@
         "
         v-model="selectedShop.fromShop"
         @update:model-value="handleUpdateFromShop($event)"
-        label="Select Shop"
+        label="From Shop"
         color="btn-primary"
         option-label="name"
         option-value="shopId"
@@ -62,7 +62,7 @@
         outlined
         v-model="selectedShop.toShop"
         @update:model-value="handleUpdateToShop($event)"
-        label="Select Shop"
+        label="To Shop"
         color="btn-primary"
         option-label="name"
         option-value="shopId"
