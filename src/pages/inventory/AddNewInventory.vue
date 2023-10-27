@@ -25,8 +25,12 @@
       </div>
     </div>
     <div v-if="!showBarcodeScreen">
-      <div v-for="(product, productIndex) in rowColumnData" :key="productIndex">
-        <div class="row justify-between mb-2 items-center">
+      <div
+        class="flex flex-col gap-2"
+        v-for="(product, productIndex) in rowColumnData"
+        :key="productIndex"
+      >
+        <div class="row justify-between items-center">
           <span
             >Product Id:
             <span class="font-semibold">{{ product.productId }}</span></span
@@ -39,7 +43,7 @@
             @click="handleRemoveProduct(product)"
           />
         </div>
-        <q-markup-table class="q-mb-md">
+        <q-markup-table class="">
           <thead align="left">
             <tr>
               <th>
@@ -52,13 +56,19 @@
                   >
                   <div class="w-8 h-8 rounded-full overflow-hidden">
                     <img
-                      class="h-full object-cover"
+                      class="w-full h-full object-cover"
                       :src="
                         getImageUrl(product.productImage) ||
                         'assets/default-image.png'
                       "
                       alt="img"
                     />
+                  </div>
+                  <div class="ml-1">
+                    <span>Available Stock:</span>
+                    <span class="font-semibold">
+                      {{ product.masterStock }}
+                    </span>
                   </div>
                 </div>
               </th>
@@ -109,6 +119,15 @@
             </tr>
           </tbody>
         </q-markup-table>
+        <span class="text-xm font-medium text-[#f60707fb]">
+          {{
+            getStockMessage(
+              selectedInventoryPayload,
+              product.productId,
+              product.masterStock
+            )
+          }}</span
+        >
       </div>
       <div
         v-if="rowColumnData.length"
@@ -119,7 +138,7 @@
           :loading="isPrintingBarcode"
           label="Save"
           unelevated
-          :disable="isSaveButtonDisable"
+          :disable="isSaveButtonDisable || InValidStock"
           color="btn-primary"
         />
       </div>
@@ -283,6 +302,7 @@ const rowColumnData = ref<
     productId: number | null;
     productName: string | null;
     productImage: string | null;
+    masterStock: number;
   }[]
 >([]);
 
@@ -303,6 +323,7 @@ const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
 const isPrintingBarcode = ref(false);
 const $q = useQuasar();
+const InValidStock = ref(false);
 const selectedProductBarcodes = ref<{ productCode: string }[]>([]);
 window.addEventListener('keypress', function (e) {
   if (e.key === 'n' || e.key === 'N') {
@@ -402,6 +423,23 @@ const getArticleList = async (data?: {
   }
   isFetchingArticleList.value = false;
 };
+
+function getStockMessage(
+  selectedInventoryPayload: any,
+  productId: number | null,
+  masterStock: number
+) {
+  const totalStock = Object.keys(selectedInventoryPayload)
+    .filter((key) => key.split('-')[0] === productId?.toString())
+    .reduce(
+      (total, key) => total + selectedInventoryPayload[key].stockQuantity,
+      0
+    );
+  InValidStock.value = totalStock > masterStock;
+  return totalStock > masterStock
+    ? 'Meaningful Stock cannot be larger than Available Stock'
+    : '';
+}
 const selectedData = (
   payload: {
     productId: number;
@@ -425,6 +463,7 @@ const selectedData = (
     }
   }
 };
+
 const handleUpdateQuantity = (
   newVal: string | number | null,
   productId: number | null,
@@ -437,6 +476,7 @@ const handleUpdateQuantity = (
       selectedInventoryPayload.value[
         `${productId}-${firstVariantId}-${secondVariantId}`
       ].stockQuantity = val;
+      console.log(selectedInventoryPayload.value);
     } else if (val < 0 || !val) {
       selectedInventoryPayload.value[
         `${productId}-${firstVariantId}-${secondVariantId}`
@@ -472,7 +512,8 @@ const handleSelectedVariant = (
   },
   productId: number,
   productName: string,
-  productImage: string
+  productImage: string,
+  masterStock: number
 ) => {
   if (showBarcodeScreen.value) {
     selectedInventoryPayload.value = {};
@@ -486,6 +527,7 @@ const handleSelectedVariant = (
       productId,
       productName,
       productImage,
+      masterStock,
     },
   ];
   setProductKeys();
