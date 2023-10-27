@@ -80,7 +80,7 @@
         <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
           <q-table
             :rows="selectedInventoryData"
-            :columns="PreviewGrnTableColumn"
+            :columns="selectedGrnInventoryTableColumn"
           >
             <template v-slot:no-data>
               <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
@@ -233,7 +233,7 @@ import {
 } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
-import { PreviewGrnTableColumn } from 'src/utils/grn';
+import { selectedGrnInventoryTableColumn } from 'src/utils/grn';
 import { useAuthStore } from 'src/stores';
 import { useRouter } from 'vue-router';
 const selectedShop = ref<{
