@@ -278,7 +278,7 @@ import {
   IArticleData,
   IPagination,
   IProductWithVariantDTOs,
-  ISelectedArticle,
+  ISelectedArticleWithMasterStock,
   ISelectedArticleData,
   IVariantDetailsData,
 } from 'src/interfaces';
@@ -292,7 +292,7 @@ const isFetchingArticleList = ref(false);
 const isPrintingBarcodeScreenVisible = ref(false);
 const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
-const selectedArticle = ref<ISelectedArticle[]>([]);
+const selectedArticle = ref<ISelectedArticleWithMasterStock[]>([]);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const showfirstBarcodePreview = ref(true);
 const rowColumnData = ref<
@@ -445,6 +445,7 @@ const selectedData = (
     productId: number;
     productName?: string;
     productImage: string | null;
+    masterStock: number;
   }[]
 ) => {
   if (payload.length > 1) {
@@ -476,7 +477,6 @@ const handleUpdateQuantity = (
       selectedInventoryPayload.value[
         `${productId}-${firstVariantId}-${secondVariantId}`
       ].stockQuantity = val;
-      console.log(selectedInventoryPayload.value);
     } else if (val < 0 || !val) {
       selectedInventoryPayload.value[
         `${productId}-${firstVariantId}-${secondVariantId}`
