@@ -167,18 +167,9 @@
                 unelevated
                 dense
                 size="sm"
-                icon="check"
-                color="green"
-                @click="handleAcceptOrRejectStrPopup(props.row, false)"
-              />
-              <q-btn
-                flat
-                unelevated
-                dense
-                size="sm"
                 icon="cancel"
                 color="red"
-                @click="handleAcceptOrRejectStrPopup(props.row, true)"
+                @click="handleRejectStrPopup(props.row)"
               />
               <q-btn
                 flat
@@ -196,9 +187,8 @@
     </div>
     <q-dialog v-model="isAcceptOrRejectStrModalVisible">
       <accept-or-reject-str-modal
-        :is-reject="isReject"
+        :is-reject="true"
         @reject-str="handleRejectStr"
-        @accept-str="handleAcceptStr"
       />
     </q-dialog>
     <q-dialog v-model="isPreviewStrModalVisible">
@@ -225,7 +215,6 @@ import StrPreviewModal from 'src/components/str/StrPreview.vue';
 import {
   grnListApi,
   shopListApi,
-  acceptStrApi,
   rejectStrApi,
   viewGrnApi,
 } from 'src/services';
@@ -278,7 +267,6 @@ const apiController = ref<AbortController | null>(null);
 const selectedRowData = ref<IGrnRecords | null>(null);
 const isAcceptOrRejectStrModalVisible = ref(false);
 const isPreviewStrModalVisible = ref(false);
-const isReject = ref(false);
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -324,11 +312,7 @@ onMounted(() => {
       apiController.value.abort();
     }
   });
-const handleAcceptOrRejectStrPopup = (
-  selectedRow: IGrnRecords,
-  isRejected: boolean
-) => {
-  isReject.value = isRejected;
+const handleRejectStrPopup = (selectedRow: IGrnRecords) => {
   selectedRowData.value = selectedRow;
   isAcceptOrRejectStrModalVisible.value = true;
 };
@@ -433,31 +417,6 @@ const handleRejectStr = async (reason: string, callback: () => void) => {
     }
   } catch (e) {
     let message = 'Unexpected error occurred rejecting Str';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      type: 'negative',
-      message,
-    });
-  }
-  callback();
-  isAcceptOrRejectStrModalVisible.value = false;
-};
-const handleAcceptStr = async (callback: () => void) => {
-  try {
-    const res = await acceptStrApi(selectedRowData.value?.grnId ?? -1);
-    if (res.type === 'Success') {
-      $q.notify({
-        type: 'positive',
-        message: res.message,
-      });
-      if (selectedRowData.value) {
-        selectedRowData.value.grnStatus = 'Accept';
-      }
-    }
-  } catch (e) {
-    let message = 'Unexpected error occurred accepting Str';
     if (isPosError(e)) {
       message = e.message;
     }
