@@ -9,7 +9,7 @@ import { makeApiCall } from 'src/utils';
 
 export const addGrnApi = async (payload: ISelectedPayload) => {
   const res = await makeApiCall<IGenericResponse<null>>({
-    url: 'api/grn/add',
+    url: 'api/grn/add/inventory',
     method: 'POST',
     data: {
       ...payload,
@@ -40,6 +40,7 @@ export const grnListApi = async (
   },
   controller?: AbortController
 ) => {
+  const { FromShop, ToShop, FromDate, ToDate } = filterSearch;
   const res = await makeApiCall<
     IGenericResponse<{ items: IGrnRecords[]; totalItemCount: number }>
   >({
@@ -48,7 +49,10 @@ export const grnListApi = async (
     params: {
       PageNumber,
       PageSize,
-      ...filterSearch,
+      FromShopId: FromShop,
+      ToShopId: ToShop,
+      ToDate,
+      FromDate,
     },
     signal: controller?.signal,
   });

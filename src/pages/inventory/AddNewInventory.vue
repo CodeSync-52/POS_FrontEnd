@@ -476,7 +476,6 @@ const handleUpdateQuantity = (
       selectedInventoryPayload.value[
         `${productId}-${firstVariantId}-${secondVariantId}`
       ].stockQuantity = val;
-      console.log(selectedInventoryPayload.value);
     } else if (val < 0 || !val) {
       selectedInventoryPayload.value[
         `${productId}-${firstVariantId}-${secondVariantId}`

@@ -317,10 +317,9 @@ const handleSelectedInventoryFilters = (
 ) => {
   filterSearch.value.ProductCode = selectedInventoryFilters.ProductCode;
   filterSearch.value.ProductId = selectedInventoryFilters.ProductId;
-  inventoryDetailList();
-  callback();
+  inventoryDetailList().then(() => callback());
 };
-const handleRemoveInventoryFilter = (
+const handleRemoveInventoryFilter = async (
   selectedInventoryFilters: IInventoryFilterSearch,
   callback: () => void
 ) => {
@@ -329,9 +328,8 @@ const handleRemoveInventoryFilter = (
     filterSearch.value.ProductId = null;
     selectedInventoryFilters.ProductCode = null;
     selectedInventoryFilters.ProductId = null;
-    inventoryDetailList();
+    inventoryDetailList().then(() => callback());
   }
-  callback();
 };
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
@@ -368,9 +366,7 @@ const handleSaveGrn = async () => {
     fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
     toShopId: selectedShop.value.toShop?.shopId ?? -1,
     grnDetails: selectedInventoryData.value.map((record) => ({
-      productId: record.productId,
-      variantId_1: record.variantId_1,
-      variantId_2: record.variantId_2,
+      inventoryId: record.inventoryId,
       quantity: record.dispatchQuantity,
     })),
   };
