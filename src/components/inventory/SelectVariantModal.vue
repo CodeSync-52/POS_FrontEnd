@@ -164,7 +164,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import {
-  ISelectedArticle,
+  ISelectedArticleWithMasterStock,
   IVariantData,
   IVariantDetailsData,
   IVariantGroup,
@@ -179,7 +179,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { CanceledError } from 'axios';
 
 interface propTypes {
-  selectedArticle: ISelectedArticle[];
+  selectedArticle: ISelectedArticleWithMasterStock[];
 }
 
 const emit = defineEmits<{
