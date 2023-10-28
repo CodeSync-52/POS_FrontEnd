@@ -17,7 +17,7 @@
         dense
         map-options
         outlined
-        v-model="selectedShop.fromShop"
+        v-model="selectedShop.fromShopId"
         @update:model-value="handleUpdateFromShop($event)"
         label="From Shop"
         color="btn-primary"
@@ -106,14 +106,12 @@
           v-slot:body-cell-action="props"
         >
           <q-td class="flex justify-start" :props="props">
-            <div
-              v-if="
-                props.row.grnStatus !== 'Accept' &&
-                props.row.grnStatus !== 'Reject'
-              "
-              class="flex gap-2 flex-nowrap"
-            >
+            <div class="flex gap-2 flex-nowrap">
               <q-btn
+                v-if="
+                  props.row.grnStatus !== 'Accept' &&
+                  props.row.grnStatus !== 'Reject'
+                "
                 flat
                 unelevated
                 dense
@@ -123,6 +121,10 @@
                 @click="handleAcceptOrRejectStrPopup(props.row, false)"
               />
               <q-btn
+                v-if="
+                  props.row.grnStatus !== 'Accept' &&
+                  props.row.grnStatus !== 'Reject'
+                "
                 flat
                 unelevated
                 dense
@@ -130,6 +132,15 @@
                 icon="cancel"
                 color="red"
                 @click="handleAcceptOrRejectStrPopup(props.row, true)"
+              />
+              <q-btn
+                flat
+                unelevated
+                dense
+                size="sm"
+                icon="visibility"
+                color="green"
+                @click="handlePreviewGrn(props.row.grnId)"
               />
             </div>
           </q-td>
@@ -158,6 +169,9 @@
       @accept-str="handleAcceptStr"
     />
   </q-dialog>
+  <q-dialog v-model="isPreviewStrModalVisible">
+    <str-preview-modal :preview-data="previewResponseData" />
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed } from 'vue';
@@ -170,13 +184,16 @@ import {
   IPagination,
   getRoleModuleDisplayName,
   IShopResponse,
+  IGrnPreviewResponse,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
+import StrPreviewModal from 'src/components/str/StrPreview.vue';
 import {
   grnListApi,
   rejectStrApi,
   acceptStrApi,
   shopListApi,
+  viewGrnApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -191,21 +208,33 @@ const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedRowData = ref<IGrnRecords | null>(null);
 const isReject = ref(false);
 const timeStamp = Date.now();
+const isPreviewStrModalVisible = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
+const previewResponseData = ref<IGrnPreviewResponse>({
+  grnId: 0,
+  fromShopId: 0,
+  toShopId: 0,
+  fromShopName: '',
+  toShopName: '',
+  quantity: 0,
+  grnStatus: '',
+  addedDate: '',
+  grnDetails: [],
+});
 const filterSearch = ref<IGrnListFilter>({
   FromDate: formattedFromDate,
   ToDate: formattedToDate,
-  FromShop: null,
-  ToShop: null,
+  fromShopId: null,
+  toShopId: null,
 });
 const selectedShop = ref<{
-  fromShop: IShopResponse | null;
-  toShop: IShopResponse | null;
+  fromShopId: IShopResponse | null;
+  toShopId: IShopResponse | null;
 }>({
-  fromShop: null,
-  toShop: null,
+  fromShopId: null,
+  toShopId: null,
 });
 const pagination = ref<IPagination>({
   sortBy: 'desc',
@@ -231,11 +260,11 @@ const resetFilter = () => {
   filterSearch.value = {
     ToDate: null,
     FromDate: null,
-    ToShop: null,
-    FromShop: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    toShopId: null,
+    fromShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
   };
   selectedShop.value = {
-    fromShop: {
+    fromShopId: {
       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
       closingBalance: 0,
       status: '',
@@ -245,16 +274,16 @@ const resetFilter = () => {
       address: '',
       code: '',
     },
-    toShop: null,
+    toShopId: null,
   };
-  if (selectedShop.value.fromShop) {
-    filterSearch.value.FromShop = selectedShop.value.fromShop?.shopId;
+  if (selectedShop.value.fromShopId) {
+    filterSearch.value.fromShopId = selectedShop.value.fromShopId?.shopId;
   }
   getGrnList();
 };
 onMounted(() => {
   getShopList();
-  selectedShop.value.fromShop = {
+  selectedShop.value.fromShopId = {
     shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     closingBalance: 0,
     status: '',
@@ -264,7 +293,7 @@ onMounted(() => {
     address: '',
     code: '',
   };
-  filterSearch.value.FromShop = selectedShop.value.fromShop.shopId;
+  filterSearch.value.fromShopId = selectedShop.value.fromShopId.shopId;
   getGrnList();
 }),
   onUnmounted(() => {
@@ -312,11 +341,11 @@ const getGrnList = async (data?: {
 };
 const shopOptionRecords = computed(() => {
   let idList: number[] = [];
-  if (selectedShop.value.fromShop) {
-    idList.push(selectedShop.value.fromShop.shopId);
+  if (selectedShop.value.fromShopId) {
+    idList.push(selectedShop.value.fromShopId.shopId);
   }
-  if (selectedShop.value.toShop) {
-    idList.push(selectedShop.value.toShop.shopId);
+  if (selectedShop.value.toShopId) {
+    idList.push(selectedShop.value.toShopId.shopId);
   }
   if (idList.length > 0) {
     return shopData.value.filter((shop) => !idList.includes(shop.shopId));
@@ -325,8 +354,8 @@ const shopOptionRecords = computed(() => {
 });
 
 const handleUpdateFromShop = (newVal: IShopResponse) => {
-  selectedShop.value.fromShop = newVal;
-  filterSearch.value.FromShop = newVal?.shopId;
+  selectedShop.value.fromShopId = newVal;
+  filterSearch.value.fromShopId = newVal?.shopId;
 };
 
 const handleRejectStr = async (reason: string, callback: () => void) => {
@@ -404,6 +433,24 @@ const getShopList = async () => {
     });
   } finally {
     isLoading.value = false;
+  }
+};
+const handlePreviewGrn = async (selectedRowId: number) => {
+  try {
+    const res = await viewGrnApi(selectedRowId);
+    previewResponseData.value = res.data;
+    if (res.type === 'Success') {
+      isPreviewStrModalVisible.value = true;
+    }
+  } catch (e) {
+    let message = 'Unexpected error occurred Preview Grn';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
   }
 };
 </script>

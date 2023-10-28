@@ -37,7 +37,7 @@
           authStore.loggedInUser?.rolePermissions.roleName !==
             EUserRoles.Admin.toLowerCase()
         "
-        v-model="selectedShop.fromShop"
+        v-model="selectedShop.fromShopId"
         @update:model-value="handleUpdateFromShop($event)"
         label="From Shop"
         color="btn-primary"
@@ -60,7 +60,7 @@
         clearable
         map-options
         outlined
-        v-model="selectedShop.toShop"
+        v-model="selectedShop.toShopId"
         @update:model-value="handleUpdateToShop($event)"
         label="To Shop"
         color="btn-primary"
@@ -246,8 +246,8 @@ const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filterSearch = ref<IGrnListFilter>({
   FromDate: formattedFromDate,
   ToDate: formattedToDate,
-  FromShop: null,
-  ToShop: null,
+  fromShopId: null,
+  toShopId: null,
 });
 const pagination = ref<IPagination>({
   sortBy: 'desc',
@@ -257,11 +257,11 @@ const pagination = ref<IPagination>({
   rowsNumber: 0,
 });
 const selectedShop = ref<{
-  fromShop: IShopResponse | null;
-  toShop: IShopResponse | null;
+  fromShopId: IShopResponse | null;
+  toShopId: IShopResponse | null;
 }>({
-  fromShop: null,
-  toShop: null,
+  fromShopId: null,
+  toShopId: null,
 });
 const apiController = ref<AbortController | null>(null);
 const selectedRowData = ref<IGrnRecords | null>(null);
@@ -274,12 +274,12 @@ const resetFilter = () => {
   filterSearch.value = {
     ToDate: null,
     FromDate: null,
-    ToShop: null,
-    FromShop: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    toShopId: null,
+    fromShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
   };
   selectedShop.value = {
-    toShop: null,
-    fromShop: {
+    toShopId: null,
+    fromShopId: {
       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
       closingBalance: 0,
       status: '',
@@ -294,7 +294,7 @@ const resetFilter = () => {
 };
 onMounted(() => {
   getShopList();
-  selectedShop.value.fromShop = {
+  selectedShop.value.fromShopId = {
     shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     closingBalance: 0,
     status: '',
@@ -304,7 +304,7 @@ onMounted(() => {
     address: '',
     code: '',
   };
-  filterSearch.value.FromShop = selectedShop.value.fromShop.shopId;
+  filterSearch.value.fromShopId = selectedShop.value.fromShopId.shopId;
   getGrnList();
 }),
   onUnmounted(() => {
@@ -318,11 +318,11 @@ const handleRejectStrPopup = (selectedRow: IGrnRecords) => {
 };
 const shopOptionRecords = computed(() => {
   let idList: number[] = [];
-  if (selectedShop.value.fromShop) {
-    idList.push(selectedShop.value.fromShop.shopId);
+  if (selectedShop.value.fromShopId) {
+    idList.push(selectedShop.value.fromShopId.shopId);
   }
-  if (selectedShop.value.toShop) {
-    idList.push(selectedShop.value.toShop.shopId);
+  if (selectedShop.value.toShopId) {
+    idList.push(selectedShop.value.toShopId.shopId);
   }
   if (idList.length > 0) {
     return shopData.value.filter((shop) => !idList.includes(shop.shopId));
@@ -330,12 +330,12 @@ const shopOptionRecords = computed(() => {
   return shopData.value;
 });
 const handleUpdateToShop = (newVal: IShopResponse) => {
-  selectedShop.value.toShop = newVal;
-  filterSearch.value.ToShop = newVal?.shopId;
+  selectedShop.value.toShopId = newVal;
+  filterSearch.value.toShopId = newVal?.shopId;
 };
 const handleUpdateFromShop = (newVal: IShopResponse) => {
-  selectedShop.value.fromShop = newVal;
-  filterSearch.value.FromShop = newVal?.shopId;
+  selectedShop.value.fromShopId = newVal;
+  filterSearch.value.fromShopId = newVal?.shopId;
 };
 
 const getGrnList = async (data?: {

@@ -12,7 +12,11 @@
             authStore.checkUserHasPermission(
               EUserModules.InventoryManagement,
               EActionPermissions.Create
-            )
+            ) &&
+            authStore.loggedInUser?.rolePermissions.roleName ===
+              EUserRoles.SuperAdmin.toLowerCase() &&
+            authStore.loggedInUser?.rolePermissions.roleName ===
+              EUserRoles.Admin.toLowerCase()
           "
           label="Add Custom Barcode"
           icon="add"
@@ -26,7 +30,11 @@
             authStore.checkUserHasPermission(
               EUserModules.InventoryManagement,
               EActionPermissions.Create
-            )
+            ) &&
+            authStore.loggedInUser?.rolePermissions.roleName ===
+              EUserRoles.SuperAdmin.toLowerCase() &&
+            authStore.loggedInUser?.rolePermissions.roleName ===
+              EUserRoles.Admin.toLowerCase()
           "
           label="Add New"
           icon="add"
@@ -162,6 +170,7 @@ import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
   EUserModules,
+  EUserRoles,
   IArticleData,
   IInventoryFilterSearch,
   IInventoryListResponse,

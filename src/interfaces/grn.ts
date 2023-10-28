@@ -21,8 +21,8 @@ export interface IGrnDetailsWithId {
 export interface IGrnListFilter {
   ToDate: string | null;
   FromDate: string | null;
-  FromShop: null | number;
-  ToShop: null | number;
+  fromShopId: null | number;
+  toShopId: null | number;
 }
 export interface IGrnRecords {
   grnId: number;
