@@ -9,12 +9,12 @@
       >
         <q-btn
           v-if="
-            authStore.checkUserHasPermission(
+            (authStore.checkUserHasPermission(
               EUserModules.InventoryManagement,
               EActionPermissions.Create
             ) &&
-            authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.SuperAdmin.toLowerCase() &&
+              authStore.loggedInUser?.rolePermissions.roleName ===
+                EUserRoles.SuperAdmin.toLowerCase()) ||
             authStore.loggedInUser?.rolePermissions.roleName ===
               EUserRoles.Admin.toLowerCase()
           "
@@ -27,12 +27,12 @@
         />
         <q-btn
           v-if="
-            authStore.checkUserHasPermission(
+            (authStore.checkUserHasPermission(
               EUserModules.InventoryManagement,
               EActionPermissions.Create
             ) &&
-            authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.SuperAdmin.toLowerCase() &&
+              authStore.loggedInUser?.rolePermissions.roleName ===
+                EUserRoles.SuperAdmin.toLowerCase()) ||
             authStore.loggedInUser?.rolePermissions.roleName ===
               EUserRoles.Admin.toLowerCase()
           "
