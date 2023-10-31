@@ -208,8 +208,8 @@
                     EUserRoles.SuperAdmin.toLowerCase() &&
                   moment(
                     date.addToDate(props.row.createdDate, { date: 5 })
-                  ).format('DD-MM-YYYY') >
-                    moment(timeStamp).format('DD-MM-YYYY')
+                  ).format('YYYY-MM-DD') >
+                    moment(timeStamp).format('YYYY-MM-DD')
                 "
                 size="sm"
                 flat
@@ -238,8 +238,8 @@
                     EUserRoles.SuperAdmin.toLowerCase() &&
                   moment(
                     date.addToDate(props.row.createdDate, { date: 5 })
-                  ).format('DD-MM-YYYY') >
-                    moment(timeStamp).format('DD-MM-YYYY')
+                  ).format('YYYY-MM-DD') >
+                    moment(timeStamp).format('YYYY-MM-DD')
                 "
                 size="sm"
                 flat
