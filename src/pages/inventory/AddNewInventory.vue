@@ -25,6 +25,59 @@
       </div>
     </div>
     <div v-if="!showBarcodeScreen">
+      <div class="row q-col-gutter-md">
+        <div class="col-12 col-sm-6">
+          <div class="text-base mb-1"><span>From Shop</span></div>
+          <q-select
+            popup-content-class="!max-h-[200px]"
+            :options="shopOptionRecords"
+            :loading="isShopLoading"
+            use-input
+            dense
+            map-options
+            outlined
+            disable
+            v-model="selectedShop.FromShop"
+            @update:model-value="selectedShop.FromShop = $event"
+            label="From Shop"
+            color="btn-primary"
+            option-label="name"
+            option-value="shopId"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey"> No results </q-item-section>
+              </q-item>
+            </template></q-select
+          >
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="text-base mb-1"><span>To Shop</span></div>
+          <q-select
+            popup-content-class="!max-h-[200px]"
+            :options="shopOptionRecords"
+            :loading="isShopLoading"
+            use-input
+            dense
+            class="w-full"
+            disable
+            map-options
+            outlined
+            v-model="selectedShop.ToShop"
+            @update:model-value="selectedShop.ToShop = $event"
+            label="To Shop"
+            color="btn-primary"
+            option-label="name"
+            option-value="shopId"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey"> No results </q-item-section>
+              </q-item>
+            </template></q-select
+          >
+        </div>
+      </div>
       <div
         class="flex flex-col gap-2"
         v-for="(product, productIndex) in rowColumnData"
@@ -281,8 +334,9 @@ import {
   ISelectedArticleWithMasterStock,
   ISelectedArticleData,
   IVariantDetailsData,
+  IShopResponse,
 } from 'src/interfaces';
-import { addInventoryApi, articleListApi } from 'src/services';
+import { addInventoryApi, articleListApi, shopListApi } from 'src/services';
 import { isPosError } from 'src/utils';
 const router = useRouter();
 const isSelectionSingle = ref(true);
@@ -295,6 +349,7 @@ const articleList = ref<IArticleData[]>([]);
 const selectedArticle = ref<ISelectedArticleWithMasterStock[]>([]);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const showfirstBarcodePreview = ref(true);
+const isShopLoading = ref(false);
 const rowColumnData = ref<
   {
     firstVariantSelection: IVariantDetailsData[] | null;
@@ -322,7 +377,16 @@ const pagination = ref<IPagination>({
 const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
 const isPrintingBarcode = ref(false);
+const shopData = ref<IShopResponse[]>([]);
+const ShopOptionData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
+const selectedShop = ref<{
+  FromShop: IShopResponse | null;
+  ToShop: IShopResponse | null;
+}>({
+  FromShop: null,
+  ToShop: null,
+});
 const InValidStock = ref(false);
 const selectedProductBarcodes = ref<{ productCode: string }[]>([]);
 window.addEventListener('keypress', function (e) {
@@ -337,7 +401,28 @@ onMounted(() => {
   } else {
     isArticleListModalVisible.value = true;
   }
+  selectedShop.value.FromShop = {
+    shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    closingBalance: 0,
+    status: '',
+    isWareHouse: '',
+    name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
+    phone: '',
+    address: '',
+    code: '',
+  };
+  selectedShop.value.ToShop = {
+    shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    closingBalance: 0,
+    status: '',
+    isWareHouse: '',
+    name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
+    phone: '',
+    address: '',
+    code: '',
+  };
   getArticleList();
+  getShopList();
 });
 const handleAddArticle = () => {
   selectedProductBarcodes.value = [];
@@ -364,6 +449,43 @@ const handleRemoveProduct = (selectedProduct: {
   );
   rowColumnData.value.splice(selectedProductIndex, 1);
   setProductKeys();
+};
+const shopOptionRecords = computed(() => {
+  let idList: number[] = [];
+  if (selectedShop.value.FromShop) {
+    idList.push(selectedShop.value.FromShop.shopId);
+  }
+  if (selectedShop.value.ToShop) {
+    idList.push(selectedShop.value.ToShop.shopId);
+  }
+  if (idList.length > 0) {
+    return shopData.value.filter((shop) => !idList.includes(shop.shopId));
+  }
+  return shopData.value;
+});
+const getShopList = async () => {
+  isShopLoading.value = true;
+  try {
+    const response = await shopListApi({
+      PageNumber: 1,
+      PageSize: 200,
+    });
+    if (response.data) {
+      shopData.value = response.data.items;
+      ShopOptionData.value = response.data.items;
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isShopLoading.value = false;
+  }
 };
 const isSaveButtonDisable = computed(() => {
   const validations = Object.values(selectedInventoryPayload.value).map(
@@ -437,7 +559,7 @@ function getStockMessage(
     );
   InValidStock.value = totalStock > masterStock;
   return totalStock > masterStock
-    ? 'Meaningful Stock cannot be larger than Available Stock'
+    ? 'Selected Quantity cannot be greater than Available Stock'
     : '';
 }
 const selectedData = (
