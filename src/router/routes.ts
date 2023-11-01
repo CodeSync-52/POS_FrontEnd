@@ -153,7 +153,7 @@ export const routeList = [
     },
   },
   {
-    path: '/inventory/add-new',
+    path: '/inventory/add-new/:id?',
     component: () => import('src/pages/inventory/AddNewInventory.vue'),
     meta: {
       module: EUserModules.InventoryManagement,
