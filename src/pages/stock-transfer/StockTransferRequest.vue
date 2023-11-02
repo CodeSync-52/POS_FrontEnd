@@ -119,7 +119,11 @@
                 icon="check"
                 color="green"
                 @click="handleAcceptOrRejectStrPopup(props.row, false)"
-              />
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Accept GRN
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 v-if="
                   props.row.grnStatus !== 'Accept' &&
@@ -132,7 +136,11 @@
                 icon="cancel"
                 color="red"
                 @click="handleAcceptOrRejectStrPopup(props.row, true)"
-              />
+              >
+                <q-tooltip class="bg-red" :offset="[10, 10]">
+                  Reject GRN
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 flat
                 unelevated
@@ -141,7 +149,11 @@
                 icon="visibility"
                 color="green"
                 @click="handlePreviewGrn(props.row)"
-              />
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Preview GRN
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>
