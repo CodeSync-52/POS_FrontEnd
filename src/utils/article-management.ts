@@ -110,4 +110,11 @@ export const articleListColumn: QTableColumn<IArticleData>[] = [
     align: 'left',
     field: (row) => row.name,
   },
+  {
+    name: 'availableStock',
+    required: true,
+    label: 'Available Stock',
+    align: 'left',
+    field: (row) => row.masterStock,
+  },
 ];
