@@ -180,13 +180,13 @@
                 {{ props.row.unitWholeSalePrice }}
                 <span
                   class="ml-2 updateArticleAmount"
-                  v-if="action === 'Add New'"
+                  v-if="action !== 'Preview'"
                 >
                   <q-btn flat unelevated icon="edit" dense size="sm" />
                 </span>
                 <q-popup-edit
-                  :disable="action !== 'Add New'"
                   v-model="props.row.unitWholeSalePrice"
+                  :disable="action === 'Preview'"
                   color="btn-primary"
                   title="Update Amount"
                   buttons
@@ -873,6 +873,7 @@ async function saveUpdatedData(row: IWholeSaleDetailsData) {
     const res = await updateWholeSaleDetailApi({
       wholeSaleDetailId: row.wholeSaleDetailId,
       quantity: row.quantity,
+      unitWholeSalePrice: row.unitWholeSalePrice,
     });
     if (res.type === 'Success') {
       $q.notify({

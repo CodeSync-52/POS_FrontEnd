@@ -50,6 +50,7 @@ export interface IGrnPreviewResponse {
 export interface IPreviewGrnDetail {
   productName: string;
   productImage: string;
+  productCode: string;
   variant_1_Name: string;
   variant_2_Name: string;
   productId: number;

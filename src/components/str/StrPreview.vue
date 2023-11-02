@@ -106,6 +106,13 @@
     </q-card-section>
     <q-card-actions align="right">
       <q-btn
+        unelevated
+        label="Print Barcode"
+        color="btn-primary"
+        class="hover:btn-primary-hover"
+        :to="`/inventory/add-new/${selectedId}`"
+      />
+      <q-btn
         flat
         label="Close"
         color="signature"
@@ -135,8 +142,10 @@ import { PreviewGrnTableColumn } from 'src/utils';
 import { onMounted, ref } from 'vue';
 type PropType = {
   previewData: IGrnPreviewResponse;
+  selectedRowId?: number;
 };
 const props = defineProps<PropType>();
+const selectedId = ref<number>();
 const selectedGrnData = ref<IGrnPreviewResponse>({
   grnId: 0,
   fromShopId: 0,
@@ -167,5 +176,6 @@ onMounted(() => {
   selectedGrnData.value.addedDate = moment(props.previewData.addedDate).format(
     'YYYY-MM-DD'
   );
+  selectedId.value = props.selectedRowId;
 });
 </script>
