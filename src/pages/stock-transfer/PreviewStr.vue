@@ -2,7 +2,7 @@
   <q-card>
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-lg font-medium"> Preview Grn</span>
+        <span class="text-lg font-medium"> Preview GRN</span>
         <span
           ><q-btn
             class="close-modal"

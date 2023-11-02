@@ -17,7 +17,7 @@
         /></span>
       </div>
       <div v-if="!isReject" class="text-center">
-        <span>Are you sure you want to accept the selected grn?</span>
+        <span>Are you sure you want to accept the selected GRN?</span>
       </div>
       <div v-else>
         <div class="mb-1 text-base">
