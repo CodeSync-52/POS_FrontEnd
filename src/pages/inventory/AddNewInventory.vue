@@ -282,7 +282,7 @@ import {
   ISelectedArticleData,
   IVariantDetailsData,
 } from 'src/interfaces';
-import { addInventoryApi, articleListApi } from 'src/services';
+import { addInventoryApi, articleListApi, viewGrnApi } from 'src/services';
 import { isPosError } from 'src/utils';
 const router = useRouter();
 const isSelectionSingle = ref(true);
@@ -321,6 +321,7 @@ const pagination = ref<IPagination>({
 });
 const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
+const selectedId = ref<number>(-1);
 const isPrintingBarcode = ref(false);
 const $q = useQuasar();
 const InValidStock = ref(false);
@@ -334,6 +335,9 @@ const isPrintBarcodeButtonVisible = ref(false);
 onMounted(() => {
   if (router.currentRoute.value.fullPath.includes('add-custom')) {
     isCustomLabelModalVisible.value = true;
+  } else if (router.currentRoute.value.fullPath.includes('add-new/')) {
+    selectedId.value = Number(router.currentRoute.value.params.id);
+    handlePreviewGrn();
   } else {
     isArticleListModalVisible.value = true;
   }
@@ -681,4 +685,30 @@ function modifyArray(inputArray: { productCode: string; quantity: number }[]) {
 
   return modifiedArray;
 }
+const handlePreviewGrn = async () => {
+  try {
+    const res = await viewGrnApi(selectedId.value);
+    if (res.type === 'Success') {
+      const selectedGrnDetails: { productCode: string; quantity: number }[] =
+        res.data.grnDetails.map((records) => ({
+          productCode: records.productCode,
+          quantity: records.quantity,
+        }));
+      const modifiedArray = modifyArray(selectedGrnDetails);
+      selectedProductBarcodes.value = modifiedArray;
+      showBarcodeScreen.value = true;
+      isPrintingBarcodeScreenVisible.value = true;
+      setBarcodeProps();
+    }
+  } catch (e) {
+    let message = 'Unexpected error occurred Preview Grn';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
+  }
+};
 </script>

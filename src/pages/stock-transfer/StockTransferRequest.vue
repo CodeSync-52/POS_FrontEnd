@@ -140,7 +140,7 @@
                 size="sm"
                 icon="visibility"
                 color="green"
-                @click="handlePreviewGrn(props.row.grnId)"
+                @click="handlePreviewGrn(props.row)"
               />
             </div>
           </q-td>
@@ -170,7 +170,10 @@
     />
   </q-dialog>
   <q-dialog v-model="isPreviewStrModalVisible">
-    <str-preview-modal :preview-data="previewResponseData" />
+    <str-preview-modal
+      :selected-row-id="selectedRowData?.grnId"
+      :preview-data="previewResponseData"
+    />
   </q-dialog>
 </template>
 <script setup lang="ts">
@@ -435,9 +438,10 @@ const getShopList = async () => {
     isLoading.value = false;
   }
 };
-const handlePreviewGrn = async (selectedRowId: number) => {
+const handlePreviewGrn = async (selectedRow: IGrnRecords) => {
+  selectedRowData.value = selectedRow;
   try {
-    const res = await viewGrnApi(selectedRowId);
+    const res = await viewGrnApi(selectedRowData.value.grnId);
     previewResponseData.value = res.data;
     if (res.type === 'Success') {
       isPreviewStrModalVisible.value = true;
