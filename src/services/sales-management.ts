@@ -96,8 +96,10 @@ export const deleteWholeSaleDetailApi = async (wholeSaleDetailId: number) => {
 export const updateWholeSaleDetailApi = async ({
   wholeSaleDetailId,
   quantity,
+  unitWholeSalePrice,
 }: {
   wholeSaleDetailId: number;
+  unitWholeSalePrice: number;
   quantity: number;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
@@ -106,6 +108,7 @@ export const updateWholeSaleDetailApi = async ({
     params: {
       wholeSaleDetailId,
       quantity,
+      unitWholeSalePrice,
     },
   });
   return res;
