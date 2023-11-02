@@ -178,7 +178,7 @@
                 size="sm"
                 icon="visibility"
                 color="green"
-                @click="handlePreviewGrn(props.row.grnId)"
+                :to="`/stock-transfer/${props.row.grnId}`"
               />
             </div>
           </q-td>
@@ -190,9 +190,6 @@
         :is-reject="true"
         @reject-str="handleRejectStr"
       />
-    </q-dialog>
-    <q-dialog v-model="isPreviewStrModalVisible">
-      <str-preview-modal :preview-data="previewResponseData" />
     </q-dialog>
   </div>
 </template>
@@ -208,16 +205,9 @@ import {
   IPagination,
   IShopResponse,
   getRoleModuleDisplayName,
-  IGrnPreviewResponse,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
-import StrPreviewModal from 'src/components/str/StrPreview.vue';
-import {
-  grnListApi,
-  shopListApi,
-  rejectStrApi,
-  viewGrnApi,
-} from 'src/services';
+import { grnListApi, shopListApi, rejectStrApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { GrnTableColumn } from 'src/utils';
@@ -228,17 +218,6 @@ const GrnRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
-const previewResponseData = ref<IGrnPreviewResponse>({
-  grnId: 0,
-  fromShopId: 0,
-  toShopId: 0,
-  fromShopName: '',
-  toShopName: '',
-  quantity: 0,
-  grnStatus: '',
-  addedDate: '',
-  grnDetails: [],
-});
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
@@ -266,7 +245,7 @@ const selectedShop = ref<{
 const apiController = ref<AbortController | null>(null);
 const selectedRowData = ref<IGrnRecords | null>(null);
 const isAcceptOrRejectStrModalVisible = ref(false);
-const isPreviewStrModalVisible = ref(false);
+
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -427,23 +406,5 @@ const handleRejectStr = async (reason: string, callback: () => void) => {
   }
   callback();
   isAcceptOrRejectStrModalVisible.value = false;
-};
-const handlePreviewGrn = async (selectedRowId: number) => {
-  try {
-    const res = await viewGrnApi(selectedRowId);
-    previewResponseData.value = res.data;
-    if (res.type === 'Success') {
-      isPreviewStrModalVisible.value = true;
-    }
-  } catch (e) {
-    let message = 'Unexpected error occurred Preview Grn';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      type: 'negative',
-      message,
-    });
-  }
 };
 </script>

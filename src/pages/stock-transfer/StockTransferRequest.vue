@@ -140,7 +140,7 @@
                 size="sm"
                 icon="visibility"
                 color="green"
-                @click="handlePreviewGrn(props.row)"
+                :to="`/stock-transfer/${props.row.grnId}`"
               />
             </div>
           </q-td>
@@ -169,12 +169,6 @@
       @accept-str="handleAcceptStr"
     />
   </q-dialog>
-  <q-dialog v-model="isPreviewStrModalVisible">
-    <str-preview-modal
-      :selected-row-id="selectedRowData?.grnId"
-      :preview-data="previewResponseData"
-    />
-  </q-dialog>
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed } from 'vue';
@@ -187,16 +181,13 @@ import {
   IPagination,
   getRoleModuleDisplayName,
   IShopResponse,
-  IGrnPreviewResponse,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
-import StrPreviewModal from 'src/components/str/StrPreview.vue';
 import {
   grnListApi,
   rejectStrApi,
   acceptStrApi,
   shopListApi,
-  viewGrnApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -211,21 +202,9 @@ const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedRowData = ref<IGrnRecords | null>(null);
 const isReject = ref(false);
 const timeStamp = Date.now();
-const isPreviewStrModalVisible = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
-const previewResponseData = ref<IGrnPreviewResponse>({
-  grnId: 0,
-  fromShopId: 0,
-  toShopId: 0,
-  fromShopName: '',
-  toShopName: '',
-  quantity: 0,
-  grnStatus: '',
-  addedDate: '',
-  grnDetails: [],
-});
 const filterSearch = ref<IGrnListFilter>({
   FromDate: formattedFromDate,
   ToDate: formattedToDate,
@@ -436,25 +415,6 @@ const getShopList = async () => {
     });
   } finally {
     isLoading.value = false;
-  }
-};
-const handlePreviewGrn = async (selectedRow: IGrnRecords) => {
-  selectedRowData.value = selectedRow;
-  try {
-    const res = await viewGrnApi(selectedRowData.value.grnId);
-    previewResponseData.value = res.data;
-    if (res.type === 'Success') {
-      isPreviewStrModalVisible.value = true;
-    }
-  } catch (e) {
-    let message = 'Unexpected error occurred Preview Grn';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      type: 'negative',
-      message,
-    });
   }
 };
 </script>

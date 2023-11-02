@@ -246,7 +246,13 @@ export const routeList = [
   {
     path: '/stock-transfer',
     component: () => import('pages/stock-transfer/StockTransferRequest.vue'),
-
+    meta: {
+      module: EUserModules.StockTransferRequests,
+    },
+  },
+  {
+    path: '/stock-transfer/:id',
+    component: () => import('pages/stock-transfer/PreviewStr.vue'),
     meta: {
       module: EUserModules.StockTransferRequests,
     },
