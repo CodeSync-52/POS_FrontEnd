@@ -59,6 +59,7 @@
               type="number"
               v-model="billGenerationDetailsInfoData.claim"
               dense
+              color="btn-primary"
               label="Claim Amount"
               outlined
               @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
@@ -71,6 +72,7 @@
               v-model="billGenerationDetailsInfoData.freight"
               dense
               :min="0"
+              color="btn-primary"
               label="Freight User"
               outlined
               @update:model-value="
