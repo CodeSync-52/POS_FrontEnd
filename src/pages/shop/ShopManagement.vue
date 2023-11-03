@@ -83,7 +83,11 @@
               unelevated
               dense
               @click="handleEditStatusPopup(props.row)"
-            />
+            >
+              <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                Edit Status
+              </q-tooltip>
+            </q-btn>
           </q-td>
         </template>
         <template v-slot:body-cell-address="props">
@@ -103,7 +107,9 @@
               unelevated
               dense
               @click="handleEditShopPopup(props.row)"
-            />
+            >
+              <q-tooltip :offset="[10, 10]"> Edit Shop </q-tooltip>
+            </q-btn>
           </q-td>
         </template>
         <template v-slot:no-data>

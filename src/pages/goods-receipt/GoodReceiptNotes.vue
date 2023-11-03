@@ -164,7 +164,11 @@
                 icon="cancel"
                 color="red"
                 @click="handleRejectStrPopup(props.row)"
-              />
+              >
+                <q-tooltip class="bg-red" :offset="[10, 10]">
+                  Cancel GRN
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 flat
                 unelevated
@@ -173,7 +177,11 @@
                 icon="visibility"
                 color="green"
                 :to="`/stock-transfer/${props.row.grnId}`"
-              />
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Preview GRN
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>

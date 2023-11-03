@@ -133,7 +133,11 @@
                 icon="check"
                 color="green"
                 @click="handleAcceptOrRejectStrPopup(props.row, false)"
-              />
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Accept GRN
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 v-if="
                   (authStore.loggedInUser?.rolePermissions.roleName ===
@@ -150,7 +154,11 @@
                 icon="cancel"
                 color="red"
                 @click="handleAcceptOrRejectStrPopup(props.row, true)"
-              />
+              >
+                <q-tooltip class="bg-red" :offset="[10, 10]">
+                  Reject GRN
+                </q-tooltip>
+              </q-btn>
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
@@ -165,7 +173,11 @@
                 icon="visibility"
                 color="green"
                 :to="`/stock-transfer/${props.row.grnId}`"
-              />
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Preview GRN
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>
