@@ -24,7 +24,7 @@
     >
       <q-select
         popup-content-class="!max-h-[200px]"
-        :options="shopOptionRecords"
+        :options="shopData"
         :loading="isLoading"
         use-input
         class="min-w-[220px] max-w-[220px]"
@@ -52,7 +52,7 @@
       >
       <q-select
         popup-content-class="!max-h-[200px]"
-        :options="shopOptionRecords"
+        :options="shopData"
         :loading="isLoading"
         use-input
         dense
@@ -145,24 +145,18 @@
         >
           <q-th></q-th>
         </template>
-        <template
-          v-if="
-            authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.SuperAdmin.toLowerCase() ||
-            authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.Admin.toLowerCase()
-          "
-          v-slot:body-cell-action="props"
-        >
+        <template v-slot:body-cell-action="props">
           <q-td class="flex justify-start" :props="props">
-            <div
-              v-if="
-                props.row.grnStatus !== 'Accept' &&
-                props.row.grnStatus !== 'Reject'
-              "
-              class="flex gap-2 flex-nowrap"
-            >
+            <div class="flex gap-2 flex-nowrap">
               <q-btn
+                v-if="
+                  (authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() ||
+                    authStore.loggedInUser?.rolePermissions.roleName ===
+                      EUserRoles.Admin.toLowerCase()) &&
+                  props.row.grnStatus !== 'Accept' &&
+                  props.row.grnStatus !== 'Reject'
+                "
                 flat
                 unelevated
                 dense
@@ -195,7 +189,7 @@
 </template>
 <script setup lang="ts">
 import { useQuasar, date } from 'quasar';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import {
   EActionPermissions,
   EUserModules,
@@ -217,7 +211,6 @@ const $q = useQuasar();
 const GrnRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
-const ShopOptionData = ref<IShopResponse[]>([]);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
@@ -295,19 +288,6 @@ const handleRejectStrPopup = (selectedRow: IGrnRecords) => {
   selectedRowData.value = selectedRow;
   isAcceptOrRejectStrModalVisible.value = true;
 };
-const shopOptionRecords = computed(() => {
-  let idList: number[] = [];
-  if (selectedShop.value.fromShopId) {
-    idList.push(selectedShop.value.fromShopId.shopId);
-  }
-  if (selectedShop.value.toShopId) {
-    idList.push(selectedShop.value.toShopId.shopId);
-  }
-  if (idList.length > 0) {
-    return shopData.value.filter((shop) => !idList.includes(shop.shopId));
-  }
-  return shopData.value;
-});
 const handleUpdateToShop = (newVal: IShopResponse) => {
   selectedShop.value.toShopId = newVal;
   filterSearch.value.toShopId = newVal?.shopId;
@@ -364,7 +344,6 @@ const getShopList = async () => {
     });
     if (response.data) {
       shopData.value = response.data.items;
-      ShopOptionData.value = response.data.items;
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';

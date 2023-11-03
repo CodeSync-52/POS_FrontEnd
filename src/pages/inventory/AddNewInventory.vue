@@ -727,14 +727,11 @@ const handleAddInventory = async (
         message: res.message,
         type: 'positive',
       });
+
+      selectedId.value = res.data;
+      handlePreviewGrn();
+
       rowColumnData.value = [];
-      const modifiedArray = modifyArray(res.data);
-      selectedProductBarcodes.value = modifiedArray;
-      showBarcodeScreen.value = true;
-      isPrintingBarcodeScreenVisible.value = true;
-      setTimeout(() => {
-        setBarcodeProps();
-      }, 0);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Inventory';

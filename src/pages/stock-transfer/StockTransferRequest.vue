@@ -10,7 +10,7 @@
     >
       <q-select
         popup-content-class="!max-h-[200px]"
-        :options="shopOptionRecords"
+        :options="shopData"
         :loading="isLoading"
         use-input
         class="min-w-[220px] max-w-[220px]"
@@ -20,6 +20,28 @@
         v-model="selectedShop.fromShopId"
         @update:model-value="handleUpdateFromShop($event)"
         label="From Shop"
+        color="btn-primary"
+        option-label="name"
+        option-value="shopId"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template></q-select
+      >
+      <q-select
+        popup-content-class="!max-h-[200px]"
+        :options="shopData"
+        :loading="isLoading"
+        use-input
+        class="min-w-[220px] max-w-[220px]"
+        dense
+        map-options
+        outlined
+        v-model="selectedShop.toShopId"
+        @update:model-value="handleUpdateToShop($event)"
+        label="To Shop"
         color="btn-primary"
         option-label="name"
         option-value="shopId"
@@ -92,23 +114,15 @@
         >
           <q-th></q-th>
         </template>
-        <template
-          v-if="
-            authStore.checkUserHasPermission(
-              EUserModules.StockTransferRequests,
-              EActionPermissions.Update
-            ) &&
-            authStore.checkUserHasPermission(
-              EUserModules.StockTransferRequests,
-              EActionPermissions.Delete
-            )
-          "
-          v-slot:body-cell-action="props"
-        >
+        <template v-slot:body-cell-action="props">
           <q-td class="flex justify-start" :props="props">
             <div class="flex gap-2 flex-nowrap">
               <q-btn
                 v-if="
+                  (authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() ||
+                    authStore.loggedInUser?.rolePermissions.roleName ===
+                      EUserRoles.Admin.toLowerCase()) &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "
@@ -122,6 +136,10 @@
               />
               <q-btn
                 v-if="
+                  (authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() ||
+                    authStore.loggedInUser?.rolePermissions.roleName ===
+                      EUserRoles.Admin.toLowerCase()) &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "
@@ -134,6 +152,12 @@
                 @click="handleAcceptOrRejectStrPopup(props.row, true)"
               />
               <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.StockTransferRequests,
+                    EActionPermissions.View
+                  )
+                "
                 flat
                 unelevated
                 dense
@@ -171,7 +195,7 @@
   </q-dialog>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useQuasar, date } from 'quasar';
 import {
   EActionPermissions,
@@ -181,6 +205,7 @@ import {
   IPagination,
   getRoleModuleDisplayName,
   IShopResponse,
+  EUserRoles,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
 import {
@@ -198,7 +223,6 @@ const $q = useQuasar();
 const strRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
-const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedRowData = ref<IGrnRecords | null>(null);
 const isReject = ref(false);
 const timeStamp = Date.now();
@@ -321,23 +345,14 @@ const getGrnList = async (data?: {
   }
   isLoading.value = false;
 };
-const shopOptionRecords = computed(() => {
-  let idList: number[] = [];
-  if (selectedShop.value.fromShopId) {
-    idList.push(selectedShop.value.fromShopId.shopId);
-  }
-  if (selectedShop.value.toShopId) {
-    idList.push(selectedShop.value.toShopId.shopId);
-  }
-  if (idList.length > 0) {
-    return shopData.value.filter((shop) => !idList.includes(shop.shopId));
-  }
-  return shopData.value;
-});
 
 const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShopId = newVal;
   filterSearch.value.fromShopId = newVal?.shopId;
+};
+const handleUpdateToShop = (newVal: IShopResponse) => {
+  selectedShop.value.toShopId = newVal;
+  filterSearch.value.toShopId = newVal?.shopId;
 };
 
 const handleRejectStr = async (reason: string, callback: () => void) => {
@@ -402,7 +417,6 @@ const getShopList = async () => {
     });
     if (response.data) {
       shopData.value = response.data.items;
-      ShopOptionData.value = response.data.items;
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';

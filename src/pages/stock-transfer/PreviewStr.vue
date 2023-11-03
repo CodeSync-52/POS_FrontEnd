@@ -3,16 +3,6 @@
     <q-card-section>
       <div class="row justify-between items-center mb-2">
         <span class="text-lg font-medium"> Preview GRN</span>
-        <span
-          ><q-btn
-            class="close-modal"
-            v-close-popup
-            flat
-            unelevated
-            dense
-            size="md"
-            icon="close"
-        /></span>
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-4">
@@ -113,6 +103,12 @@
     <q-card-actions align="right">
       <q-btn
         unelevated
+        v-if="
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.ShopManager.toLowerCase() &&
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.ShopOfficer.toLowerCase()
+        "
         label="Generate Barcode"
         color="btn-primary"
         class="hover:btn-primary-hover"
@@ -145,14 +141,16 @@
 <script lang="ts" setup>
 import moment from 'moment';
 import { useQuasar } from 'quasar';
-import { IGrnPreviewResponse } from 'src/interfaces';
+import { EUserRoles, IGrnPreviewResponse } from 'src/interfaces';
 import { viewGrnApi } from 'src/services';
+import { useAuthStore } from 'src/stores';
 import { PreviewGrnTableColumn, isPosError } from 'src/utils';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 const $q = useQuasar();
 const isLoading = ref(false);
+const authStore = useAuthStore();
 const selectedGrnData = ref<IGrnPreviewResponse>({
   grnId: 0,
   fromShopId: 0,
