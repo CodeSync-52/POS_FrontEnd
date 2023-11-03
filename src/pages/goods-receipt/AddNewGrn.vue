@@ -134,7 +134,11 @@
                     unelevated
                     color="red"
                     @click="handleRemoveSelectedInventoryRecord(props.row)"
-                  />
+                  >
+                    <q-tooltip class="bg-red" :offset="[10, 10]">
+                      Delete Article
+                    </q-tooltip>
+                  </q-btn>
                 </div>
               </q-td>
             </template>
