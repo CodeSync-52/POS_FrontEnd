@@ -96,18 +96,6 @@ export const PreviewGrnTableColumn: QTableColumn<IPreviewGrnDetail>[] = [
     align: 'left',
   },
   {
-    name: 'variantOne',
-    label: 'Variant One',
-    field: (row) => row.variant_1_Name,
-    align: 'left',
-  },
-  {
-    name: 'variantOne',
-    label: 'Variant Two',
-    field: (row) => row.variant_2_Name,
-    align: 'left',
-  },
-  {
     name: 'productCode',
     label: 'Product Code',
     field: (row) => row.productCode.split(',')[0],

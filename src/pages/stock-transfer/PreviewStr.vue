@@ -1,24 +1,15 @@
 <template>
-  <q-card class="min-w-[310px] md:min-w-[400px] !max-w-[700px]">
+  <q-card>
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-lg font-medium"> Preview Grn</span>
-        <span
-          ><q-btn
-            class="close-modal"
-            v-close-popup
-            flat
-            unelevated
-            dense
-            size="md"
-            icon="close"
-        /></span>
+        <span class="text-lg font-medium"> Preview GRN</span>
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-4">
           <q-input
             dense
             outlined
+            :loading="isLoading"
             maxlength="250"
             disable
             v-model="selectedGrnData.fromShopName"
@@ -31,6 +22,7 @@
             dense
             outlined
             maxlength="250"
+            :loading="isLoading"
             disable
             v-model="selectedGrnData.toShopName"
             label="To Shop"
@@ -42,6 +34,7 @@
             dense
             disable
             outlined
+            :loading="isLoading"
             maxlength="250px"
             v-model="selectedGrnData.quantity"
             label="Quantity"
@@ -55,6 +48,7 @@
             disable
             outlined
             maxlength="250"
+            :loading="isLoading"
             v-model="selectedGrnData.grnStatus"
             label="Status"
             color="btn-primary"
@@ -65,6 +59,7 @@
             dense
             disable
             outlined
+            :loading="isLoading"
             maxlength="250"
             v-model="selectedGrnData.addedDate"
             label="Added Date"
@@ -74,6 +69,7 @@
       </div>
       <div class="py-4">
         <q-table
+          :loading="isLoading"
           :rows="selectedGrnData.grnDetails"
           :columns="PreviewGrnTableColumn"
         >
@@ -107,17 +103,24 @@
     <q-card-actions align="right">
       <q-btn
         unelevated
-        label="Print Barcode"
+        v-if="
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.ShopManager.toLowerCase() &&
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.ShopOfficer.toLowerCase()
+        "
+        label="Generate Barcode"
         color="btn-primary"
         class="hover:btn-primary-hover"
-        :to="`/inventory/add-new/${selectedId}`"
+        :to="`/inventory/add-new/${selectedGrnId}`"
       />
       <q-btn
         flat
-        label="Close"
+        label="Go Back"
         color="signature"
         v-close-popup
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        @click="router.go(-1)"
       />
     </q-card-actions>
   </q-card>
@@ -137,15 +140,17 @@
 </template>
 <script lang="ts" setup>
 import moment from 'moment';
-import { IGrnPreviewResponse } from 'src/interfaces';
-import { PreviewGrnTableColumn } from 'src/utils';
+import { useQuasar } from 'quasar';
+import { EUserRoles, IGrnPreviewResponse } from 'src/interfaces';
+import { viewGrnApi } from 'src/services';
+import { useAuthStore } from 'src/stores';
+import { PreviewGrnTableColumn, isPosError } from 'src/utils';
 import { onMounted, ref } from 'vue';
-type PropType = {
-  previewData: IGrnPreviewResponse;
-  selectedRowId?: number;
-};
-const props = defineProps<PropType>();
-const selectedId = ref<number>();
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const $q = useQuasar();
+const isLoading = ref(false);
+const authStore = useAuthStore();
 const selectedGrnData = ref<IGrnPreviewResponse>({
   grnId: 0,
   fromShopId: 0,
@@ -158,6 +163,7 @@ const selectedGrnData = ref<IGrnPreviewResponse>({
   grnDetails: [],
 });
 const selectedPreviewImage = ref('');
+const selectedGrnId = ref(-1);
 const isPreviewImageModalVisible = ref(false);
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
@@ -172,10 +178,29 @@ const getImageUrl = (base64Image: string) => {
   return '';
 };
 onMounted(() => {
-  selectedGrnData.value = props.previewData;
-  selectedGrnData.value.addedDate = moment(props.previewData.addedDate).format(
-    'YYYY-MM-DD'
-  );
-  selectedId.value = props.selectedRowId;
+  selectedGrnId.value = Number(router.currentRoute.value.params.id);
+  previewGrn(selectedGrnId.value);
 });
+const previewGrn = async (selectedId: number) => {
+  isLoading.value = true;
+  try {
+    const res = await viewGrnApi(selectedId);
+    if (res.type === 'Success') {
+      selectedGrnData.value = res.data;
+      selectedGrnData.value.addedDate = moment(res.data.addedDate).format(
+        'YYYY-MM-DD'
+      );
+    }
+  } catch (e) {
+    let message = 'Unexpected error occurred Preview Grn';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      type: 'negative',
+      message,
+    });
+  }
+  isLoading.value = false;
+};
 </script>

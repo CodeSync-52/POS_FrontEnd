@@ -4,7 +4,12 @@
       v-if="!isPrintingBarcodeScreenVisible"
       class="flex flex-col md:flex-row justify-between items-center q-mb-md gap-3"
     >
-      <q-btn unelevated color="btn-cancel" label="Go Back" to="/inventory" />
+      <q-btn
+        unelevated
+        color="btn-cancel"
+        label="Go Back"
+        @click="router.go(-1)"
+      />
       <div class="q-gutter-md flex flex-col md:flex-row">
         <q-btn
           v-if="!rowColumnData.length"
@@ -722,14 +727,11 @@ const handleAddInventory = async (
         message: res.message,
         type: 'positive',
       });
+
+      selectedId.value = res.data;
+      handlePreviewGrn();
+
       rowColumnData.value = [];
-      const modifiedArray = modifyArray(res.data);
-      selectedProductBarcodes.value = modifiedArray;
-      showBarcodeScreen.value = true;
-      isPrintingBarcodeScreenVisible.value = true;
-      setTimeout(() => {
-        setBarcodeProps();
-      }, 0);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Inventory';

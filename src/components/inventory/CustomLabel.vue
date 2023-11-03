@@ -19,7 +19,7 @@
               outlined
               @filter="filterProduct"
               v-model="selectedProduct.productLabel"
-              @update:model-value="selectedProduct.productLabel = $event.name"
+              @update:model-value="handleSelectProduct($event)"
               label="Select Product"
               color="btn-primary"
               option-label="name"
@@ -143,7 +143,7 @@
             <span class="text-base font-medium">Select Quantity</span>
             <q-input
               v-model="selectedProduct.quantity"
-              :min="1"
+              :max="selectedProductAvailableStock"
               outlined
               dense
               color="btn-primary"
@@ -218,7 +218,7 @@ const emit = defineEmits<{
     callback: () => void
   ): void;
 }>();
-
+const selectedProductAvailableStock = ref(0);
 const props = withDefaults(defineProps<propTypes>(), {
   selectedArticle: () => [],
   articleList: () => [],
@@ -274,6 +274,11 @@ const optionData = computed(() => {
   }
   return options.value;
 });
+const handleSelectProduct = (newArticle: IArticleData) => {
+  selectedProduct.value.productLabel = newArticle.name;
+  selectedProductAvailableStock.value = newArticle.masterStock ?? 0;
+  selectedProduct.value.quantity = 0;
+};
 const isButtonDisabled = computed(() => {
   const validations = [
     Object.values(variantGroup.value).some((variant) => variant === null),
@@ -282,6 +287,8 @@ const isButtonDisabled = computed(() => {
     ),
     selectedProduct.value.quantity === null,
     selectedProduct.value.quantity === 0,
+    selectedProduct.value.quantity !== null &&
+      selectedProduct.value.quantity < 0,
     selectedProduct.value.productLabel === null,
   ];
   return validations.some((validation) => validation === true);
@@ -291,6 +298,8 @@ const handleUpdateQuantity = (newVal: number | string | null) => {
     const val = parseInt(newVal);
     if (!val || val < 0) {
       selectedProduct.value.quantity = 0;
+    } else if (val > selectedProductAvailableStock.value) {
+      selectedProduct.value.quantity = selectedProductAvailableStock.value;
     } else {
       selectedProduct.value.quantity = val;
     }

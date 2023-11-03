@@ -13,10 +13,8 @@ export const addInventoryApi = async ({
   shopId: number;
   productWithVariantDTOs: IProductWithVariantDTOs[];
 }) => {
-  const res = await makeApiCall<
-    IGenericResponse<{ productCode: string; quantity: number }[]>
-  >({
-    url: 'api/inventory/add',
+  const res = await makeApiCall<IGenericResponse<number>>({
+    url: 'api/grn/warehouse/add',
     method: 'POST',
     data: {
       shopId,

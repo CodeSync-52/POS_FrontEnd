@@ -10,7 +10,7 @@
     >
       <q-select
         popup-content-class="!max-h-[200px]"
-        :options="shopOptionRecords"
+        :options="shopData"
         :loading="isLoading"
         use-input
         class="min-w-[220px] max-w-[220px]"
@@ -20,6 +20,28 @@
         v-model="selectedShop.fromShopId"
         @update:model-value="handleUpdateFromShop($event)"
         label="From Shop"
+        color="btn-primary"
+        option-label="name"
+        option-value="shopId"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template></q-select
+      >
+      <q-select
+        popup-content-class="!max-h-[200px]"
+        :options="shopData"
+        :loading="isLoading"
+        use-input
+        class="min-w-[220px] max-w-[220px]"
+        dense
+        map-options
+        outlined
+        v-model="selectedShop.toShopId"
+        @update:model-value="handleUpdateToShop($event)"
+        label="To Shop"
         color="btn-primary"
         option-label="name"
         option-value="shopId"
@@ -92,23 +114,15 @@
         >
           <q-th></q-th>
         </template>
-        <template
-          v-if="
-            authStore.checkUserHasPermission(
-              EUserModules.StockTransferRequests,
-              EActionPermissions.Update
-            ) &&
-            authStore.checkUserHasPermission(
-              EUserModules.StockTransferRequests,
-              EActionPermissions.Delete
-            )
-          "
-          v-slot:body-cell-action="props"
-        >
+        <template v-slot:body-cell-action="props">
           <q-td class="flex justify-start" :props="props">
             <div class="flex gap-2 flex-nowrap">
               <q-btn
                 v-if="
+                  (authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() ||
+                    authStore.loggedInUser?.rolePermissions.roleName ===
+                      EUserRoles.Admin.toLowerCase()) &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "
@@ -126,6 +140,10 @@
               </q-btn>
               <q-btn
                 v-if="
+                  (authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() ||
+                    authStore.loggedInUser?.rolePermissions.roleName ===
+                      EUserRoles.Admin.toLowerCase()) &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "
@@ -142,13 +160,19 @@
                 </q-tooltip>
               </q-btn>
               <q-btn
+                v-if="
+                  authStore.checkUserHasPermission(
+                    EUserModules.StockTransferRequests,
+                    EActionPermissions.View
+                  )
+                "
                 flat
                 unelevated
                 dense
                 size="sm"
                 icon="visibility"
                 color="green"
-                @click="handlePreviewGrn(props.row)"
+                :to="`/stock-transfer/${props.row.grnId}`"
               >
                 <q-tooltip class="bg-green" :offset="[10, 10]">
                   Preview GRN
@@ -181,15 +205,9 @@
       @accept-str="handleAcceptStr"
     />
   </q-dialog>
-  <q-dialog v-model="isPreviewStrModalVisible">
-    <str-preview-modal
-      :selected-row-id="selectedRowData?.grnId"
-      :preview-data="previewResponseData"
-    />
-  </q-dialog>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useQuasar, date } from 'quasar';
 import {
   EActionPermissions,
@@ -199,16 +217,14 @@ import {
   IPagination,
   getRoleModuleDisplayName,
   IShopResponse,
-  IGrnPreviewResponse,
+  EUserRoles,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
-import StrPreviewModal from 'src/components/str/StrPreview.vue';
 import {
   grnListApi,
   rejectStrApi,
   acceptStrApi,
   shopListApi,
-  viewGrnApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -219,25 +235,12 @@ const $q = useQuasar();
 const strRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
-const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedRowData = ref<IGrnRecords | null>(null);
 const isReject = ref(false);
 const timeStamp = Date.now();
-const isPreviewStrModalVisible = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
-const previewResponseData = ref<IGrnPreviewResponse>({
-  grnId: 0,
-  fromShopId: 0,
-  toShopId: 0,
-  fromShopName: '',
-  toShopName: '',
-  quantity: 0,
-  grnStatus: '',
-  addedDate: '',
-  grnDetails: [],
-});
 const filterSearch = ref<IGrnListFilter>({
   FromDate: formattedFromDate,
   ToDate: formattedToDate,
@@ -354,23 +357,14 @@ const getGrnList = async (data?: {
   }
   isLoading.value = false;
 };
-const shopOptionRecords = computed(() => {
-  let idList: number[] = [];
-  if (selectedShop.value.fromShopId) {
-    idList.push(selectedShop.value.fromShopId.shopId);
-  }
-  if (selectedShop.value.toShopId) {
-    idList.push(selectedShop.value.toShopId.shopId);
-  }
-  if (idList.length > 0) {
-    return shopData.value.filter((shop) => !idList.includes(shop.shopId));
-  }
-  return shopData.value;
-});
 
 const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShopId = newVal;
   filterSearch.value.fromShopId = newVal?.shopId;
+};
+const handleUpdateToShop = (newVal: IShopResponse) => {
+  selectedShop.value.toShopId = newVal;
+  filterSearch.value.toShopId = newVal?.shopId;
 };
 
 const handleRejectStr = async (reason: string, callback: () => void) => {
@@ -435,7 +429,6 @@ const getShopList = async () => {
     });
     if (response.data) {
       shopData.value = response.data.items;
-      ShopOptionData.value = response.data.items;
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
@@ -448,25 +441,6 @@ const getShopList = async () => {
     });
   } finally {
     isLoading.value = false;
-  }
-};
-const handlePreviewGrn = async (selectedRow: IGrnRecords) => {
-  selectedRowData.value = selectedRow;
-  try {
-    const res = await viewGrnApi(selectedRowData.value.grnId);
-    previewResponseData.value = res.data;
-    if (res.type === 'Success') {
-      isPreviewStrModalVisible.value = true;
-    }
-  } catch (e) {
-    let message = 'Unexpected error occurred Preview Grn';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      type: 'negative',
-      message,
-    });
   }
 };
 </script>
