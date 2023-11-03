@@ -13,6 +13,12 @@
         :options="shopData"
         :loading="isLoading"
         use-input
+        :disable="
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.SuperAdmin.toLowerCase() &&
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.Admin.toLowerCase()
+        "
         class="min-w-[220px] max-w-[220px]"
         dense
         map-options
@@ -119,10 +125,8 @@
             <div class="flex gap-2 flex-nowrap">
               <q-btn
                 v-if="
-                  (authStore.loggedInUser?.rolePermissions.roleName ===
-                    EUserRoles.SuperAdmin.toLowerCase() ||
-                    authStore.loggedInUser?.rolePermissions.roleName ===
-                      EUserRoles.Admin.toLowerCase()) &&
+                  authStore.loggedInUser?.userShopInfoDTO.shopId ===
+                    props.row.toShopId &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "
@@ -140,10 +144,8 @@
               </q-btn>
               <q-btn
                 v-if="
-                  (authStore.loggedInUser?.rolePermissions.roleName ===
-                    EUserRoles.SuperAdmin.toLowerCase() ||
-                    authStore.loggedInUser?.rolePermissions.roleName ===
-                      EUserRoles.Admin.toLowerCase()) &&
+                  authStore.loggedInUser?.userShopInfoDTO.shopId ===
+                    props.row.toShopId &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "

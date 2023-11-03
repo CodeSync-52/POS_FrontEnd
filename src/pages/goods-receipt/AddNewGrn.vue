@@ -292,10 +292,9 @@ const handleSelectedInventoryFilters = (
 ) => {
   filterSearch.value.ProductCode = selectedInventoryFilters.ProductCode;
   filterSearch.value.ProductId = selectedInventoryFilters.ProductId;
-  inventoryDetailList();
-  callback();
+  inventoryDetailList().then(() => callback());
 };
-const handleRemoveInventoryFilter = (
+const handleRemoveInventoryFilter = async (
   selectedInventoryFilters: IInventoryFilterSearch,
   callback: () => void
 ) => {
@@ -304,9 +303,8 @@ const handleRemoveInventoryFilter = (
     filterSearch.value.ProductId = null;
     selectedInventoryFilters.ProductCode = null;
     selectedInventoryFilters.ProductId = null;
-    inventoryDetailList();
+    inventoryDetailList().then(() => callback());
   }
-  callback();
 };
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;

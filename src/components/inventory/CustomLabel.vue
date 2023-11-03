@@ -140,7 +140,14 @@
             >
           </div>
           <div class="col-6 q-gutter-y-xs">
-            <span class="text-base font-medium">Select Quantity</span>
+            <div
+              class="flex text-base font-medium justify-between items-center"
+            >
+              <span>Select Quantity</span>
+              <span
+                >Available Quantity: {{ selectedProductAvailableStock }}</span
+              >
+            </div>
             <q-input
               v-model="selectedProduct.quantity"
               :max="selectedProductAvailableStock"
@@ -275,9 +282,13 @@ const optionData = computed(() => {
   return options.value;
 });
 const handleSelectProduct = (newArticle: IArticleData) => {
-  selectedProduct.value.productLabel = newArticle.name;
-  selectedProductAvailableStock.value = newArticle.masterStock ?? 0;
-  selectedProduct.value.quantity = 0;
+  if (newArticle) {
+    selectedProduct.value.productLabel = newArticle.name;
+    selectedProductAvailableStock.value = newArticle.masterStock ?? 0;
+    selectedProduct.value.quantity = 0;
+  } else {
+    selectedProductAvailableStock.value = 0;
+  }
 };
 const isButtonDisabled = computed(() => {
   const validations = [
