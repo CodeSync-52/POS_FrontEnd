@@ -173,12 +173,9 @@
               !newArticle.name ||
               !newArticle.categoryName ||
               (isUpdate &&
-                (newArticle.retailPrice <= 0 ||
-                  newArticle.wholeSalePrice <= 0 ||
-                  newArticle.costPrice <= 0 ||
-                  !newArticle.retailPrice ||
-                  !newArticle.wholeSalePrice ||
-                  !newArticle.costPrice)) ||
+                (newArticle.retailPrice < 0 ||
+                  newArticle.wholeSalePrice < 0 ||
+                  newArticle.costPrice < 0)) ||
               isImageSizeGreater()
             "
             color="btn-primary"
