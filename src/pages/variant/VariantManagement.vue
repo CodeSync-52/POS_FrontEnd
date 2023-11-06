@@ -152,7 +152,7 @@
                 class="hover:text-btn-primary !px-[5px]"
                 @click="onEditButtonClick(props.row)"
               >
-                <q-tooltip class="bg-black" :offset="[10, 10]">
+                <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
                   Edit Variant Group
                 </q-tooltip>
               </q-btn>

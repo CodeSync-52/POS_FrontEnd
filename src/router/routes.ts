@@ -257,6 +257,13 @@ export const routeList = [
       module: EUserModules.StockTransferRequests,
     },
   },
+  {
+    path: '/stock-transfer/:id/edit',
+    component: () => import('pages/stock-transfer/PreviewStr.vue'),
+    meta: {
+      module: EUserModules.StockTransferRequests,
+    },
+  },
 ];
 
 const routes: RouteRecordRaw[] = [

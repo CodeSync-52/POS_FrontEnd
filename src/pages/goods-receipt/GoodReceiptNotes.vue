@@ -182,6 +182,31 @@
                   Preview GRN
                 </q-tooltip>
               </q-btn>
+              <div class="flex gap-2 flex-nowrap">
+                <q-btn
+                  v-if="
+                    authStore.checkUserHasPermission(
+                      EUserModules.GoodsReceiptNotes,
+                      EActionPermissions.Delete
+                    ) &&
+                    authStore.checkUserHasPermission(
+                      EUserModules.GoodsReceiptNotes,
+                      EActionPermissions.Update
+                    )
+                  "
+                  size="sm"
+                  flat
+                  unelevated
+                  dense
+                  icon="edit"
+                  class="hover:text-btn-primary !px-[5px]"
+                  :to="`/stock-transfer/${props.row.grnId}/edit`"
+                >
+                  <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                    Edit GRN
+                  </q-tooltip>
+                </q-btn>
+              </div>
             </div>
           </q-td>
         </template>

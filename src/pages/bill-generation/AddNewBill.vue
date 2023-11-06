@@ -273,6 +273,7 @@
               dense
               label="Claim Amount"
               outlined
+              color="btn-primary"
               @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
             />
           </div>
@@ -286,6 +287,7 @@
               :min="0"
               label="Freight User"
               outlined
+              color="btn-primary"
               @update:model-value="
                 handleUpdateClaimOrFreight($event, 'freight')
               "
@@ -296,6 +298,7 @@
               v-if="billAction !== 'Preview Bill'"
               label="Update Claim Freight"
               :loading="isUpdating"
+              unelevated
               color="btn-primary"
               @click="handleUpdateClaimFreight"
             />

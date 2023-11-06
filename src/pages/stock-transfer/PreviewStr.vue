@@ -2,7 +2,9 @@
   <q-card>
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-lg font-medium"> Preview GRN</span>
+        <span class="text-lg font-medium"
+          >{{ isEdit ? 'Edit' : 'Preview' }} GRN</span
+        >
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-4">
@@ -37,7 +39,7 @@
             :loading="isLoading"
             maxlength="250px"
             v-model="selectedGrnData.quantity"
-            label="Quantity"
+            label="Total Quantity"
             lazy-rules
             color="btn-primary"
           />
@@ -93,6 +95,46 @@
                     'assets/default-image.png'
                   "
                   alt="img"
+                />
+              </div>
+            </q-td>
+          </template>
+          <template v-slot:body-cell-quantity="props">
+            <q-td :props="props">
+              <q-input
+                v-if="isEdit"
+                type="number"
+                outlined
+                dense
+                color="btn-primary"
+                v-model="props.row.quantity"
+                class="w-[150px]"
+              />
+              <span v-else>{{ props.row.quantity }}</span>
+            </q-td>
+          </template>
+          <template v-if="!isEdit" v-slot:header-cell-action>
+            <q-th></q-th>
+          </template>
+          <template v-if="isEdit" v-slot:body-cell-action="props">
+            <q-td :props="props">
+              <div class="flex gap-2 flex-nowrap">
+                <q-btn
+                  size="sm"
+                  flat
+                  unelevated
+                  dense
+                  color="green"
+                  icon="check"
+                />
+
+                <q-btn
+                  size="sm"
+                  flat
+                  unelevated
+                  dense
+                  color="red"
+                  icon="delete"
                 />
               </div>
             </q-td>
@@ -165,6 +207,7 @@ const selectedGrnData = ref<IGrnPreviewResponse>({
 const selectedPreviewImage = ref('');
 const selectedGrnId = ref(-1);
 const isPreviewImageModalVisible = ref(false);
+const isEdit = ref(false);
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
     selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
@@ -180,6 +223,11 @@ const getImageUrl = (base64Image: string) => {
 onMounted(() => {
   selectedGrnId.value = Number(router.currentRoute.value.params.id);
   previewGrn(selectedGrnId.value);
+  if (router.currentRoute.value.path.includes('edit')) {
+    isEdit.value = true;
+  } else {
+    isEdit.value = false;
+  }
 });
 const previewGrn = async (selectedId: number) => {
   isLoading.value = true;

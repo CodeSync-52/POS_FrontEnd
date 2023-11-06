@@ -233,11 +233,6 @@ const apiController = ref<AbortController | null>(null);
 const isFetchingRecords = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
-onUnmounted(() => {
-  if (apiController.value) {
-    apiController.value.abort();
-  }
-});
 const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
 const pagination = ref({
@@ -268,6 +263,17 @@ onMounted(() => {
   };
   inventoryDetailList();
 });
+onUnmounted(() => {
+  if (apiController.value) {
+    apiController.value.abort();
+  }
+});
+window.addEventListener('keypress', function (e) {
+  if (e.key === 'n' || e.key === 'N') {
+    isInventoryListModalVisible.value = true;
+  }
+});
+
 const handleUpdatedispatchQuantity = (
   newVal: string | number | null,
   selectedRecord: IInventoryListResponseWithDispatchQuantity
