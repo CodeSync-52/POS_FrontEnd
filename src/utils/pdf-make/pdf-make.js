@@ -1,6 +1,6 @@
-import PdfMake from 'pdfmake';
-import fonts from 'pdfmake/build/vfs_fonts';
-PdfMake.vfs = fonts.pdfMake.vfs;
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export const downloadPdf = async ({
   tableHeaders = [],
@@ -106,6 +106,6 @@ export const downloadPdf = async ({
       fontSize: 20,
     });
   }
-  const doc = await PdfMake.createPdf(docData);
+  const doc = await pdfMake.createPdf(docData);
   await doc.download(filename);
 };

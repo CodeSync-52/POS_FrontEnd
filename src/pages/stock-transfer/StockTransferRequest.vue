@@ -13,12 +13,6 @@
         :options="shopData"
         :loading="isLoading"
         use-input
-        :disable="
-          authStore.loggedInUser?.rolePermissions.roleName !==
-            EUserRoles.SuperAdmin.toLowerCase() &&
-          authStore.loggedInUser?.rolePermissions.roleName !==
-            EUserRoles.Admin.toLowerCase()
-        "
         class="min-w-[220px] max-w-[220px]"
         dense
         map-options
@@ -43,6 +37,12 @@
         use-input
         class="min-w-[220px] max-w-[220px]"
         dense
+        :disable="
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.SuperAdmin.toLowerCase() &&
+          authStore.loggedInUser?.rolePermissions.roleName !==
+            EUserRoles.Admin.toLowerCase()
+        "
         map-options
         outlined
         v-model="selectedShop.toShopId"
@@ -280,11 +280,11 @@ const resetFilter = () => {
   filterSearch.value = {
     ToDate: null,
     FromDate: null,
-    toShopId: null,
-    fromShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    toShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    fromShopId: null,
   };
   selectedShop.value = {
-    fromShopId: {
+    toShopId: {
       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
       closingBalance: 0,
       status: '',
@@ -294,16 +294,16 @@ const resetFilter = () => {
       address: '',
       code: '',
     },
-    toShopId: null,
+    fromShopId: null,
   };
-  if (selectedShop.value.fromShopId) {
-    filterSearch.value.fromShopId = selectedShop.value.fromShopId?.shopId;
+  if (selectedShop.value.toShopId) {
+    filterSearch.value.toShopId = selectedShop.value.toShopId?.shopId;
   }
   getGrnList();
 };
 onMounted(() => {
   getShopList();
-  selectedShop.value.fromShopId = {
+  selectedShop.value.toShopId = {
     shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     closingBalance: 0,
     status: '',
@@ -313,7 +313,7 @@ onMounted(() => {
     address: '',
     code: '',
   };
-  filterSearch.value.fromShopId = selectedShop.value.fromShopId.shopId;
+  filterSearch.value.toShopId = selectedShop.value.toShopId.shopId;
   getGrnList();
 }),
   onUnmounted(() => {
