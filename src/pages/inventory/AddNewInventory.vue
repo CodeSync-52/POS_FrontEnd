@@ -171,8 +171,7 @@
                       secondItem.variantId
                     )
                   "
-                >
-                </q-input>
+                />
               </td>
             </tr>
           </tbody>
