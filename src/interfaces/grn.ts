@@ -60,6 +60,36 @@ export interface IPreviewGrnDetail {
   quantity: number;
 }
 
+export interface IProductGRN {
+  productId: number;
+  productName: string;
+  productImage: string | null;
+  data: ProductVariant[];
+}
+
+export interface ProductVariant {
+  variantId1: number;
+  variantName1: string;
+  variantId2: number;
+  variantName2: string;
+  selectedGrnId: number;
+  quantity: number;
+  v2details: V2Detail[];
+}
+
+export interface V2Detail {
+  grnDetailId: number;
+  productName: string;
+  productCode: string;
+  productImage: string | null;
+  variant_1_Name: string;
+  variant_2_Name: string;
+  productId: number;
+  variantId_1: number;
+  variantId_2: number;
+  quantity: number;
+}
+
 export interface PurchaseOrder {
   id?: 0;
   action: '';
