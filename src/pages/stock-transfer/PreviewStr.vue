@@ -177,7 +177,7 @@
           authStore.loggedInUser?.rolePermissions.roleName !==
             EUserRoles.ShopOfficer.toLowerCase()
         "
-        label="Generate Barcode"
+        label="Print Label"
         color="btn-primary"
         class="hover:btn-primary-hover"
         :to="`/inventory/add-new/${selectedGrnId}`"
