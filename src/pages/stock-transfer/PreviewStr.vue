@@ -2,7 +2,9 @@
   <q-card>
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-lg font-medium"> Preview GRN</span>
+        <span class="text-lg font-medium"
+          >{{ isEdit ? 'Edit' : 'Preview' }} GRN</span
+        >
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-4">
@@ -37,7 +39,7 @@
             :loading="isLoading"
             maxlength="250px"
             v-model="selectedGrnData.quantity"
-            label="Quantity"
+            label="Total Quantity"
             lazy-rules
             color="btn-primary"
           />
@@ -67,37 +69,103 @@
           />
         </div>
       </div>
-      <div class="py-4">
-        <q-table
-          :loading="isLoading"
-          :rows="selectedGrnData.grnDetails"
-          :columns="PreviewGrnTableColumn"
-        >
-          <template v-slot:no-data>
-            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-              <q-icon name="warning" size="xs" />
-              <span class="text-md font-medium"> No data available. </span>
-            </div>
-          </template>
-          <template v-slot:body-cell-productImage="props">
-            <q-td :props="props">
-              <div
-                @click="handlePreviewImage(props.row.productImage)"
-                class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
-                :class="props.row.productImage ? 'cursor-pointer' : ''"
+      <div v-if="grnGroupByProductId" class="q-gutter-y-md mt-2">
+        <div v-for="(product, i) in grnGroupByProductId" :key="i">
+          <q-markup-table>
+            <thead>
+              <tr>
+                <th class="text-left">
+                  <div class="row items-center gap-1">
+                    <span
+                      >Product:
+                      <span class="font-semibold">{{
+                        product.productName
+                      }}</span></span
+                    >
+                    <div
+                      class="w-8 h-8 rounded-full overflow-hidden"
+                      :class="product.productImage && 'cursor-pointer'"
+                      @click="handlePreviewImage(product.productImage)"
+                    >
+                      <img
+                        class="w-full h-full object-cover"
+                        :src="
+                          getImageUrl(product.productImage) ||
+                          'assets/default-image.png'
+                        "
+                        alt="img"
+                      />
+                    </div>
+                  </div>
+                </th>
+
+                <th
+                  v-for="(firstVariant, i) in uniqueVariantNames(product.data)"
+                  :key="i"
+                  class="text-left"
+                >
+                  {{ firstVariant }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(secondVariant, i) in uniqueVariantNames2(product.data)"
+                :key="i"
               >
-                <img
-                  class="w-full h-full object-cover"
-                  :src="
-                    getImageUrl(props.row.productImage) ||
-                    'assets/default-image.png'
-                  "
-                  alt="img"
-                />
-              </div>
-            </q-td>
-          </template>
-        </q-table>
+                <td class="text-left font-semibold">
+                  {{ secondVariant }}
+                </td>
+                <td
+                  v-for="(secondItem, secondItemIndex) in limitedRecord(
+                    product.data,
+                    secondVariant
+                  )"
+                  :key="secondItemIndex"
+                >
+                  <q-input
+                    type="number"
+                    dense
+                    color="btn-primary"
+                    outlined
+                    :disable="!isEdit"
+                    min="0"
+                    v-model="secondItem.quantity"
+                  >
+                    <template v-if="isEdit" v-slot:append>
+                      <q-icon
+                        class="cursor-pointer"
+                        name="check"
+                        color="green"
+                        dense
+                        size="xs"
+                        @click="
+                          updateSelectedProductVariant(
+                            secondItem.selectedGrnId,
+                            secondItem.quantity
+                          )
+                        "
+                      />
+                      <q-icon
+                        class="cursor-pointer"
+                        name="delete"
+                        @click="
+                          updateSelectedProductVariant(
+                            secondItem.selectedGrnId,
+                            0
+                          )
+                        "
+                        color="red"
+                        dense
+                        size="xs"
+                      />
+                    </template>
+                  </q-input>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </div>
       </div>
     </q-card-section>
     <q-card-actions align="right">
@@ -109,7 +177,7 @@
           authStore.loggedInUser?.rolePermissions.roleName !==
             EUserRoles.ShopOfficer.toLowerCase()
         "
-        label="Generate Barcode"
+        label="Print Label"
         color="btn-primary"
         class="hover:btn-primary-hover"
         :to="`/inventory/add-new/${selectedGrnId}`"
@@ -141,10 +209,15 @@
 <script lang="ts" setup>
 import moment from 'moment';
 import { useQuasar } from 'quasar';
-import { EUserRoles, IGrnPreviewResponse } from 'src/interfaces';
-import { viewGrnApi } from 'src/services';
+import {
+  EUserRoles,
+  IGrnPreviewResponse,
+  IProductGRN,
+  ProductVariant,
+} from 'src/interfaces';
+import { updateGrnDetail, viewGrnApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
-import { PreviewGrnTableColumn, isPosError } from 'src/utils';
+import { isPosError } from 'src/utils';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
@@ -162,16 +235,45 @@ const selectedGrnData = ref<IGrnPreviewResponse>({
   addedDate: '',
   grnDetails: [],
 });
+
+const uniqueVariantNames = (data: ProductVariant[]) => {
+  const uniqueNames = new Set();
+  if (data) {
+    for (const product of data) {
+      uniqueNames.add(product.variantName1);
+    }
+  }
+
+  return Array.from(uniqueNames);
+};
+const limitedRecord = (data: ProductVariant[], variantName2: any) => {
+  let rec = data.filter((item) => item.variantName2 === variantName2);
+  return rec;
+};
+const uniqueVariantNames2 = (data: ProductVariant[]) => {
+  const uniqueNames = new Set();
+  if (data) {
+    for (const product of data) {
+      uniqueNames.add(product.variantName2);
+    }
+  }
+
+  return Array.from(uniqueNames);
+};
+
 const selectedPreviewImage = ref('');
 const selectedGrnId = ref(-1);
 const isPreviewImageModalVisible = ref(false);
-const handlePreviewImage = (selectedImage: string) => {
+const isEdit = ref(false);
+const grnGroupByProductId = ref<IProductGRN[] | null>(null);
+
+const handlePreviewImage = (selectedImage: string | null) => {
   if (selectedImage) {
     selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
     isPreviewImageModalVisible.value = true;
   }
 };
-const getImageUrl = (base64Image: string) => {
+const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
   }
@@ -180,7 +282,13 @@ const getImageUrl = (base64Image: string) => {
 onMounted(() => {
   selectedGrnId.value = Number(router.currentRoute.value.params.id);
   previewGrn(selectedGrnId.value);
+  if (router.currentRoute.value.path.includes('edit')) {
+    isEdit.value = true;
+  } else {
+    isEdit.value = false;
+  }
 });
+
 const previewGrn = async (selectedId: number) => {
   isLoading.value = true;
   try {
@@ -190,7 +298,41 @@ const previewGrn = async (selectedId: number) => {
       selectedGrnData.value.addedDate = moment(res.data.addedDate).format(
         'YYYY-MM-DD'
       );
+      grnGroupByProductId.value = selectedGrnData.value.grnDetails.reduce(
+        (accumulator: any, currentDetail) => {
+          const productId = currentDetail.productId;
+
+          if (!accumulator[productId]) {
+            accumulator[productId] = {
+              productId,
+              productName: currentDetail.productName,
+              productImage: currentDetail.productImage,
+              data: [],
+            };
+          }
+          const existingVariantv2 = accumulator[productId].data.find(
+            (variant: any) => variant.variantId1 === currentDetail.variantId_2
+          );
+          if (existingVariantv2) {
+            existingVariantv2.v2details.push(currentDetail);
+          } else {
+            accumulator[productId].data.push({
+              variantId2: currentDetail.variantId_2,
+              variantName2: currentDetail.variant_2_Name,
+              variantId1: currentDetail.variantId_1,
+              variantName1: currentDetail.variant_1_Name,
+              selectedGrnId: currentDetail.grnDetailId,
+              quantity: currentDetail.quantity,
+              v2details: [currentDetail],
+            });
+          }
+
+          return accumulator;
+        },
+        {}
+      );
     }
+    console.log(grnGroupByProductId.value);
   } catch (e) {
     let message = 'Unexpected error occurred Preview Grn';
     if (isPosError(e)) {
@@ -202,5 +344,23 @@ const previewGrn = async (selectedId: number) => {
     });
   }
   isLoading.value = false;
+};
+
+const updateSelectedProductVariant = async (
+  grnDetailId: number,
+  quantity: number
+) => {
+  const res = await updateGrnDetail({
+    grnId: grnDetailId,
+    quantity: quantity,
+  });
+  if (res.type === 'Success') {
+    $q.notify({
+      message: res.message,
+      type: 'positive',
+    });
+  }
+  selectedGrnId.value = Number(router.currentRoute.value.params.id);
+  previewGrn(selectedGrnId.value);
 };
 </script>

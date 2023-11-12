@@ -31,6 +31,7 @@
                 dense
                 map-options
                 outlined
+                popup-content-class="!max-h-[200px]"
                 @filter="filterFn"
                 v-model="addNewReceipt.userId"
                 @update:model-value="addNewReceipt.userId = $event.userId"

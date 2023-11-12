@@ -103,6 +103,7 @@
                 :loading="isLoading"
                 use-input
                 dense
+                popup-content-class="!max-h-[200px]"
                 map-options
                 outlined
                 @filter="filterFn"
@@ -314,6 +315,7 @@
               <q-td :props="props">
                 <div class="flex gap-2 flex-nowrap">
                   <q-input
+                    ref="firstRow"
                     :disable="
                       (action === 'Edit' &&
                         !authStore.checkUserHasPermission(
@@ -421,7 +423,7 @@
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import moment from 'moment';
 import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
@@ -483,6 +485,7 @@ const articleList = ref<IArticleData[]>([]);
 const selectedArticleData = ref<ISelectedWholeSaleArticleData[]>([]);
 const selectedId = ref<number>(-1);
 const isAddingSale = ref(false);
+const firstRow = ref<HTMLElement | null>(null);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const pagination = ref<IPagination>({
@@ -656,6 +659,11 @@ const selectedData = (
         wholeSaleDetailId: -1,
         productImage: item.productImage,
         masterStock: item.masterStock,
+      });
+      nextTick(() => {
+        if (firstRow.value) {
+          firstRow.value.focus();
+        }
       });
 
       if (action.value === 'Edit') {

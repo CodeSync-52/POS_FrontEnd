@@ -107,4 +107,10 @@ export const PreviewGrnTableColumn: QTableColumn<IPreviewGrnDetail>[] = [
     field: (row) => row.quantity,
     align: 'left',
   },
+  {
+    name: 'action',
+    label: 'Action',
+    field: () => '',
+    align: 'left',
+  },
 ];

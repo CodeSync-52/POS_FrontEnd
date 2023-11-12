@@ -54,3 +54,11 @@ export const grnListApi = async (
   });
   return res;
 };
+
+export const updateGrnDetail = async (payload: any) => {
+  const res = await makeApiCall<any>({
+    url: `api/grn/update?grnDetailId=${payload.grnId}&quantity=${payload.quantity}`,
+    method: 'PUT',
+  });
+  return res;
+};
