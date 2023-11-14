@@ -64,7 +64,7 @@
             >
           </div>
         </div>
-        <div class="q-gutter-y-xs">
+        <div class="q-gutter-y-xs row gap-10">
           <div class="row gap-6 items-center">
             <span class="text-base">Add Inventory</span>
             <q-btn
@@ -75,6 +75,15 @@
               @click="isInventoryListModalVisible = true"
             />
           </div>
+          <q-input
+            autofocus
+            v-model="scannedLabel"
+            :loading="scannedLabelLoading"
+            outlined
+            dense
+            label="Scan label"
+            color="btn-primary"
+          />
         </div>
 
         <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
@@ -233,6 +242,8 @@ const apiController = ref<AbortController | null>(null);
 const isFetchingRecords = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
+const scannedLabel = ref('');
+const scannedLabelLoading = ref(false);
 const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
 const pagination = ref({
@@ -268,9 +279,52 @@ onUnmounted(() => {
     apiController.value.abort();
   }
 });
-window.addEventListener('keypress', function (e) {
+window.addEventListener('keypress', async function (e: KeyboardEvent) {
   if (e.key === 'n' || e.key === 'N') {
     isInventoryListModalVisible.value = true;
+  } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
+    console.log(scannedLabel.value.length);
+    const target = e.target as HTMLInputElement;
+    if (scannedLabel.value.length > 0) {
+      filterSearch.value.ProductCode = target.value;
+      if (scannedLabelLoading.value) return;
+      scannedLabelLoading.value = true;
+      try {
+        const res = await inventoryDetailApi({
+          ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+          PageNumber: pagination.value.page,
+          PageSize: pagination.value.rowsPerPage,
+          filterSearch: filterSearch.value,
+        });
+        if (res.type === 'Success') {
+          const selectedProduct = selectedInventoryData.value.find(
+            (record) =>
+              res.data.inventoryDetails[0].inventoryId === record.inventoryId
+          );
+          if (
+            selectedProduct &&
+            selectedInventoryData.value.includes(selectedProduct)
+          ) {
+            selectedProduct.quantity += 1;
+          } else {
+            selectedInventoryData.value.unshift({
+              ...res.data.inventoryDetails[0],
+              dispatchQuantity: 1,
+            });
+          }
+        }
+      } catch (e) {
+        let message = 'Unexpected Error Occurred';
+        if (isPosError(e)) {
+          message = e.message;
+        }
+        $q.notify({
+          message,
+          type: 'negative',
+        });
+      }
+      scannedLabelLoading.value = false;
+    }
   }
 });
 
