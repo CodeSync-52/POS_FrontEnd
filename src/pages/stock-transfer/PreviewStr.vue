@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="row justify-between items-center mb-2">
         <span class="text-lg font-medium"
-          >{{ isEdit ? 'Edit' : 'Preview' }} GRN</span
+          >{{ isEdit ? 'Edit' : 'Preview' }} Str Receiving</span
         >
       </div>
       <div class="row q-col-gutter-md">
