@@ -77,6 +77,8 @@
           </div>
           <q-input
             autofocus
+            ref="scannedLabelInput"
+            class="min-w-[200px] max-w-[200px]"
             v-model="scannedLabel"
             :loading="scannedLabelLoading"
             outlined
@@ -243,6 +245,7 @@ const isFetchingRecords = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const scannedLabel = ref('');
+const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
 const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
@@ -283,7 +286,6 @@ window.addEventListener('keypress', async function (e: KeyboardEvent) {
   if (e.key === 'n' || e.key === 'N') {
     isInventoryListModalVisible.value = true;
   } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
-    console.log(scannedLabel.value.length);
     const target = e.target as HTMLInputElement;
     if (scannedLabel.value.length > 0) {
       filterSearch.value.ProductCode = target.value;
@@ -297,21 +299,25 @@ window.addEventListener('keypress', async function (e: KeyboardEvent) {
           filterSearch: filterSearch.value,
         });
         if (res.type === 'Success') {
-          const selectedProduct = selectedInventoryData.value.find(
-            (record) =>
+          const selectedProduct = selectedInventoryData.value.find((record) => {
+            return (
               res.data.inventoryDetails[0].inventoryId === record.inventoryId
-          );
+            );
+          });
           if (
             selectedProduct &&
-            selectedInventoryData.value.includes(selectedProduct)
+            selectedInventoryData.value.includes(selectedProduct) &&
+            selectedProduct.quantity > selectedProduct.dispatchQuantity
           ) {
-            selectedProduct.quantity += 1;
-          } else {
+            selectedProduct.dispatchQuantity += 1;
+          } else if (!selectedProduct) {
             selectedInventoryData.value.unshift({
               ...res.data.inventoryDetails[0],
               dispatchQuantity: 1,
             });
           }
+          scannedLabel.value = '';
+          if (scannedLabelInput.value) scannedLabelInput.value.focus();
         }
       } catch (e) {
         let message = 'Unexpected Error Occurred';
