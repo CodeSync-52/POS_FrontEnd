@@ -389,7 +389,11 @@
                 <q-td>
                   <div>
                     Total:
-                    {{ BillGenerationDetailsInfoTotalAmount }}
+                    {{
+                      BillGenerationDetailsInfoTotalAmount -
+                      billGenerationDetailsInfoData.claim +
+                      billGenerationDetailsInfoData.freight
+                    }}
                   </div>
                 </q-td>
               </q-tr>
@@ -590,12 +594,7 @@ const BillGenerationDetailsInfoTotalAmount = computed(() => {
   const rows = billGenerationDetailsInfoData.value.productList;
   return rows.reduce(
     (total: number, row: IBillGenerationDetailsInfoProductList) => {
-      return (
-        total +
-        row.quantity * row.amount -
-        billGenerationDetailsInfoData.value.claim +
-        billGenerationDetailsInfoData.value.freight
-      );
+      return total + row.quantity * row.amount;
     },
     0
   );
