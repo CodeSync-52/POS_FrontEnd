@@ -315,6 +315,12 @@ window.addEventListener('keypress', async function (e: KeyboardEvent) {
               ...res.data.inventoryDetails[0],
               dispatchQuantity: 1,
             });
+          } else {
+            $q.notify({
+              message:
+                'Dispatch quantity can not be greater than avaible quantity.',
+              type: 'negative',
+            });
           }
           scannedLabel.value = '';
           if (scannedLabelInput.value) scannedLabelInput.value.focus();
