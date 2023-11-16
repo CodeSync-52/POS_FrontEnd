@@ -20,6 +20,7 @@
         v-model="selectedShop.fromShopId"
         @update:model-value="handleUpdateFromShop($event)"
         label="From Shop"
+        autofocus
         color="btn-primary"
         option-label="name"
         option-value="shopId"

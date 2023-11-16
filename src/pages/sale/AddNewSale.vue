@@ -110,7 +110,7 @@
                 v-model="selectedSaleRecord.userId"
                 @update:model-value="addNewSale.userId = $event.userId"
                 label="Select User"
-                color="btn-primary"
+                                color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
                 :disable="action !== 'Add New'"
@@ -535,7 +535,7 @@ onMounted(() => {
   }
   getUserList();
   getArticleList();
-});
+  });
 function handleUpdateAmount(newVal: unknown, scope: { value: string }) {
   function setScopeValue(val: number) {
     scope.value = `${val}`;
