@@ -220,12 +220,14 @@
           @click="handleToggleBarcodePreview"
         />
       </div>
-      <div class="overflow-auto h-[calc(100vh_-_224px)]">
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div ref="printedDiv" class="overflow-auto h-[calc(100vh_-_224px)]">
+        <div
+          class="print:grid-cols-3 grid-parent grid md:grid-cols-2 lg:grid-cols-3 gap-2"
+        >
           <div
             v-for="(barcode, index) in selectedProductBarcodes"
             :key="barcode.productCode"
-            class="mx-auto"
+            class="mx-auto grid-item"
           >
             <q-card-section>
               <div
@@ -278,6 +280,7 @@
           @click="isPrintingBarcodeScreenVisible = false"
         />
         <q-btn
+          @click="printBarcodes"
           v-if="isPrintBarcodeButtonVisible"
           label="Print Barcodes"
           color="btn-primary"
@@ -437,6 +440,36 @@ onMounted(() => {
   getArticleList();
   getShopList();
 });
+const printedDiv = ref<null | HTMLDivElement>(null);
+const printBarcodes = () => {
+  // debugger
+  let header_string =
+    '<html><head><title>' + document.title + '</title></head><body>';
+  let footer_string = '</body></html>';
+  let new_string = printedDiv.value?.innerHTML;
+  let printWindow = window.open('', '_blank');
+  if (printWindow) {
+    let stylesheets =
+      '<style>' +
+      '.grid-parent { .grid-container {display: grid;grid-template-columns: auto auto auto;background-color: #2196F3;padding: 10px;} }' +
+      '.grid-item { background-color: rgba(255, 255, 255, 0.8);border: 1px solid rgba(0, 0, 0, 0.8);padding: 20px;font-size: 30px;text-align: center; }' +
+      '</style>';
+    printWindow.document.write(
+      header_string + stylesheets + new_string + footer_string
+    );
+    printWindow.document.close();
+
+    printWindow.print();
+
+    // Close the new window after printing
+    printWindow.close();
+  }
+  // let old_string = document.body.innerHTML;
+  // document.body.innerHTML = header_string + new_string + footer_string;
+  // window.print();
+  // document.body.innerHTML = old_string;
+  return false;
+};
 const handleAddArticle = () => {
   selectedProductBarcodes.value = [];
   isArticleListModalVisible.value = true;
