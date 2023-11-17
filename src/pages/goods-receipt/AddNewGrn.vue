@@ -298,7 +298,7 @@ window.addEventListener('keypress', async function (e: KeyboardEvent) {
           PageSize: pagination.value.rowsPerPage,
           filterSearch: filterSearch.value,
         });
-        if (res.type === 'Success') {
+        if (res.type === 'Success' && res.data.inventoryDetails.length > 0) {
           const selectedProduct = selectedInventoryData.value.find((record) => {
             return (
               res.data.inventoryDetails[0].inventoryId === record.inventoryId
@@ -324,6 +324,13 @@ window.addEventListener('keypress', async function (e: KeyboardEvent) {
           }
           scannedLabel.value = '';
           if (scannedLabelInput.value) scannedLabelInput.value.focus();
+        } else if (res.data.inventoryDetails.length === 0) {
+          let message = 'No record found! Kindly select manually';
+          $q.notify({
+            message,
+            type: 'negative',
+          });
+          scannedLabelLoading.value = false;
         }
       } catch (e) {
         let message = 'Unexpected Error Occurred';
