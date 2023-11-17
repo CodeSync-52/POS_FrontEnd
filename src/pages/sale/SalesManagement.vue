@@ -74,6 +74,8 @@
         maxlength="250"
         outlined
         label="Name"
+        autofocus
+        @keyup.enter="getSalesManagementList()"
         dense
         color="btn-primary"
       />

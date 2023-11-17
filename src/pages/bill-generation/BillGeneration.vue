@@ -60,6 +60,8 @@
         maxlength="250"
         style="min-width: 200px"
         label="Name"
+        autofocus
+        @keyup.enter="getBillList()"
         dense
         color="btn-primary"
       />

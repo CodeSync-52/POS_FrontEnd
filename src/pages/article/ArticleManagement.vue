@@ -36,6 +36,8 @@
         outlined
         maxlength="250"
         label="Name"
+        autofocus
+        @keyup.enter="handleFilterSearch"
         style="min-width: 200px"
         dense
         color="btn-primary"

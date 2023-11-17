@@ -63,6 +63,7 @@
         v-model="selectedShop.toShopId"
         @update:model-value="handleUpdateToShop($event)"
         label="To Shop"
+        autofocus
         color="btn-primary"
         option-label="name"
         option-value="shopId"
