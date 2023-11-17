@@ -15,6 +15,7 @@
               v-model="categoryData.name"
               dense
               label="Name"
+              autofocus
               color="btn-primary"
               outlined
             />

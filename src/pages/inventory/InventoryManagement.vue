@@ -91,6 +91,7 @@
         v-model="filterSearch.ProductId"
         @update:model-value="filterSearch.ProductId = $event.productId"
         label="Select Product"
+        autofocus
         color="btn-primary"
         option-label="name"
         option-value="productId"

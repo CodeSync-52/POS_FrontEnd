@@ -12,6 +12,7 @@
                 <span class="text-base font-medium">Source</span>
                 <q-select
                   label="Source"
+                  autofocus
                   dense
                   color="btn-primary"
                   outlined

@@ -36,6 +36,7 @@
                 v-model="addNewReceipt.userId"
                 @update:model-value="addNewReceipt.userId = $event.userId"
                 label="Select User"
+                autofocus
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"

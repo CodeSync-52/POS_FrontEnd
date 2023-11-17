@@ -22,6 +22,8 @@
         outlined
         v-model="filterSearch.ShopName"
         label="Shop Name"
+        autofocus
+        @keyup.enter="getShopList()"
         color="btn-primary"
       />
 
