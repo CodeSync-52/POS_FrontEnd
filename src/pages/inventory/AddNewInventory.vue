@@ -222,7 +222,7 @@
       </div>
       <div ref="printedDiv" class="overflow-auto h-[calc(100vh_-_224px)]">
         <div
-          class="print:grid-cols-3 grid-parent grid md:grid-cols-2 lg:grid-cols-3 gap-2"
+          class="print:grid-cols-1 grid-parent grid md:grid-cols-2 lg:grid-cols-3 gap-2"
         >
           <div
             v-for="(barcode, index) in selectedProductBarcodes"
@@ -239,15 +239,15 @@
                   <div
                     :class="
                       showfirstBarcodePreview
-                        ? 'grid grid-cols-[2fr_5fr] font-semibold'
-                        : 'flex flex-col font-semibold items-center'
+                        ? 'firstBarcodeContainer grid grid-cols-[2fr_5fr] font-semibold'
+                        : 'secondBarcodeContainer flex flex-col font-semibold items-center'
                     "
                   >
                     <div
                       :class="
                         showfirstBarcodePreview
-                          ? 'flex flex-col justify-center items-center gap-2'
-                          : 'flex justify-center gap-2'
+                          ? 'firstBarcodeLabel flex flex-col justify-center items-center gap-2'
+                          : 'secondBarcodeLabel flex justify-center gap-2'
                       "
                     >
                       <span
@@ -442,7 +442,6 @@ onMounted(() => {
 });
 const printedDiv = ref<null | HTMLDivElement>(null);
 const printBarcodes = () => {
-  // debugger
   let header_string =
     '<html><head><title>' + document.title + '</title></head><body>';
   let footer_string = '</body></html>';
@@ -451,23 +450,19 @@ const printBarcodes = () => {
   if (printWindow) {
     let stylesheets =
       '<style>' +
-      '.grid-parent { .grid-container {display: grid;grid-template-columns: auto auto auto;background-color: #2196F3;padding: 10px;} }' +
-      '.grid-item { background-color: rgba(255, 255, 255, 0.8);border: 1px solid rgba(0, 0, 0, 0.8);padding: 20px;font-size: 30px;text-align: center; }' +
+      '.grid-parent { .grid-container {display: grid !important; gap:1rem;grid-template-columns: auto; margin-left:auto;margin-right:auto} }' +
+      '.grid-item {width:280px;margin-bottom:0.5rem; font-size:1.1rem;margin-left:auto;margin-right:auto;border: 1px solid rgba(0, 0, 0, 0.3); border-radius:12px;padding: 0.34rem;text-align: center; }' +
+      '.firstBarcodeLabel {display:flex;gap:1rem;flex-direction:column;align-items:center;justify-content:center;margin-left:0.3rem}' +
+      '.firstBarcodeContainer {display:flex;align-items:center;justify-content:center;}' +
+      '.secondBarcodeLabel {display:flex;gap:1rem;align-items:center;justify-content:center;}' +
       '</style>';
     printWindow.document.write(
       header_string + stylesheets + new_string + footer_string
     );
     printWindow.document.close();
-
     printWindow.print();
-
-    // Close the new window after printing
     printWindow.close();
   }
-  // let old_string = document.body.innerHTML;
-  // document.body.innerHTML = header_string + new_string + footer_string;
-  // window.print();
-  // document.body.innerHTML = old_string;
   return false;
 };
 const handleAddArticle = () => {
@@ -792,8 +787,8 @@ const setBarcodeProps = (callback?: () => void) => {
             barcode.productCode.split(',')[0],
             {
               format: 'CODE128',
-              width: 1,
-              height: 40,
+              width: 1.25,
+              height: 60,
               displayValue: true,
               textPosition: 'top',
               text: 'KIT Shoes',
@@ -806,8 +801,8 @@ const setBarcodeProps = (callback?: () => void) => {
             barcode.productCode.split(',')[0],
             {
               format: 'CODE128',
-              width: 1,
-              height: 40,
+              width: 1.25,
+              height: 60,
               displayValue: false,
               text: '',
             }
