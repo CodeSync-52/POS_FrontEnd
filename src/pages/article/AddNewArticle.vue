@@ -30,6 +30,7 @@
                 maxlength="250"
                 v-model="newArticle.name"
                 label="Name"
+                autofocus
                 dense
                 outlined
                 color="btn-primary"

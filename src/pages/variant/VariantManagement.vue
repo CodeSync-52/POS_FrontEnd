@@ -41,6 +41,7 @@
               color="btn-primary"
               maxlength="250"
               label="Name"
+              autofocus
               v-model="filter"
             >
               <template v-slot:append>

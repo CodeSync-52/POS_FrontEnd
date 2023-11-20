@@ -21,6 +21,7 @@
               v-model="selectedProduct.productLabel"
               @update:model-value="handleSelectProduct($event)"
               label="Select Product"
+              autofocus
               color="btn-primary"
               option-label="name"
               option-value="productId"
