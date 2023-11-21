@@ -180,6 +180,7 @@
       <q-card-actions class="row justify-end">
         <q-btn
           label="Cancel"
+          unelevated
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/receipt')"
         />
@@ -197,6 +198,7 @@
               (row) => Number(row.amount) === 0
             )
           "
+          unelevated
           color="btn-primary"
           @click="handleBillSaveAsDraft"
         />
@@ -406,6 +408,7 @@
       <q-card-actions class="row justify-end">
         <q-btn
           :label="billAction !== 'Preview Bill' ? 'Cancel' : 'Close'"
+          unelevated
           color="btn-cancel hover:bg-btn-cancel-hover"
           @click="router.push('/bill-generation')"
         />
@@ -418,6 +421,7 @@
               (row) => Number(row.amount) === 0
             )
           "
+          unelevated
           color="btn-primary"
           @click="handleUpdateBill"
         />

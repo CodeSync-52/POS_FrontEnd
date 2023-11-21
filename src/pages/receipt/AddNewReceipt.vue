@@ -57,6 +57,7 @@
                 <q-btn
                   icon="add"
                   rounded
+                  unelevated
                   dense
                   @click="isArticleListModalVisible = true"
                   color="btn-primary"
@@ -215,6 +216,7 @@
             )
           "
           label="Save"
+          unelevated
           @click="saveNewReceipt"
           :loading="isAddingPurchase"
           color="btn-primary"

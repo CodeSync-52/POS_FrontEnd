@@ -71,6 +71,7 @@
               icon="add"
               rounded
               dense
+              unelevated
               color="btn-primary"
               @click="isInventoryListModalVisible = true"
             />
