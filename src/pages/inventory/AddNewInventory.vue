@@ -317,6 +317,7 @@
     </q-dialog>
     <q-dialog v-model="isCustomLabelModalVisible">
       <custom-label
+        :is-articles-loading="isFetchingArticleList"
         :selected-article="selectedArticle"
         :article-list="articleListComputed"
         :pagination="pagination"
@@ -451,7 +452,7 @@ const printBarcodes = () => {
     let stylesheets =
       '<style>' +
       '.grid-parent { .grid-container {display: grid !important; gap:1rem;grid-template-columns: auto; margin-left:auto;margin-right:auto} }' +
-      '.grid-item {width:280px;margin-bottom:0.5rem; font-size:1.1rem;margin-left:auto;margin-right:auto;border: 1px solid rgba(0, 0, 0, 0.3); border-radius:12px;padding: 0.34rem;text-align: center; }' +
+      '.grid-item {page-break-after:always;width:280px;margin-top:0.3rem;margin-bottom:0.7rem; font-size:1.1rem;margin-left:auto;margin-right:auto;padding: 0.34rem;text-align: center; }' +
       '.firstBarcodeLabel {display:flex;gap:1rem;flex-direction:column;align-items:center;justify-content:center;margin-left:0.3rem}' +
       '.firstBarcodeContainer {display:flex;align-items:center;justify-content:center;}' +
       '.secondBarcodeLabel {display:flex;gap:1rem;align-items:center;justify-content:center;}' +
@@ -788,7 +789,7 @@ const setBarcodeProps = (callback?: () => void) => {
             {
               format: 'CODE128',
               width: 1.25,
-              height: 60,
+              height: 55,
               displayValue: true,
               textPosition: 'top',
               text: 'KIT Shoes',
@@ -802,7 +803,7 @@ const setBarcodeProps = (callback?: () => void) => {
             {
               format: 'CODE128',
               width: 1.25,
-              height: 60,
+              height: 55,
               displayValue: false,
               text: '',
             }
