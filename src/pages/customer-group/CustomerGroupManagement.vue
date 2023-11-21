@@ -36,6 +36,7 @@
               debounce="300"
               color="btn-primary"
               label="Name"
+              autofocus
               v-model="filter"
             >
               <template v-slot:append>

@@ -17,6 +17,7 @@ export interface IGrnDetailsWithId {
   inventoryId?: number;
   productName?: string;
   productImage?: string;
+  productCode?: string;
 }
 export interface IGrnListFilter {
   ToDate: string | null;

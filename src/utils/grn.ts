@@ -58,9 +58,9 @@ export const selectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] 
       align: 'left',
     },
     {
-      name: 'productName',
-      label: 'Product Name',
-      field: (row) => row.productName,
+      name: 'productCode',
+      label: 'Product Code',
+      field: (row) => row.productCode?.split(',')[0],
       align: 'left',
     },
     {

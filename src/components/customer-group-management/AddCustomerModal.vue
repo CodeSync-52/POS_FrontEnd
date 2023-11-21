@@ -15,6 +15,7 @@
         v-model="customerName"
         outlined
         label="Name"
+        autofocus
         color="btn-primary"
       />
     </q-card-section>

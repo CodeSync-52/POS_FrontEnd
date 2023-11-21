@@ -76,7 +76,7 @@ const isActiveRoute = (path: string) => route.path === path;
 const authStore = useAuthStore();
 const essentialLinks = [
   {
-    title: 'User Management',
+    title: 'Store Management',
     icon: 'dashboard',
     children: [
       {
@@ -91,13 +91,6 @@ const essentialLinks = [
         title: EUserModules.CustomerGroupManagement,
         path: '/customer-group',
       },
-    ],
-  },
-  {
-    title: 'Product Management',
-    caption: 'quasar.dev',
-    icon: 'local_florist',
-    children: [
       {
         title: EUserModules.VariantManagement,
         path: '/variant',
@@ -107,15 +100,23 @@ const essentialLinks = [
         path: '/category',
       },
       {
-        title: EUserModules.ArticleManagement,
-        path: '/article',
-      },
-      {
-        title: EUserModules.InventoryManagement,
-        path: '/inventory',
+        title: EUserModules.ShopManagement,
+        path: '/shop',
       },
     ],
   },
+  {
+    title: 'Product Management',
+    caption: 'quasar.dev',
+    icon: 'local_florist',
+    children: [
+      {
+        title: EUserModules.ArticleManagement,
+        path: '/article',
+      },
+    ],
+  },
+
   {
     title: 'Sales Operations',
     icon: 'receipt',
@@ -128,10 +129,7 @@ const essentialLinks = [
         title: EUserModules.BillGeneration,
         path: '/bill-generation',
       },
-      {
-        title: EUserModules.CashInCashOutManagement,
-        path: '/cash-flow',
-      },
+
       {
         title: EUserModules.SalesManagement,
         path: '/sale',
@@ -148,14 +146,10 @@ const essentialLinks = [
   },
 
   {
-    title: 'Shop Management',
+    title: 'Stock Management',
     caption: 'quasar.dev',
     icon: 'store',
     children: [
-      {
-        title: EUserModules.ShopManagement,
-        path: '/shop',
-      },
       {
         title: EUserModules.GoodsReceiptNotes,
         path: '/goods-receipt',
@@ -163,6 +157,21 @@ const essentialLinks = [
       {
         title: EUserModules.StockTransferRequests,
         path: '/stock-transfer',
+      },
+      {
+        title: EUserModules.InventoryManagement,
+        path: '/inventory',
+      },
+    ],
+  },
+  {
+    title: 'Cash Flow Management',
+    caption: 'quasar.dev',
+    icon: 'currency_exchange',
+    children: [
+      {
+        title: EUserModules.CashInCashOutManagement,
+        path: '/cash-flow',
       },
     ],
   },

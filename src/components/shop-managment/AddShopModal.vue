@@ -24,6 +24,7 @@
                 maxlength="250"
                 v-model="shopData.name"
                 label="Full Name"
+                autofocus
                 color="btn-primary"
               />
             </div>

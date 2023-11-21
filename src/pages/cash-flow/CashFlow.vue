@@ -86,6 +86,7 @@
                 debounce="300"
                 color="btn-primary"
                 label="Source"
+                autofocus
                 v-model="filter.source"
               >
                 <template v-slot:append>

@@ -74,6 +74,8 @@
         maxlength="250"
         outlined
         label="Name"
+        autofocus
+        @keyup.enter="getReceiptList()"
         style="min-width: 200px"
         dense
         color="btn-primary"

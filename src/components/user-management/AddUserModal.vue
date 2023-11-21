@@ -27,6 +27,7 @@
                 maxlength="250"
                 v-model="userData.fullName"
                 label="Full Name"
+                autofocus
                 lazy-rules
                 :rules="[(val) => val.length || 'This field is mandatory']"
                 color="btn-primary"

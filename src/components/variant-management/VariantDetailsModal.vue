@@ -15,6 +15,7 @@
               maxlength="250"
               dense
               label="Name"
+              autofocus
               color="btn-primary"
               outlined
             />
