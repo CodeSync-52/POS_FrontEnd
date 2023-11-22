@@ -43,6 +43,7 @@
                   icon="add"
                   rounded
                   dense
+                  unelevated
                   @click="addCategory"
                   color="btn-primary"
                 />
@@ -164,10 +165,12 @@
           <q-btn
             label="Cancel"
             color="Signature"
+            unelevated
             class="bg-btn-cancel hover:bg-btn-cancel-hover"
             @click="cancelNewArticle"
           />
           <q-btn
+            unelevated
             :label="isUpdate ? 'Save' : 'Add'"
             :loading="isLoading"
             :disable="

@@ -50,6 +50,7 @@
                   <q-btn
                     v-if="props.row.subCategories.length"
                     dense
+                    unelevated
                     size="sm"
                     rounded
                     @click="props.expand = !props.expand"

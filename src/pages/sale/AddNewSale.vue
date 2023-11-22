@@ -111,9 +111,10 @@
                 @update:model-value="addNewSale.userId = $event.userId"
                 label="Select User"
                 color="btn-primary"
+                autofocus
                 option-label="fullName"
                 option-value="userId"
-                :disable="action !== 'Add New'"
+                :disable="action === 'Preview' || action === 'Edit'"
                 ><template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -131,6 +132,7 @@
                 <q-btn
                   icon="add"
                   rounded
+                  unelevated
                   dense
                   color="btn-primary"
                   @click="isArticleListModalVisible = true"

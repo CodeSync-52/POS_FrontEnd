@@ -14,6 +14,7 @@
         "
         label="Add New"
         icon="add"
+        unelevated
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         color=""
         @click="handleAddNewReceipt"
@@ -106,11 +107,13 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
+          unelevated
           :disable="filterSearch.userId !== null && filterSearch.userId < 0"
           @click="getReceiptList()"
         />
         <q-btn
           color=""
+          unelevated
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="handleResetFilter"

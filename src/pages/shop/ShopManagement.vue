@@ -7,6 +7,7 @@
 
       <q-btn
         label="Add New"
+        unelevated
         icon="add"
         class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
         color=""
@@ -51,6 +52,7 @@
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           :loading="isLoading"
+          unelevated
           color=""
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
@@ -60,6 +62,7 @@
 
         <q-btn
           color=""
+          unelevated
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="handleResetFilter"
