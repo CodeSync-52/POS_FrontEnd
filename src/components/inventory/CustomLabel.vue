@@ -12,7 +12,7 @@
             <q-select
               popup-content-class="!max-h-[200px]"
               :options="optionsProduct"
-              :loading="isLoading"
+              :loading="isArticlesLoading"
               use-input
               dense
               map-options
@@ -211,6 +211,7 @@ interface propTypes {
 }
 interface propTypes {
   articleList: IArticleData[];
+  isArticlesLoading: boolean;
   pagination: IPagination;
   selectedArticle: ISelectedArticle[];
 }
