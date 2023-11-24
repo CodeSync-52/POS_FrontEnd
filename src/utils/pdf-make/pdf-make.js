@@ -1,6 +1,6 @@
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+import pdfMake from 'pdfmake/build/pdfmake';
+import { pdfFont } from './pdf-Font';
+pdfMake.vfs = pdfFont;
 
 export const downloadPdf = async ({
   tableHeaders = [],
