@@ -408,6 +408,16 @@ window.addEventListener('keypress', function (e) {
     isArticleListModalVisible.value = true;
   }
 });
+window.addEventListener('keydown', function (event) {
+  if (
+    isPrintBarcodeButtonVisible.value &&
+    event.ctrlKey &&
+    (event.key === 'p' || event.key === 'P')
+  ) {
+    event.preventDefault();
+    printBarcodes();
+  }
+});
 const isPrintBarcodeButtonVisible = ref(false);
 onMounted(() => {
   if (router.currentRoute.value.fullPath.includes('add-custom')) {
