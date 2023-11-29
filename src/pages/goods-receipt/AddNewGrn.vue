@@ -84,6 +84,7 @@
             :loading="scannedLabelLoading"
             outlined
             dense
+            @keydown="dialoagClose"
             label="Scan label"
             color="btn-primary"
           />
@@ -264,6 +265,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
 });
 
 onMounted(() => {
+  window.addEventListener('keydown',handleKeyDown)
   getShopList();
   getArticleList();
   selectedShop.value.fromShop = {
@@ -283,6 +285,26 @@ onUnmounted(() => {
     apiController.value.abort();
   }
 });
+const handleKeyPress=(e:any) => {
+  if (e.key === 'n' || e.key === 'N') {
+    isInventoryListModalVisible.value = true;
+  }
+};
+const handleKeyDown=(e:any) => {
+  if (e.key === 'Tab' && !e.shiftKey) {
+    console.log('handleKeyDown')
+    window.addEventListener('keypress',handleKeyPress)
+  }
+  else if (e.key === 'Tab' && e.shiftKey) {
+    console.log('handleShiftTabKey')
+    window.removeEventListener('keypress', handleKeyPress) 
+  }
+};
+const dialoagClose = (e:any) =>{
+  if(e.key === 'n' || e.key === 'N'){
+    window.removeEventListener('keypress',handleKeyPress)
+  }
+}
 window.addEventListener('keypress', async function (e: KeyboardEvent) {
   if (e.key === 'n' || e.key === 'N') {
     isInventoryListModalVisible.value = true;

@@ -111,6 +111,7 @@
                 @update:model-value="addNewSale.userId = $event.userId"
                 label="Select User"
                 color="btn-primary"
+                @keydown="dialoagClose"
                 autofocus
                 option-label="fullName"
                 option-value="userId"
@@ -517,12 +518,28 @@ watch(addNewSale.value, (newVal: IAddNewSale) => {
     selectedSaleRecord.value.discount = selectedUser.discount ?? 0;
   }
 });
-window.addEventListener('keypress', function (e) {
+const handleKeyPress=(e:any) => {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
   }
-});
+};
+const handleKeyDown=(e:any) => {
+  if (e.key === 'Tab' && !e.shiftKey) {
+    console.log('handleKeyDown')
+    window.addEventListener('keypress',handleKeyPress)
+  }
+  else if (e.key === 'Tab' && e.shiftKey) {
+    console.log('handleShiftTabKey')
+    window.removeEventListener('keypress', handleKeyPress) 
+  }
+};
+const dialoagClose = (e:any) =>{
+  if(e.key === 'n' || e.key === 'N'){
+    window.removeEventListener('keypress',handleKeyPress)
+  }
+}
 onMounted(() => {
+  window.addEventListener('keydown',handleKeyDown)
   const route = router.currentRoute.value;
   if (route.params.id && typeof route.params.id === 'string') {
     if (route.fullPath.includes('preview')) {

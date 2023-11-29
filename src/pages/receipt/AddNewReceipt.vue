@@ -36,11 +36,13 @@
                 v-model="addNewReceipt.userId"
                 @update:model-value="addNewReceipt.userId = $event.userId"
                 label="Select User"
+                ref="mySelect"
                 autofocus
                 color="btn-primary"
                 option-label="fullName"
                 option-value="userId"
                 :disable="isEdit || isReceiptPreview"
+                @keydown="dialoagClose"
                 ><template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -292,6 +294,7 @@ const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const isArticleListModalVisible = ref(false);
 const isFilterChanged = ref(false);
 const selectedPreviewImage = ref('');
+const mySelect = ref(null)
 const isPreviewImageModalVisible = ref(false);
 const handleUpdateQuantity = (data: number, row: ISelectedArticleData) => {
   if (!data || data <= 0) {
@@ -305,11 +308,26 @@ const pagination = ref<IPagination>({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-window.addEventListener('keypress', function (e) {
+const handleKeyPress=(e:any) => {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
   }
-});
+};
+const handleKeyDown=(e:any) => {
+  if (e.key === 'Tab' && !e.shiftKey) {
+    console.log('handleKeyDown')
+    window.addEventListener('keypress',handleKeyPress)
+  }
+  else if (e.key === 'Tab' && e.shiftKey) {
+    console.log('handleShiftTabKey')
+    window.removeEventListener('keypress', handleKeyPress) 
+  }
+};
+const dialoagClose = (e:any) =>{
+  if(e.key === 'n' || e.key === 'N'){
+    window.removeEventListener('keypress',handleKeyPress)
+  }
+}
 const firstRow = ref<HTMLElement | null>(null);
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
@@ -567,6 +585,7 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
 };
 onMounted(() => {
   getUserList();
+  window.addEventListener('keydown',handleKeyDown)
   const selectedItemId = route.params?.id;
   if (selectedItemId && typeof selectedItemId === 'string') {
     if (router.currentRoute.value.path.includes('preview')) {

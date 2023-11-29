@@ -15,6 +15,7 @@
         v-model="filterSearch.CustomerGroupId"
         :options="customerGroupList"
         map-options
+        popup-content-class="!max-h-[200px]"
         @update:model-value="
           filterSearch.CustomerGroupId = $event.customerGroupId
         "
@@ -40,6 +41,7 @@
         @filter="filterFn"
         :options="options"
         map-options
+        popup-content-class="!max-h-[200px]"
         option-label="fullName"
         option-value="userId"
         label="User"
