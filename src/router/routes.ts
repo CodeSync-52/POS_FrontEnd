@@ -195,6 +195,13 @@ export const routeList = [
     },
   },
   {
+    path: '/return/add-new',
+    component: () => import('src/pages/return/AddNewSaleAndReturn.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
     path: '/report',
     component: () => import('src/pages/report/ReportManagement.vue'),
     meta: {

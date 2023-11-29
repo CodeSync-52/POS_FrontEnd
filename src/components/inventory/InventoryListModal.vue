@@ -163,6 +163,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
   ProductCode: null,
   ShopId: null,
+  keyword: null,
 });
 interface IProps {
   isFetchingRecords: boolean;

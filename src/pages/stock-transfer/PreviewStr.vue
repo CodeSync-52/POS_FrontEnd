@@ -332,7 +332,6 @@ const previewGrn = async (selectedId: number) => {
         {}
       );
     }
-    console.log(grnGroupByProductId.value);
   } catch (e) {
     let message = 'Unexpected error occurred Preview Grn';
     if (isPosError(e)) {

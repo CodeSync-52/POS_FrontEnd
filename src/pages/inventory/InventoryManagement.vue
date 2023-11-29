@@ -208,6 +208,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
   ProductCode: null,
   ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+  keyword: null,
 });
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -217,6 +218,7 @@ const resetFilter = () => {
     ProductId: null,
     ProductCode: null,
     ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    keyword: '',
   };
   getInventoryList();
 };

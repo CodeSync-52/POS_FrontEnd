@@ -2,7 +2,7 @@
   <div>
     <div class="mb-4 row justify-between items-center">
       <div class="text-xl text-center md:text-left font-medium">
-        <span>Add New STR</span>
+        <span>Add New Sale and Return</span>
       </div>
     </div>
     <q-card flat>
@@ -157,7 +157,7 @@
           </q-table>
           <div class="flex justify-end gap-2">
             <q-btn
-              label="Save"
+              label="Save as Draft"
               flat
               :loading="isSavingNewGrn"
               unelevated
@@ -165,6 +165,14 @@
               :disable="isButtonDisable"
               class="bg-btn-primary hover:bg-btn-primary-hover"
               @click="handleSaveGrn"
+            />
+            <q-btn
+              label="Cancel"
+              flat
+              unelevated
+              color="signature"
+              class="bg-btn-cancel"
+              @click="router.go(-1)"
             />
           </div>
         </div>
@@ -212,12 +220,7 @@ import {
   IPagination,
   IInventoryListResponseWithDispatchQuantity,
 } from 'src/interfaces';
-import {
-  addGrnApi,
-  articleListApi,
-  inventoryDetailApi,
-  shopListApi,
-} from 'src/services';
+import { articleListApi, inventoryDetailApi, shopListApi } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { selectedGrnInventoryTableColumn } from 'src/utils/grn';
@@ -429,26 +432,8 @@ const handleSaveGrn = async () => {
     })),
   };
   isSavingNewGrn.value = true;
-  try {
-    const res = await addGrnApi(selectedInventoryDataPayload);
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        type: 'positive',
-      });
-    }
-  } catch (e) {
-    let message = 'Unexpected error occurred adding Grn';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  }
+  console.log(selectedInventoryDataPayload);
   isSavingNewGrn.value = false;
-  router.push('/goods-receipt');
 };
 const isButtonDisable = computed(() => {
   const validations = [
