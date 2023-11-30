@@ -97,34 +97,36 @@
         </div>
         <div class="row q-col-gutter-md">
           <div class="col-md-4 w-full col-sm-12">
-            <div>
-              <q-select
-                :options="options"
-                :loading="isLoading"
-                use-input
-                dense
-                popup-content-class="!max-h-[200px]"
-                map-options
-                outlined
-                @filter="filterFn"
-                v-model="selectedSaleRecord.userId"
-                @update:model-value="addNewSale.userId = $event.userId"
-                label="Select User"
-                color="btn-primary"
-                @keydown="dialoagClose"
-                autofocus
-                option-label="fullName"
-                option-value="userId"
-                :disable="action === 'Preview' || action === 'Edit'"
-                ><template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template></q-select
-              >
-            </div>
+            <outside-click-container @outside-click="handleOutsideClick">
+              <div>
+                <q-select
+                  :options="options"
+                  :loading="isLoading"
+                  use-input
+                  dense
+                  popup-content-class="!max-h-[200px]"
+                  map-options
+                  outlined
+                  @filter="filterFn"
+                  v-model="selectedSaleRecord.userId"
+                  @update:model-value="addNewSale.userId = $event.userId"
+                  label="Select User"
+                  color="btn-primary"
+                  @keydown="dialoagClose"
+                  autofocus
+                  option-label="fullName"
+                  option-value="userId"
+                  :disable="action === 'Preview' || action === 'Edit'"
+                  ><template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template></q-select
+                >
+              </div>
+            </outside-click-container>
           </div>
           <div v-if="action !== 'Preview'" class="col-12 col-md-4">
             <div class="q-gutter-y-xs">
@@ -458,6 +460,7 @@ import {
   wholeSaleDetailApi,
 } from 'src/services';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
+import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
 const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   createdBy: '',
   createdById: 0,
@@ -518,28 +521,28 @@ watch(addNewSale.value, (newVal: IAddNewSale) => {
     selectedSaleRecord.value.discount = selectedUser.discount ?? 0;
   }
 });
-const handleKeyPress=(e:any) => {
+const handleKeyPress = (e: KeyboardEvent) => {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
   }
 };
-const handleKeyDown=(e:any) => {
+const handleOutsideClick = () => {
+  window.addEventListener('keypress', handleKeyPress);
+};
+const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Tab' && !e.shiftKey) {
-    console.log('handleKeyDown')
-    window.addEventListener('keypress',handleKeyPress)
-  }
-  else if (e.key === 'Tab' && e.shiftKey) {
-    console.log('handleShiftTabKey')
-    window.removeEventListener('keypress', handleKeyPress) 
+    window.addEventListener('keypress', handleKeyPress);
+  } else if (e.key === 'Tab' && e.shiftKey) {
+    window.removeEventListener('keypress', handleKeyPress);
   }
 };
-const dialoagClose = (e:any) =>{
-  if(e.key === 'n' || e.key === 'N'){
-    window.removeEventListener('keypress',handleKeyPress)
+const dialoagClose = (e: KeyboardEvent) => {
+  if (e.key === 'n' || e.key === 'N') {
+    window.removeEventListener('keypress', handleKeyPress);
   }
-}
+};
 onMounted(() => {
-  window.addEventListener('keydown',handleKeyDown)
+  window.addEventListener('keydown', handleKeyDown);
   const route = router.currentRoute.value;
   if (route.params.id && typeof route.params.id === 'string') {
     if (route.fullPath.includes('preview')) {
@@ -1081,7 +1084,7 @@ function downloadPdfData() {
     title: fileTitle,
   });
 }
-const filterFn = (val: string, update: any) => {
+const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     options.value = UserList.value.filter((v) =>

@@ -23,35 +23,36 @@
       <q-card-section class="q-gutter-y-md">
         <div class="row q-col-gutter-md items-center">
           <div class="col-md-4 w-full col-sm-12">
-            <div>
-              <q-select
-                :options="options"
-                :loading="isLoading"
-                use-input
-                dense
-                map-options
-                outlined
-                popup-content-class="!max-h-[200px]"
-                @filter="filterFn"
-                v-model="addNewReceipt.userId"
-                @update:model-value="addNewReceipt.userId = $event.userId"
-                label="Select User"
-                ref="mySelect"
-                autofocus
-                color="btn-primary"
-                option-label="fullName"
-                option-value="userId"
-                :disable="isEdit || isReceiptPreview"
-                @keydown="dialoagClose"
-                ><template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template></q-select
-              >
-            </div>
+            <outside-click-container @outside-click="handleOutsideClick">
+              <div>
+                <q-select
+                  :options="options"
+                  :loading="isLoading"
+                  use-input
+                  dense
+                  map-options
+                  outlined
+                  popup-content-class="!max-h-[200px]"
+                  @filter="filterFn"
+                  v-model="addNewReceipt.userId"
+                  @update:model-value="addNewReceipt.userId = $event.userId"
+                  label="Select User"
+                  autofocus
+                  color="btn-primary"
+                  option-label="fullName"
+                  option-value="userId"
+                  :disable="isEdit || isReceiptPreview"
+                  @keydown="dialoagClose"
+                  ><template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template></q-select
+                >
+              </div>
+            </outside-click-container>
           </div>
           <div v-if="!isReceiptPreview" class="col-12 col-md-4">
             <div class="q-gutter-y-xs">
@@ -281,6 +282,7 @@ import { ITableHeaders, ITableItems, downloadPdf, isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
 import { selectedArticleColumn } from 'src/utils';
+import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
 import { useAuthStore } from 'src/stores';
 import moment from 'moment';
 const authStore = useAuthStore();
@@ -294,7 +296,6 @@ const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const isArticleListModalVisible = ref(false);
 const isFilterChanged = ref(false);
 const selectedPreviewImage = ref('');
-const mySelect = ref(null)
 const isPreviewImageModalVisible = ref(false);
 const handleUpdateQuantity = (data: number, row: ISelectedArticleData) => {
   if (!data || data <= 0) {
@@ -308,26 +309,26 @@ const pagination = ref<IPagination>({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const handleKeyPress=(e:any) => {
+const handleOutsideClick = () => {
+  window.addEventListener('keypress', handleKeyPress);
+};
+const handleKeyPress = (e: KeyboardEvent) => {
   if (e.key === 'n' || e.key === 'N') {
     isArticleListModalVisible.value = true;
   }
 };
-const handleKeyDown=(e:any) => {
+const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Tab' && !e.shiftKey) {
-    console.log('handleKeyDown')
-    window.addEventListener('keypress',handleKeyPress)
-  }
-  else if (e.key === 'Tab' && e.shiftKey) {
-    console.log('handleShiftTabKey')
-    window.removeEventListener('keypress', handleKeyPress) 
+    window.addEventListener('keypress', handleKeyPress);
+  } else if (e.key === 'Tab' && e.shiftKey) {
+    window.removeEventListener('keypress', handleKeyPress);
   }
 };
-const dialoagClose = (e:any) =>{
-  if(e.key === 'n' || e.key === 'N'){
-    window.removeEventListener('keypress',handleKeyPress)
+const dialoagClose = (e: KeyboardEvent) => {
+  if (e.key === 'n' || e.key === 'N') {
+    window.removeEventListener('keypress', handleKeyPress);
   }
-}
+};
 const firstRow = ref<HTMLElement | null>(null);
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
@@ -585,7 +586,7 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
 };
 onMounted(() => {
   getUserList();
-  window.addEventListener('keydown',handleKeyDown)
+  window.addEventListener('keydown', handleKeyDown);
   const selectedItemId = route.params?.id;
   if (selectedItemId && typeof selectedItemId === 'string') {
     if (router.currentRoute.value.path.includes('preview')) {

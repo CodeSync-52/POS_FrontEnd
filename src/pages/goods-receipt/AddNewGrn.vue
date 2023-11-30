@@ -37,31 +37,34 @@
           </div>
           <div class="col-12 col-sm-6">
             <div class="text-base mb-1"><span>To Shop</span></div>
-            <q-select
-              popup-content-class="!max-h-[200px]"
-              :options="shopOptionRecords"
-              :loading="isLoading"
-              use-input
-              dense
-              class="w-full"
-              clearable
-              map-options
-              outlined
-              v-model="selectedShop.toShop"
-              @update:model-value="selectedShop.toShop = $event"
-              label="Select Shop"
-              color="btn-primary"
-              option-label="name"
-              option-value="shopId"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template></q-select
-            >
+            <outside-click-container @outside-click="handleOutsideClick">
+              <q-select
+                popup-content-class="!max-h-[200px]"
+                :options="shopOptionRecords"
+                :loading="isLoading"
+                use-input
+                dense
+                class="w-full"
+                clearable
+                map-options
+                @keydown="dialoagClose"
+                outlined
+                v-model="selectedShop.toShop"
+                @update:model-value="selectedShop.toShop = $event"
+                label="Select Shop"
+                color="btn-primary"
+                option-label="name"
+                option-value="shopId"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template></q-select
+              >
+            </outside-click-container>
           </div>
         </div>
         <div class="q-gutter-y-xs row gap-10">
@@ -76,18 +79,20 @@
               @click="isInventoryListModalVisible = true"
             />
           </div>
-          <q-input
-            autofocus
-            ref="scannedLabelInput"
-            class="min-w-[200px] max-w-[200px]"
-            v-model="scannedLabel"
-            :loading="scannedLabelLoading"
-            outlined
-            dense
-            @keydown="dialoagClose"
-            label="Scan label"
-            color="btn-primary"
-          />
+          <outside-click-container @outside-click="handleOutsideClick">
+            <q-input
+              autofocus
+              ref="scannedLabelInput"
+              class="min-w-[200px] max-w-[200px]"
+              v-model="scannedLabel"
+              :loading="scannedLabelLoading"
+              outlined
+              dense
+              @keydown="dialoagClose"
+              label="Scan label"
+              color="btn-primary"
+            />
+          </outside-click-container>
         </div>
 
         <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
@@ -205,6 +210,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from 'vue';
 import InventoryListModal from 'src/components/inventory/InventoryListModal.vue';
+import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
 import {
   IArticleData,
   IInventoryFilterSearch,
@@ -263,9 +269,11 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductCode: null,
   ShopId: null,
 });
-
+const handleOutsideClick = () => {
+  window.addEventListener('keypress', handleKeyPress);
+};
 onMounted(() => {
-  window.addEventListener('keydown',handleKeyDown)
+  window.addEventListener('keydown', handleKeyDown);
   getShopList();
   getArticleList();
   selectedShop.value.fromShop = {
@@ -285,27 +293,7 @@ onUnmounted(() => {
     apiController.value.abort();
   }
 });
-const handleKeyPress=(e:any) => {
-  if (e.key === 'n' || e.key === 'N') {
-    isInventoryListModalVisible.value = true;
-  }
-};
-const handleKeyDown=(e:any) => {
-  if (e.key === 'Tab' && !e.shiftKey) {
-    console.log('handleKeyDown')
-    window.addEventListener('keypress',handleKeyPress)
-  }
-  else if (e.key === 'Tab' && e.shiftKey) {
-    console.log('handleShiftTabKey')
-    window.removeEventListener('keypress', handleKeyPress) 
-  }
-};
-const dialoagClose = (e:any) =>{
-  if(e.key === 'n' || e.key === 'N'){
-    window.removeEventListener('keypress',handleKeyPress)
-  }
-}
-window.addEventListener('keypress', async function (e: KeyboardEvent) {
+const handleKeyPress = async (e: KeyboardEvent) => {
   if (e.key === 'n' || e.key === 'N') {
     isInventoryListModalVisible.value = true;
   } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
@@ -368,8 +356,19 @@ window.addEventListener('keypress', async function (e: KeyboardEvent) {
       scannedLabelLoading.value = false;
     }
   }
-});
-
+};
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'Tab' && !e.shiftKey) {
+    window.addEventListener('keypress', handleKeyPress);
+  } else if (e.key === 'Tab' && e.shiftKey) {
+    window.removeEventListener('keypress', handleKeyPress);
+  }
+};
+const dialoagClose = (e: KeyboardEvent) => {
+  if (e.key === 'n' || e.key === 'N') {
+    window.removeEventListener('keypress', handleKeyPress);
+  }
+};
 const handleUpdatedispatchQuantity = (
   newVal: string | number | null,
   selectedRecord: IInventoryListResponseWithDispatchQuantity
