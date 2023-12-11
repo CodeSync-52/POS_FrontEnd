@@ -490,7 +490,7 @@ const getBillList = async (data?: {
   }
   isLoading.value = false;
 };
-const filterFn = (val: string, update: any) => {
+const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     options.value = UserList.value.filter((v) =>

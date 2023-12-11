@@ -599,7 +599,10 @@ const getArticleList = async (data?: {
 };
 
 function getStockMessage(
-  selectedInventoryPayload: any,
+  selectedInventoryPayload: Record<
+    string,
+    { variantId_1: number; variantId_2: number; stockQuantity: number }
+  >,
   productId: number | null,
   masterStock: number
 ) {

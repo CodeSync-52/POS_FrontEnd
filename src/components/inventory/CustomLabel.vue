@@ -434,7 +434,7 @@ const getVariantGroupList = async () => {
   isLoading.value = false;
 };
 
-const filterFn = (val: string, update: any) => {
+const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     options.value = variantData.value.filter((v) =>
@@ -454,7 +454,7 @@ const handleAddVariantDetails = () => {
   }, 300);
 };
 
-const filterProduct = (val: string, update: any) => {
+const filterProduct = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     optionsProduct.value = props.articleList.filter((v) =>
