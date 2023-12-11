@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-4 row justify-between items-center">
+    <!-- <div class="mb-4 row justify-between items-center">
       <div class="text-xl text-center md:text-left font-medium">
         <span>Add New Sale and Return</span>
       </div>
@@ -177,6 +177,18 @@
           </div>
         </div>
       </q-card-section>
+    </q-card> -->
+    <q-card>
+      <q-card-section>
+        <div class="row">
+          <div class="col-6">
+            <div class="text-lg">
+              <span>Shopboy Code</span>
+            </div>
+            <q-input v-model="selectedShopBoyCode" outlined dense />
+          </div>
+        </div>
+      </q-card-section>
     </q-card>
     <q-dialog v-model="isPreviewImageModalVisible">
       <q-card class="max-w-[400px]">
@@ -210,7 +222,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, onUnmounted } from 'vue';
+import {
+  ref,
+  onMounted,
+  // computed,
+  onUnmounted,
+} from 'vue';
 import InventoryListModal from 'src/components/inventory/InventoryListModal.vue';
 import {
   IArticleData,
@@ -223,9 +240,9 @@ import {
 import { articleListApi, inventoryDetailApi, shopListApi } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
-import { selectedGrnInventoryTableColumn } from 'src/utils/grn';
+// import { selectedGrnInventoryTableColumn } from 'src/utils/grn';
 import { useAuthStore } from 'src/stores';
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
 const selectedShop = ref<{
   fromShop: IShopResponse | null;
   toShop: IShopResponse | null;
@@ -235,7 +252,8 @@ const selectedShop = ref<{
 });
 const $q = useQuasar();
 const authStore = useAuthStore();
-const router = useRouter();
+const selectedShopBoyCode = ref('');
+// const router = useRouter();
 const isInventoryListModalVisible = ref(false);
 const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
@@ -251,7 +269,7 @@ const articleList = ref<IArticleData[]>([]);
 const scannedLabel = ref('');
 const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
-const isSavingNewGrn = ref(false);
+// const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
 const pagination = ref({
   sortBy: 'desc',
@@ -352,21 +370,21 @@ window.addEventListener('keypress', async function (e: KeyboardEvent) {
   }
 });
 
-const handleUpdatedispatchQuantity = (
-  newVal: string | number | null,
-  selectedRecord: IInventoryListResponseWithDispatchQuantity
-) => {
-  if (typeof newVal === 'string') {
-    const val = parseInt(newVal);
-    if (!val || val < 0) {
-      selectedRecord.dispatchQuantity = 0;
-    } else if (val > selectedRecord.quantity) {
-      selectedRecord.dispatchQuantity = selectedRecord.quantity;
-    } else {
-      selectedRecord.dispatchQuantity = val;
-    }
-  }
-};
+// const handleUpdatedispatchQuantity = (
+//   newVal: string | number | null,
+//   selectedRecord: IInventoryListResponseWithDispatchQuantity
+// ) => {
+//   if (typeof newVal === 'string') {
+//     const val = parseInt(newVal);
+//     if (!val || val < 0) {
+//       selectedRecord.dispatchQuantity = 0;
+//     } else if (val > selectedRecord.quantity) {
+//       selectedRecord.dispatchQuantity = selectedRecord.quantity;
+//     } else {
+//       selectedRecord.dispatchQuantity = val;
+//     }
+//   }
+// };
 const handleFilterArticle = (searchedArticle: string) => {
   getArticleList(searchedArticle);
 };
@@ -412,49 +430,48 @@ const handleSelectedData = (payload: IInventoryListResponse[]) => {
   });
   isInventoryListModalVisible.value = false;
 };
-const handleRemoveSelectedInventoryRecord = (
-  selectedRow: IInventoryListResponse
-) => {
-  const selectedRecordIndex = selectedInventoryData.value.findIndex(
-    (record) => selectedRow.inventoryId === record.inventoryId
-  );
-  selectedInventoryData.value.splice(selectedRecordIndex, 1);
-};
-const handleSaveGrn = async () => {
-  const selectedInventoryDataPayload = {
-    fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
-    toShopId: selectedShop.value.toShop?.shopId ?? -1,
-    grnDetails: selectedInventoryData.value.map((record) => ({
-      productId: record.productId,
-      variantId_1: record.variantId_1,
-      variantId_2: record.variantId_2,
-      quantity: record.dispatchQuantity,
-    })),
-  };
-  isSavingNewGrn.value = true;
-  console.log(selectedInventoryDataPayload);
-  isSavingNewGrn.value = false;
-};
-const isButtonDisable = computed(() => {
-  const validations = [
-    selectedInventoryData.value.some((record) => record.dispatchQuantity === 0),
-    selectedShop.value.toShop?.shopId === undefined,
-  ];
-  return validations.some((validation) => validation);
-});
+// const handleRemoveSelectedInventoryRecord = (
+//   selectedRow: IInventoryListResponse
+// ) => {
+//   const selectedRecordIndex = selectedInventoryData.value.findIndex(
+//     (record) => selectedRow.inventoryId === record.inventoryId
+//   );
+//   selectedInventoryData.value.splice(selectedRecordIndex, 1);
+// };
+// const handleSaveGrn = async () => {
+//   const selectedInventoryDataPayload = {
+//     fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
+//     toShopId: selectedShop.value.toShop?.shopId ?? -1,
+//     grnDetails: selectedInventoryData.value.map((record) => ({
+//       productId: record.productId,
+//       variantId_1: record.variantId_1,
+//       variantId_2: record.variantId_2,
+//       quantity: record.dispatchQuantity,
+//     })),
+//   };
+//   isSavingNewGrn.value = true;
+//   isSavingNewGrn.value = false;
+// };
+// const isButtonDisable = computed(() => {
+//   const validations = [
+//     selectedInventoryData.value.some((record) => record.dispatchQuantity === 0),
+//     selectedShop.value.toShop?.shopId === undefined,
+//   ];
+//   return validations.some((validation) => validation);
+// });
 
-const handlePreviewImage = (selectedImage: string) => {
-  if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
-    isPreviewImageModalVisible.value = true;
-  }
-};
-const getImageUrl = (base64Image: string) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
-};
+// const handlePreviewImage = (selectedImage: string) => {
+//   if (selectedImage) {
+//     selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+//     isPreviewImageModalVisible.value = true;
+//   }
+// };
+// const getImageUrl = (base64Image: string) => {
+//   if (base64Image) {
+//     return `data:image/png;base64,${base64Image}`;
+//   }
+//   return '';
+// };
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
@@ -523,19 +540,19 @@ const inventoryDetailList = async (data?: {
   }
   isFetchingRecords.value = false;
 };
-const shopOptionRecords = computed(() => {
-  let idList: number[] = [];
-  if (selectedShop.value.fromShop) {
-    idList.push(selectedShop.value.fromShop.shopId);
-  }
-  if (selectedShop.value.toShop) {
-    idList.push(selectedShop.value.toShop.shopId);
-  }
-  if (idList.length > 0) {
-    return shopData.value.filter((shop) => !idList.includes(shop.shopId));
-  }
-  return shopData.value;
-});
+// const shopOptionRecords = computed(() => {
+//   let idList: number[] = [];
+//   if (selectedShop.value.fromShop) {
+//     idList.push(selectedShop.value.fromShop.shopId);
+//   }
+//   if (selectedShop.value.toShop) {
+//     idList.push(selectedShop.value.toShop.shopId);
+//   }
+//   if (idList.length > 0) {
+//     return shopData.value.filter((shop) => !idList.includes(shop.shopId));
+//   }
+//   return shopData.value;
+// });
 const getShopList = async () => {
   isLoading.value = true;
   try {

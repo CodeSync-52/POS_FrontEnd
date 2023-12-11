@@ -4,7 +4,13 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
-      <router-link to="/return/add-new">
+      <div class="text-base flex items-center gap-1">
+        <span> Date: </span>
+        <span class="font-semibold">
+          {{ moment(timeStamp).format('YYYY-MM-DD') }}
+        </span>
+      </div>
+      <!-- <router-link to="/return/add-new">
         <q-btn
           v-if="
             authStore.checkUserHasPermission(
@@ -18,9 +24,70 @@
           class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
           color=""
         />
-      </router-link>
+      </router-link> -->
     </div>
-    <div
+    <q-card class="max-w-[600px] mx-auto">
+      <q-card-section>
+        <div class="mb-2 justify-end text-base flex items-center gap-1">
+          <span> Running Balance: </span>
+          <span class="font-semibold">100</span>
+        </div>
+        <div class="row q-col-gutter-md">
+          <div class="col-6">
+            <q-input
+              v-model="selectedShopBoyCode"
+              outlined
+              color="btn-primary"
+              dense
+              label="Shopboy Code"
+            />
+          </div>
+          <div class="col-6">
+            <div class="row justify-end">
+              <q-btn
+                label="show hold bill"
+                :disable="!selectedShopBoyCode"
+                color="btn-primary"
+                unelevated
+              />
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+            <div class="row justify-end">
+              <q-btn
+                label="Close Balance"
+                color="btn-primary"
+                :disable="!selectedShopBoyCode"
+                unelevated
+              />
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+            <div class="row justify-end">
+              <q-btn
+                label="show Today Sale"
+                color="btn-primary"
+                :disable="!selectedShopBoyCode"
+                unelevated
+              />
+            </div>
+          </div>
+        </div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <router-link to="/return/add-sale">
+          <q-btn
+            unelevated
+            color="btn-primary"
+            label="Next"
+            :disable="!selectedShopBoyCode"
+          />
+        </router-link>
+      </q-card-actions>
+    </q-card>
+    <!-- <div
       class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
     >
       <q-select
@@ -135,14 +202,15 @@
           </div>
         </q-card-section>
       </q-card>
-    </q-dialog>
+    </q-dialog> -->
   </div>
 </template>
 
 <script setup lang="ts">
+import moment from 'moment';
 import { useQuasar } from 'quasar';
 import {
-  EActionPermissions,
+  // EActionPermissions,
   EUserModules,
   IInventoryListResponse,
   IShopResponse,
@@ -151,15 +219,17 @@ import {
 import { inventoryDetailApi, shopListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
-import { InventoryListColumn } from 'src/utils/inventory';
+// import { InventoryListColumn } from 'src/utils/inventory';
 import { ref, onMounted, onUnmounted } from 'vue';
 const authStore = useAuthStore();
+const timeStamp = Date.now();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.SaleAndReturnManagement
 );
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
 });
+const selectedShopBoyCode = ref('');
 const filterSearch = ref({
   wholeSaleStatus: '',
   keyword: '',
@@ -179,9 +249,9 @@ const shopData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
 const isFetchingShopList = ref(false);
 const isFetchingRecords = ref(false);
-const isPreviewImageModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
-const selectedPreviewImage = ref('');
+// const isPreviewImageModalVisible = ref(false);
+// const selectedPreviewImage = ref('');
 
 onMounted(() => {
   getShopList();
@@ -203,22 +273,22 @@ onUnmounted(() => {
     apiController.value.abort();
   }
 });
-const handleUpdateShop = (newVal: IShopResponse) => {
-  selectedShop.value.fromShop = newVal;
-  filterSearch.value.ShopId = newVal.shopId;
-};
-const handlePreviewImage = (selectedImage: string) => {
-  if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
-    isPreviewImageModalVisible.value = true;
-  }
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
-};
+// const handleUpdateShop = (newVal: IShopResponse) => {
+//   selectedShop.value.fromShop = newVal;
+//   filterSearch.value.ShopId = newVal.shopId;
+// };
+// const handlePreviewImage = (selectedImage: string) => {
+//   if (selectedImage) {
+//     selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+//     isPreviewImageModalVisible.value = true;
+//   }
+// };
+// const getImageUrl = (base64Image: string | null) => {
+//   if (base64Image) {
+//     return `data:image/png;base64,${base64Image}`;
+//   }
+//   return '';
+// };
 const getShopList = async () => {
   isFetchingShopList.value = true;
   try {
