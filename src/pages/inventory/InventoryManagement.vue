@@ -313,12 +313,12 @@ const getArticleList = async (productName?: string) => {
   }
   isFetchingArticleList.value = false;
 };
-const filterProduct = (val: string, update: any) => {
+const filterProduct = (val: string, update: CallableFunction) => {
   update(() => {
     getArticleList(val);
   });
 };
-const filterShop = (val: string, update: any) => {
+const filterShop = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     ShopOptionData.value = ShopData.value.filter((v) =>

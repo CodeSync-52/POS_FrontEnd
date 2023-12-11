@@ -31,7 +31,7 @@ export type IUserData = {
   status: string;
   discount: number;
   address: string;
-  customerGroup: null | any;
+  customerGroup: null | string;
 } & IUserManagementData;
 export interface IUserResponse {
   customerGroup?: null | string;

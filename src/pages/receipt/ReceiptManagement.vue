@@ -30,6 +30,7 @@
         v-model="filterSearch.customerGroupId"
         :options="customerGroupList"
         map-options
+        popup-content-class="!max-h-[200px]"
         @update:model-value="
           filterSearch.customerGroupId = $event.customerGroupId
         "
@@ -55,6 +56,7 @@
         @update:model-value="filterSearch.userId = $event.userId"
         :options="options"
         map-options
+        popup-content-class="!max-h-[200px]"
         option-label="fullName"
         option-value="userId"
         label="User"
@@ -507,7 +509,7 @@ const getReceiptList = async (data?: {
   }
   isLoading.value = false;
 };
-const filterFn = (val: string, update: any) => {
+const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     options.value = UserList.value.filter((v) =>
