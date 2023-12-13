@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div
+    <!-- <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
     >
       <span class="text-xl font-medium">{{ pageTitle }}</span>
@@ -10,23 +10,24 @@
           {{ moment(timeStamp).format('YYYY-MM-DD') }}
         </span>
       </div>
-      <!-- <router-link to="/return/add-new">
-        <q-btn
-          v-if="
-            authStore.checkUserHasPermission(
-              EUserModules.SaleAndReturnManagement,
-              EActionPermissions.Create
-            )
-          "
-          unelevated
-          label="Add New"
-          icon="add"
-          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
-          color=""
-        />
-      </router-link> -->
-    </div>
-    <q-card class="max-w-[600px] mx-auto">
+    </div> -->
+    <!-- <router-link to="/return/add-new">
+      <q-btn
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.SaleAndReturnManagement,
+            EActionPermissions.Create
+          )
+        "
+        unelevated
+        label="Add New"
+        icon="add"
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+        color=""
+      />
+    </router-link> -->
+
+    <!-- <q-card class="w-full">
       <q-card-section>
         <div class="mb-2 justify-end text-base flex items-center gap-1">
           <span> Running Balance: </span>
@@ -34,59 +35,196 @@
         </div>
         <div class="row q-col-gutter-md">
           <div class="col-6">
-            <q-input
-              v-model="selectedShopBoyCode"
-              outlined
-              color="btn-primary"
-              dense
-              label="Shopboy Code"
-            />
+
+            <q-input v-model="selectedShopBoyCode" outlined color="btn-primary" dense label="Shopboy Code" />
           </div>
           <div class="col-6">
             <div class="row justify-end">
-              <q-btn
-                label="show hold bill"
-                :disable="!selectedShopBoyCode"
-                color="btn-primary"
-                unelevated
-              />
+              <q-btn label="show hold bill" :disable="!selectedShopBoyCode" color="btn-primary" unelevated />
             </div>
           </div>
           <div class="col-6"></div>
           <div class="col-6">
             <div class="row justify-end">
-              <q-btn
-                label="Close Balance"
-                color="btn-primary"
-                :disable="!selectedShopBoyCode"
-                unelevated
-              />
+              <q-btn label="Close Balance" color="btn-primary" :disable="!selectedShopBoyCode" unelevated />
             </div>
           </div>
           <div class="col-6"></div>
           <div class="col-6">
             <div class="row justify-end">
-              <q-btn
-                label="show Today Sale"
-                color="btn-primary"
-                :disable="!selectedShopBoyCode"
-                unelevated
-              />
+              <q-btn label="show Today Sale" color="btn-primary" :disable="!selectedShopBoyCode" unelevated />
             </div>
           </div>
         </div>
       </q-card-section>
       <q-card-actions align="right">
         <router-link to="/return/add-sale">
-          <q-btn
-            unelevated
-            color="btn-primary"
-            label="Next"
-            :disable="!selectedShopBoyCode"
-          />
+          <q-btn unelevated color="btn-primary" label="Next" :disable="!selectedShopBoyCode" />
         </router-link>
       </q-card-actions>
-    </q-card>
+    </q-card> -->
+
+
+    <div>
+      <div
+        class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4">
+        <span class="text-xl font-medium">{{ pageTitle }}</span>
+        <div class="text-base flex items-center gap-1">
+          <span> Date: </span>
+          <span class="font-semibold">
+            {{ moment(timeStamp).format('YYYY-MM-DD') }}
+          </span>
+        </div>
+      </div>
+      <div class="flex  justify-between">
+        <!-- bg-[#e3f1fe] -->
+        <div class="w-[80%]">
+          <div class="flex justify-between">
+            <div class="max-w-[300px] min-w-[250px]">
+              <!-- <div class="flex justify-between items-center m-2 max-w-[300px]">
+                <span class="text-black text-[16px] font-medium">Shop</span>
+                <q-input class="max-w-[220px] min-w-[220px]" v-model="selectedShopBoyCode" outlined color="btn-primary"
+                  dense>
+                </q-input>
+              </div> -->
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="Shop" />
+              <!-- <div class="flex justify-between items-center m-2 max-w-[350px]">
+                <span class="text-black text-[16px] font-medium">Receipt</span>
+                <q-input class="max-w-[220px] min-w-[220px]" v-model="selectedShopBoyCode" outlined color="btn-primary"
+                  dense>
+                </q-input>
+              </div> -->
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="Receipt" />
+              <!-- <div class="flex justify-between items-center m-2 max-w-[300px]">
+                <span class="text-black text-[16px] font-medium">User</span>
+                <q-input class="max-w-[220px] min-w-[220px]" v-model="selectedShopBoyCode" outlined color="btn-primary"
+                  dense>
+                </q-input>
+              </div> -->
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="User" />
+            </div>
+            <div class="max-w-[300px] min-w-[250px]">
+              <!-- <div class="flex justify-between items-center m-2 max-w-[380px]">
+                <span class="text-black text-[16px] font-medium">Remaining Balance</span>
+                <q-input class="max-w-[220px] min-w-[220px]" v-model="selectedShopBoyCode" outlined color="btn-primary"
+                  dense>
+                </q-input>
+              </div> -->
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="Remaining Balance" />
+              <!-- <div class="flex justify-between items-center m-2 max-w-[380px]">
+                <span class="text-black text-[16px] font-medium">Global Discount</span>
+                <q-input class="max-w-[220px] min-w-[220px]" v-model="selectedShopBoyCode" outlined color="btn-primary"
+                  dense>
+                </q-input>
+              </div> -->
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="Global Discount" />
+            </div>
+          </div>
+          <div class="py-4">
+            <q-table :columns="InventoryListColumn" :rows="InventoryListRecords" :loading="isLoading"
+              v-model:pagination="pagination" @request="getInventoryList"><template v-slot:no-data>
+                <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+                  <q-icon name="warning" size="xs" />
+                  <span class="text-md font-medium"> No data available. </span>
+                </div>
+              </template>
+              <template v-slot:body-cell-productImage="props">
+                <q-td :props="props">
+                  <div @click="handlePreviewImage(props.row.productImage)"
+                    class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
+                    :class="props.row.productImage ? 'cursor-pointer' : ''">
+                    <img class="w-full h-full object-cover" :src="getImageUrl(props.row.productImage) ||
+                      'assets/default-image.png'
+                      " alt="img" />
+                  </div>
+                </q-td>
+              </template>
+            </q-table>
+          </div>
+           <div class="w-full flex justify-end">
+            <div class="max-w-[300px] min-w-[250px]">
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="Total" />
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="Discount" />
+              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
+                label="Net Total" />
+            </div>
+           </div>
+          <!-- <q-input class="max-w-[220px] min-w-[220px] m-2" v-model="selectedShopBoyCode" outlined color="btn-primary" dense>
+        <template v-slot:before>
+          <span class="text-black text-[16px] mr-[0.25rem] font-medium">Receipt</span>
+        </template>
+        </q-input>
+            <q-input class="max-w-[220px] min-w-[220px] m-2" v-model="selectedShopBoyCode" outlined color="btn-primary" dense>
+        <template v-slot:before>
+          <span class="text-black text-[16px] mr-[1.50rem] font-medium">User</span>
+        </template>
+        </q-input> -->
+
+        </div>
+        <div class="w-[17%]">
+          <!-- <q-btn
+          unelevated
+          :loading="isLoading"
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[50px]"
+          icon="search"
+          label="Search"
+          @click="getInventoryList()"
+        /> -->
+        <q-btn unelevated
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[60px] my-3">
+      <q-icon left size="3em" name="map" />
+      <div class="text-lg">Exit</div>
+    </q-btn>
+        <q-btn unelevated
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[60px] my-3">
+      <q-icon left size="3em" name="close" />
+      <div class="text-lg">Cancel</div>
+    </q-btn>
+        <q-btn unelevated
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[60px] my-3">
+      <q-icon left size="3em" name="cached" />
+      <div class="text-lg">Return</div>
+    </q-btn>
+        <q-btn unelevated
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[60px] my-3">
+      <q-icon left size="3em" name="hourglass_empty" />
+      <div class="text-lg">Hold Sale</div>
+    </q-btn>
+        <q-btn unelevated
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[60px] my-3">
+      <q-icon left size="3em" name="trending_up" />
+      <div class="text-lg">Today Sale</div>
+    </q-btn>
+        <q-btn unelevated
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[60px] my-3">
+      <q-icon left size="3em" name="paid" />
+      <div class="text-lg">Balance</div>
+    </q-btn>
+        <q-btn unelevated
+          color=""
+          class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover w-full h-[60px] my-3">
+      <q-icon left size="3em" name="shopping_cart" />
+      <div class="text-lg">Save</div>
+    </q-btn>
+        </div>
+      </div>
+    </div>
+
+
     <!-- <div
       class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
     >
