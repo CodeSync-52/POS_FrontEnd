@@ -76,6 +76,12 @@ export const selectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] 
       align: 'left',
     },
     {
+      name: 'retailPrice',
+      label: 'Retail Price',
+      field: (row) => row.retailPrice,
+      align: 'left',
+    },
+    {
       name: 'action',
       label: 'Action',
       field: () => '',

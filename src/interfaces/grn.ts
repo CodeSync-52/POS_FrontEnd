@@ -14,6 +14,7 @@ export interface IGrnDetailsWithId {
   variantId_1: number;
   variantId_2: number;
   quantity: number;
+  retailPrice: number;
   inventoryId?: number;
   productName?: string;
   productImage?: string;

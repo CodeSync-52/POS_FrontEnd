@@ -87,7 +87,7 @@
         v-model:pagination="InventoryPagination"
         row-key="inventoryId"
         selection="multiple"
-        class="max-h-[500px]"
+        class="max-h-[250px] 2xl:max-h-[350px] 3xl:max-h-[500px]"
         v-model:selected="selectedShopRecords"
         align="left"
         :loading="isLoading"

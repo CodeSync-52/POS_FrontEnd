@@ -12,8 +12,8 @@
             </span>
           </div>
         </div>
-        <div class="flex justify-center md:justify-between">
-          <div class="flex justify-center md:gap-8">
+        <div class="flex">
+          <div class="flex justify-center gap-8">
             <q-input
               v-model="filterSearch.ProductCode"
               maxlength="250"
@@ -48,9 +48,9 @@
         </div>
 
         <div class="Inventtory_Tabel">
-          <div class="q-gutter-y-xs row gap-10">
+          <div class="q-gutter-y-xs row gap-11 3xl:gap-10">
             <div
-              class="row gap-6 items-center justify-center min-w-[175px] max-w-[200px] my-3"
+              class="row gap-6 items-center justify-center min-w-[175px] max-w-[200px] px- my-3"
             >
               <span class="text-base">Add Article</span>
               <q-btn
@@ -82,7 +82,7 @@
             <q-table
               :rows="selectedInventoryData"
               :columns="selectedGrnInventoryTableColumn"
-              class="h-[48vh] 3xl:h-[45vh] relative stcky-table-head"
+              class="max-h-[48vh] 3xl:max-h-[45vh]"
             >
               <template v-slot:no-data>
                 <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
@@ -254,12 +254,12 @@
 .icon_left > :nth-child(2) {
   justify-content: flex-start;
   flex-wrap: nowrap;
+  text-align: start;
   @media (min-width: 992px) {
     margin-left: 1rem;
   }
 }
 </style>
-
 <script setup lang="ts">
 import InventoryListModal from 'src/components/inventory/InventoryListModal.vue';
 import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
@@ -286,6 +286,25 @@ import { ref, onMounted, onUnmounted, computed, onBeforeUnmount } from 'vue';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
 
+const ShopDetailRecords = ref<IInventoryListResponse[]>([]);
+const shopData = ref<IShopResponse[]>([]);
+const $q = useQuasar();
+const isFetchingShopList = ref(false);
+const isFetchingRecords = ref(false);
+const apiController = ref<AbortController | null>(null);
+const isPreviewImageModalVisible = ref(false);
+const selectedPreviewImage = ref('');
+const isInventoryListModalVisible = ref(false);
+const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
+const isSelectedShopDetailTableVisible = ref(false);
+const isFetchingArticleList = ref(false);
+const articleList = ref<IArticleData[]>([]);
+const scannedLabel = ref('');
+const scannedLabelInput = ref<null | HTMLDivElement>(null);
+const scannedLabelLoading = ref(false);
+const isSavingNewGrn = ref(false);
+const filterChanged = ref(false);
+
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
 });
@@ -307,14 +326,6 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const ShopDetailRecords = ref<IInventoryListResponse[]>([]);
-const shopData = ref<IShopResponse[]>([]);
-const $q = useQuasar();
-const isFetchingShopList = ref(false);
-const isFetchingRecords = ref(false);
-const apiController = ref<AbortController | null>(null);
-const isPreviewImageModalVisible = ref(false);
-const selectedPreviewImage = ref('');
 
 onMounted(() => {
   getShopList();
@@ -398,7 +409,6 @@ const getInventoryDetailList = async (data?: {
       PageSize: pagination.value.rowsPerPage,
       filterSearch: filterSearch.value,
     });
-    console.log(res);
     if (res.data) {
       ShopDetailRecords.value = res.data.inventoryDetails;
       pagination.value.rowsNumber = res.data.totalCountInventoryDetails;
@@ -436,27 +446,27 @@ const buttons = ref([
     name: 'holdBill',
   },
   {
-    label: 'Show Hold Bill (F5)',
+    label: 'Show Hold Bill (F6)',
     icon: 'visibility',
-    shortcut: 'F5',
+    shortcut: 'F6',
     name: 'showHoldBill',
   },
   {
-    label: 'Remaining Balance (F6)',
+    label: 'Remaining Balance (F7)',
     icon: 'account_balance',
-    shortcut: 'F6',
+    shortcut: 'F7',
     name: 'remainingBalance',
   },
   {
-    label: 'Today Sale (F7)',
+    label: 'Today Sale (F8)',
     icon: 'trending_up',
-    shortcut: 'F7',
+    shortcut: 'F8',
     name: 'todaySale',
   },
   {
-    label: 'Close Balance (F8)',
+    label: 'Close Balance (F9)',
     icon: 'paid',
-    shortcut: 'F8',
+    shortcut: 'F9',
     name: 'closeBalance',
   },
 ]);
@@ -502,16 +512,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('keyup', handleKeyUp);
 });
 
-const isInventoryListModalVisible = ref(false);
-const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
-const isSelectedShopDetailTableVisible = ref(false);
-const isFetchingArticleList = ref(false);
-const articleList = ref<IArticleData[]>([]);
-const scannedLabel = ref('');
-const scannedLabelInput = ref<null | HTMLDivElement>(null);
-const scannedLabelLoading = ref(false);
-const isSavingNewGrn = ref(false);
-const filterChanged = ref(false);
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
