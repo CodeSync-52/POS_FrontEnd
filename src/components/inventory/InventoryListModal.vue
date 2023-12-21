@@ -87,7 +87,7 @@
         v-model:pagination="InventoryPagination"
         row-key="inventoryId"
         selection="multiple"
-        class="max-h-[500px]"
+        class="max-h-[400px]"
         v-model:selected="selectedShopRecords"
         align="left"
         :loading="isLoading"
@@ -186,10 +186,12 @@ onMounted(() => {
   isFetchingArticleList.value = props.isFetchingArticle;
   selectedShopDetailList.value = props.inventoryList;
   InventoryPagination.value = props.pagination;
+  isLoading.value = props.isFetchingRecords;
 });
 onUpdated(() => {
   articleList.value = props.articleRecords;
   selectedShopDetailList.value = props.inventoryList;
+  isLoading.value = props.isFetchingRecords;
 });
 const emit = defineEmits<{
   (event: 'handle-pagination', pagination: IPagination): void;
