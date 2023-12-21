@@ -225,9 +225,9 @@
         class="col-3 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
       >
         <div class="flex flex-col h-full gap-3 lg:gap-4">
-          <!-- @click="handleButtonClick(button)" -->
           <q-btn
             v-for="(button, index) in buttons"
+            @click="handleButtonClick(button)"
             :key="index"
             unelevated
             color=""
@@ -430,11 +430,13 @@ import {
   computed,
   // , onBeforeUnmount
 } from 'vue';
+import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.SaleAndReturnManagement
 );
+const router = useRouter();
 // const ShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const shopData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
@@ -707,11 +709,13 @@ const handleEnterKey = () => {
 //     ctrlPressed.value = false;
 //   }
 // };
-// const handleButtonClick = (button: { name: string }): void => {
-//   if (ctrlPressed.value && button.name === 'cancelReceipt') {
-//     showNotif();
-//   } else showNotif();
-// };
+const handleButtonClick = (button: { name: string }): void => {
+  if (button.name === 'remainingBalance') {
+    router.push('/return/remaining-balance');
+    // showNotif();
+  }
+  //  else showNotif();
+};
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
