@@ -1,9 +1,10 @@
 <template>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
-      <div class="col-xs-12 col-md-9" >
+      <div class="col-xs-12 col-md-9">
         <div
-          class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4">
+          class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
+        >
           <span class="text-lg font-medium">{{ pageTitle }}</span>
           <div class="text-base flex items-center gap-1">
             <span class="text-[18px] font-semibold">
@@ -11,31 +12,80 @@
             </span>
           </div>
         </div>
-        <div class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-pt-md q-mb-md">
-          <q-input v-model="filterSearch.ProductCode" class="max-w-[200px] min-w-[200px]" maxlength="250" outlined dense
-            color="btn-primary" label="Shop Boy Code" />
+        <div
+          class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-pt-md q-mb-md"
+        >
+          <q-input
+            v-model="shopSale.shopBoyCode"
+            class="max-w-[200px] min-w-[200px]"
+            maxlength="250"
+            outlined
+            dense
+            color="btn-primary"
+            label="Shop Boy Code"
+          />
 
-          <q-select :loading="isFetchingShopList" popup-content-class="!max-h-[200px]" :options="shopData"
-            class="max-w-[200px] min-w-[200px]" use-input dense map-options outlined :disable="authStore.loggedInUser?.rolePermissions.roleName !==
+          <q-select
+            :loading="isFetchingShopList"
+            popup-content-class="!max-h-[200px]"
+            :options="shopData"
+            class="max-w-[200px] min-w-[200px]"
+            use-input
+            dense
+            map-options
+            outlined
+            :disable="
+              authStore.loggedInUser?.rolePermissions.roleName !==
               EUserRoles.SuperAdmin.toLowerCase()
-              " v-model="selectedShop.fromShop" @update:model-value="handleUpdateFromShop($event)"
-            label="Select Shop" color="btn-primary" option-label="name" option-value="shopId"></q-select>
+            "
+            v-model="selectedShop.fromShop"
+            @update:model-value="handleUpdateFromShop($event)"
+            label="Select Shop"
+            color="btn-primary"
+            option-label="name"
+            option-value="shopId"
+          />
         </div>
-        <div class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-2 md:gap-16">
+        <div
+          class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-2 md:gap-16"
+        >
           <div class="row gap-6 items-center">
             <span class="text-base">Add Inventory</span>
-            <q-btn icon="add" rounded dense unelevated color="btn-primary" @click="isInventoryListModalVisible = true" />
+            <q-btn
+              icon="add"
+              rounded
+              dense
+              unelevated
+              color="btn-primary"
+              @click="isInventoryListModalVisible = true"
+            />
           </div>
           <outside-click-container @outside-click="handleOutsideClick">
-            <q-input autofocus ref="scannedLabelInput" class="min-w-[200px] max-w-[200px]" v-model="scannedLabel"
-              :loading="scannedLabelLoading" outlined dense @keydown="dialoagClose" label="Scan label"
-              color="btn-primary" />
+            <q-input
+              autofocus
+              ref="scannedLabelInput"
+              class="min-w-[200px] max-w-[200px]"
+              v-model="scannedLabel"
+              :loading="scannedLabelLoading"
+              outlined
+              dense
+              @keydown="dialogClose"
+              label="Scan label"
+              color="btn-primary"
+            />
           </outside-click-container>
         </div>
-        <div v-if="selectedInventoryData.length" class="md:h-[calc(100vh-269px)] flex flex-col justify-between">
+        <div
+          v-if="selectedInventoryData.length"
+          class="md:h-[calc(100vh-269px)] flex flex-col justify-between"
+        >
           <div class="py-4 w-full">
-            <q-table auto-width :rows="selectedInventoryData" :columns="selectedGrnInventoryTableColumn"
-              class=" max-h-[39.3vh] 3xl:max-h-[45vh]">
+            <q-table
+              auto-width
+              :rows="selectedInventoryData"
+              :columns="selectedGrnInventoryTableColumn"
+              class="max-h-[37.3vh] 3xl:max-h-[45vh]"
+            >
               <template v-slot:no-data>
                 <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
                   <q-icon name="warning" size="xs" />
@@ -44,28 +94,51 @@
               </template>
               <template v-slot:body-cell-productImage="props">
                 <q-td :props="props">
-                  <div @click="handlePreviewImage(props.row.productImage)"
+                  <div
+                    @click="handlePreviewImage(props.row.productImage)"
                     class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
-                    :class="props.row.productImage ? 'cursor-pointer' : ''">
-                    <img class="w-full h-full object-cover" :src="getImageUrl(props.row.productImage) ||
-                      'assets/default-image.png'
-                      " alt="img" />
+                    :class="props.row.productImage ? 'cursor-pointer' : ''"
+                  >
+                    <img
+                      class="w-full h-full object-cover"
+                      :src="
+                        getImageUrl(props.row.productImage) ||
+                        'assets/default-image.png'
+                      "
+                      alt="img"
+                    />
                   </div>
                 </q-td>
               </template>
               <template v-slot:body-cell-dispatchQuantity="props">
                 <q-td :props="props">
-                  <q-input type="number" v-model="props.row.dispatchQuantity" :min="0" :max="props.row.quantity"
+                  <q-input
+                    type="number"
+                    v-model="props.row.dispatchQuantity"
+                    :min="0"
+                    :max="props.row.quantity"
                     @update:model-value="
                       handleUpdatedispatchQuantity($event, props.row)
-                      " dense outlined class="w-[150px]" color="btn-primary" />
+                    "
+                    dense
+                    outlined
+                    class="w-[150px]"
+                    color="btn-primary"
+                  />
                 </q-td>
               </template>
               <template v-slot:body-cell-action="props">
                 <q-td :props="props">
                   <div>
-                    <q-btn dense size="sm" icon="delete" flat unelevated color="red"
-                      @click="handleRemoveSelectedInventoryRecord(props.row)">
+                    <q-btn
+                      dense
+                      size="sm"
+                      icon="delete"
+                      flat
+                      unelevated
+                      color="red"
+                      @click="handleRemoveSelectedInventoryRecord(props.row)"
+                    >
                       <q-tooltip class="bg-red" :offset="[10, 10]">
                         Delete Article
                       </q-tooltip>
@@ -75,20 +148,50 @@
               </template>
             </q-table>
           </div>
-
           <div
-            class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between">
+            class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between"
+          >
             <div class="max-w-[300px] min-w-[200px] md:w-1/3">
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-2" outlined dense color="btn-primary"
-                label="Comments" />
+              <q-input
+                v-model="shopSale.comment"
+                maxlength="250"
+                outlined
+                dense
+                color="btn-primary"
+                label="Comments"
+              />
             </div>
-            <div class="max-w-[300px] min-w-[200px]">
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-2" outlined dense color="btn-primary"
-                label="Total" />
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
-                label="Discount" />
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
-                label="Net Total" />
+            <div class="max-w-[300px] min-w-[200px] flex flex-col gap-2">
+              <q-input
+                v-model="shopSalesTotalAmount"
+                type="number"
+                maxlength="250"
+                disable
+                outlined
+                dense
+                color="btn-primary"
+                label="Total"
+              />
+              <q-input
+                v-model="shopSale.discount"
+                @update:model-value="handleUpdateShopSaleDiscount($event)"
+                type="number"
+                maxlength="250"
+                outlined
+                dense
+                color="btn-primary"
+                label="Discount"
+              />
+              <q-input
+                v-model="shopSalesNetAmount"
+                type="number"
+                maxlength="250"
+                disable
+                outlined
+                dense
+                color="btn-primary"
+                label="Net Total"
+              />
             </div>
           </div>
         </div>
@@ -99,31 +202,52 @@
         direction="up"
         class="lg:!hidden sm:fixed bottom-1 end-1"
       >
-        <q-fab-action v-for="(button, index) in buttons" :key="index" label-position="left" padding="3px"
-          color="btn-primary" @click="handleButtonClick(button)" :icon="button.icon" :label="button.label" />
-        <q-fab-action padding="3px" 
-          color="btn-primary" @click="handleSaveGrn" icon="shopping_cart" label="Save (enter)" />
+        <!-- @click="handleButtonClick(button)" -->
+        <q-fab-action
+          v-for="(button, index) in buttons"
+          :key="index"
+          label-position="left"
+          padding="3px 10px"
+          color="btn-primary"
+          :icon="button.icon"
+          :label="button.label"
+        />
+        <q-fab-action
+          padding="3px 10px"
+          color="btn-primary"
+          @click="handleSaveShopSale"
+          label-position="left"
+          icon="shopping_cart"
+          label="Save (Ctrl + Enter)"
+        />
       </q-fab>
-      <div class="col-3 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block">
-            <q-btn v-for="(button, index) in buttons" :key="index" unelevated @click="handleButtonClick(button)"
-               color="" :label="button.label" :icon="button.icon"
-              class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3.5 lg:py-4 xl:py-5 mb-3 md:text-[12px] lg:text-[13px] xl:text-[16px]" />
-            <q-btn unelevated @keydown.enter="handleEnterKey" :loading="isSavingNewGrn" :disable="isButtonDisable"
-              @click="handleSaveGrn" color=""
-              class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-2 lg:py-5 text-[14px] lg:text-[16px]"
-              label="Save (enter)" icon="shopping_cart" />
+      <div
+        class="col-3 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
+      >
+        <div class="flex flex-col h-full gap-3 lg:gap-4">
+          <!-- @click="handleButtonClick(button)" -->
+          <q-btn
+            v-for="(button, index) in buttons"
+            :key="index"
+            unelevated
+            color=""
+            :label="button.label"
+            :icon="button.icon"
+            class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
+          />
+          <q-btn
+            unelevated
+            @keydown.enter="handleEnterKey"
+            :disable="isButtonDisable"
+            @click="handleSaveShopSale"
+            color=""
+            class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
+            label="Save (Ctrl + Enter)"
+            icon="shopping_cart"
+          />
+        </div>
       </div>
-
-
-
-
-
-
-
       <!--------------------------------------------------------------------------->
-
-
-
       <!-- <div class="flex justify-between">
         <div class="w-[80%]">
           <div
@@ -226,8 +350,8 @@
             <q-btn v-for="(button, index) in buttons" :key="index" unelevated @click="handleButtonClick(button)"
               :disable="button.name === 'save' && isButtonDisable" color="" :label="button.label" :icon="button.icon"
               class="rounded-[8px] icon_left border bg-btn-primary hover:bg-btn-primary-hover w-full py-2 lg:py-5 my-3 text-[14px] lg:text-[16px]" />
-            <q-btn unelevated @keydown.enter="handleEnterKey" :loading="isSavingNewGrn" :disable="isButtonDisable"
-              @click="handleSaveGrn" color=""
+            <q-btn unelevated @keydown.enter="handleEnterKey" :disable="isButtonDisable"
+              @click="handleSaveShopSale" color=""
               class="rounded-[8px] icon_left border bg-btn-primary hover:bg-btn-primary-hover w-full py-2 lg:py-5 my-3 text-[14px] lg:text-[16px]"
               label="Save (enter)" icon="shopping_cart" />
           </div>
@@ -238,23 +362,34 @@
       <q-card class="max-w-[400px]">
         <q-card-section>
           <div class="min-w-[2rem]">
-            <img class="w-full h-full object-cover" :src="selectedPreviewImage" alt="img" />
+            <img
+              class="w-full h-full object-cover"
+              :src="selectedPreviewImage"
+              alt="img"
+            />
           </div>
         </q-card-section>
       </q-card>
     </q-dialog>
     <q-dialog v-model="isInventoryListModalVisible">
-      <inventory-list-modal :is-fetching-article="isFetchingArticleList" :isFetchingRecords="isFetchingRecords"
-        :article-records="articleList" :current-data="selectedInventoryData" :pagination="pagination"
-        @filter-article-list="handleFilterArticle" @selected-data="handleSelectedData"
-        @handle-pagination="handlePagination" :inventory-list="selectedShopDetailRecords"
+      <inventory-list-modal
+        :is-fetching-article="isFetchingArticleList"
+        :isFetchingRecords="isFetchingRecords"
+        :article-records="articleList"
+        :current-data="selectedInventoryData"
+        :pagination="pagination"
+        @filter-article-list="handleFilterArticle"
+        @selected-data="handleSelectedData"
+        @handle-pagination="handlePagination"
+        :inventory-list="selectedShopDetailRecords"
         @selected-inventory-filters="handleSelectedInventoryFilters"
-        @removed-inventory-filters="handleRemoveInventoryFilter" />
+        @removed-inventory-filters="handleRemoveInventoryFilter"
+      />
     </q-dialog>
   </div>
 </template>
 <style scoped lang="scss">
-.icon_left> :nth-child(2) {
+.icon_left > :nth-child(2) {
   justify-content: flex-start;
   flex-wrap: nowrap;
   text-align: start;
@@ -288,10 +423,18 @@ import {
 import { inventoryDetailApi, shopListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
-import { ref, onMounted, onUnmounted, computed, onBeforeUnmount } from 'vue';
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  computed,
+  // , onBeforeUnmount
+} from 'vue';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
-const pageTitle = getRoleModuleDisplayName(EUserModules.SaleAndReturnManagement);
+const pageTitle = getRoleModuleDisplayName(
+  EUserModules.SaleAndReturnManagement
+);
 // const ShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const shopData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
@@ -308,7 +451,6 @@ const articleList = ref<IArticleData[]>([]);
 const scannedLabel = ref('');
 const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
-const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
@@ -331,6 +473,12 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
+const shopSale = ref({
+  comment: '',
+  discount: 0,
+  shopBoyCode: null,
+});
+// const ctrlPressed = ref(false);
 // onMounted(() => {
 //   getShopList();
 //   if (selectedShop.value)
@@ -346,11 +494,96 @@ const pagination = ref({
 //     };
 //   getInventoryDetailList();
 // });
+// onMounted(() => {
+//   window.addEventListener('keydown', handleKeyDownn);
+//   window.addEventListener('keyup', handleKeyUp);
+// });
+// onBeforeUnmount(() => {
+// window.removeEventListener('keydown', handleKeyDownn);
+// window.removeEventListener('keyup', handleKeyUp);
+// });
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keydown', handleActionKeys);
+  getShopList();
+  getArticleList();
+  selectedShop.value.fromShop = {
+    shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    closingBalance: 0,
+    status: '',
+    isWareHouse: '',
+    name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
+    phone: '',
+    address: '',
+    code: '',
+  };
+  inventoryDetailList();
+});
+const handleActionKeys = (e: KeyboardEvent) => {
+  if (e.ctrlKey) {
+    e.preventDefault();
+    if (e.key === 'F1') {
+      console.log('cancel receipt');
+    } else if (e.key === 'F2') {
+      console.log('create return');
+    } else if (
+      e.key === 'F3' &&
+      selectedInventoryData.value.length &&
+      selectedInventoryData.value.every(
+        (record) => record.dispatchQuantity !== 0
+      )
+    ) {
+      console.log('hold bill');
+    } else if (e.key === 'F6') {
+      console.log('show hold bill');
+    } else if (e.key === 'F7') {
+      console.log('remaining balance');
+    } else if (e.key === 'F8') {
+      console.log('today sale');
+    } else if (e.key === 'F9') {
+      console.log('close balance');
+    } else if (
+      e.key === 'Enter' &&
+      selectedInventoryData.value.length &&
+      selectedInventoryData.value.every(
+        (record) => record.dispatchQuantity !== 0
+      )
+    ) {
+      console.log('save');
+    }
+  }
+};
 onUnmounted(() => {
   if (apiController.value) {
     apiController.value.abort();
   }
 });
+const shopSalesTotalAmount = computed(() => {
+  return selectedInventoryData.value.reduce((amount: number, row) => {
+    return amount + row.dispatchQuantity * row.retailPrice;
+  }, 0);
+});
+const shopSalesNetAmount = computed(() => {
+  const totalAmount = selectedInventoryData.value.reduce(
+    (amount: number, row) => {
+      return amount + row.dispatchQuantity * row.retailPrice;
+    },
+    0
+  );
+  return totalAmount - shopSale.value.discount;
+});
+const handleUpdateShopSaleDiscount = (newValue: string | null | number) => {
+  if (typeof newValue === 'string') {
+    const value = parseInt(newValue);
+    if (!value || value < 0) {
+      shopSale.value.discount = 0;
+    } else if (value > shopSalesTotalAmount.value) {
+      shopSale.value.discount = shopSalesTotalAmount.value;
+    } else {
+      shopSale.value.discount = value;
+    }
+  }
+};
 const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShop = newVal;
   filterSearch.value.ShopId = newVal.shopId;
@@ -366,29 +599,6 @@ const getImageUrl = (base64Image: string | null) => {
     return `data:image/png;base64,${base64Image}`;
   }
   return '';
-};
-const getShopList = async () => {
-  isFetchingShopList.value = true;
-  try {
-    const response = await shopListApi({
-      PageNumber: 1,
-      PageSize: 200,
-    });
-    if (response.data) {
-      shopData.value = response.data.items;
-    }
-  } catch (error) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(error)) {
-      message = error.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  } finally {
-    isFetchingShopList.value = false;
-  }
 };
 // const getInventoryDetailList = async (data?: {
 //   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -429,46 +639,45 @@ const getShopList = async () => {
 //   }
 //   isFetchingRecords.value = false;
 // };
-
 const buttons = ref([
   {
-    label: 'Cancel Receipt (F1)',
+    label: 'Cancel Receipt (Ctrl + F1)',
     icon: 'close',
     shortcut: 'F1',
     name: 'cancelReceipt',
   },
   {
-    label: 'Create Return (F2)',
+    label: 'Create Return (Ctrl + F2)',
     icon: 'cached',
     shortcut: 'F2',
     name: 'createReturn',
   },
   {
-    label: 'Hold Bill (F3)',
+    label: 'Hold Bill (Ctrl + F3)',
     icon: 'hourglass_empty',
     shortcut: 'F3',
     name: 'holdBill',
   },
   {
-    label: 'Show Hold Bill (F6)',
+    label: 'Show Hold Bill (Ctrl + F6)',
     icon: 'visibility',
     shortcut: 'F6',
     name: 'showHoldBill',
   },
   {
-    label: 'Remaining Balance (F7)',
+    label: 'Remaining Balance (Ctrl + F7)',
     icon: 'account_balance',
     shortcut: 'F7',
     name: 'remainingBalance',
   },
   {
-    label: 'Today Sale (F8)',
+    label: 'Today Sale (Ctrl + F8)',
     icon: 'trending_up',
     shortcut: 'F8',
     name: 'todaySale',
   },
   {
-    label: 'Close Balance (F9)',
+    label: 'Close Balance (Ctrl + F9)',
     icon: 'paid',
     shortcut: 'F9',
     name: 'closeBalance',
@@ -481,65 +690,31 @@ const showNotif = () => {
 const handleEnterKey = () => {
   showNotif();
 };
-const ctrlPressed = ref(false);
-const handleKeyDownn = (event: KeyboardEvent): void => {
-  if (event.key === 'Control') {
-    ctrlPressed.value = true;
-  } else if (ctrlPressed.value) {
-    const matchingButton = buttons.value.find(
-      (button) => button.shortcut === event.key
-    );
-    if (matchingButton) {
-      showNotif();
-    }
-  }
-};
-
-const handleKeyUp = (event: KeyboardEvent): void => {
-  if (event.key === 'Control') {
-    ctrlPressed.value = false;
-  }
-};
-
-const handleButtonClick = (button: { name: string }): void => {
-  if (ctrlPressed.value && button.name === 'cancelReceipt') {
-    showNotif();
-  } else showNotif();
-};
-
-onMounted(() => {
-  window.addEventListener('keydown', handleKeyDownn);
-  window.addEventListener('keyup', handleKeyUp);
-});
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeyDownn);
-  window.removeEventListener('keyup', handleKeyUp);
-});
-
+// const handleKeyDownn = (event: KeyboardEvent): void => {
+//   if (event.key === 'Control') {
+//     ctrlPressed.value = true;
+//   } else if (ctrlPressed.value) {
+//     const matchingButton = buttons.value.find(
+//       (button) => button.shortcut === event.key
+//     );
+//     if (matchingButton) {
+//       showNotif();
+//     }
+//   }
+// };
+// const handleKeyUp = (event: KeyboardEvent): void => {
+//   if (event.key === 'Control') {
+//     ctrlPressed.value = false;
+//   }
+// };
+// const handleButtonClick = (button: { name: string }): void => {
+//   if (ctrlPressed.value && button.name === 'cancelReceipt') {
+//     showNotif();
+//   } else showNotif();
+// };
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
-onMounted(() => {
-  window.addEventListener('keydown', handleKeyDown);
-  getShopList();
-  getArticleList();
-  selectedShop.value.fromShop = {
-    shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
-    closingBalance: 0,
-    status: '',
-    isWareHouse: '',
-    name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
-    phone: '',
-    address: '',
-    code: '',
-  };
-  inventoryDetailList();
-});
-onUnmounted(() => {
-  if (apiController.value) {
-    apiController.value.abort();
-  }
-});
 const handleKeyPress = async (e: KeyboardEvent) => {
   if (e.key === 'n' || e.key === 'N') {
     isInventoryListModalVisible.value = true;
@@ -549,7 +724,6 @@ const handleKeyPress = async (e: KeyboardEvent) => {
       filterSearch.value.ProductCode = target.value;
       if (scannedLabelLoading.value) return;
       scannedLabelLoading.value = true;
-
       try {
         const res = await inventoryDetailApi({
           ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
@@ -577,14 +751,14 @@ const handleKeyPress = async (e: KeyboardEvent) => {
           } else {
             $q.notify({
               message:
-                'Dispatch quantity can not be greater than avaible quantity.',
+                'Dispatch quantity can not be greater than available quantity.',
               type: 'negative',
             });
           }
           scannedLabel.value = '';
           if (scannedLabelInput.value) scannedLabelInput.value.focus();
         } else if (res.data.inventoryDetails.length === 0) {
-          let message = 'No record found! Kindly select manually';
+          let message = 'No record found!';
           $q.notify({
             message,
             type: 'negative',
@@ -606,13 +780,15 @@ const handleKeyPress = async (e: KeyboardEvent) => {
   }
 };
 const handleKeyDown = (e: KeyboardEvent) => {
-  if (e.key === 'Tab' && !e.shiftKey) {
+  if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
+    window.addEventListener('keypress', handleKeyPress);
+  } else if (e.key === 'Tab' && !e.shiftKey) {
     window.addEventListener('keypress', handleKeyPress);
   } else if (e.key === 'Tab' && e.shiftKey) {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
-const dialoagClose = (e: KeyboardEvent) => {
+const dialogClose = (e: KeyboardEvent) => {
   if (e.key === 'n' || e.key === 'N') {
     window.removeEventListener('keypress', handleKeyPress);
   }
@@ -685,28 +861,27 @@ const handleRemoveSelectedInventoryRecord = (
   );
   selectedInventoryData.value.splice(selectedRecordIndex, 1);
 };
-const handleSaveGrn = async () => {
-  isSavingNewGrn.value = true;
-  try {
-  } catch (e) {
-    let message = 'Unexpected error occurred adding Grn';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  }
-  isSavingNewGrn.value = false;
+const handleSaveShopSale = () => {
+  const payload = {
+    shopId: selectedShop.value.fromShop?.shopId,
+    Products: selectedInventoryData.value.map((record) => ({
+      productCode: record.productCode,
+      quantity: record.dispatchQuantity,
+    })),
+    totalAmount: shopSalesNetAmount.value,
+    comment: shopSale.value.comment,
+    shopBoyCode: shopSale.value.shopBoyCode,
+  };
+  console.log(payload);
 };
 const isButtonDisable = computed(() => {
   const validations = [
+    !selectedInventoryData.value.length,
     selectedInventoryData.value.some((record) => record.dispatchQuantity === 0),
   ];
   return validations.some((validation) => validation);
 });
-
+//------------------------------------------------------------ Api---------------------------------------------------------
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
@@ -734,6 +909,29 @@ const getArticleList = async (productName?: string) => {
     });
   }
   isFetchingArticleList.value = false;
+};
+const getShopList = async () => {
+  isFetchingShopList.value = true;
+  try {
+    const response = await shopListApi({
+      PageNumber: 1,
+      PageSize: 200,
+    });
+    if (response.data) {
+      shopData.value = response.data.items;
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isFetchingShopList.value = false;
+  }
 };
 const inventoryDetailList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;

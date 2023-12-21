@@ -26,6 +26,7 @@ export interface IInventoryListResponse {
   productCode: string;
   variantId_1: number;
   variantId_2: number;
+  retailPrice: number;
   quantity: number;
 }
 export interface IInventoryListResponseWithDispatchQuantity
