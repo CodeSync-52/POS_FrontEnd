@@ -202,7 +202,6 @@
         direction="up"
         class="lg:!hidden sm:fixed bottom-1 end-1"
       >
-        <!-- @click="handleButtonClick(button)" -->
         <q-fab-action
           v-for="(button, index) in buttons"
           :key="index"
@@ -247,116 +246,6 @@
           />
         </div>
       </div>
-      <!--------------------------------------------------------------------------->
-      <!-- <div class="flex justify-between">
-        <div class="w-[80%]">
-          <div
-            class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4">
-            <span class="text-xl font-medium">Sale Management</span>
-            <div class="text-base flex items-center gap-1">
-              <span class="text-[18px] font-semibold">
-                {{ moment(timeStamp).format('LL') }}
-              </span>
-            </div>
-          </div>
-          <div class="flex">
-            <div class="flex justify-center gap-8">
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
-                label="Shop Boy Code" />
-  
-              <q-select :loading="isFetchingShopList" popup-content-class="!max-h-[200px]" :options="shopData"
-                class="my-3 max-w-[200px] min-w-[200px]" use-input dense map-options outlined :disable="authStore.loggedInUser?.rolePermissions.roleName !==
-                  EUserRoles.SuperAdmin.toLowerCase()
-                  " v-model="selectedShop.fromShop" @update:model-value="handleUpdateFromShop($event)" label="Select Shop"
-                color="btn-primary" option-label="name" option-value="shopId"></q-select>
-            </div>
-          </div>
-  
-          <div class="Inventtory_Tabel">
-            <div class="q-gutter-y-xs row gap-11 3xl:gap-10">
-              <div class="row gap-6 items-center justify-center min-w-[175px] max-w-[200px] px- my-3">
-                <span class="text-base">Add Article</span>
-                <q-btn icon="add" rounded dense unelevated color="btn-primary"
-                  @click="isInventoryListModalVisible = true" />
-              </div>
-              <outside-click-container @outside-click="handleOutsideClick">
-                <q-input autofocus ref="scannedLabelInput" class="min-w-[200px] max-w-[200px] my-3" v-model="scannedLabel"
-                  :loading="scannedLabelLoading" outlined dense @keydown="dialoagClose" label="Scan label"
-                  color="btn-primary" />
-              </outside-click-container>
-            </div>
-  
-            <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
-              <q-table :rows="selectedInventoryData" :columns="selectedGrnInventoryTableColumn"
-                class="max-h-[48vh] 3xl:max-h-[45vh]">
-                <template v-slot:no-data>
-                  <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-                    <q-icon name="warning" size="xs" />
-                    <span class="text-md font-medium"> No data available.</span>
-                  </div>
-                </template>
-                <template v-slot:body-cell-productImage="props">
-                  <q-td :props="props">
-                    <div @click="handlePreviewImage(props.row.productImage)"
-                      class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
-                      :class="props.row.productImage ? 'cursor-pointer' : ''">
-                      <img class="w-full h-full object-cover" :src="getImageUrl(props.row.productImage) ||
-                        'assets/default-image.png'
-                        " alt="img" />
-                    </div>
-                  </q-td>
-                </template>
-                <template v-slot:body-cell-dispatchQuantity="props">
-                  <q-td :props="props">
-                    <q-input type="number" v-model="props.row.dispatchQuantity" :min="0" :max="props.row.quantity"
-                      @update:model-value="
-                        handleUpdatedispatchQuantity($event, props.row)
-                        " dense outlined class="w-[150px]" color="btn-primary" />
-                  </q-td>
-                </template>
-                <template v-slot:body-cell-action="props">
-                  <q-td :props="props">
-                    <div>
-                      <q-btn dense size="sm" icon="delete" flat unelevated color="red"
-                        @click="handleRemoveSelectedInventoryRecord(props.row)">
-                        <q-tooltip class="bg-red" :offset="[10, 10]">
-                          Delete Article
-                        </q-tooltip>
-                      </q-btn>
-                    </div>
-                  </q-td>
-                </template>
-              </q-table>
-            </div>
-          </div> 
-          <div class="w-full flex justify-center md:justify-between">
-            <div class="w-[50%]">
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-2" outlined dense color="btn-primary"
-                label="Comments" />
-            </div>
-            <div class="max-w-[300px] min-w-[250px]">
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-2" outlined dense color="btn-primary"
-                label="Total" />
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
-                label="Discount" />
-              <q-input v-model="filterSearch.ProductCode" maxlength="250" class="my-3" outlined dense color="btn-primary"
-                label="Net Total" />
-            </div>
-          </div>
-        </div>
-  
-        <div class="w-[17%] relative">
-          <div class="sticky top-20">
-            <q-btn v-for="(button, index) in buttons" :key="index" unelevated @click="handleButtonClick(button)"
-              :disable="button.name === 'save' && isButtonDisable" color="" :label="button.label" :icon="button.icon"
-              class="rounded-[8px] icon_left border bg-btn-primary hover:bg-btn-primary-hover w-full py-2 lg:py-5 my-3 text-[14px] lg:text-[16px]" />
-            <q-btn unelevated @keydown.enter="handleEnterKey" :disable="isButtonDisable"
-              @click="handleSaveShopSale" color=""
-              class="rounded-[8px] icon_left border bg-btn-primary hover:bg-btn-primary-hover w-full py-2 lg:py-5 my-3 text-[14px] lg:text-[16px]"
-              label="Save (enter)" icon="shopping_cart" />
-          </div>
-        </div>
-      </div> -->
     </div>
     <q-dialog v-model="isPreviewImageModalVisible">
       <q-card class="max-w-[400px]">
@@ -388,17 +277,6 @@
     </q-dialog>
   </div>
 </template>
-<style scoped lang="scss">
-.icon_left > :nth-child(2) {
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  text-align: start;
-
-  @media (min-width: 992px) {
-    margin-left: 1rem;
-  }
-}
-</style>
 <script setup lang="ts">
 import InventoryListModal from 'src/components/inventory/InventoryListModal.vue';
 import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
@@ -423,13 +301,7 @@ import {
 import { inventoryDetailApi, shopListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
-import {
-  ref,
-  onMounted,
-  onUnmounted,
-  computed,
-  // , onBeforeUnmount
-} from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
@@ -437,7 +309,6 @@ const pageTitle = getRoleModuleDisplayName(
   EUserModules.SaleAndReturnManagement
 );
 const router = useRouter();
-// const ShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const shopData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
 const isFetchingShopList = ref(false);
@@ -480,30 +351,6 @@ const shopSale = ref({
   discount: 0,
   shopBoyCode: null,
 });
-// const ctrlPressed = ref(false);
-// onMounted(() => {
-//   getShopList();
-//   if (selectedShop.value)
-//     selectedShop.value.fromShop = {
-//       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
-//       closingBalance: 0,
-//       status: '',
-//       isWareHouse: '',
-//       name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
-//       phone: '',
-//       address: '',
-//       code: '',
-//     };
-//   getInventoryDetailList();
-// });
-// onMounted(() => {
-//   window.addEventListener('keydown', handleKeyDownn);
-//   window.addEventListener('keyup', handleKeyUp);
-// });
-// onBeforeUnmount(() => {
-// window.removeEventListener('keydown', handleKeyDownn);
-// window.removeEventListener('keyup', handleKeyUp);
-// });
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keydown', handleActionKeys);
@@ -602,46 +449,7 @@ const getImageUrl = (base64Image: string | null) => {
   }
   return '';
 };
-// const getInventoryDetailList = async (data?: {
-//   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
-// }) => {
-//   isFetchingRecords.value = true;
-//   if (data) {
-//     pagination.value = { ...pagination.value, ...data.pagination };
-//   }
-//   try {
-//     if (isFetchingRecords.value && apiController.value) {
-//       apiController.value.abort();
-//       apiController.value = null;
-//     }
-//     apiController.value = new AbortController();
-
-//     const res = await inventoryDetailApi({
-//       ShopId:
-//         filterSearch.value.ShopId ??
-//         authStore.loggedInUser?.userShopInfoDTO.shopId ??
-//         -1,
-//       PageNumber: pagination.value.page,
-//       PageSize: pagination.value.rowsPerPage,
-//       filterSearch: filterSearch.value,
-//     });
-//     if (res.data) {
-//       ShopDetailRecords.value = res.data.inventoryDetails;
-//       pagination.value.rowsNumber = res.data.totalCountInventoryDetails;
-//     }
-//   } catch (e) {
-//     let message = 'Unexpected Error Occurred';
-//     if (isPosError(e)) {
-//       message = e.message;
-//     }
-//     $q.notify({
-//       message,
-//       type: 'negative',
-//     });
-//   }
-//   isFetchingRecords.value = false;
-// };
-const buttons = ref([
+const buttons = [
   {
     label: 'Cancel Receipt (Ctrl + F1)',
     icon: 'close',
@@ -684,7 +492,7 @@ const buttons = ref([
     shortcut: 'F9',
     name: 'closeBalance',
   },
-]);
+];
 const showNotif = () => {
   alert("Button Working Perfectly...'");
 };
@@ -692,29 +500,10 @@ const showNotif = () => {
 const handleEnterKey = () => {
   showNotif();
 };
-// const handleKeyDownn = (event: KeyboardEvent): void => {
-//   if (event.key === 'Control') {
-//     ctrlPressed.value = true;
-//   } else if (ctrlPressed.value) {
-//     const matchingButton = buttons.value.find(
-//       (button) => button.shortcut === event.key
-//     );
-//     if (matchingButton) {
-//       showNotif();
-//     }
-//   }
-// };
-// const handleKeyUp = (event: KeyboardEvent): void => {
-//   if (event.key === 'Control') {
-//     ctrlPressed.value = false;
-//   }
-// };
 const handleButtonClick = (button: { name: string }): void => {
   if (button.name === 'remainingBalance') {
     router.push('/return/remaining-balance');
-    // showNotif();
   }
-  //  else showNotif();
 };
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
@@ -978,3 +767,13 @@ const inventoryDetailList = async (data?: {
   isFetchingRecords.value = false;
 };
 </script>
+<style scoped lang="scss">
+.icon_left > :nth-child(2) {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  text-align: start;
+  @media (min-width: 992px) {
+    margin-left: 1rem;
+  }
+}
+</style>
