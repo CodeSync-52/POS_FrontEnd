@@ -164,7 +164,7 @@ const expenseCounter = ref(0);
 const addRow = () => {
   const id = expenseCounter.value++;
   const newRecord: IShopSaleExpenses = {
-    id,
+    id: Date.now(),
     name: '',
     amount: 0,
     saveRow: false,
@@ -185,12 +185,8 @@ const saveRow = (row: IShopSaleExpenses) => {
     });
   }
 };
-
-
 const discardRow = (row: IShopSaleExpenses) => {
-  const index = ShopManagementExpenseRecords.value.indexOf(row);
-  if (index !== -1) {
-    ShopManagementExpenseRecords.value.splice(index, 1);
-  }
+  ShopManagementExpenseRecords.value =
+    ShopManagementExpenseRecords.value.filter((item) => item.id !== row.id);
 };
 </script>
