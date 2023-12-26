@@ -136,6 +136,7 @@
               >
                 {{ header.displayName }}
               </th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -173,6 +174,7 @@
                   "
                 />
               </td>
+              <td>{{ selectedInventoryTotalQuantity(product, secondItem) }}</td>
             </tr>
           </tbody>
         </q-markup-table>
@@ -880,5 +882,30 @@ const handlePreviewGrn = async () => {
       message,
     });
   }
+};
+
+const selectedInventoryTotalQuantity = (
+  product: {
+    firstVariantSelection: IVariantDetailsData[] | null;
+    secondVariantSelection: IVariantDetailsData[] | null;
+    productId: number | null;
+    productName: string | null;
+    productImage: string | null;
+    masterStock: number;
+  },
+  secondItem: IVariantDetailsData
+): number => {
+  if (!product.firstVariantSelection) {
+    return 0;
+  }
+  return product.firstVariantSelection.reduce(
+    (total: number, firstItem: IVariantDetailsData) => {
+      const key = `${product.productId}-${firstItem.variantId}-${secondItem.variantId}`;
+      const stockQuantity =
+        selectedInventoryPayload.value[key]?.stockQuantity || 0;
+      return total + stockQuantity;
+    },
+    0
+  );
 };
 </script>
