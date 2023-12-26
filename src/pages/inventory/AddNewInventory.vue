@@ -122,11 +122,19 @@
                       alt="img"
                     />
                   </div>
-                  <div class="ml-1">
-                    <span>Available Stock:</span>
-                    <span class="font-semibold">
-                      {{ product.masterStock }}
-                    </span>
+                  <div class="flex flex-col">
+                    <div class="ml-1">
+                      <span>Available Stock: </span>
+                      <span class="font-semibold">
+                        {{ product.masterStock }}
+                      </span>
+                    </div>
+                    <div class="ml-1">
+                      <span>Retail Price: </span>
+                      <span class="font-semibold">
+                        {{ product.retailPrice }}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </th>
@@ -185,6 +193,15 @@
             )
           }}</span
         >
+        <span class="text-xm font-medium text-[#f60707fb]">
+          {{
+            Object.values(selectedInventoryPayload).some(
+              (payload) => payload.stockQuantity === 0
+            )
+              ? 'You have to add all product variants'
+              : ''
+          }}
+        </span>
       </div>
       <div
         v-if="rowColumnData.length"
@@ -302,6 +319,7 @@
             productName: item?.productName || '',
             productImage: item.productImage || '',
             masterStock: item.masterStock ?? 0,
+            retailPrice: item.retailPrice ?? 0,
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"
@@ -339,7 +357,7 @@ import {
   IArticleData,
   IPagination,
   IProductWithVariantDTOs,
-  ISelectedArticleWithMasterStock,
+  ISelectedArticleWithMasterStockAndRetailPrice,
   ISelectedArticleData,
   IVariantDetailsData,
   IShopResponse,
@@ -359,7 +377,9 @@ const isFetchingArticleList = ref(false);
 const isPrintingBarcodeScreenVisible = ref(false);
 const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
-const selectedArticle = ref<ISelectedArticleWithMasterStock[]>([]);
+const selectedArticle = ref<ISelectedArticleWithMasterStockAndRetailPrice[]>(
+  []
+);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const showfirstBarcodePreview = ref(true);
 const isShopLoading = ref(false);
@@ -371,6 +391,7 @@ const rowColumnData = ref<
     productName: string | null;
     productImage: string | null;
     masterStock: number;
+    retailPrice: number;
   }[]
 >([]);
 
@@ -623,6 +644,7 @@ const selectedData = (
     productName?: string;
     productImage: string | null;
     masterStock: number;
+    retailPrice: number;
   }[]
 ) => {
   if (payload.length > 1) {
@@ -690,7 +712,8 @@ const handleSelectedVariant = (
   productId: number,
   productName: string,
   productImage: string,
-  masterStock: number
+  masterStock: number,
+  retailPrice: number
 ) => {
   if (showBarcodeScreen.value) {
     selectedInventoryPayload.value = {};
@@ -705,6 +728,7 @@ const handleSelectedVariant = (
       productName,
       productImage,
       masterStock,
+      retailPrice,
     },
   ];
   setProductKeys();
@@ -768,7 +792,6 @@ const handleAddInventory = async (
         message: res.message,
         type: 'positive',
       });
-
       selectedId.value = res.data;
       handlePreviewGrn();
 

@@ -164,7 +164,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import {
-  ISelectedArticleWithMasterStock,
+  ISelectedArticleWithMasterStockAndRetailPrice,
   IVariantData,
   IVariantDetailsData,
   IVariantGroup,
@@ -179,20 +179,21 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { CanceledError } from 'axios';
 
 interface propTypes {
-  selectedArticle: ISelectedArticleWithMasterStock[];
+  selectedArticle: ISelectedArticleWithMasterStockAndRetailPrice[];
 }
 
 const emit = defineEmits<{
   (
     event: 'selected-Variants',
     payload: {
-      firstVariantSelection: IVariantDetailsData | null;
-      secondVariantSelection: IVariantDetailsData | null;
+      firstVariantSelection: IVariantDetailsData[] | null;
+      secondVariantSelection: IVariantDetailsData[] | null;
     },
     productId: number,
     productName: string,
     productImage: string | null,
-    masterStock: number
+    masterStock: number,
+    retailPrice: number
   ): void;
 }>();
 
@@ -213,8 +214,8 @@ const $q = useQuasar();
 const filter = ref('');
 const options = ref<IVariantData[]>([]);
 const selectedDetailsData = ref<{
-  firstVariantSelection: IVariantDetailsData | null;
-  secondVariantSelection: IVariantDetailsData | null;
+  firstVariantSelection: IVariantDetailsData[] | null;
+  secondVariantSelection: IVariantDetailsData[] | null;
 }>({
   firstVariantSelection: null,
   secondVariantSelection: null,
@@ -259,9 +260,23 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-onMounted(() => {
+onMounted(async () => {
+  await getVariantGroupList();
+  const selectedSizeVariant = optionData.value.find(
+    (variant) => variant.name.toLowerCase() === 'size'
+  );
+  if (selectedSizeVariant) {
+    variantGroup.value.firstVariant = selectedSizeVariant;
+    getSelectedVariantDetails(selectedSizeVariant, false);
+  }
+  const selectedColorVariant = optionData.value.find(
+    (variant) => variant.name.toLowerCase() === 'color'
+  );
+  if (selectedColorVariant) {
+    variantGroup.value.secondVariant = selectedColorVariant;
+    getSelectedVariantDetails(selectedColorVariant, true);
+  }
   getVariantList();
-  getVariantGroupList();
 });
 const getSelectedVariantDetails = async (
   selectedVariantGroup: {
@@ -374,8 +389,25 @@ const filterFn = (val: string, update: CallableFunction) => {
     );
   });
 };
+const sortedVariant = (variantArray: IVariantDetailsData[]) => {
+  return variantArray.sort(
+    (firstItem, secondItem) =>
+      parseInt(firstItem.displayName) - parseInt(secondItem.displayName)
+  );
+};
 const handleAddVariantDetails = () => {
   const selectedArticle = props.selectedArticle[0];
+  if (
+    selectedDetailsData.value.firstVariantSelection &&
+    selectedDetailsData.value.secondVariantSelection
+  ) {
+    selectedDetailsData.value.firstVariantSelection = sortedVariant(
+      selectedDetailsData.value.firstVariantSelection
+    );
+    selectedDetailsData.value.secondVariantSelection = sortedVariant(
+      selectedDetailsData.value.secondVariantSelection
+    );
+  }
   setTimeout(() => {
     emit(
       'selected-Variants',
@@ -383,7 +415,8 @@ const handleAddVariantDetails = () => {
       selectedArticle.productId,
       selectedArticle.productName ?? '',
       selectedArticle.productImage,
-      selectedArticle.masterStock
+      selectedArticle.masterStock,
+      selectedArticle.retailPrice
     );
   }, 300);
 };
