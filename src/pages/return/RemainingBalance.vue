@@ -57,6 +57,74 @@
             :columns="shopSaleExpenseTableColumn"
             row-key="id"
           >
+            <template v-slot:body-cell-name="props">
+              <q-td :props="props">
+                <template v-if="props.row.editing">
+                  <q-input
+                    v-model="props.row.name"
+                    type="text"
+                    label="Expense"
+                    class="max-w-[200px] min-w-[200px]"
+                    outlined
+                    dense
+                    color="btn-primary"
+                  />
+                </template>
+                <template v-else>
+                  <span>{{ props.row.name }}</span>
+                </template>
+              </q-td>
+            </template>
+            <template v-slot:body-cell-amount="props">
+              <q-td :props="props">
+                <template v-if="props.row.editing">
+                  <q-input
+                    v-model="props.row.amount"
+                    type="number"
+                    label="Amount"
+                    class="max-w-[200px] min-w-[200px]"
+                    outlined
+                    dense
+                    color="btn-primary"
+                  />
+                </template>
+                <template v-else>
+                  <span>{{ props.row.amount }}</span>
+                </template>
+              </q-td>
+            </template>
+            <template v-slot:body-cell-saveRow="props">
+              <q-td :props="props">
+                <q-btn
+                  v-if="!props.row.saveRow && props.row.editing"
+                  flat
+                  unelevated
+                  dense
+                  size="sm"
+                  icon="check"
+                  color="green"
+                  @click="saveRow(props.row)"
+                >
+                  <q-tooltip class="bg-green" :offset="[10, 10]">
+                    Save row
+                  </q-tooltip>
+                </q-btn>
+                <q-btn
+                  v-if="!props.row.saveRow || !props.row.editing"
+                  flat
+                  unelevated
+                  dense
+                  size="sm"
+                  icon="cancel"
+                  color="red"
+                  @click="discardRow(props.row)"
+                >
+                  <q-tooltip class="bg-red" :offset="[10, 10]">
+                    Delete Row
+                  </q-tooltip>
+                </q-btn>
+              </q-td>
+            </template>
             <template v-slot:bottom-row>
               <q-tr>
                 <q-td>
@@ -85,18 +153,41 @@
 import { ref } from 'vue';
 import { IShopSaleExpenses } from 'src/interfaces';
 import { shopSaleExpenseTableColumn } from './utils';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
 const openingBalance = ref('');
 const runningBalance = ref('');
 const balanceSubmitToHod = ref('');
 const ShopManagementExpenseRecords = ref<IShopSaleExpenses[]>([]);
+const editingRow = ref<number | null>(null);
 const expenseCounter = ref(0);
 const addRow = () => {
   const id = expenseCounter.value++;
   const newRecord: IShopSaleExpenses = {
     id,
-    name: 'Enter Text',
+    name: '',
     amount: 0,
+    saveRow: false,
+    editing: true,
   };
   ShopManagementExpenseRecords.value.push(newRecord);
+  editingRow.value = id;
+};
+const saveRow = (row: IShopSaleExpenses) => {
+  if (row.name.trim() !== '') {
+    row.saveRow = true;
+    row.editing = false;
+  } else {
+    $q.notify({
+      message: 'Empty expense field',
+      type: 'negative',
+    });
+  }
+};
+const discardRow = (row: IShopSaleExpenses) => {
+  const index = ShopManagementExpenseRecords.value.indexOf(row);
+  if (index !== -1) {
+    ShopManagementExpenseRecords.value.splice(index, 1);
+  }
 };
 </script>

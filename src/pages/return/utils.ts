@@ -16,4 +16,11 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
     align: 'left',
     field: (row) => row.amount,
   },
+  {
+    name: 'saveRow',
+    required: true,
+    label: 'Action',
+    align: 'left',
+    field: () => '',
+  },
 ];
