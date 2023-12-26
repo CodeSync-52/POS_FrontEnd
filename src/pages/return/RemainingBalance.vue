@@ -175,15 +175,18 @@ const addRow = () => {
 };
 const saveRow = (row: IShopSaleExpenses) => {
   if (row.name.trim() !== '') {
+    row.amount = Math.max(row.amount, 0);
     row.saveRow = true;
     row.editing = false;
   } else {
     $q.notify({
-      message: 'Empty expense field',
+      message: 'Empty expense field or amount is below 0',
       type: 'negative',
     });
   }
 };
+
+
 const discardRow = (row: IShopSaleExpenses) => {
   const index = ShopManagementExpenseRecords.value.indexOf(row);
   if (index !== -1) {
