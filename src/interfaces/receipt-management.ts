@@ -26,6 +26,7 @@ export interface ISelectedArticleData {
   productName?: string;
   purchaseDetailId?: number;
   masterStock?: number;
+  retailPrice?: number;
 }
 
 export interface IProductList {

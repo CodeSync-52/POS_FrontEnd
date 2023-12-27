@@ -106,6 +106,7 @@ interface propTypes {
     productName?: string;
     productImage: string;
     masterStock: number;
+    retailPrice: number;
   }[];
   articleList: IArticleData[];
   isFetchingArticleList: boolean;
@@ -133,6 +134,7 @@ const selectedArticles = ref<
     unitWholeSalePrice?: number;
     productImage: string | null;
     masterStock: number;
+    retailPrice: number;
   }[]
 >([...props.currentData]);
 const selected = ref<IArticleData[]>([]);
@@ -148,6 +150,7 @@ const emit = defineEmits<{
       productName?: string;
       productImage: string | null;
       masterStock: number;
+      retailPrice: number;
     }[]
   ): void;
   (event: 'handle-pagination', pagination: IPagination): void;
@@ -166,6 +169,7 @@ watch(
       unitWholeSalePrice: article.wholeSalePrice ?? 0,
       productImage: article.productImage,
       masterStock: article.masterStock ?? 0,
+      retailPrice: article.retailPrice,
     }));
   },
   {

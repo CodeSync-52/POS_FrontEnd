@@ -66,4 +66,5 @@ export interface ISelectedWholeSaleArticleData {
   unitWholeSalePrice?: number;
   totalAmount?: number;
   masterStock?: number;
+  retailPrice?: number;
 }
