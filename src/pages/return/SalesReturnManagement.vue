@@ -211,10 +211,10 @@
           :icon="button.icon"
           :label="button.label"
         />
+        <!-- @click="handleSaveShopSale" -->
         <q-fab-action
           padding="3px 10px"
           color="btn-primary"
-          @click="handleSaveShopSale"
           label-position="left"
           icon="shopping_cart"
           label="Save (Ctrl + Enter)"
@@ -234,11 +234,11 @@
             :icon="button.icon"
             class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
           />
+          <!-- @click="handleSaveShopSale" -->
           <q-btn
             unelevated
             @keydown.enter="handleEnterKey"
             :disable="isButtonDisable"
-            @click="handleSaveShopSale"
             color=""
             class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
             label="Save (Ctrl + Enter)"
@@ -372,9 +372,7 @@ const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
     if (e.key === 'F1') {
-      console.log('cancel receipt');
     } else if (e.key === 'F2') {
-      console.log('create return');
     } else if (
       e.key === 'F3' &&
       selectedInventoryData.value.length &&
@@ -382,15 +380,10 @@ const handleActionKeys = (e: KeyboardEvent) => {
         (record) => record.dispatchQuantity !== 0
       )
     ) {
-      console.log('hold bill');
     } else if (e.key === 'F6') {
-      console.log('show hold bill');
     } else if (e.key === 'F7') {
-      console.log('remaining balance');
     } else if (e.key === 'F8') {
-      console.log('today sale');
     } else if (e.key === 'F9') {
-      console.log('close balance');
     } else if (
       e.key === 'Enter' &&
       selectedInventoryData.value.length &&
@@ -398,7 +391,6 @@ const handleActionKeys = (e: KeyboardEvent) => {
         (record) => record.dispatchQuantity !== 0
       )
     ) {
-      console.log('save');
     }
   }
 };
@@ -654,19 +646,18 @@ const handleRemoveSelectedInventoryRecord = (
   );
   selectedInventoryData.value.splice(selectedRecordIndex, 1);
 };
-const handleSaveShopSale = () => {
-  const payload = {
-    shopId: selectedShop.value.fromShop?.shopId,
-    Products: selectedInventoryData.value.map((record) => ({
-      productCode: record.productCode,
-      quantity: record.dispatchQuantity,
-    })),
-    totalAmount: shopSalesNetAmount.value,
-    comment: shopSale.value.comment,
-    shopBoyCode: shopSale.value.shopBoyCode,
-  };
-  console.log(payload);
-};
+// const handleSaveShopSale = () => {
+//   const payload = {
+//     shopId: selectedShop.value.fromShop?.shopId,
+//     Products: selectedInventoryData.value.map((record) => ({
+//       productCode: record.productCode,
+//       quantity: record.dispatchQuantity,
+//     })),
+//     totalAmount: shopSalesNetAmount.value,
+//     comment: shopSale.value.comment,
+//     shopBoyCode: shopSale.value.shopBoyCode,
+//   };
+// };
 const isButtonDisable = computed(() => {
   const validations = [
     !selectedInventoryData.value.length,

@@ -59,7 +59,9 @@
           >
             <template v-slot:body-cell-name="props">
               <q-td :props="props">
-                <template v-if="props.row.editing">
+                <template
+                  v-if="props.row.isEditing || props.row.id === editingRowId"
+                >
                   <q-input
                     v-model="props.row.name"
                     type="text"
@@ -77,7 +79,9 @@
             </template>
             <template v-slot:body-cell-amount="props">
               <q-td :props="props">
-                <template v-if="props.row.editing">
+                <template
+                  v-if="props.row.isEditing || props.row.id === editingRowId"
+                >
                   <q-input
                     v-model="props.row.amount"
                     type="number"
@@ -96,28 +100,42 @@
             <template v-slot:body-cell-saveRow="props">
               <q-td :props="props">
                 <q-btn
-                  v-if="!props.row.saveRow && props.row.editing"
+                  v-if="props.row.isSavingRow && !props.row.isEditing"
+                  flat
+                  unelevated
+                  dense
+                  size="sm"
+                  icon="edit"
+                  color="green"
+                  @click="handleEditRow(props.row)"
+                >
+                  <q-tooltip class="bg-green" :offset="[10, 10]">
+                    Edit Row
+                  </q-tooltip>
+                </q-btn>
+                <q-btn
+                  v-if="!props.row.isSavingRow || props.row.isEditing"
                   flat
                   unelevated
                   dense
                   size="sm"
                   icon="check"
                   color="green"
-                  @click="saveRow(props.row)"
+                  @click="hanldeSaveRow(props.row)"
                 >
                   <q-tooltip class="bg-green" :offset="[10, 10]">
-                    Save row
+                    Save Row
                   </q-tooltip>
                 </q-btn>
                 <q-btn
-                  v-if="!props.row.saveRow || !props.row.editing"
+                  v-if="!props.row.isSavingRow || !props.row.isEditing"
                   flat
                   unelevated
                   dense
                   size="sm"
                   icon="cancel"
                   color="red"
-                  @click="discardRow(props.row)"
+                  @click="handleDeletedRow(props.row)"
                 >
                   <q-tooltip class="bg-red" :offset="[10, 10]">
                     Delete Row
@@ -126,8 +144,17 @@
               </q-td>
             </template>
             <template v-slot:bottom-row>
-              <q-tr>
+              <q-tr v-if="showTotalExpenseRow">
                 <q-td>
+                  <span class="font-medium">Total: </span>
+                </q-td>
+                <q-td>
+                  <span>{{ expensesTotalSum }}</span>
+                </q-td>
+                <q-td />
+              </q-tr>
+              <q-tr>
+                <q-td colSpan="3">
                   <q-btn
                     unelevated
                     color="btn-primary"
@@ -145,48 +172,98 @@
             </template>
           </q-table>
         </div>
+        <div
+          class="flex flex-col gap-2 md:gap-4 items-center md:items-end q-pa-md"
+        >
+          <div class="md:flex gap-2 items-center">
+            <span class="font-medium md:text-lg">Remaining Balance :</span>
+            <q-input
+              v-model="remainingBalance"
+              type="number"
+              label="Remaining Balance"
+              class="max-w-[200px] min-w-[200px]"
+              maxlength="250"
+              outlined
+              dense
+              readonly
+              color="btn-primary"
+            />
+          </div>
+        </div>
       </q-card-section>
     </q-card>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { IShopSaleExpenses } from 'src/interfaces';
 import { shopSaleExpenseTableColumn } from './utils';
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
-const openingBalance = ref('');
-const runningBalance = ref('');
-const balanceSubmitToHod = ref('');
+const openingBalance = ref(0);
+const runningBalance = ref(0);
+const balanceSubmitToHod = ref(0);
 const ShopManagementExpenseRecords = ref<IShopSaleExpenses[]>([]);
-const editingRow = ref<number | null>(null);
+const editingRowId = ref<number | null>(null);
 const expenseCounter = ref(0);
 const addRow = () => {
-  const id = expenseCounter.value++;
-  const newRecord: IShopSaleExpenses = {
-    id: Date.now(),
-    name: '',
-    amount: 0,
-    saveRow: false,
-    editing: true,
-  };
-  ShopManagementExpenseRecords.value.push(newRecord);
-  editingRow.value = id;
+  if (editingRowId.value !== null) {
+    $q.notify({
+      message: 'Complete or discard the current edit before adding a new row.',
+      type: 'warning',
+    });
+  } else {
+    const id = expenseCounter.value++;
+    const newRecord: IShopSaleExpenses = {
+      id,
+      name: '',
+      amount: 0,
+      isSavingRow: false,
+      isEditing: true,
+    };
+    ShopManagementExpenseRecords.value.push(newRecord);
+    editingRowId.value = id;
+  }
 };
-const saveRow = (row: IShopSaleExpenses) => {
+const hanldeSaveRow = (row: IShopSaleExpenses) => {
   if (row.name.trim() !== '') {
     row.amount = Math.max(row.amount, 0);
-    row.saveRow = true;
-    row.editing = false;
+    row.isSavingRow = true;
+    row.isEditing = false;
+    editingRowId.value = null;
   } else {
     $q.notify({
-      message: 'Empty expense field or amount is below 0',
+      message: 'Empty expense field',
       type: 'negative',
     });
   }
 };
-const discardRow = (row: IShopSaleExpenses) => {
+const handleDeletedRow = (row: IShopSaleExpenses) => {
   ShopManagementExpenseRecords.value =
     ShopManagementExpenseRecords.value.filter((item) => item.id !== row.id);
+  editingRowId.value = null;
 };
+const handleEditRow = (row: IShopSaleExpenses) => {
+  editingRowId.value = row.id;
+  row.isSavingRow = false;
+};
+const expensesTotalSum = computed(() => {
+  return ShopManagementExpenseRecords.value.reduce(
+    (acc, record) => acc + (record.isSavingRow ? record.amount : 0),
+    0
+  );
+});
+const showTotalExpenseRow = computed(() => {
+  return ShopManagementExpenseRecords.value.some(
+    (record) => record.isSavingRow
+  );
+});
+const remainingBalance = computed(() => {
+  return (
+    runningBalance.value -
+    openingBalance.value -
+    balanceSubmitToHod.value -
+    expensesTotalSum.value
+  );
+});
 </script>
