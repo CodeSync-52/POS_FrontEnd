@@ -193,7 +193,8 @@
                     authStore.checkUserHasPermission(
                       EUserModules.GoodsReceiptNotes,
                       EActionPermissions.Update
-                    )
+                    ) &&
+                    props.row.grnStatus === 'Pending'
                   "
                   size="sm"
                   flat
