@@ -18,7 +18,9 @@ export interface ISelectedArticle {
   productName?: string;
   productImage: string | null;
 }
-export interface ISelectedArticleWithMasterStock extends ISelectedArticle {
+export interface ISelectedArticleWithMasterStockAndRetailPrice
+  extends ISelectedArticle {
+  retailPrice: number;
   masterStock: number;
 }
 export interface IArticleInfo {
