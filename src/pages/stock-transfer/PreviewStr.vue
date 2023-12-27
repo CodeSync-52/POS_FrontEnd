@@ -76,12 +76,6 @@
               <tr>
                 <th class="text-left">
                   <div class="row items-center gap-1">
-                    <span
-                      >Product:
-                      <span class="font-semibold">{{
-                        product.productName
-                      }}</span></span
-                    >
                     <div
                       class="w-8 h-8 rounded-full overflow-hidden"
                       :class="product.productImage && 'cursor-pointer'"
@@ -96,6 +90,12 @@
                         alt="img"
                       />
                     </div>
+                    <span
+                      >Product:
+                      <span class="font-semibold">{{
+                        product.productName
+                      }}</span></span
+                    >
                   </div>
                 </th>
 
@@ -106,6 +106,7 @@
                 >
                   {{ firstVariant }}
                 </th>
+                <th class="text-left">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -129,7 +130,8 @@
                     color="btn-primary"
                     outlined
                     :disable="!isEdit"
-                    min="0"
+                    :min="0"
+                    @update:model-value="handleUpdateStrStock($event)"
                     v-model="secondItem.quantity"
                   >
                     <template v-if="isEdit" v-slot:append>
@@ -161,6 +163,13 @@
                       />
                     </template>
                   </q-input>
+                </td>
+                <td>
+                  {{
+                    getInvetoryTotalStockQuantity(
+                      limitedRecord(product.data, secondVariant)
+                    )
+                  }}
                 </td>
               </tr>
             </tbody>
@@ -288,7 +297,21 @@ onMounted(() => {
     isEdit.value = false;
   }
 });
-
+const getInvetoryTotalStockQuantity = (variant: ProductVariant[]) => {
+  return variant.reduce((acc: number, row: ProductVariant) => {
+    return acc + parseInt(row.quantity.toString());
+  }, 0);
+};
+const handleUpdateStrStock = (value: string | number | null) => {
+  if (typeof value === 'string') {
+    const newValue = parseInt(value);
+    if (!newValue || newValue > 0) {
+      return 0;
+    } else {
+      return newValue;
+    }
+  }
+};
 const previewGrn = async (selectedId: number) => {
   isLoading.value = true;
   try {
@@ -326,13 +349,11 @@ const previewGrn = async (selectedId: number) => {
               v2details: [currentDetail],
             });
           }
-
           return accumulator;
         },
         {}
       );
     }
-    console.log(grnGroupByProductId.value);
   } catch (e) {
     let message = 'Unexpected error occurred Preview Grn';
     if (isPosError(e)) {

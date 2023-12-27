@@ -325,9 +325,27 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-onMounted(() => {
-  getVariantList();
-  getVariantGroupList();
+onMounted(async () => {
+  await getVariantGroupList();
+  const selectedSizeVariant = optionData.value.find(
+    (variant) => variant.name.toLowerCase() === 'size'
+  );
+  if (selectedSizeVariant) {
+    variantGroup.value.firstVariant = selectedSizeVariant;
+    getSelectedVariantDetails(selectedSizeVariant, false);
+  }
+  const selectedColorVariant = optionData.value.find(
+    (variant) => variant.name.toLowerCase() === 'color'
+  );
+  if (selectedColorVariant) {
+    variantGroup.value.secondVariant = selectedColorVariant;
+    getSelectedVariantDetails(selectedColorVariant, true);
+  }
+  await getVariantList();
+  selectedDetailsData.value.firstVariantSelection =
+    selectedVariantOptions.value.firstVariantOptions[
+      selectedVariantOptions.value.firstVariantOptions.length - 1
+    ];
   optionsProduct.value = props.articleList;
 });
 const isPrintingBarcode = ref(false);

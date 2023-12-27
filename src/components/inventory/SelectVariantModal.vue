@@ -276,8 +276,11 @@ onMounted(async () => {
     variantGroup.value.secondVariant = selectedColorVariant;
     getSelectedVariantDetails(selectedColorVariant, true);
   }
-  getVariantList();
+  await getVariantList();
+  selectedDetailsData.value.firstVariantSelection =
+    selectedVariantOptions.value.firstVariantOptions;
 });
+
 const getSelectedVariantDetails = async (
   selectedVariantGroup: {
     status: string;

@@ -106,12 +106,6 @@
             <tr>
               <th>
                 <div class="row items-center gap-1">
-                  <span
-                    >Product:
-                    <span class="font-semibold">{{
-                      product.productName
-                    }}</span></span
-                  >
                   <div class="w-8 h-8 rounded-full overflow-hidden">
                     <img
                       class="w-full h-full object-cover"
@@ -123,13 +117,19 @@
                     />
                   </div>
                   <div class="flex flex-col">
-                    <div class="ml-1">
+                    <span
+                      >Product:
+                      <span class="font-semibold">{{
+                        product.productName
+                      }}</span></span
+                    >
+                    <div>
                       <span>Available Stock: </span>
                       <span class="font-semibold">
                         {{ product.masterStock }}
                       </span>
                     </div>
-                    <div class="ml-1">
+                    <div>
                       <span>Retail Price: </span>
                       <span class="font-semibold">
                         {{ product.retailPrice }}
@@ -193,15 +193,6 @@
             )
           }}</span
         >
-        <span class="text-xm font-medium text-[#f60707fb]">
-          {{
-            Object.values(selectedInventoryPayload).some(
-              (payload) => payload.stockQuantity === 0
-            )
-              ? 'You have to add all product variants'
-              : ''
-          }}
-        </span>
       </div>
       <div
         v-if="rowColumnData.length"
@@ -212,7 +203,7 @@
           :loading="isPrintingBarcode"
           label="Save"
           unelevated
-          :disable="isSaveButtonDisable || InValidStock"
+          :disable="InValidStock"
           color="btn-primary"
         />
       </div>
@@ -560,12 +551,6 @@ const getShopList = async () => {
     isShopLoading.value = false;
   }
 };
-const isSaveButtonDisable = computed(() => {
-  const validations = Object.values(selectedInventoryPayload.value).map(
-    (payload) => payload.stockQuantity === 0
-  );
-  return validations.some((validations) => validations === true);
-});
 const handleFilterRows = (filterChanged: boolean) => {
   if (filterChanged) {
     isFilterChanged.value = filterChanged;
