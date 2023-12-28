@@ -9,7 +9,7 @@
         <div class="col-12 col-md-6">
           <q-input
             v-model="previewCashFlow.sourceUserName"
-            label="Source User Name"
+            label="Cash In User Name"
             outlined
             maxlength="250"
             dense
@@ -19,7 +19,7 @@
         <div class="col-12 col-md-6">
           <q-input
             v-model="previewCashFlow.targetUserName"
-            label="Target User Name"
+            label="Cash Out User Name"
             outlined
             maxlength="250"
             dense
