@@ -777,7 +777,7 @@ const handleAddShopSale = async () => {
     if (response.httpStatusCode === 200) {
       $q.notify({
         message: 'Sale Added Successfully.',
-        color: 'green',
+        type: 'positive',
       });
       shopSale.value.salePersonCode = '';
       shopSale.value.comment = '';
