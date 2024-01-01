@@ -16,13 +16,13 @@
           class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-pt-md q-mb-md"
         >
           <q-input
-            v-model="shopSale.shopBoyCode"
+            v-model="shopSale.salePersonCode"
             class="max-w-[200px] min-w-[200px]"
             maxlength="250"
             outlined
             dense
             color="btn-primary"
-            label="Shop Boy Code"
+            label="Sale Person Code"
           />
 
           <q-select
@@ -211,13 +211,13 @@
           :icon="button.icon"
           :label="button.label"
         />
-        <!-- @click="handleSaveShopSale" -->
         <q-fab-action
           padding="3px 10px"
           color="btn-primary"
           label-position="left"
           icon="shopping_cart"
           label="Save (Ctrl + Enter)"
+          @click="handleAddShopSale"
         />
       </q-fab>
       <div
@@ -234,12 +234,12 @@
             :icon="button.icon"
             class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
           />
-          <!-- @click="handleSaveShopSale" -->
           <q-btn
             unelevated
             @keydown.enter="handleEnterKey"
             :disable="isButtonDisable"
             color=""
+            @click="handleAddShopSale"
             class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
             label="Save (Ctrl + Enter)"
             icon="shopping_cart"
@@ -298,7 +298,11 @@ import {
   IShopResponse,
   EUserRoles,
 } from 'src/interfaces';
-import { inventoryDetailApi, shopListApi } from 'src/services';
+import {
+  inventoryDetailApi,
+  shopListApi,
+  addShopSaleManagementApi,
+} from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
@@ -325,6 +329,7 @@ const scannedLabel = ref('');
 const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
+const isLoading = ref(false);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
 });
@@ -346,10 +351,14 @@ const pagination = ref({
   rowsPerPage: 50,
   rowsNumber: 0,
 });
-const shopSale = ref({
+const shopSale = ref<{
+  comment: string;
+  discount: number;
+  salePersonCode: null | string;
+}>({
   comment: '',
   discount: 0,
-  shopBoyCode: null,
+  salePersonCode: null,
 });
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
@@ -646,18 +655,6 @@ const handleRemoveSelectedInventoryRecord = (
   );
   selectedInventoryData.value.splice(selectedRecordIndex, 1);
 };
-// const handleSaveShopSale = () => {
-//   const payload = {
-//     shopId: selectedShop.value.fromShop?.shopId,
-//     Products: selectedInventoryData.value.map((record) => ({
-//       productCode: record.productCode,
-//       quantity: record.dispatchQuantity,
-//     })),
-//     totalAmount: shopSalesNetAmount.value,
-//     comment: shopSale.value.comment,
-//     shopBoyCode: shopSale.value.shopBoyCode,
-//   };
-// };
 const isButtonDisable = computed(() => {
   const validations = [
     !selectedInventoryData.value.length,
@@ -756,6 +753,48 @@ const inventoryDetailList = async (data?: {
     });
   }
   isFetchingRecords.value = false;
+};
+const handleAddShopSale = async () => {
+  isLoading.value = true;
+  try {
+    const payload = {
+      salePersonCode: shopSale.value.salePersonCode,
+      shopId: selectedShop.value.fromShop?.shopId,
+      totalDiscount: shopSale.value.discount,
+      comments: shopSale.value.comment,
+      saleStatus: 1,
+      saleDetails: selectedInventoryData.value.map((record) => ({
+        inventoryId: record.inventoryId,
+        saleId: record.productId,
+        productId: record.productId,
+        productCode: record.productCode,
+        amount: record.dispatchQuantity * record.retailPrice,
+        quantity: record.dispatchQuantity,
+        discount: 0,
+      })),
+    };
+    const response = await addShopSaleManagementApi(payload);
+    if (response.httpStatusCode === 200) {
+      $q.notify({
+        message: 'Sale Added Successfully.',
+        type: 'positive',
+      });
+      shopSale.value.salePersonCode = '';
+      shopSale.value.comment = '';
+      selectedInventoryData.value = [];
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 <style scoped lang="scss">
