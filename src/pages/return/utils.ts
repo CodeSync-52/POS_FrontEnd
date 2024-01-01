@@ -1,6 +1,51 @@
 import { QTableColumn } from 'quasar';
-import { IShopSaleExpenses } from 'src/interfaces';
+import { IGrnDetailsWithId, IShopSaleExpenses } from 'src/interfaces';
 
+export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] =
+  [
+    {
+      name: 'productImage',
+      label: 'Product Image',
+      field: (row) => row.productImage,
+      align: 'left',
+    },
+    {
+      name: 'productCode',
+      label: 'Product Code',
+      field: (row) => row.productCode?.split(',')[0] || '-',
+      align: 'left',
+    },
+    {
+      name: 'availableQuantity',
+      label: 'Available Quantity',
+      field: (row) => row.quantity,
+      align: 'left',
+    },
+    {
+      name: 'dispatchQuantity',
+      label: 'Dispatch Quantity',
+      field: (row) => row.quantity,
+      align: 'left',
+    },
+    {
+      name: 'retailPrice',
+      label: 'Retail Price',
+      field: (row) => row.retailPrice,
+      align: 'left',
+    },
+    {
+      name: 'discount',
+      label: 'Discount',
+      field: () => '',
+      align: 'left',
+    },
+    {
+      name: 'action',
+      label: 'Action',
+      field: () => '',
+      align: 'left',
+    },
+  ];
 export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
   {
     name: 'name',

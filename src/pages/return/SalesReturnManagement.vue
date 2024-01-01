@@ -83,7 +83,7 @@
             <q-table
               auto-width
               :rows="selectedInventoryData"
-              :columns="selectedGrnInventoryTableColumn"
+              :columns="saleShopSelectedGrnInventoryTableColumn"
               class="max-h-[37.3vh] 3xl:max-h-[45vh]"
             >
               <template v-slot:no-data>
@@ -144,6 +144,21 @@
                       </q-tooltip>
                     </q-btn>
                   </div>
+                </q-td>
+              </template>
+              <template v-slot:body-cell-discount="props">
+                <q-td :props="props">
+                  <q-input
+                    v-model="props.row.discount"
+                    @update:model-value="
+                      handleUpdateDiscount($event, props.row)
+                    "
+                    type="number"
+                    dense
+                    outlined
+                    color="btn-primary"
+                    class="w-[150px]"
+                  />
                 </q-td>
               </template>
             </q-table>
@@ -284,12 +299,12 @@ import {
   IArticleData,
   IInventoryFilterSearch,
   IPagination,
-  IInventoryListResponseWithDispatchQuantity,
+  ISaleShopSelectedInventory,
   getRoleModuleDisplayName,
   EUserModules,
 } from 'src/interfaces';
 import { articleListApi } from 'src/services';
-import { selectedGrnInventoryTableColumn } from 'src/utils/grn';
+import { saleShopSelectedGrnInventoryTableColumn } from './utils';
 
 import moment from 'moment';
 import { useQuasar } from 'quasar';
@@ -541,6 +556,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
             selectedInventoryData.value.unshift({
               ...res.data.inventoryDetails[0],
               dispatchQuantity: 1,
+              discount: 0,
             });
           } else {
             $q.notify({
@@ -589,7 +605,7 @@ const dialogClose = (e: KeyboardEvent) => {
 };
 const handleUpdatedispatchQuantity = (
   newVal: string | number | null,
-  selectedRecord: IInventoryListResponseWithDispatchQuantity
+  selectedRecord: ISaleShopSelectedInventory
 ) => {
   if (typeof newVal === 'string') {
     const val = parseInt(newVal);
@@ -625,13 +641,26 @@ const handleRemoveInventoryFilter = async (
     inventoryDetailList().then(() => callback());
   }
 };
+const handleUpdateDiscount = (
+  newVal: string | number | null,
+  row: ISaleShopSelectedInventory
+) => {
+  if (newVal === null || newVal === '') {
+    row.discount = 0;
+  } else {
+    const value = parseInt(newVal.toString());
+    if (!isNaN(value) && value >= 0) {
+      row.discount = value;
+    } else {
+      row.discount = 0;
+    }
+  }
+};
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   inventoryDetailList();
 };
-const selectedInventoryData = ref<IInventoryListResponseWithDispatchQuantity[]>(
-  []
-);
+const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
 const handleSelectedData = (payload: IInventoryListResponse[]) => {
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   const filteredOldIdList = oldIdList.filter((oldId) =>
@@ -642,7 +671,11 @@ const handleSelectedData = (payload: IInventoryListResponse[]) => {
   );
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
-      selectedInventoryData.value.push({ ...item, dispatchQuantity: 0 });
+      selectedInventoryData.value.push({
+        ...item,
+        dispatchQuantity: 0,
+        discount: 0,
+      });
     }
   });
   isInventoryListModalVisible.value = false;
@@ -760,21 +793,16 @@ const handleAddShopSale = async () => {
     const payload = {
       salePersonCode: shopSale.value.salePersonCode,
       shopId: selectedShop.value.fromShop?.shopId,
-      totalDiscount: shopSale.value.discount,
       comments: shopSale.value.comment,
-      saleStatus: 1,
       saleDetails: selectedInventoryData.value.map((record) => ({
         inventoryId: record.inventoryId,
         saleId: record.productId,
-        productId: record.productId,
-        productCode: record.productCode,
-        amount: record.dispatchQuantity * record.retailPrice,
         quantity: record.dispatchQuantity,
-        discount: 0,
+        discount: record.discount,
       })),
     };
     const response = await addShopSaleManagementApi(payload);
-    if (response.httpStatusCode === 200) {
+    if (response.type === 'Success') {
       $q.notify({
         message: 'Sale Added Successfully.',
         type: 'positive',
@@ -802,6 +830,7 @@ const handleAddShopSale = async () => {
   justify-content: flex-start;
   flex-wrap: nowrap;
   text-align: start;
+
   @media (min-width: 992px) {
     margin-left: 1rem;
   }

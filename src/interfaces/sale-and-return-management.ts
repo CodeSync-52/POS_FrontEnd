@@ -17,9 +17,6 @@ export interface IAddShopSaleManagement {
 export interface ISaleDetail {
   inventoryId: number;
   saleId: number;
-  productId: number;
-  productCode: string;
-  amount: number;
   quantity: number;
   discount: number;
 }

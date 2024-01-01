@@ -33,3 +33,7 @@ export interface IInventoryListResponseWithDispatchQuantity
   extends IInventoryListResponse {
   dispatchQuantity: number;
 }
+export interface ISaleShopSelectedInventory
+  extends IInventoryListResponseWithDispatchQuantity {
+  discount: number;
+}
