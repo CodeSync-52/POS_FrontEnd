@@ -137,3 +137,13 @@ export interface IPagination {
   rowsPerPage: number;
   rowsNumber: number;
 }
+export enum ShopSalesStatus {
+  Completed = 1,
+  Hold = 2,
+  Cancelled = 3,
+}
+export const DisplaySalesStatus: Record<ShopSalesStatus, string> = {
+  [ShopSalesStatus.Completed]: 'Completed',
+  [ShopSalesStatus.Cancelled]: 'Cancelled',
+  [ShopSalesStatus.Hold]: 'Hold',
+};
