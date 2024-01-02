@@ -23,6 +23,7 @@
             dense
             color="btn-primary"
             label="Sale Person Code"
+            @keydown="dialogClose"
           />
 
           <q-select
