@@ -13,7 +13,7 @@
           </div>
         </div>
         <div
-          class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-pt-md q-mb-md"
+          class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
         >
           <q-input
             v-model="shopSale.salePersonCode"
@@ -78,14 +78,14 @@
         </div>
         <div
           v-if="selectedInventoryData.length"
-          class="md:h-[calc(100vh-269px)] flex flex-col justify-between"
+          class="flex flex-col justify-between"
         >
           <div class="py-4 w-full">
             <q-table
               auto-width
               :rows="selectedInventoryData"
               :columns="saleShopSelectedGrnInventoryTableColumn"
-              class="max-h-[37.3vh] 3xl:max-h-[45vh]"
+              class="max-h-[39.5vh] lg:max-h-[35vh] 3xl:max-h-[45vh]"
             >
               <template v-slot:no-data>
                 <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
@@ -239,7 +239,7 @@
       <div
         class="col-3 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
       >
-        <div class="flex flex-col h-full gap-3 lg:gap-4">
+        <div class="flex flex-nowrap flex-col h-full gap-3 lg:gap-4">
           <q-btn
             v-for="(button, index) in buttons"
             @click="handleButtonClick(button)"
@@ -248,7 +248,7 @@
             color=""
             :label="button.label"
             :icon="button.icon"
-            class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
+            class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
           />
           <q-btn
             unelevated
@@ -256,7 +256,7 @@
             :disable="isButtonDisable"
             color=""
             @click="handleAddShopSale"
-            class="rounded-[8px] icon_left bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
+            class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
             label="Save (Ctrl + Enter)"
             icon="shopping_cart"
           />
