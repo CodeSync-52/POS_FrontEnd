@@ -110,68 +110,87 @@
               </tr>
             </thead>
             <tbody>
-              <tr
+              <template
                 v-for="(secondVariant, i) in uniqueVariantNames2(product.data)"
                 :key="i"
               >
-                <td class="text-left font-semibold">
-                  {{ secondVariant }}
-                </td>
-                <td
-                  v-for="(secondItem, secondItemIndex) in limitedRecord(
-                    product.data,
-                    secondVariant
-                  )"
-                  :key="secondItemIndex"
-                >
-                  <q-input
-                    type="number"
-                    dense
-                    color="btn-primary"
-                    outlined
-                    :disable="!isEdit"
-                    :min="0"
-                    @update:model-value="handleUpdateStrStock($event)"
-                    v-model="secondItem.quantity"
-                  >
-                    <template v-if="isEdit" v-slot:append>
-                      <q-icon
-                        class="cursor-pointer"
-                        name="check"
-                        color="green"
-                        dense
-                        size="xs"
-                        @click="
-                          updateSelectedProductVariant(
-                            secondItem.selectedGrnId,
-                            secondItem.quantity
-                          )
-                        "
-                      />
-                      <q-icon
-                        class="cursor-pointer"
-                        name="delete"
-                        @click="
-                          updateSelectedProductVariant(
-                            secondItem.selectedGrnId,
-                            0
-                          )
-                        "
-                        color="red"
-                        dense
-                        size="xs"
-                      />
-                    </template>
-                  </q-input>
-                </td>
-                <td>
-                  {{
-                    getInvetoryTotalStockQuantity(
-                      limitedRecord(product.data, secondVariant)
+                <tr
+                  v-if="
+                    !limitedRecord(product.data, secondVariant).every(
+                      (data) => data.quantity === 0
                     )
-                  }}
-                </td>
-              </tr>
+                  "
+                >
+                  <td class="text-left font-semibold">
+                    {{ secondVariant }}
+                  </td>
+                  <td
+                    v-for="(secondItem, secondItemIndex) in limitedRecord(
+                      product.data,
+                      secondVariant
+                    )"
+                    :key="secondItemIndex"
+                  >
+                    <q-input
+                      type="number"
+                      dense
+                      color="btn-primary"
+                      outlined
+                      :disable="!isEdit"
+                      :min="0"
+                      @update:model-value="
+                        handleUpdateStrStockQuantity(
+                          Number($event) ?? 0,
+                          secondItem
+                        )
+                      "
+                      v-model="secondItem.quantity"
+                    >
+                      <template v-if="isEdit" v-slot:append>
+                        <q-icon
+                          class="cursor-pointer"
+                          name="check"
+                          color="green"
+                          dense
+                          size="xs"
+                          @click="
+                            updateSelectedProductVariant(
+                              secondItem.selectedGrnId,
+                              secondItem.quantity
+                            )
+                          "
+                        />
+                        <q-icon
+                          class="cursor-pointer"
+                          name="delete"
+                          @click="
+                            updateSelectedProductVariant(
+                              secondItem.selectedGrnId,
+                              0
+                            )
+                          "
+                          color="red"
+                          dense
+                          size="xs"
+                        />
+                      </template>
+                    </q-input>
+                  </td>
+                  <td>
+                    {{
+                      !Number.isNaN(
+                        getInvetoryTotalStockQuantity(
+                          limitedRecord(product.data, secondVariant)
+                        )
+                      )
+                        ? getInvetoryTotalStockQuantity(
+                            limitedRecord(product.data, secondVariant)
+                          )
+                        : 0
+                    }}
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </q-markup-table>
         </div>
@@ -299,17 +318,16 @@ onMounted(() => {
 });
 const getInvetoryTotalStockQuantity = (variant: ProductVariant[]) => {
   return variant.reduce((acc: number, row: ProductVariant) => {
-    return acc + parseInt(row.quantity.toString());
+    return acc + (parseInt(row.quantity.toString()) ?? 0);
   }, 0);
 };
-const handleUpdateStrStock = (value: string | number | null) => {
-  if (typeof value === 'string') {
-    const newValue = parseInt(value);
-    if (!newValue || newValue > 0) {
-      return 0;
-    } else {
-      return newValue;
-    }
+const handleUpdateStrStockQuantity = (value: number, row: ProductVariant) => {
+  if (!value || value <= 0) {
+    setTimeout(() => {
+      row.quantity = 0;
+    }, 0);
+  } else {
+    row.quantity = value;
   }
 };
 const previewGrn = async (selectedId: number) => {
@@ -366,7 +384,6 @@ const previewGrn = async (selectedId: number) => {
   }
   isLoading.value = false;
 };
-
 const updateSelectedProductVariant = async (
   grnDetailId: number,
   quantity: number
