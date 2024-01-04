@@ -17,6 +17,7 @@
         >
           <q-input
             v-model="shopSale.salePersonCode"
+            ref="salePersonCodeInput"
             class="max-w-[200px] min-w-[200px]"
             maxlength="250"
             outlined
@@ -25,7 +26,6 @@
             label="Sale Person Code"
             @keydown="dialogClose"
           />
-
           <q-select
             :loading="isFetchingShopList"
             popup-content-class="!max-h-[200px]"
@@ -189,10 +189,11 @@
                 label="Total"
               />
               <q-input
-                v-model="shopSale.discount"
+                v-model="shopSalesTotalDiscount"
                 @update:model-value="handleUpdateShopSaleDiscount($event)"
                 type="number"
                 maxlength="250"
+                disable
                 outlined
                 dense
                 color="btn-primary"
@@ -221,6 +222,8 @@
         <q-fab-action
           v-for="(button, index) in buttons"
           :key="index"
+          @click="handleButtonClick(button)"
+          :disable="button.name === 'holdBill' && isButtonDisable"
           label-position="left"
           padding="3px 10px"
           color="btn-primary"
@@ -234,6 +237,7 @@
           icon="shopping_cart"
           label="Save (Ctrl + Enter)"
           @click="handleAddShopSale"
+          :disable="isButtonDisable"
         />
       </q-fab>
       <div
@@ -244,6 +248,7 @@
             v-for="(button, index) in buttons"
             @click="handleButtonClick(button)"
             :key="index"
+            :disable="button.name === 'holdBill' && isButtonDisable"
             unelevated
             color=""
             :label="button.label"
@@ -252,7 +257,6 @@
           />
           <q-btn
             unelevated
-            @keydown.enter="handleEnterKey"
             :disable="isButtonDisable"
             color=""
             @click="handleAddShopSale"
@@ -318,6 +322,7 @@ import {
   inventoryDetailApi,
   shopListApi,
   addShopSaleManagementApi,
+  holdBillApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -346,6 +351,7 @@ const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
+const salePersonCodeInput = ref<null | HTMLDivElement>(null);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
 });
@@ -429,6 +435,11 @@ const shopSalesTotalAmount = computed(() => {
     return amount + row.dispatchQuantity * row.retailPrice;
   }, 0);
 });
+const shopSalesTotalDiscount = computed(() => {
+  return selectedInventoryData.value.reduce((amount: number, row) => {
+    return amount + row.discount;
+  }, 0);
+});
 const shopSalesNetAmount = computed(() => {
   const totalAmount = selectedInventoryData.value.reduce(
     (amount: number, row) => {
@@ -510,16 +521,12 @@ const buttons = [
     name: 'closeBalance',
   },
 ];
-const showNotif = () => {
-  alert("Button Working Perfectly...'");
-};
-
-const handleEnterKey = () => {
-  showNotif();
-};
 const handleButtonClick = (button: { name: string }): void => {
   if (button.name === 'remainingBalance') {
     router.push('/return/remaining-balance');
+  }
+  if (button.name === 'holdBill') {
+    handleHoldBill();
   }
 };
 const handleOutsideClick = () => {
@@ -789,6 +796,14 @@ const inventoryDetailList = async (data?: {
   isFetchingRecords.value = false;
 };
 const handleAddShopSale = async () => {
+  if (!shopSale.value.salePersonCode) {
+    $q.notify({
+      message: 'Sale Person Code is required.',
+      type: 'negative',
+    });
+    if (salePersonCodeInput.value) salePersonCodeInput.value.focus();
+    return;
+  }
   isLoading.value = true;
   try {
     const payload = {
@@ -797,7 +812,6 @@ const handleAddShopSale = async () => {
       comments: shopSale.value.comment,
       saleDetails: selectedInventoryData.value.map((record) => ({
         inventoryId: record.inventoryId,
-        saleId: record.productId,
         quantity: record.dispatchQuantity,
         discount: record.discount,
       })),
@@ -805,12 +819,58 @@ const handleAddShopSale = async () => {
     const response = await addShopSaleManagementApi(payload);
     if (response.type === 'Success') {
       $q.notify({
-        message: 'Sale Added Successfully.',
+        message: response.message,
         type: 'positive',
       });
       shopSale.value.salePersonCode = '';
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
+      getArticleList();
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+const handleHoldBill = async () => {
+  if (!shopSale.value.salePersonCode) {
+    $q.notify({
+      message: 'Sale Person Code is required.',
+      type: 'negative',
+    });
+    if (salePersonCodeInput.value) salePersonCodeInput.value.focus();
+    return;
+  }
+  isLoading.value = true;
+  try {
+    const payload = {
+      salePersonCode: shopSale.value.salePersonCode,
+      shopId: selectedShop.value.fromShop?.shopId,
+      comments: shopSale.value.comment,
+      saleDetails: selectedInventoryData.value.map((record) => ({
+        inventoryId: record.inventoryId,
+        quantity: record.dispatchQuantity,
+        discount: record.discount,
+      })),
+    };
+    const response = await holdBillApi(payload);
+    if (response.type === 'Success') {
+      $q.notify({
+        message: response.message,
+        type: 'positive',
+      });
+      shopSale.value.salePersonCode = '';
+      shopSale.value.comment = '';
+      selectedInventoryData.value = [];
+      getArticleList();
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';

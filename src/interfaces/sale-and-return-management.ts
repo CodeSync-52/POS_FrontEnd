@@ -16,7 +16,6 @@ export interface IAddShopSaleManagement {
 
 export interface ISaleDetail {
   inventoryId: number;
-  saleId: number;
   quantity: number;
   discount: number;
 }

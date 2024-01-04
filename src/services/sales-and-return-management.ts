@@ -19,3 +19,22 @@ export const addShopSaleManagementApi = async ({
   });
   return res;
 };
+
+export const holdBillApi = async ({
+  salePersonCode,
+  shopId,
+  comments,
+  saleDetails,
+}: Partial<IAddShopSaleManagement>) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/sale/hold',
+    method: 'POST',
+    data: {
+      salePersonCode,
+      shopId,
+      comments,
+      saleDetails,
+    },
+  });
+  return res;
+};
