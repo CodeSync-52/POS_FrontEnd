@@ -409,6 +409,7 @@
             productName: item?.productName || '',
             productImage: item.productImage || '',
             masterStock: item.masterStock || 0,
+            retailPrice: item.retailPrice ?? 0,
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"

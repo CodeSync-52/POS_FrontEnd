@@ -9,9 +9,9 @@
           <div class="row q-col-gutter-md">
             <div class="col-md-4 col-12 q-gutter-y-md">
               <div>
-                <span class="text-base font-medium">Source</span>
+                <span class="text-base font-medium">Cash In</span>
                 <q-select
-                  label="Source"
+                  label="Cash In"
                   autofocus
                   dense
                   color="btn-primary"
@@ -24,27 +24,27 @@
                   option-value="userId"
                   :options="userListOptions"
                   @update:model-value="
-                    addNewFlow.sourceOutstandingBalance =
+                    addNewFlow.cashInOutstandingBalance =
                       $event.outStandingBalance
                   "
-                  v-model="addNewFlow.source"
+                  v-model="addNewFlow.cashIn"
                 />
               </div>
 
               <q-input
-                v-model="addNewFlow.sourceOutstandingBalance"
+                v-model="addNewFlow.cashInOutstandingBalance"
                 disable
                 color="btn-primary"
-                label="Source Outstanding Balance"
+                label="Cash In Outstanding Balance"
                 dense
                 outlined
               />
             </div>
             <div class="col-md-4 col-12 q-gutter-y-md">
               <div>
-                <span class="text-base font-medium">Target</span>
+                <span class="text-base font-medium">Cash Out</span>
                 <q-select
-                  label="Target"
+                  label="Cash Out"
                   color="btn-primary"
                   dense
                   outlined
@@ -53,20 +53,20 @@
                   map-options
                   @filter="filterUser"
                   @update:model-value="
-                    addNewFlow.targetOutstandingBalance =
+                    addNewFlow.cashOutOutstandingBalance =
                       $event.outStandingBalance
                   "
                   option-label="fullName"
                   option-value="userId"
                   :options="userListOptions"
-                  v-model="addNewFlow.target"
+                  v-model="addNewFlow.cashOut"
                 />
               </div>
 
               <q-input
-                v-model="addNewFlow.targetOutstandingBalance"
+                v-model="addNewFlow.cashOutOutstandingBalance"
                 disable
-                label="Target Outstanding Balance"
+                label="Cash Out Outstanding Balance"
                 dense
                 outlined
                 color="btn-primary"
@@ -112,8 +112,8 @@
           label="Add"
           unelevated
           :disable="
-            !addNewFlow.source ||
-            !addNewFlow.target ||
+            !addNewFlow.cashIn ||
+            !addNewFlow.cashOut ||
             addNewFlow.amount <= 0 ||
             !addNewFlow.amount ||
             addNewFlow.amount > 9999999
@@ -137,19 +137,19 @@ import { isPosError } from 'src/utils';
 const router = useRouter();
 const isAdding = ref(false);
 const addNewFlow = ref<{
-  source: IUserResponse | null;
-  target: IUserResponse | null;
+  cashIn: IUserResponse | null;
+  cashOut: IUserResponse | null;
   amount: number;
   comment: string;
-  sourceOutstandingBalance: null | number;
-  targetOutstandingBalance: null | number;
+  cashInOutstandingBalance: null | number;
+  cashOutOutstandingBalance: null | number;
 }>({
-  source: null,
-  target: null,
+  cashIn: null,
+  cashOut: null,
   amount: 0,
   comment: '',
-  sourceOutstandingBalance: null,
-  targetOutstandingBalance: null,
+  cashInOutstandingBalance: null,
+  cashOutOutstandingBalance: null,
 });
 const userList = ref<IUserResponse[]>([]);
 const userListOptions = ref<IUserResponse[]>([]);
@@ -166,12 +166,12 @@ const handleUpdateAmount = (newVal: string | number | null) => {
 const handleAddNewFlow = async () => {
   if (isAdding.value) return;
   isAdding.value = true;
-  const { source, target, amount, comment } = addNewFlow.value;
+  const { cashIn, cashOut, amount, comment } = addNewFlow.value;
   try {
     const res = await addCashFlowApi({
-      sourceUserId: source?.userId ?? -1,
+      sourceUserId: cashIn?.userId ?? -1,
       amount: amount,
-      targetUserId: target?.userId ?? -1,
+      targetUserId: cashOut?.userId ?? -1,
       comments: comment,
     });
     if (res.type === 'Success') {
