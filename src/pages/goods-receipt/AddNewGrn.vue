@@ -527,6 +527,8 @@ const inventoryDetailList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     if (isFetchingRecords.value && apiController.value) {
       apiController.value.abort();
       apiController.value = null;
@@ -536,7 +538,7 @@ const inventoryDetailList = async (data?: {
       {
         ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
         PageNumber: pagination.value.page,
-        PageSize: pagination.value.rowsPerPage,
+        PageSize: rowsPerPage,
         filterSearch: filterSearch.value,
       },
       apiController.value

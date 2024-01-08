@@ -478,6 +478,8 @@ const getUserList = async (paginationData?: {
       ...paginationData.pagination,
     };
   }
+  const rowsPerPage =
+    pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
   try {
     if (isLoading.value && apiController.value) {
       apiController.value.abort();
@@ -488,9 +490,8 @@ const getUserList = async (paginationData?: {
       {
         filterSearch: filterSearch.value,
         pageNumber: pagination.value.page,
-        pageSize: pagination.value.rowsPerPage,
+        pageSize: rowsPerPage,
       },
-
       apiController.value
     );
     if (res?.data) {
