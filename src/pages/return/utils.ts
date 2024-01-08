@@ -69,3 +69,40 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
     field: () => '',
   },
 ];
+export const shopAllBillsTableColumn: QTableColumn[] = [
+  {
+    name: 'id',
+    required: true,
+    label: 'ID',
+    align: 'left',
+    field: (row) => row.id,
+  },
+  {
+    name: 'amount',
+    required: true,
+    label: 'Amount',
+    align: 'left',
+    field: (row) => row.amount,
+  },
+  {
+    name: 'discount',
+    required: true,
+    label: 'Discount',
+    align: 'left',
+    field: (row) => row.discount,
+  },
+  {
+    name: 'status',
+    required: true,
+    label: 'Status',
+    align: 'left',
+    field: (row) => row.status,
+  },
+  {
+    name: 'action',
+    required: true,
+    label: 'Action',
+    align: 'left',
+    field: () => '',
+  },
+];

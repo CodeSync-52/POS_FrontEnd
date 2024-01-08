@@ -497,6 +497,12 @@ const buttons = [
     name: 'holdBill',
   },
   {
+    label: 'Show All Bill (Ctrl + F5)',
+    icon: 'receipt',
+    shortcut: 'F3',
+    name: 'showAllBill',
+  },
+  {
     label: 'Show Hold Bill (Ctrl + F6)',
     icon: 'visibility',
     shortcut: 'F6',
@@ -524,6 +530,9 @@ const buttons = [
 const handleButtonClick = (button: { name: string }): void => {
   if (button.name === 'remainingBalance') {
     router.push('/return/remaining-balance');
+  }
+  if (button.name === 'showAllBill') {
+    router.push('/return/showAllBill');
   }
   if (button.name === 'holdBill') {
     handleHoldBill();
