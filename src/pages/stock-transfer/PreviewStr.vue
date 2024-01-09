@@ -75,7 +75,7 @@
             <thead>
               <tr>
                 <th class="text-left">
-                  <div class="row items-center gap-1">
+                  <div class="row items-center gap-3">
                     <div
                       class="w-8 h-8 rounded-full overflow-hidden"
                       :class="product.productImage && 'cursor-pointer'"
@@ -90,12 +90,20 @@
                         alt="img"
                       />
                     </div>
-                    <span
-                      >Product:
-                      <span class="font-semibold">{{
-                        product.productName
-                      }}</span></span
-                    >
+                    <div class="flex flex-col gap-1">
+                      <span
+                        >Product:
+                        <span class="font-semibold">{{
+                          product.productName
+                        }}</span></span
+                      >
+                      <span
+                        >Retail Price:
+                        <span class="font-semibold">{{
+                          product.retailPrice
+                        }}</span></span
+                      >
+                    </div>
                   </div>
                 </th>
 
@@ -348,6 +356,7 @@ const previewGrn = async (selectedId: number) => {
               productId,
               productName: currentDetail.productName,
               productImage: currentDetail.productImage,
+              retailPrice: currentDetail.retailPrice,
               data: [],
             };
           }
