@@ -19,3 +19,28 @@ export interface ISaleDetail {
   quantity: number;
   discount: number;
 }
+export interface IBillStatusOptionList {
+  name: string;
+  statusId: number;
+}
+export interface ISaleFilterList {
+  statusId: string | null;
+  shopId: string | null;
+  invoiceNumber: string | null;
+  fromDate: string | null;
+  toDate: string | null;
+}
+export interface ISaleListResponse {
+  invoiceNumber: string;
+  shopName: string;
+  salePersonCode: string;
+  status: string;
+  totalDiscount: number;
+  totalQuantity: number;
+  netAmount: number;
+  comments: string;
+  saleDate: string;
+  shopId: number;
+  saleId: number;
+  totalSalesAmount: number;
+}

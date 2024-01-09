@@ -532,7 +532,7 @@ const handleButtonClick = (button: { name: string }): void => {
     router.push('/return/remaining-balance');
   }
   if (button.name === 'showAllBill') {
-    router.push('/return/showAllBill');
+    router.push('/return/all-bills');
   }
   if (button.name === 'holdBill') {
     handleHoldBill();

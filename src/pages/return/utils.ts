@@ -1,5 +1,9 @@
 import { QTableColumn } from 'quasar';
-import { IGrnDetailsWithId, IShopSaleExpenses } from 'src/interfaces';
+import {
+  IGrnDetailsWithId,
+  IShopSaleExpenses,
+  IBillStatusOptionList,
+} from 'src/interfaces';
 
 export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] =
   [
@@ -71,25 +75,25 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
 ];
 export const shopAllBillsTableColumn: QTableColumn[] = [
   {
-    name: 'id',
+    name: 'invoiceNumber',
     required: true,
-    label: 'ID',
+    label: 'Invoice #',
     align: 'left',
-    field: (row) => row.id,
+    field: (row) => row.invoiceNumber,
   },
   {
-    name: 'amount',
+    name: 'shopName',
     required: true,
-    label: 'Amount',
+    label: 'Shop Name',
     align: 'left',
-    field: (row) => row.amount,
+    field: (row) => row.shopName,
   },
   {
-    name: 'discount',
+    name: 'salePersonCode',
     required: true,
-    label: 'Discount',
+    label: 'Sale Person Code',
     align: 'left',
-    field: (row) => row.discount,
+    field: (row) => row.salePersonCode,
   },
   {
     name: 'status',
@@ -99,10 +103,50 @@ export const shopAllBillsTableColumn: QTableColumn[] = [
     field: (row) => row.status,
   },
   {
+    name: 'totalDiscount',
+    required: true,
+    label: 'Total Discount',
+    align: 'left',
+    field: (row) => row.totalDiscount,
+  },
+  {
+    name: 'totalQuantity',
+    required: true,
+    label: 'Total Quantity',
+    align: 'left',
+    field: (row) => row.totalQuantity,
+  },
+  {
+    name: 'netAmount',
+    required: true,
+    label: 'Net Amount',
+    align: 'left',
+    field: (row) => row.netAmount,
+  },
+  {
+    name: 'comments',
+    required: true,
+    label: 'Comments',
+    align: 'left',
+    field: (row) => (row.comments ? row.comments : 'N/A'),
+  },
+  {
+    name: 'saleDate',
+    required: true,
+    label: 'Sale Date',
+    align: 'left',
+    field: (row) => row.saleDate,
+  },
+  {
     name: 'action',
     required: true,
     label: 'Action',
     align: 'left',
     field: () => '',
   },
+];
+export const billStatusOptionList: IBillStatusOptionList[] = [
+  { name: 'Completed', statusId: 1 },
+  { name: 'Hold', statusId: 2 },
+  { name: 'Rejected', statusId: 3 },
 ];

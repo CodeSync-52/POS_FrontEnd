@@ -202,8 +202,8 @@ export const routeList = [
     },
   },
   {
-    path: '/return/showAllBill',
-    component: () => import('src/pages/return/showAllBill.vue'),
+    path: '/return/all-bills',
+    component: () => import('src/pages/return/AllBills.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
