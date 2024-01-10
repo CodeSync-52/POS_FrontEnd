@@ -60,7 +60,7 @@ export const getSaleListApi = async (
     method: 'GET',
     url: 'api/sale/list',
     params: {
-      status: filterSearch.statusId,
+      status: filterSearch.statusId?.statusId,
       shopId: filterSearch.shopId,
       invoiceNumber: filterSearch.invoiceNumber,
       fromDate: filterSearch.fromDate,

@@ -24,8 +24,8 @@ export interface IBillStatusOptionList {
   statusId: number;
 }
 export interface ISaleFilterList {
-  statusId: string | null;
-  shopId: string | null;
+  statusId: IBillStatusOptionList | null;
+  shopId: number | null;
   invoiceNumber: string | null;
   fromDate: string | null;
   toDate: string | null;

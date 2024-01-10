@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { QTableColumn } from 'quasar';
 import {
   IGrnDetailsWithId,
@@ -128,14 +129,14 @@ export const shopAllBillsTableColumn: QTableColumn[] = [
     required: true,
     label: 'Comments',
     align: 'left',
-    field: (row) => (row.comments ? row.comments : 'N/A'),
+    field: (row) => row.comments,
   },
   {
     name: 'saleDate',
     required: true,
     label: 'Sale Date',
     align: 'left',
-    field: (row) => row.saleDate,
+    field: (row) => moment(row.saleDate).format('YYYY-MM-DD'),
   },
   {
     name: 'action',

@@ -175,6 +175,7 @@
                 dense
                 color="btn-primary"
                 label="Comments"
+                @keydown="dialogClose"
               />
             </div>
             <div class="max-w-[300px] min-w-[200px] flex flex-col gap-2">

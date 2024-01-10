@@ -17,7 +17,7 @@
       popup-content-class="!max-h-[200px]"
       label="Status"
       option-label="name"
-      option-value="customerGroupId"
+      option-value="statusId"
       color="btn-primary"
     >
     </q-select>
@@ -26,10 +26,18 @@
       style="min-width: 200px"
       outlined
       map-options
-      v-model="filterSearch.shopId"
+      :options="shopData"
+      :disable="
+        authStore.loggedInUser?.rolePermissions.roleName !==
+        EUserRoles.SuperAdmin.toLowerCase()
+      "
+      v-model="selectedShop.fromShop"
+      @update:model-value="handleUpdateFromShop($event)"
       popup-content-class="!max-h-[200px]"
-      label="Shop ID"
+      label="Select Shop"
       color="btn-primary"
+      option-label="name"
+      option-value="shopId"
     />
     <q-input
       dense
@@ -42,7 +50,6 @@
     <q-input
       v-model="filterSearch.startDate"
       :max="filterSearch.endDate"
-      :min="filterSearch.endDate"
       label="From"
       type="date"
       style="min-width: 200px"
@@ -88,6 +95,61 @@
       v-model:pagination="pagination"
       @request="searchBills"
     >
+      <template v-slot:body-cell-comments="props">
+        <q-td
+          :props="props"
+          class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+        >
+          {{ props.row.comments || '-' }}
+        </q-td>
+      </template>
+      <template v-slot:body-cell-action="props">
+        <q-td class="flex justify-start" :props="props">
+          <div class="flex gap-2 flex-nowrap">
+            <q-btn flat unelevated dense size="sm" icon="cancel" color="red">
+              <q-tooltip class="bg-red" :offset="[10, 10]">
+                Cancel Bill
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              flat
+              unelevated
+              dense
+              size="sm"
+              icon="visibility"
+              color="green"
+            >
+              <q-tooltip class="bg-green" :offset="[10, 10]">
+                Preview Bill
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              size="sm"
+              flat
+              unelevated
+              dense
+              icon="edit"
+              class="hover:text-btn-primary !px-[5px]"
+            >
+              <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                Edit Bill
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              size="sm"
+              flat
+              unelevated
+              dense
+              icon="check"
+              class="text-green !px-[5px]"
+            >
+              <q-tooltip class="bg-green" :offset="[10, 10]">
+                Add Bill
+              </q-tooltip>
+            </q-btn>
+          </div>
+        </q-td>
+      </template>
       <template v-slot:no-data>
         <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
           <q-icon name="warning" size="xs" />
@@ -98,31 +160,57 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { shopAllBillsTableColumn, billStatusOptionList } from './utils';
-import { getSaleListApi } from 'src/services';
-import { ISaleListResponse } from 'src/interfaces';
+import { getSaleListApi, shopListApi } from 'src/services';
+import {
+  IBillStatusOptionList,
+  ISaleListResponse,
+  IShopResponse,
+  EUserRoles,
+} from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import { CanceledError } from 'axios';
 import { useQuasar } from 'quasar';
 import { date } from 'quasar';
+import { useAuthStore } from 'src/stores';
 const timeStamp = Date.now();
+const authStore = useAuthStore();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past1Date = date.subtractFromDate(timeStamp, { date: 1 });
-const formattedFromDate = date.formatDate(past1Date, 'YYYY-MM-DD');
+const past7Date = date.subtractFromDate(timeStamp, { date: 7 });
+const formattedFromDate = date.formatDate(past7Date, 'YYYY-MM-DD');
 const saleList = ref<ISaleListResponse[]>([]);
 const apiController = ref<AbortController | null>(null);
+const isFetchingShopList = ref(false);
 const isLoading = ref(false);
 const $q = useQuasar();
+const shopData = ref<IShopResponse[]>([]);
+const selectedShop = ref<{ fromShop: IShopResponse | null }>({
+  fromShop: null,
+});
+onMounted(() => {
+  getShopList();
+  selectedShop.value.fromShop = {
+    shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    closingBalance: 0,
+    status: '',
+    isWareHouse: '',
+    name: authStore.loggedInUser?.userShopInfoDTO.shopName ?? '',
+    phone: '',
+    address: '',
+    code: '',
+  };
+  searchBills();
+});
 const filterSearch = ref<{
-  selectStatus: null | string;
-  shopId: null | string;
+  selectStatus: null | IBillStatusOptionList;
+  shopId: null | number;
   invoiceNumber: null | string;
   startDate: null | string;
   endDate: null | string;
 }>({
   selectStatus: null,
-  shopId: null,
+  shopId: selectedShop.value.fromShop?.shopId ?? null,
   invoiceNumber: null,
   startDate: formattedFromDate,
   endDate: formattedToDate,
@@ -197,5 +285,32 @@ const handleResetFilter = () => {
     endDate: null,
   };
   searchBills();
+};
+const handleUpdateFromShop = (newVal: IShopResponse) => {
+  selectedShop.value.fromShop = newVal;
+  filterSearch.value.shopId = newVal.shopId;
+};
+const getShopList = async () => {
+  isFetchingShopList.value = true;
+  try {
+    const response = await shopListApi({
+      PageNumber: 1,
+      PageSize: 200,
+    });
+    if (response.data) {
+      shopData.value = response.data.items;
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isFetchingShopList.value = false;
+  }
 };
 </script>
