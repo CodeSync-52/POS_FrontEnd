@@ -85,7 +85,7 @@
                 maxlength="250"
                 debounce="300"
                 color="btn-primary"
-                label="Cash In"
+                label="Receiver"
                 autofocus
                 v-model="filter.source"
               >
@@ -99,7 +99,7 @@
                 maxlength="250"
                 debounce="300"
                 color="btn-primary"
-                label="Cash Out"
+                label="Sender"
                 v-model="filter.target"
               >
                 <template v-slot:append>
