@@ -72,3 +72,13 @@ export const getSaleListApi = async (
   });
   return res;
 };
+export const cancelSaleApi = async (saleId: number) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/sale/cancel',
+    method: 'PUT',
+    params: {
+      saleId,
+    },
+  });
+  return res;
+};

@@ -50,6 +50,7 @@
     <q-input
       v-model="filterSearch.startDate"
       :max="filterSearch.endDate"
+      :min="filterSearch.startDate"
       label="From"
       type="date"
       style="min-width: 200px"
@@ -59,6 +60,8 @@
     />
     <q-input
       v-model="filterSearch.endDate"
+      :max="filterSearch.endDate"
+      :min="filterSearch.startDate"
       label="To"
       type="date"
       style="min-width: 200px"
@@ -106,12 +109,33 @@
       <template v-slot:body-cell-action="props">
         <q-td class="flex justify-start" :props="props">
           <div class="flex gap-2 flex-nowrap">
-            <q-btn flat unelevated dense size="sm" icon="cancel" color="red">
+            <q-btn
+              flat
+              unelevated
+              dense
+              size="sm"
+              icon="cancel"
+              color="red"
+              v-if="
+                props.row.status === 'Hold' &&
+                authStore.checkUserHasPermission(
+                  EUserModules.SaleAndReturnManagement,
+                  EActionPermissions.Delete
+                )
+              "
+              @click="cancelSale(props.row.saleId)"
+            >
               <q-tooltip class="bg-red" :offset="[10, 10]">
                 Cancel Bill
               </q-tooltip>
             </q-btn>
             <q-btn
+              v-if="
+                authStore.checkUserHasPermission(
+                  EUserModules.SaleAndReturnManagement,
+                  EActionPermissions.View
+                )
+              "
               flat
               unelevated
               dense
@@ -124,6 +148,13 @@
               </q-tooltip>
             </q-btn>
             <q-btn
+              v-if="
+                props.row.status === 'Hold' &&
+                authStore.checkUserHasPermission(
+                  EUserModules.SaleAndReturnManagement,
+                  EActionPermissions.Update
+                )
+              "
               size="sm"
               flat
               unelevated
@@ -136,6 +167,13 @@
               </q-tooltip>
             </q-btn>
             <q-btn
+              v-if="
+                props.row.status === 'Hold' &&
+                authStore.checkUserHasPermission(
+                  EUserModules.SaleAndReturnManagement,
+                  EActionPermissions.Create
+                )
+              "
               size="sm"
               flat
               unelevated
@@ -162,10 +200,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { shopAllBillsTableColumn, billStatusOptionList } from './utils';
-import { getSaleListApi, shopListApi } from 'src/services';
+import { getSaleListApi, shopListApi, cancelSaleApi } from 'src/services';
 import {
   IBillStatusOptionList,
   ISaleListResponse,
+  EActionPermissions,
+  EUserModules,
   IShopResponse,
   EUserRoles,
 } from 'src/interfaces';
@@ -273,6 +313,30 @@ const searchBills = async (paginationData?: {
     isLoading.value = false;
   }
 };
+const cancelSale = async (id: number) => {
+  try {
+    const response = await cancelSaleApi(id);
+    if (response.type === 'Success') {
+      const saleToUpdate = saleList.value.find((sale) => sale.saleId === id);
+      if (saleToUpdate) {
+        saleToUpdate.status = 'Canceled';
+        $q.notify({
+          message: response.message,
+          type: 'negative',
+        });
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+};
 const handleResetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -281,8 +345,8 @@ const handleResetFilter = () => {
     selectStatus: null,
     shopId: null,
     invoiceNumber: null,
-    startDate: null,
-    endDate: null,
+    startDate: formattedFromDate,
+    endDate: formattedToDate,
   };
   searchBills();
 };

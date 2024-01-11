@@ -149,5 +149,5 @@ export const shopAllBillsTableColumn: QTableColumn[] = [
 export const billStatusOptionList: IBillStatusOptionList[] = [
   { name: 'Completed', statusId: 1 },
   { name: 'Hold', statusId: 2 },
-  { name: 'Rejected', statusId: 3 },
+  { name: 'Canceled', statusId: 3 },
 ];
