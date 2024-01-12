@@ -386,9 +386,11 @@ const getCategoryList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     const res = await categoryListApi({
       pageNumber: pagination.value.page,
-      pageSize: pagination.value.rowsPerPage,
+      pageSize: rowsPerPage,
     });
     if (res?.data) {
       categoryData.value = res.data.items;

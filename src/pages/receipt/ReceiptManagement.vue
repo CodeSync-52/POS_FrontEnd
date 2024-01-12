@@ -474,6 +474,8 @@ const getReceiptList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     if (isLoading.value && apiController.value) {
       apiController.value.abort();
       apiController.value = null;
@@ -486,7 +488,7 @@ const getReceiptList = async (data?: {
         UserId: filterSearch.value.userId,
         FullName: filterSearch.value.userName?.trim() ?? '',
         PageNumber: pagination.value.page,
-        PageSize: pagination.value.rowsPerPage,
+        PageSize: rowsPerPage,
         PurchaseStatus: filterSearch.value.purchaseStatus,
         customerGroupId: filterSearch.value.customerGroupId,
       },

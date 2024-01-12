@@ -9,13 +9,14 @@
           <div class="row q-col-gutter-md">
             <div class="col-md-4 col-12 q-gutter-y-md">
               <div>
-                <span class="text-base font-medium">Cash In</span>
+                <span class="text-base font-medium">Receiver</span>
                 <q-select
-                  label="Cash In"
+                  label="Receiver"
                   autofocus
                   dense
                   color="btn-primary"
                   outlined
+                  clearable
                   map-options
                   use-input
                   popup-content-class="!max-h-[200px]"
@@ -24,8 +25,9 @@
                   option-value="userId"
                   :options="userListOptions"
                   @update:model-value="
-                    addNewFlow.cashInOutstandingBalance =
-                      $event.outStandingBalance
+                    addNewFlow.cashInOutstandingBalance &&
+                      (addNewFlow.cashInOutstandingBalance =
+                        $event.outStandingBalance)
                   "
                   v-model="addNewFlow.cashIn"
                 />
@@ -35,26 +37,28 @@
                 v-model="addNewFlow.cashInOutstandingBalance"
                 disable
                 color="btn-primary"
-                label="Cash In Outstanding Balance"
+                label="Receiver Outstanding Balance"
                 dense
                 outlined
               />
             </div>
             <div class="col-md-4 col-12 q-gutter-y-md">
               <div>
-                <span class="text-base font-medium">Cash Out</span>
+                <span class="text-base font-medium">Sender</span>
                 <q-select
-                  label="Cash Out"
+                  label="Sender"
                   color="btn-primary"
                   dense
                   outlined
+                  clearable
                   use-input
                   popup-content-class="!max-h-[200px]"
                   map-options
                   @filter="filterUser"
                   @update:model-value="
-                    addNewFlow.cashOutOutstandingBalance =
-                      $event.outStandingBalance
+                    addNewFlow.cashOutOutstandingBalance &&
+                      (addNewFlow.cashOutOutstandingBalance =
+                        $event.outStandingBalance)
                   "
                   option-label="fullName"
                   option-value="userId"
@@ -66,7 +70,7 @@
               <q-input
                 v-model="addNewFlow.cashOutOutstandingBalance"
                 disable
-                label="Cash Out Outstanding Balance"
+                label="Sender Outstanding Balance"
                 dense
                 outlined
                 color="btn-primary"
@@ -226,6 +230,16 @@ const filterUser = (val: string, update: CallableFunction) => {
     userListOptions.value = userList.value.filter((user) =>
       user.fullName.toLowerCase().includes(val.toLowerCase())
     );
+    if (addNewFlow.value.cashIn?.userId) {
+      userListOptions.value = userListOptions.value.filter(
+        (user) => user.userId !== addNewFlow.value.cashIn?.userId
+      );
+    }
+    if (addNewFlow.value.cashOut?.userId) {
+      userListOptions.value = userListOptions.value.filter(
+        (user) => user.userId !== addNewFlow.value.cashOut?.userId
+      );
+    }
   });
 };
 </script>
