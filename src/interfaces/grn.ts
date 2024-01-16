@@ -56,6 +56,7 @@ export interface IPreviewGrnDetail {
   variant_1_Name: string;
   grnDetailId: number;
   variant_2_Name: string;
+  retailPrice: number;
   productId: number;
   variantId_1: number;
   variantId_2: number;
@@ -66,6 +67,7 @@ export interface IProductGRN {
   productId: number;
   productName: string;
   productImage: string | null;
+  retailPrice: number;
   data: ProductVariant[];
 }
 

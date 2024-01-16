@@ -85,7 +85,7 @@
                 maxlength="250"
                 debounce="300"
                 color="btn-primary"
-                label="Cash In"
+                label="Receiver"
                 autofocus
                 v-model="filter.source"
               >
@@ -99,7 +99,7 @@
                 maxlength="250"
                 debounce="300"
                 color="btn-primary"
-                label="Cash Out"
+                label="Sender"
                 v-model="filter.target"
               >
                 <template v-slot:append>
@@ -277,6 +277,8 @@ const getCashFlowRecords = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     if (isLoading.value && apiController.value) {
       apiController.value.abort();
       apiController.value = null;
@@ -286,7 +288,7 @@ const getCashFlowRecords = async (data?: {
       {
         filterSearch: filterSearch.value,
         PageNumber: pagination.value.page,
-        PageSize: pagination.value.rowsPerPage,
+        PageSize: rowsPerPage,
       },
       apiController.value
     );

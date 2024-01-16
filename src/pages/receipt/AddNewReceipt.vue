@@ -548,9 +548,11 @@ const getArticleList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     const res = await articleListApi({
       PageNumber: pagination.value.page,
-      PageSize: pagination.value.rowsPerPage,
+      PageSize: rowsPerPage,
       Status: 'Active',
     });
     if (res.type === 'Success') {
