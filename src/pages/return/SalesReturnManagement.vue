@@ -1,12 +1,18 @@
 <template>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
-      <div class="col-xs-12 col-md-9">
+      <div
+        class="col-xs-12"
+        :class="{ 'col-md-9': titleAction !== 'Preview Sale Bill' }"
+      >
         <div
           class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
         >
-          <span class="text-lg font-medium">{{ pageTitle }}</span>
-          <div class="text-base flex items-center gap-1">
+          <span class="text-lg font-medium">{{ titleAction }}</span>
+          <div
+            v-if="titleAction === pageTitle"
+            class="text-base flex items-center gap-1"
+          >
             <span class="text-[18px] font-semibold">
               {{ moment(timeStamp).format('LL') }}
             </span>
@@ -16,6 +22,7 @@
           class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
         >
           <q-input
+            v-if="titleAction === pageTitle"
             v-model="shopSale.salePersonCode"
             ref="salePersonCodeInput"
             class="max-w-[200px] min-w-[200px]"
@@ -37,7 +44,8 @@
             outlined
             :disable="
               authStore.loggedInUser?.rolePermissions.roleName !==
-              EUserRoles.SuperAdmin.toLowerCase()
+                EUserRoles.SuperAdmin.toLowerCase() ||
+              titleAction === 'Preview Sale Bill'
             "
             v-model="selectedShop.fromShop"
             @update:model-value="handleUpdateFromShop($event)"
@@ -48,6 +56,7 @@
           />
         </div>
         <div
+          v-if="titleAction === pageTitle"
           class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-2 md:gap-16"
         >
           <div class="row gap-6 items-center">
@@ -77,7 +86,9 @@
           </outside-click-container>
         </div>
         <div
-          v-if="selectedInventoryData.length"
+          v-if="
+            selectedInventoryData.length || titleAction === 'Preview Sale Bill'
+          "
           class="flex flex-col justify-between"
         >
           <div class="py-4 w-full">
@@ -111,7 +122,10 @@
                   </div>
                 </q-td>
               </template>
-              <template v-slot:body-cell-dispatchQuantity="props">
+              <template
+                v-if="titleAction !== 'Preview Sale Bill'"
+                v-slot:body-cell-dispatchQuantity="props"
+              >
                 <q-td :props="props">
                   <q-input
                     type="number"
@@ -128,7 +142,10 @@
                   />
                 </q-td>
               </template>
-              <template v-slot:body-cell-action="props">
+              <template
+                v-if="titleAction === pageTitle"
+                v-slot:body-cell-action="props"
+              >
                 <q-td :props="props">
                   <div>
                     <q-btn
@@ -147,7 +164,10 @@
                   </div>
                 </q-td>
               </template>
-              <template v-slot:body-cell-discount="props">
+              <template
+                v-if="titleAction !== 'Preview Sale Bill'"
+                v-slot:body-cell-discount="props"
+              >
                 <q-td :props="props">
                   <q-input
                     v-model="props.row.discount"
@@ -165,6 +185,7 @@
             </q-table>
           </div>
           <div
+            v-if="titleAction === pageTitle"
             class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between"
           >
             <div class="max-w-[300px] min-w-[200px] md:w-1/3">
@@ -219,6 +240,7 @@
         color="btn-primary"
         direction="up"
         class="lg:!hidden sm:fixed bottom-1 end-1"
+        v-if="titleAction === pageTitle"
       >
         <q-fab-action
           v-for="(button, index) in buttons"
@@ -242,6 +264,7 @@
         />
       </q-fab>
       <div
+        v-if="titleAction === pageTitle"
         class="col-3 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
       >
         <div class="flex flex-nowrap flex-col h-full gap-3 lg:gap-4">
@@ -309,8 +332,8 @@ import {
   getRoleModuleDisplayName,
   EUserModules,
 } from 'src/interfaces';
-import { articleListApi } from 'src/services';
-import { saleShopSelectedGrnInventoryTableColumn } from './utils';
+import { articleListApi, previewSaleApi } from 'src/services';
+import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
 
 import moment from 'moment';
 import { useQuasar } from 'quasar';
@@ -353,6 +376,9 @@ const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
 const salePersonCodeInput = ref<null | HTMLDivElement>(null);
+const selectedId: string | string[] = router.currentRoute.value.params.id;
+const path = router.currentRoute.value.fullPath;
+const titleAction = ref('');
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
 });
@@ -387,7 +413,6 @@ onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keydown', handleActionKeys);
   getShopList();
-  getArticleList();
   selectedShop.value.fromShop = {
     shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     closingBalance: 0,
@@ -398,7 +423,16 @@ onMounted(() => {
     address: '',
     code: '',
   };
-  inventoryDetailList();
+  if (selectedId) {
+    if (path.includes('preview')) {
+      titleAction.value = 'Preview Sale Bill';
+      previewBill(Number(selectedId));
+    }
+  } else {
+    titleAction.value = pageTitle;
+    inventoryDetailList();
+    getArticleList();
+  }
 });
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
@@ -478,56 +512,6 @@ const getImageUrl = (base64Image: string | null) => {
   }
   return '';
 };
-const buttons = [
-  {
-    label: 'Cancel Receipt (Ctrl + F1)',
-    icon: 'close',
-    shortcut: 'F1',
-    name: 'cancelReceipt',
-  },
-  {
-    label: 'Create Return (Ctrl + F2)',
-    icon: 'cached',
-    shortcut: 'F2',
-    name: 'createReturn',
-  },
-  {
-    label: 'Hold Bill (Ctrl + F3)',
-    icon: 'hourglass_empty',
-    shortcut: 'F3',
-    name: 'holdBill',
-  },
-  {
-    label: 'Show All Bill (Ctrl + F5)',
-    icon: 'receipt',
-    shortcut: 'F3',
-    name: 'showAllBill',
-  },
-  {
-    label: 'Show Hold Bill (Ctrl + F6)',
-    icon: 'visibility',
-    shortcut: 'F6',
-    name: 'showHoldBill',
-  },
-  {
-    label: 'Remaining Balance (Ctrl + F7)',
-    icon: 'account_balance',
-    shortcut: 'F7',
-    name: 'remainingBalance',
-  },
-  {
-    label: 'Today Sale (Ctrl + F8)',
-    icon: 'trending_up',
-    shortcut: 'F8',
-    name: 'todaySale',
-  },
-  {
-    label: 'Close Balance (Ctrl + F9)',
-    icon: 'paid',
-    shortcut: 'F9',
-    name: 'closeBalance',
-  },
-];
 const handleButtonClick = (button: { name: string }): void => {
   if (button.name === 'remainingBalance') {
     router.push('/return/remaining-balance');
@@ -893,6 +877,38 @@ const handleHoldBill = async () => {
     });
   } finally {
     isLoading.value = false;
+  }
+};
+const previewBill = async (saleId: number) => {
+  try {
+    const res = await previewSaleApi(saleId);
+    if (res.type === 'Success') {
+      selectedInventoryData.value.push(
+        ...res.data.map((inventoryItem: ISaleShopSelectedInventory) => ({
+          discount: inventoryItem.discount,
+          dispatchQuantity: 0,
+          addedDate: inventoryItem.addedDate,
+          productId: inventoryItem.productId,
+          productName: inventoryItem.productName,
+          productImage: inventoryItem.productImage,
+          inventoryId: inventoryItem.inventoryId,
+          productCode: inventoryItem.productCode,
+          variantId_1: inventoryItem.variantId_1,
+          variantId_2: inventoryItem.variantId_2,
+          retailPrice: inventoryItem.retailPrice,
+          quantity: inventoryItem.quantity,
+        }))
+      );
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
   }
 };
 </script>

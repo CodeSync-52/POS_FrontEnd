@@ -50,7 +50,12 @@
     <q-input
       v-model="filterSearch.startDate"
       :max="filterSearch.endDate"
-      :min="filterSearch.startDate"
+      :min="
+        date.formatDate(
+          date.subtractFromDate(timeStamp, { date: 7 }),
+          'YYYY-MM-DD'
+        )
+      "
       label="From"
       type="date"
       style="min-width: 200px"
@@ -123,7 +128,7 @@
                   EActionPermissions.Delete
                 )
               "
-              @click="cancelSale(props.row.saleId)"
+              @click="handleCancelSale(props.row.saleId)"
             >
               <q-tooltip class="bg-red" :offset="[10, 10]">
                 Cancel Bill
@@ -142,6 +147,7 @@
               size="sm"
               icon="visibility"
               color="green"
+              @click="router.push(`/return/${props.row.saleId}/preview`)"
             >
               <q-tooltip class="bg-green" :offset="[10, 10]">
                 Preview Bill
@@ -214,11 +220,13 @@ import { CanceledError } from 'axios';
 import { useQuasar } from 'quasar';
 import { date } from 'quasar';
 import { useAuthStore } from 'src/stores';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const timeStamp = Date.now();
 const authStore = useAuthStore();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past7Date = date.subtractFromDate(timeStamp, { date: 7 });
-const formattedFromDate = date.formatDate(past7Date, 'YYYY-MM-DD');
+const past1Date = date.subtractFromDate(timeStamp, { date: 1 });
+const formattedFromDate = date.formatDate(past1Date, 'YYYY-MM-DD');
 const saleList = ref<ISaleListResponse[]>([]);
 const apiController = ref<AbortController | null>(null);
 const isFetchingShopList = ref(false);
@@ -240,6 +248,8 @@ onMounted(() => {
     address: '',
     code: '',
   };
+  filterSearch.value.selectStatus =
+    billStatusOptionList.find((status) => status.statusId === 2) || null;
   searchBills();
 });
 const filterSearch = ref<{
@@ -313,30 +323,6 @@ const searchBills = async (paginationData?: {
     isLoading.value = false;
   }
 };
-const cancelSale = async (id: number) => {
-  try {
-    const response = await cancelSaleApi(id);
-    if (response.type === 'Success') {
-      const saleToUpdate = saleList.value.find((sale) => sale.saleId === id);
-      if (saleToUpdate) {
-        saleToUpdate.status = 'Canceled';
-        $q.notify({
-          message: response.message,
-          type: 'negative',
-        });
-      }
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  }
-};
 const handleResetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -375,6 +361,30 @@ const getShopList = async () => {
     });
   } finally {
     isFetchingShopList.value = false;
+  }
+};
+const handleCancelSale = async (id: number) => {
+  try {
+    const response = await cancelSaleApi(id);
+    if (response.type === 'Success') {
+      const saleToUpdate = saleList.value.find((sale) => sale.saleId === id);
+      if (saleToUpdate) {
+        saleToUpdate.status = 'Canceled';
+        $q.notify({
+          message: response.message,
+          type: 'positive',
+        });
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
   }
 };
 </script>

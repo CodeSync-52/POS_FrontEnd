@@ -6,9 +6,9 @@ export interface IShopSaleExpenses {
   isEditing: boolean;
 }
 export interface IAddShopSaleManagement {
-  salePersonCode: string | null;
   shopId: number | undefined;
   totalDiscount: number;
+  salePersonCode: string | null;
   saleStatus: number;
   comments: string;
   saleDetails: ISaleDetail[];

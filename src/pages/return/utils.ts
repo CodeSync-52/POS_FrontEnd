@@ -5,7 +5,56 @@ import {
   IShopSaleExpenses,
   IBillStatusOptionList,
 } from 'src/interfaces';
-
+export const buttons = [
+  {
+    label: 'Cancel Receipt (Ctrl + F1)',
+    icon: 'close',
+    shortcut: 'F1',
+    name: 'cancelReceipt',
+  },
+  {
+    label: 'Create Return (Ctrl + F2)',
+    icon: 'cached',
+    shortcut: 'F2',
+    name: 'createReturn',
+  },
+  {
+    label: 'Hold Bill (Ctrl + F3)',
+    icon: 'hourglass_empty',
+    shortcut: 'F3',
+    name: 'holdBill',
+  },
+  {
+    label: 'Show All Bill (Ctrl + F5)',
+    icon: 'receipt',
+    shortcut: 'F3',
+    name: 'showAllBill',
+  },
+  {
+    label: 'Show Hold Bill (Ctrl + F6)',
+    icon: 'visibility',
+    shortcut: 'F6',
+    name: 'showHoldBill',
+  },
+  {
+    label: 'Remaining Balance (Ctrl + F7)',
+    icon: 'account_balance',
+    shortcut: 'F7',
+    name: 'remainingBalance',
+  },
+  {
+    label: 'Today Sale (Ctrl + F8)',
+    icon: 'trending_up',
+    shortcut: 'F8',
+    name: 'todaySale',
+  },
+  {
+    label: 'Close Balance (Ctrl + F9)',
+    icon: 'paid',
+    shortcut: 'F9',
+    name: 'closeBalance',
+  },
+];
 export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] =
   [
     {
