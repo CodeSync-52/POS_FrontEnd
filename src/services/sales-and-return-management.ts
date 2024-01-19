@@ -95,3 +95,38 @@ export const previewSaleApi = async (saleId: number) => {
   );
   return res;
 };
+export const addSaleItemApi = async ({
+  saleId,
+  saleDetails,
+}: {
+  saleId: number;
+  saleDetails: ISaleShopSelectedInventory[];
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/sale/additem',
+    method: 'PUT',
+    params: {
+      saleId,
+    },
+    data: saleDetails,
+  });
+  return res;
+};
+
+export const deleteSaleApi = async ({
+  saleId,
+  saleDetailId,
+}: {
+  saleId: number;
+  saleDetailId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/sale/deleteitem',
+    method: 'PUT',
+    params: {
+      saleId,
+      saleDetailId,
+    },
+  });
+  return res;
+};

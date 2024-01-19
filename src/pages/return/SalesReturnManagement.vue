@@ -1,10 +1,7 @@
 <template>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
-      <div
-        class="col-xs-12"
-        :class="{ 'col-md-9': titleAction !== 'Preview Sale Bill' }"
-      >
+      <div class="col-xs-12" :class="{ 'col-md-9': titleAction === pageTitle }">
         <div
           class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
         >
@@ -44,8 +41,7 @@
             outlined
             :disable="
               authStore.loggedInUser?.rolePermissions.roleName !==
-                EUserRoles.SuperAdmin.toLowerCase() ||
-              titleAction === 'Preview Sale Bill'
+                EUserRoles.SuperAdmin.toLowerCase() || titleAction !== pageTitle
             "
             v-model="selectedShop.fromShop"
             @update:model-value="handleUpdateFromShop($event)"
@@ -56,7 +52,7 @@
           />
         </div>
         <div
-          v-if="titleAction === pageTitle"
+          v-if="titleAction !== 'Preview Sale Bill'"
           class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-2 md:gap-16"
         >
           <div class="row gap-6 items-center">
@@ -86,18 +82,44 @@
           </outside-click-container>
         </div>
         <div
-          v-if="
-            selectedInventoryData.length || titleAction === 'Preview Sale Bill'
-          "
+          v-if="selectedInventoryData.length || titleAction !== pageTitle"
           class="flex flex-col justify-between"
         >
           <div class="py-4 w-full">
             <q-table
               auto-width
+              :loading="isLoading"
               :rows="selectedInventoryData"
               :columns="saleShopSelectedGrnInventoryTableColumn"
               class="max-h-[39.5vh] lg:max-h-[35vh] 3xl:max-h-[45vh]"
+              row-key="id"
             >
+              <template
+                v-slot:header-cell-action
+                v-if="titleAction === 'Preview Sale Bill'"
+              >
+                <q-th></q-th>
+              </template>
+              <template
+                v-if="titleAction === 'Preview Sale Bill'"
+                v-slot:header-cell-availableQuantity
+              >
+                <q-th></q-th>
+              </template>
+              <template v-else v-slot:header-cell-availableQuantity>
+                <q-th class="text-left">Available Quantity</q-th>
+              </template>
+              <template
+                v-if="titleAction === 'Preview Sale Bill'"
+                v-slot:body-cell-availableQuantity="props"
+              >
+                <q-td :props="props"> </q-td>
+              </template>
+              <template v-else v-slot:body-cell-availableQuantity="props">
+                <q-td :props="props">
+                  {{ props.row.quantity }}
+                </q-td>
+              </template>
               <template v-slot:no-data>
                 <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
                   <q-icon name="warning" size="xs" />
@@ -165,6 +187,46 @@
                 </q-td>
               </template>
               <template
+                v-else-if="titleAction === 'Edit Hold Bill'"
+                v-slot:body-cell-action="props"
+              >
+                <q-td :props="props">
+                  <div>
+                    <q-btn
+                      dense
+                      size="md"
+                      icon="check"
+                      flat
+                      unelevated
+                      color="green"
+                      @click="handleEditBill(props.row.inventoryId)"
+                    >
+                      <q-tooltip class="bg-green" :offset="[10, 10]">
+                        Add Sale
+                      </q-tooltip>
+                    </q-btn>
+                    <q-btn
+                      dense
+                      size="md"
+                      icon="delete"
+                      flat
+                      unelevated
+                      color="red"
+                      @click="
+                        handleDeleteSale(
+                          Number(selectedId),
+                          props.row.saleDetailId
+                        )
+                      "
+                    >
+                      <q-tooltip class="bg-red" :offset="[10, 10]">
+                        Delete Sale
+                      </q-tooltip>
+                    </q-btn>
+                  </div>
+                </q-td>
+              </template>
+              <template
                 v-if="titleAction !== 'Preview Sale Bill'"
                 v-slot:body-cell-discount="props"
               >
@@ -184,6 +246,17 @@
               </template>
             </q-table>
           </div>
+          <q-card-actions
+            v-if="titleAction !== pageTitle"
+            class="row justify-end"
+          >
+            <q-btn
+              label="CLOSE"
+              unelevated
+              color="btn-cancel hover:bg-btn-cancel-hover"
+              @click="router.push('/return/all-bills')"
+            />
+          </q-card-actions>
           <div
             v-if="titleAction === pageTitle"
             class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between"
@@ -332,7 +405,12 @@ import {
   getRoleModuleDisplayName,
   EUserModules,
 } from 'src/interfaces';
-import { articleListApi, previewSaleApi } from 'src/services';
+import {
+  articleListApi,
+  previewSaleApi,
+  addSaleItemApi,
+  deleteSaleApi,
+} from 'src/services';
 import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
 
 import moment from 'moment';
@@ -377,7 +455,7 @@ const filterChanged = ref(false);
 const isLoading = ref(false);
 const salePersonCodeInput = ref<null | HTMLDivElement>(null);
 const selectedId: string | string[] = router.currentRoute.value.params.id;
-const path = router.currentRoute.value.fullPath;
+const routerPath = router.currentRoute.value.fullPath;
 const titleAction = ref('');
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
@@ -412,7 +490,6 @@ const shopSale = ref<{
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keydown', handleActionKeys);
-  getShopList();
   selectedShop.value.fromShop = {
     shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     closingBalance: 0,
@@ -424,14 +501,20 @@ onMounted(() => {
     code: '',
   };
   if (selectedId) {
-    if (path.includes('preview')) {
+    if (routerPath.includes('preview')) {
       titleAction.value = 'Preview Sale Bill';
       previewBill(Number(selectedId));
+    }
+    if (routerPath.includes('editHoldBill')) {
+      titleAction.value = 'Edit Hold Bill';
+      previewBill(Number(selectedId));
+      inventoryDetailList();
     }
   } else {
     titleAction.value = pageTitle;
     inventoryDetailList();
     getArticleList();
+    getShopList();
   }
 });
 const handleActionKeys = (e: KeyboardEvent) => {
@@ -880,13 +963,14 @@ const handleHoldBill = async () => {
   }
 };
 const previewBill = async (saleId: number) => {
+  isLoading.value = true;
   try {
     const res = await previewSaleApi(saleId);
     if (res.type === 'Success') {
       selectedInventoryData.value.push(
         ...res.data.map((inventoryItem: ISaleShopSelectedInventory) => ({
           discount: inventoryItem.discount,
-          dispatchQuantity: 0,
+          dispatchQuantity: inventoryItem.quantity,
           addedDate: inventoryItem.addedDate,
           productId: inventoryItem.productId,
           productName: inventoryItem.productName,
@@ -897,8 +981,73 @@ const previewBill = async (saleId: number) => {
           variantId_2: inventoryItem.variantId_2,
           retailPrice: inventoryItem.retailPrice,
           quantity: inventoryItem.quantity,
+          saleDetailId: inventoryItem.saleDetailId,
         }))
       );
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+const handleEditBill = (id: number) => {
+  const saleId = Number(selectedId);
+  const selectedRow = selectedInventoryData.value.find(
+    (row) => row.inventoryId === id
+  );
+  if (selectedRow) {
+    handleAddBill(saleId, [selectedRow]);
+  }
+};
+const handleAddBill = async (
+  saleId: number,
+  saleDetails: ISaleShopSelectedInventory[]
+) => {
+  try {
+    const res = await addSaleItemApi({
+      saleId,
+      saleDetails: { ...saleDetails },
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+};
+const handleDeleteSale = async (saleId: number, saleDetailId: number) => {
+  try {
+    const response = await deleteSaleApi({ saleId, saleDetailId });
+    if (response.type === 'Success') {
+      $q.notify({
+        message: response.message,
+        type: 'positive',
+      });
+      const indexToRemove = selectedInventoryData.value.findIndex(
+        (row) => row.saleDetailId === saleDetailId
+      );
+      if (indexToRemove !== -1) {
+        selectedInventoryData.value.splice(indexToRemove, 1);
+      }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

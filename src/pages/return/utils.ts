@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { QTableColumn } from 'quasar';
 import {
-  IGrnDetailsWithId,
+  IGrnDetailsWithdiscount,
   IShopSaleExpenses,
   IBillStatusOptionList,
 } from 'src/interfaces';
@@ -55,7 +55,7 @@ export const buttons = [
     name: 'closeBalance',
   },
 ];
-export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] =
+export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithdiscount>[] =
   [
     {
       name: 'productImage',
@@ -90,7 +90,7 @@ export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWi
     {
       name: 'discount',
       label: 'Discount',
-      field: () => '',
+      field: (row) => row.discount,
       align: 'left',
     },
     {

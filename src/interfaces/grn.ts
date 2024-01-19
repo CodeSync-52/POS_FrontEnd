@@ -20,6 +20,9 @@ export interface IGrnDetailsWithId {
   productImage?: string;
   productCode?: string;
 }
+export interface IGrnDetailsWithdiscount extends IGrnDetailsWithId {
+  discount?: number;
+}
 export interface IGrnListFilter {
   ToDate: string | null;
   FromDate: string | null;

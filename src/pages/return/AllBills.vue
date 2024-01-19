@@ -167,6 +167,7 @@
               dense
               icon="edit"
               class="hover:text-btn-primary !px-[5px]"
+              @click="router.push(`/return/${props.row.saleId}/editHoldBill`)"
             >
               <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
                 Edit Bill

@@ -216,6 +216,13 @@ export const routeList = [
     },
   },
   {
+    path: '/return/:id/editHoldBill',
+    component: () => import('src/pages/return/SalesReturnManagement.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
     path: '/report',
     component: () => import('src/pages/report/ReportManagement.vue'),
     meta: {
