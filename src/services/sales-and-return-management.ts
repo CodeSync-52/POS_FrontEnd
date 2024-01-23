@@ -4,6 +4,7 @@ import {
   ISaleFilterList,
   ISaleListResponse,
   ISaleShopSelectedInventory,
+  ISaleDetail,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -100,7 +101,7 @@ export const addSaleItemApi = async ({
   saleDetails,
 }: {
   saleId: number;
-  saleDetails: ISaleShopSelectedInventory[];
+  saleDetails: ISaleDetail[];
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/sale/additem',

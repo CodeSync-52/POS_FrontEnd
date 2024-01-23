@@ -412,13 +412,13 @@ import {
   deleteSaleApi,
 } from 'src/services';
 import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
-
 import moment from 'moment';
 import { useQuasar } from 'quasar';
 import {
   IInventoryListResponse,
   IShopResponse,
   EUserRoles,
+  ISaleDetail,
 } from 'src/interfaces';
 import {
   inventoryDetailApi,
@@ -487,7 +487,7 @@ const shopSale = ref<{
   discount: 0,
   salePersonCode: null,
 });
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keydown', handleActionKeys);
   selectedShop.value.fromShop = {
@@ -504,11 +504,12 @@ onMounted(() => {
     if (routerPath.includes('preview')) {
       titleAction.value = 'Preview Sale Bill';
       previewBill(Number(selectedId));
-    }
-    if (routerPath.includes('editHoldBill')) {
+    } else if (routerPath.includes('editHoldBill')) {
       titleAction.value = 'Edit Hold Bill';
+      isLoading.value = true;
+      await inventoryDetailList();
       previewBill(Number(selectedId));
-      inventoryDetailList();
+      isLoading.value = false;
     }
   } else {
     titleAction.value = pageTitle;
@@ -873,16 +874,10 @@ const inventoryDetailList = async (data?: {
   isFetchingRecords.value = false;
 };
 const handleAddShopSale = async () => {
-  if (!shopSale.value.salePersonCode) {
-    $q.notify({
-      message: 'Sale Person Code is required.',
-      type: 'negative',
-    });
-    if (salePersonCodeInput.value) salePersonCodeInput.value.focus();
-    return;
-  }
-  isLoading.value = true;
+  const res = isPersonCodeEmpty();
+  if (!res) return;
   try {
+    isLoading.value = true;
     const payload = {
       salePersonCode: shopSale.value.salePersonCode,
       shopId: selectedShop.value.fromShop?.shopId,
@@ -917,17 +912,22 @@ const handleAddShopSale = async () => {
     isLoading.value = false;
   }
 };
-const handleHoldBill = async () => {
+const isPersonCodeEmpty = () => {
   if (!shopSale.value.salePersonCode) {
     $q.notify({
       message: 'Sale Person Code is required.',
       type: 'negative',
     });
-    if (salePersonCodeInput.value) salePersonCodeInput.value.focus();
-    return;
+    salePersonCodeInput.value?.focus();
+    return false;
   }
-  isLoading.value = true;
+  return true;
+};
+const handleHoldBill = async () => {
+  const res = isPersonCodeEmpty();
+  if (!res) return;
   try {
+    isLoading.value = true;
     const payload = {
       salePersonCode: shopSale.value.salePersonCode,
       shopId: selectedShop.value.fromShop?.shopId,
@@ -963,26 +963,39 @@ const handleHoldBill = async () => {
   }
 };
 const previewBill = async (saleId: number) => {
-  isLoading.value = true;
   try {
+    isLoading.value = true;
     const res = await previewSaleApi(saleId);
     if (res.type === 'Success') {
+      const PreviewRecords = selectedShopDetailRecords.value
+        .filter((inventoryRecord) =>
+          res.data.some(
+            (selectedRecord) =>
+              selectedRecord.inventoryId === inventoryRecord.inventoryId
+          )
+        )
+        .map((record) => record.quantity);
       selectedInventoryData.value.push(
-        ...res.data.map((inventoryItem: ISaleShopSelectedInventory) => ({
-          discount: inventoryItem.discount,
-          dispatchQuantity: inventoryItem.quantity,
-          addedDate: inventoryItem.addedDate,
-          productId: inventoryItem.productId,
-          productName: inventoryItem.productName,
-          productImage: inventoryItem.productImage,
-          inventoryId: inventoryItem.inventoryId,
-          productCode: inventoryItem.productCode,
-          variantId_1: inventoryItem.variantId_1,
-          variantId_2: inventoryItem.variantId_2,
-          retailPrice: inventoryItem.retailPrice,
-          quantity: inventoryItem.quantity,
-          saleDetailId: inventoryItem.saleDetailId,
-        }))
+        ...res.data.map(
+          (inventoryItem: ISaleShopSelectedInventory, index: number) => ({
+            discount: inventoryItem.discount,
+            dispatchQuantity: inventoryItem.quantity,
+            addedDate: inventoryItem.addedDate,
+            productId: inventoryItem.productId,
+            productName: inventoryItem.productName,
+            productImage: inventoryItem.productImage,
+            inventoryId: inventoryItem.inventoryId,
+            productCode: inventoryItem.productCode,
+            variantId_1: inventoryItem.variantId_1,
+            variantId_2: inventoryItem.variantId_2,
+            retailPrice: inventoryItem.retailPrice,
+            quantity:
+              titleAction.value === 'Preview Sale Bill'
+                ? inventoryItem.quantity
+                : PreviewRecords[index],
+            saleDetailId: inventoryItem.saleDetailId,
+          })
+        )
       );
     }
   } catch (e) {
@@ -998,19 +1011,7 @@ const previewBill = async (saleId: number) => {
     isLoading.value = false;
   }
 };
-const handleEditBill = (id: number) => {
-  const saleId = Number(selectedId);
-  const selectedRow = selectedInventoryData.value.find(
-    (row) => row.inventoryId === id
-  );
-  if (selectedRow) {
-    handleAddBill(saleId, [selectedRow]);
-  }
-};
-const handleAddBill = async (
-  saleId: number,
-  saleDetails: ISaleShopSelectedInventory[]
-) => {
+const handleAddBill = async (saleId: number, saleDetails: ISaleDetail[]) => {
   try {
     const res = await addSaleItemApi({
       saleId,
@@ -1032,6 +1033,32 @@ const handleAddBill = async (
       icon: 'error',
       color: 'red',
     });
+  }
+};
+const handleEditBill = (id: number) => {
+  const saleId = Number(selectedId);
+  const selectedRow = selectedInventoryData.value.find(
+    (row) => row.inventoryId === id
+  );
+  if (selectedRow) {
+    if (selectedRow.dispatchQuantity === 0) {
+      let message = 'Dispatch Quantity Required';
+      $q.notify({
+        message,
+        icon: 'error',
+        color: 'orange',
+      });
+    } else {
+      const saleDetails = [
+        {
+          inventoryId: selectedRow.inventoryId,
+          quantity: selectedRow.dispatchQuantity,
+          discount: selectedRow.discount,
+        },
+      ];
+
+      handleAddBill(saleId, saleDetails);
+    }
   }
 };
 const handleDeleteSale = async (saleId: number, saleDetailId: number) => {
