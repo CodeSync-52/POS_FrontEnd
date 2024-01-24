@@ -428,7 +428,7 @@ import {
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
@@ -518,6 +518,15 @@ onMounted(async () => {
     getShopList();
   }
 });
+watch(
+  () => router.currentRoute.value.fullPath,
+  (newPath) => {
+    if (newPath === '/return') {
+      titleAction.value = pageTitle;
+      selectedInventoryData.value = [];
+    }
+  }
+);
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
