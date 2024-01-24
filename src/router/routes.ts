@@ -195,8 +195,8 @@ export const routeList = [
     },
   },
   {
-    path: '/return/remaining-balance',
-    component: () => import('src/pages/return/RemainingBalance.vue'),
+    path: '/return/today-sale-summary',
+    component: () => import('src/pages/return/TodaySaleSummary.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },

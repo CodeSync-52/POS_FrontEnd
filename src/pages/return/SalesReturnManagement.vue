@@ -212,6 +212,7 @@
                       flat
                       unelevated
                       color="red"
+                      :disable="isDeleteButtonDisabled(props.row)"
                       @click="
                         handleDeleteSale(
                           Number(selectedId),
@@ -524,14 +525,16 @@ watch(
     if (newPath === '/return') {
       titleAction.value = pageTitle;
       selectedInventoryData.value = [];
+      inventoryDetailList();
+      getArticleList();
+      getShopList();
     }
   }
 );
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
-    if (e.key === 'F1') {
-    } else if (e.key === 'F2') {
+    if (e.key === 'F2') {
     } else if (
       e.key === 'F3' &&
       selectedInventoryData.value.length &&
@@ -541,7 +544,6 @@ const handleActionKeys = (e: KeyboardEvent) => {
     ) {
     } else if (e.key === 'F6') {
     } else if (e.key === 'F7') {
-    } else if (e.key === 'F8') {
     } else if (e.key === 'F9') {
     } else if (
       e.key === 'Enter' &&
@@ -565,7 +567,7 @@ const shopSalesTotalAmount = computed(() => {
 });
 const shopSalesTotalDiscount = computed(() => {
   return selectedInventoryData.value.reduce((amount: number, row) => {
-    return amount + row.discount;
+    return amount + row.discount * row.dispatchQuantity;
   }, 0);
 });
 const shopSalesNetAmount = computed(() => {
@@ -575,7 +577,8 @@ const shopSalesNetAmount = computed(() => {
     },
     0
   );
-  return totalAmount - shopSale.value.discount;
+  const netAmount = totalAmount - shopSalesTotalDiscount.value;
+  return netAmount;
 });
 const handleUpdateShopSaleDiscount = (newValue: string | null | number) => {
   if (typeof newValue === 'string') {
@@ -606,8 +609,8 @@ const getImageUrl = (base64Image: string | null) => {
   return '';
 };
 const handleButtonClick = (button: { name: string }): void => {
-  if (button.name === 'remainingBalance') {
-    router.push('/return/remaining-balance');
+  if (button.name === 'todaySaleSummary') {
+    router.push('/return/today-sale-summary');
   }
   if (button.name === 'showAllBill') {
     router.push('/return/all-bills');
@@ -1020,7 +1023,7 @@ const previewBill = async (saleId: number) => {
     isLoading.value = false;
   }
 };
-const handleAddBill = async (saleId: number, saleDetails: ISaleDetail[]) => {
+const handleAddBill = async (saleId: number, saleDetails: ISaleDetail) => {
   try {
     const res = await addSaleItemApi({
       saleId,
@@ -1031,6 +1034,8 @@ const handleAddBill = async (saleId: number, saleDetails: ISaleDetail[]) => {
         message: res.message,
         color: 'green',
       });
+      selectedInventoryData.value = [];
+      previewBill(Number(selectedId));
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -1058,17 +1063,17 @@ const handleEditBill = (id: number) => {
         color: 'orange',
       });
     } else {
-      const saleDetails = [
-        {
-          inventoryId: selectedRow.inventoryId,
-          quantity: selectedRow.dispatchQuantity,
-          discount: selectedRow.discount,
-        },
-      ];
-
+      const saleDetails = {
+        inventoryId: selectedRow.inventoryId,
+        quantity: selectedRow.dispatchQuantity,
+        discount: selectedRow.discount,
+      };
       handleAddBill(saleId, saleDetails);
     }
   }
+};
+const isDeleteButtonDisabled = (row: ISaleShopSelectedInventory) => {
+  return !row.saleDetailId;
 };
 const handleDeleteSale = async (saleId: number, saleDetailId: number) => {
   try {

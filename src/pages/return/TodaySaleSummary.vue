@@ -3,7 +3,7 @@
     <q-card>
       <q-card-section>
         <div class="font-semibold text-lg text-center">
-          <span>Remaining Balance Details</span>
+          <span>Balance Summary</span>
         </div>
         <div
           class="flex flex-col gap-2 md:gap-4 items-center md:items-end q-pa-md"

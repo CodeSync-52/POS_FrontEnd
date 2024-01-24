@@ -7,12 +7,6 @@ import {
 } from 'src/interfaces';
 export const buttons = [
   {
-    label: 'Cancel Receipt (Ctrl + F1)',
-    icon: 'close',
-    shortcut: 'F1',
-    name: 'cancelReceipt',
-  },
-  {
     label: 'Create Return (Ctrl + F2)',
     icon: 'cached',
     shortcut: 'F2',
@@ -37,22 +31,16 @@ export const buttons = [
     name: 'showHoldBill',
   },
   {
-    label: 'Remaining Balance (Ctrl + F7)',
-    icon: 'account_balance',
-    shortcut: 'F7',
-    name: 'remainingBalance',
-  },
-  {
-    label: 'Today Sale (Ctrl + F8)',
+    label: 'Today Sale Summary (Ctrl + F7)',
     icon: 'trending_up',
-    shortcut: 'F8',
-    name: 'todaySale',
+    shortcut: 'F7',
+    name: 'todaySaleSummary',
   },
   {
-    label: 'Close Balance (Ctrl + F9)',
+    label: 'Close Shop (Ctrl + F9)',
     icon: 'paid',
     shortcut: 'F9',
-    name: 'closeBalance',
+    name: 'closeShop',
   },
 ];
 export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithdiscount>[] =

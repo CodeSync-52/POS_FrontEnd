@@ -189,7 +189,7 @@
               class="text-green !px-[5px]"
             >
               <q-tooltip class="bg-green" :offset="[10, 10]">
-                Add Bill
+                Complete Bill
               </q-tooltip>
             </q-btn>
           </div>

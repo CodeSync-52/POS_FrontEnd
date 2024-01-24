@@ -101,7 +101,7 @@ export const addSaleItemApi = async ({
   saleDetails,
 }: {
   saleId: number;
-  saleDetails: ISaleDetail[];
+  saleDetails: ISaleDetail;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/sale/additem',
