@@ -25,9 +25,7 @@
                   option-value="userId"
                   :options="userListOptions"
                   @update:model-value="
-                    addNewFlow.cashInOutstandingBalance &&
-                      (addNewFlow.cashInOutstandingBalance =
-                        $event.outStandingBalance)
+                    handleShowOutstandingBalance($event, false)
                   "
                   v-model="addNewFlow.cashIn"
                 />
@@ -56,9 +54,7 @@
                   map-options
                   @filter="filterUser"
                   @update:model-value="
-                    addNewFlow.cashOutOutstandingBalance &&
-                      (addNewFlow.cashOutOutstandingBalance =
-                        $event.outStandingBalance)
+                    handleShowOutstandingBalance($event, true)
                   "
                   option-label="fullName"
                   option-value="userId"
@@ -202,6 +198,18 @@ const $q = useQuasar();
 onMounted(() => {
   getUserList();
 });
+const handleShowOutstandingBalance = (
+  value: IUserResponse,
+  isSender: boolean
+) => {
+  if (isSender) {
+    addNewFlow.value.cashOutOutstandingBalance =
+      value?.outStandingBalance ?? null;
+  } else {
+    addNewFlow.value.cashInOutstandingBalance =
+      value?.outStandingBalance ?? null;
+  }
+};
 const getUserList = async () => {
   try {
     const res = await getUserListApi({
