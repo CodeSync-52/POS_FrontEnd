@@ -7,13 +7,13 @@ import {
 } from 'src/interfaces';
 export const buttons = [
   {
-    label: 'Create Return (Ctrl + F2)',
+    label: 'Create Return (Ctrl + F1)',
     icon: 'cached',
     shortcut: 'F2',
     name: 'createReturn',
   },
   {
-    label: 'Hold Bill (Ctrl + F3)',
+    label: 'Hold Bill (Ctrl + F2)',
     icon: 'hourglass_empty',
     shortcut: 'F3',
     name: 'holdBill',
@@ -184,6 +184,7 @@ export const shopAllBillsTableColumn: QTableColumn[] = [
   },
 ];
 export const billStatusOptionList: IBillStatusOptionList[] = [
+  { name: 'All Bills', statusId: null },
   { name: 'Completed', statusId: 1 },
   { name: 'Hold', statusId: 2 },
   { name: 'Canceled', statusId: 3 },

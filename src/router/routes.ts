@@ -209,6 +209,13 @@ export const routeList = [
     },
   },
   {
+    path: '/return/hold-bills',
+    component: () => import('src/pages/return/AllBills.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
     path: '/return/:id/preview',
     component: () => import('src/pages/return/SalesReturnManagement.vue'),
     meta: {

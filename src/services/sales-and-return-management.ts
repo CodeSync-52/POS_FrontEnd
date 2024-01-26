@@ -131,3 +131,37 @@ export const deleteSaleApi = async ({
   });
   return res;
 };
+export const updateSaleItemApi = async ({
+  saleDetailId,
+  saleDetails,
+}: {
+  saleDetailId: number;
+  saleDetails: ISaleDetail;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/sale/updateitem',
+    method: 'PUT',
+    params: {
+      saleDetailId,
+    },
+    data: saleDetails,
+  });
+  return res;
+};
+export const changeSaleStatusApi = async ({
+  saleId,
+  saleStatus,
+}: {
+  saleId: number;
+  saleStatus: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/sale/changestatus',
+    method: 'PUT',
+    params: {
+      saleId,
+      saleStatus,
+    },
+  });
+  return res;
+};

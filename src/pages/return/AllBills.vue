@@ -2,7 +2,7 @@
   <div
     class="flex md:flex-row md:gap-0 md:justify-between sm:justify-center sm:flex-col sm:gap-2 md:items-center sm:items-center mb-4"
   >
-    <span class="text-lg font-medium">Bills</span>
+    <span class="text-lg font-medium">{{ titleAction }}</span>
   </div>
   <div
     class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
@@ -15,7 +15,8 @@
       :options="billStatusOptionList"
       map-options
       popup-content-class="!max-h-[200px]"
-      label="Status"
+      label="Bill Status"
+      :disable="titleAction === 'Hold Bills'"
       option-label="name"
       option-value="statusId"
       color="btn-primary"
@@ -94,6 +95,7 @@
   </div>
   <div class="py-4">
     <q-table
+      class="max-h-[39.5vh] lg:max-h-[55vh] 3xl:max-h-[65vh]"
       :loading="isLoading"
       tabindex="0"
       :rows="saleList"
@@ -128,7 +130,7 @@
                   EActionPermissions.Delete
                 )
               "
-              @click="handleCancelSale(props.row.saleId)"
+              @click="handleCancelSalePopup(props.row.saleId)"
             >
               <q-tooltip class="bg-red" :offset="[10, 10]">
                 Cancel Bill
@@ -187,6 +189,7 @@
               dense
               icon="check"
               class="text-green !px-[5px]"
+              @click="handleCompleteSale(props.row.saleId, 1)"
             >
               <q-tooltip class="bg-green" :offset="[10, 10]">
                 Complete Bill
@@ -203,11 +206,61 @@
       </template>
     </q-table>
   </div>
+  <q-dialog v-model="isCancelBillModalVisible">
+    <q-card class="min-w-[400px]">
+      <q-card-section>
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-lg font-medium">Cancel Receipt</span>
+          <q-btn
+            class="font-medium"
+            icon="close"
+            flat
+            unelevated
+            dense
+            v-close-popup
+          />
+        </div>
+        <div class="text-center">
+          <span>Are you sure you want to Cancel the Bill?</span>
+        </div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          flat
+          label="No"
+          color="white"
+          v-close-popup
+          class="bg-btn-cancel hover:bg-btn-cancel-hover"
+        />
+        <q-btn
+          flat
+          label="Yes"
+          color="white"
+          :loading="isCancellingBill"
+          class="bg-btn-primary hover:bg-btn-primary-hover"
+          @click="handleCancelSale(selectedRowId)"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <q-card-actions class="row justify-end">
+    <q-btn
+      label="CLOSE"
+      unelevated
+      color="btn-cancel hover:bg-btn-cancel-hover"
+      @click="$router.go(-1)"
+    />
+  </q-card-actions>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { shopAllBillsTableColumn, billStatusOptionList } from './utils';
-import { getSaleListApi, shopListApi, cancelSaleApi } from 'src/services';
+import {
+  getSaleListApi,
+  shopListApi,
+  cancelSaleApi,
+  changeSaleStatusApi,
+} from 'src/services';
 import {
   IBillStatusOptionList,
   ISaleListResponse,
@@ -229,7 +282,12 @@ const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past1Date = date.subtractFromDate(timeStamp, { date: 1 });
 const formattedFromDate = date.formatDate(past1Date, 'YYYY-MM-DD');
 const saleList = ref<ISaleListResponse[]>([]);
+const selectedRowId = ref<number>(-1);
 const apiController = ref<AbortController | null>(null);
+const routerPath = router.currentRoute.value.fullPath;
+const titleAction = ref('All Bills');
+const isCancelBillModalVisible = ref(false);
+const isCancellingBill = ref(false);
 const isFetchingShopList = ref(false);
 const isLoading = ref(false);
 const $q = useQuasar();
@@ -249,8 +307,11 @@ onMounted(() => {
     address: '',
     code: '',
   };
-  filterSearch.value.selectStatus =
-    billStatusOptionList.find((status) => status.statusId === 2) || null;
+  if (routerPath.includes('hold-bills')) {
+    titleAction.value = 'Hold Bills';
+    filterSearch.value.selectStatus =
+      billStatusOptionList.find((status) => status.statusId === 2) || null;
+  }
   searchBills();
 });
 const filterSearch = ref<{
@@ -364,7 +425,40 @@ const getShopList = async () => {
     isFetchingShopList.value = false;
   }
 };
+const handleCompleteSale = async (saleId: number, saleStatus: number) => {
+  try {
+    const response = await changeSaleStatusApi({ saleId, saleStatus });
+    if (response.type === 'Success') {
+      const saleToUpdate = saleList.value.find(
+        (sale) => sale.saleId === saleId
+      );
+      if (saleToUpdate) {
+        saleToUpdate.status = 'Completed';
+        $q.notify({
+          message: response.message,
+          type: 'positive',
+        });
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+};
+
+const handleCancelSalePopup = (selectedRow: number) => {
+  selectedRowId.value = selectedRow;
+  isCancelBillModalVisible.value = true;
+};
 const handleCancelSale = async (id: number) => {
+  if (isCancellingBill.value) return;
+  isCancellingBill.value = true;
   try {
     const response = await cancelSaleApi(id);
     if (response.type === 'Success') {
@@ -387,5 +481,7 @@ const handleCancelSale = async (id: number) => {
       type: 'negative',
     });
   }
+  isCancellingBill.value = false;
+  isCancelBillModalVisible.value = false;
 };
 </script>

@@ -214,7 +214,7 @@
                       color="red"
                       :disable="isDeleteButtonDisabled(props.row)"
                       @click="
-                        handleDeleteSale(
+                        handleDeleteSaleItem(
                           Number(selectedId),
                           props.row.saleDetailId
                         )
@@ -252,10 +252,18 @@
             class="row justify-end"
           >
             <q-btn
+              v-if="titleAction === 'Edit Hold Bill'"
+              label="Complete Bill"
+              unelevated
+              color="btn-primary hover:btn-primary-hover"
+              @click="handleCompleteSale(Number(selectedId), 1)"
+            />
+
+            <q-btn
               label="CLOSE"
               unelevated
               color="btn-cancel hover:bg-btn-cancel-hover"
-              @click="router.push('/return/all-bills')"
+              @click="$router.go(-1)"
             />
           </q-card-actions>
           <div
@@ -333,7 +341,7 @@
           label-position="left"
           icon="shopping_cart"
           label="Save (Ctrl + Enter)"
-          @click="handleAddShopSale"
+          @click="handleAddShopSale()"
           :disable="isButtonDisable"
         />
       </q-fab>
@@ -411,6 +419,8 @@ import {
   previewSaleApi,
   addSaleItemApi,
   deleteSaleApi,
+  updateSaleItemApi,
+  changeSaleStatusApi,
 } from 'src/services';
 import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
 import moment from 'moment';
@@ -534,16 +544,21 @@ watch(
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
-    if (e.key === 'F2') {
+    if (e.key === 'F1') {
     } else if (
-      e.key === 'F3' &&
+      e.key === 'F2' &&
       selectedInventoryData.value.length &&
       selectedInventoryData.value.every(
         (record) => record.dispatchQuantity !== 0
       )
     ) {
+      handleHoldBill();
+    } else if (e.key === 'F5') {
+      router.push('/return/all-bills');
     } else if (e.key === 'F6') {
+      router.push('/return/hold-bills');
     } else if (e.key === 'F7') {
+      router.push('/return/today-sale-summary');
     } else if (e.key === 'F9') {
     } else if (
       e.key === 'Enter' &&
@@ -552,7 +567,22 @@ const handleActionKeys = (e: KeyboardEvent) => {
         (record) => record.dispatchQuantity !== 0
       )
     ) {
+      handleAddShopSale();
     }
+  }
+};
+const handleButtonClick = (button: { name: string }): void => {
+  if (button.name === 'todaySaleSummary') {
+    router.push('/return/today-sale-summary');
+  }
+  if (button.name === 'showAllBill') {
+    router.push('/return/all-bills');
+  }
+  if (button.name === 'showHoldBill') {
+    router.push('/return/hold-bills');
+  }
+  if (button.name === 'holdBill') {
+    handleHoldBill();
   }
 };
 onUnmounted(() => {
@@ -607,17 +637,6 @@ const getImageUrl = (base64Image: string | null) => {
     return `data:image/png;base64,${base64Image}`;
   }
   return '';
-};
-const handleButtonClick = (button: { name: string }): void => {
-  if (button.name === 'todaySaleSummary') {
-    router.push('/return/today-sale-summary');
-  }
-  if (button.name === 'showAllBill') {
-    router.push('/return/all-bills');
-  }
-  if (button.name === 'holdBill') {
-    handleHoldBill();
-  }
 };
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
@@ -1023,7 +1042,7 @@ const previewBill = async (saleId: number) => {
     isLoading.value = false;
   }
 };
-const handleAddBill = async (saleId: number, saleDetails: ISaleDetail) => {
+const handleAddSaleItem = async (saleId: number, saleDetails: ISaleDetail) => {
   try {
     const res = await addSaleItemApi({
       saleId,
@@ -1034,7 +1053,10 @@ const handleAddBill = async (saleId: number, saleDetails: ISaleDetail) => {
         message: res.message,
         color: 'green',
       });
+      isLoading.value = true;
       selectedInventoryData.value = [];
+      await inventoryDetailList();
+      isLoading.value = false;
       previewBill(Number(selectedId));
     }
   } catch (e) {
@@ -1049,7 +1071,7 @@ const handleAddBill = async (saleId: number, saleDetails: ISaleDetail) => {
     });
   }
 };
-const handleEditBill = (id: number) => {
+const handleEditBill = async (id: number) => {
   const saleId = Number(selectedId);
   const selectedRow = selectedInventoryData.value.find(
     (row) => row.inventoryId === id
@@ -1062,20 +1084,76 @@ const handleEditBill = (id: number) => {
         icon: 'error',
         color: 'orange',
       });
+    } else if (selectedRow.saleDetailId) {
+      await handleUpdateSaleItem(selectedRow.saleDetailId, {
+        quantity: selectedRow.dispatchQuantity,
+        discount: selectedRow.discount,
+      });
     } else {
       const saleDetails = {
         inventoryId: selectedRow.inventoryId,
         quantity: selectedRow.dispatchQuantity,
         discount: selectedRow.discount,
       };
-      handleAddBill(saleId, saleDetails);
+      await handleAddSaleItem(saleId, saleDetails);
     }
   }
 };
-const isDeleteButtonDisabled = (row: ISaleShopSelectedInventory) => {
-  return !row.saleDetailId;
+const handleUpdateSaleItem = async (
+  saleDetailId: number,
+  saleDetails: ISaleDetail
+) => {
+  try {
+    const res = await updateSaleItemApi({
+      saleDetailId,
+      saleDetails: { ...saleDetails },
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      isLoading.value = true;
+      selectedInventoryData.value = [];
+      await inventoryDetailList();
+      isLoading.value = false;
+      previewBill(Number(selectedId));
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
 };
-const handleDeleteSale = async (saleId: number, saleDetailId: number) => {
+
+const handleCompleteSale = async (saleId: number, saleStatus: number) => {
+  try {
+    const response = await changeSaleStatusApi({ saleId, saleStatus });
+    if (response.type === 'Success') {
+      $q.notify({
+        message: response.message,
+        type: 'positive',
+      });
+      router.go(-1);
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+};
+const handleDeleteSaleItem = async (saleId: number, saleDetailId: number) => {
   try {
     const response = await deleteSaleApi({ saleId, saleDetailId });
     if (response.type === 'Success') {
@@ -1100,6 +1178,9 @@ const handleDeleteSale = async (saleId: number, saleDetailId: number) => {
       type: 'negative',
     });
   }
+};
+const isDeleteButtonDisabled = (row: ISaleShopSelectedInventory) => {
+  return !row.saleDetailId;
 };
 </script>
 <style scoped lang="scss">

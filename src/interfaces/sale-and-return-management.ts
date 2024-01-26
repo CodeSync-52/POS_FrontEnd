@@ -15,13 +15,13 @@ export interface IAddShopSaleManagement {
 }
 
 export interface ISaleDetail {
-  inventoryId: number;
+  inventoryId?: number;
   quantity: number;
   discount: number;
 }
 export interface IBillStatusOptionList {
   name: string;
-  statusId: number;
+  statusId: number | null;
 }
 export interface ISaleFilterList {
   statusId: IBillStatusOptionList | null;
