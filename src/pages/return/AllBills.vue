@@ -210,7 +210,7 @@
     <q-card class="min-w-[400px]">
       <q-card-section>
         <div class="flex justify-between items-center mb-2">
-          <span class="text-lg font-medium">Cancel Receipt</span>
+          <span class="text-lg font-medium">Cancel Bill</span>
           <q-btn
             class="font-medium"
             icon="close"
@@ -389,13 +389,24 @@ const handleResetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
   }
-  filterSearch.value = {
-    selectStatus: null,
-    shopId: null,
-    invoiceNumber: null,
-    startDate: formattedFromDate,
-    endDate: formattedToDate,
-  };
+  if (routerPath.includes('hold-bills')) {
+    filterSearch.value = {
+      selectStatus:
+        billStatusOptionList.find((status) => status.statusId === 2) || null,
+      shopId: null,
+      invoiceNumber: null,
+      startDate: formattedFromDate,
+      endDate: formattedToDate,
+    };
+  } else {
+    filterSearch.value = {
+      selectStatus: null,
+      shopId: null,
+      invoiceNumber: null,
+      startDate: formattedFromDate,
+      endDate: formattedToDate,
+    };
+  }
   searchBills();
 };
 const handleUpdateFromShop = (newVal: IShopResponse) => {

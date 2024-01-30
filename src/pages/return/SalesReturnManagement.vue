@@ -944,7 +944,8 @@ const handleAddShopSale = async () => {
   }
 };
 const isPersonCodeEmpty = () => {
-  if (!shopSale.value.salePersonCode) {
+  const personCode = shopSale.value.salePersonCode;
+  if (!personCode || personCode.trim() === '') {
     $q.notify({
       message: 'Sale Person Code is required.',
       type: 'negative',
