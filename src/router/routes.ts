@@ -195,6 +195,13 @@ export const routeList = [
     },
   },
   {
+    path: '/expenses',
+    component: () => import('src/pages/expenses/ShopExpenses.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
     path: '/report',
     component: () => import('src/pages/report/ReportManagement.vue'),
     meta: {
