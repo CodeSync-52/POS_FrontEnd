@@ -2,7 +2,7 @@
   <div>
     <div class="mb-4 row justify-between items-center">
       <div class="text-xl text-center md:text-left font-medium">
-        <span>Add New GRN</span>
+        <span>Add New STR</span>
       </div>
     </div>
     <q-card flat>
@@ -268,6 +268,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
   ProductCode: null,
   ShopId: null,
+  keyword: null,
 });
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
@@ -527,6 +528,8 @@ const inventoryDetailList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     if (isFetchingRecords.value && apiController.value) {
       apiController.value.abort();
       apiController.value = null;
@@ -536,7 +539,7 @@ const inventoryDetailList = async (data?: {
       {
         ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
         PageNumber: pagination.value.page,
-        PageSize: pagination.value.rowsPerPage,
+        PageSize: rowsPerPage,
         filterSearch: filterSearch.value,
       },
       apiController.value

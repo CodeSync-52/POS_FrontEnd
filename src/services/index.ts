@@ -13,3 +13,4 @@ export * from './shop-management';
 export * from './inventory';
 export * from './grn';
 export * from './str';
+export * from './sales-and-return-management';

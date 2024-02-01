@@ -60,7 +60,7 @@ export const selectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] 
     {
       name: 'productCode',
       label: 'Product Code',
-      field: (row) => row.productCode?.split(',')[0],
+      field: (row) => row.productCode?.split(',')[0] || '-',
       align: 'left',
     },
     {
@@ -73,6 +73,12 @@ export const selectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] 
       name: 'dispatchQuantity',
       label: 'Dispatch Quantity',
       field: (row) => row.quantity,
+      align: 'left',
+    },
+    {
+      name: 'retailPrice',
+      label: 'Retail Price',
+      field: (row) => row.retailPrice,
       align: 'left',
     },
     {

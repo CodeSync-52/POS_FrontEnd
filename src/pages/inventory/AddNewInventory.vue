@@ -106,12 +106,6 @@
             <tr>
               <th>
                 <div class="row items-center gap-1">
-                  <span
-                    >Product:
-                    <span class="font-semibold">{{
-                      product.productName
-                    }}</span></span
-                  >
                   <div class="w-8 h-8 rounded-full overflow-hidden">
                     <img
                       class="w-full h-full object-cover"
@@ -122,11 +116,25 @@
                       alt="img"
                     />
                   </div>
-                  <div class="ml-1">
-                    <span>Available Stock:</span>
-                    <span class="font-semibold">
-                      {{ product.masterStock }}
-                    </span>
+                  <div class="flex flex-col">
+                    <span
+                      >Product:
+                      <span class="font-semibold">{{
+                        product.productName
+                      }}</span></span
+                    >
+                    <div>
+                      <span>Available Stock: </span>
+                      <span class="font-semibold">
+                        {{ product.masterStock }}
+                      </span>
+                    </div>
+                    <div>
+                      <span>Retail Price: </span>
+                      <span class="font-semibold">
+                        {{ product.retailPrice }}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </th>
@@ -136,6 +144,7 @@
               >
                 {{ header.displayName }}
               </th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -173,6 +182,7 @@
                   "
                 />
               </td>
+              <td>{{ selectedInventoryTotalQuantity(product, secondItem) }}</td>
             </tr>
           </tbody>
         </q-markup-table>
@@ -195,7 +205,7 @@
           :loading="isPrintingBarcode"
           label="Save"
           unelevated
-          :disable="isSaveButtonDisable || InValidStock"
+          :disable="InValidStock"
           color="btn-primary"
         />
       </div>
@@ -302,6 +312,7 @@
             productName: item?.productName || '',
             productImage: item.productImage || '',
             masterStock: item.masterStock ?? 0,
+            retailPrice: item.retailPrice ?? 0,
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"
@@ -339,7 +350,7 @@ import {
   IArticleData,
   IPagination,
   IProductWithVariantDTOs,
-  ISelectedArticleWithMasterStock,
+  ISelectedArticleWithMasterStockAndRetailPrice,
   ISelectedArticleData,
   IVariantDetailsData,
   IShopResponse,
@@ -359,7 +370,9 @@ const isFetchingArticleList = ref(false);
 const isPrintingBarcodeScreenVisible = ref(false);
 const isInventoryManagementStepTwoVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
-const selectedArticle = ref<ISelectedArticleWithMasterStock[]>([]);
+const selectedArticle = ref<ISelectedArticleWithMasterStockAndRetailPrice[]>(
+  []
+);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const showfirstBarcodePreview = ref(true);
 const isShopLoading = ref(false);
@@ -371,6 +384,7 @@ const rowColumnData = ref<
     productName: string | null;
     productImage: string | null;
     masterStock: number;
+    retailPrice: number;
   }[]
 >([]);
 
@@ -539,12 +553,6 @@ const getShopList = async () => {
     isShopLoading.value = false;
   }
 };
-const isSaveButtonDisable = computed(() => {
-  const validations = Object.values(selectedInventoryPayload.value).map(
-    (payload) => payload.stockQuantity === 0
-  );
-  return validations.some((validations) => validations === true);
-});
 const handleFilterRows = (filterChanged: boolean) => {
   if (filterChanged) {
     isFilterChanged.value = filterChanged;
@@ -623,6 +631,7 @@ const selectedData = (
     productName?: string;
     productImage: string | null;
     masterStock: number;
+    retailPrice: number;
   }[]
 ) => {
   if (payload.length > 1) {
@@ -690,7 +699,8 @@ const handleSelectedVariant = (
   productId: number,
   productName: string,
   productImage: string,
-  masterStock: number
+  masterStock: number,
+  retailPrice: number
 ) => {
   if (showBarcodeScreen.value) {
     selectedInventoryPayload.value = {};
@@ -705,6 +715,7 @@ const handleSelectedVariant = (
       productName,
       productImage,
       masterStock,
+      retailPrice,
     },
   ];
   setProductKeys();
@@ -768,7 +779,6 @@ const handleAddInventory = async (
         message: res.message,
         type: 'positive',
       });
-
       selectedId.value = res.data;
       handlePreviewGrn();
 
@@ -880,5 +890,30 @@ const handlePreviewGrn = async () => {
       message,
     });
   }
+};
+
+const selectedInventoryTotalQuantity = (
+  product: {
+    firstVariantSelection: IVariantDetailsData[] | null;
+    secondVariantSelection: IVariantDetailsData[] | null;
+    productId: number | null;
+    productName: string | null;
+    productImage: string | null;
+    masterStock: number;
+  },
+  secondItem: IVariantDetailsData
+): number => {
+  if (!product.firstVariantSelection) {
+    return 0;
+  }
+  return product.firstVariantSelection.reduce(
+    (total: number, firstItem: IVariantDetailsData) => {
+      const key = `${product.productId}-${firstItem.variantId}-${secondItem.variantId}`;
+      const stockQuantity =
+        selectedInventoryPayload.value[key]?.stockQuantity || 0;
+      return total + stockQuantity;
+    },
+    0
+  );
 };
 </script>

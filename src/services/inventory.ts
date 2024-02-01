@@ -37,7 +37,7 @@ export const inventoryDetailApi = async (
   },
   controller?: AbortController
 ) => {
-  const { ProductId, ProductCode } = filterSearch;
+  const { ProductId, keyword, ProductCode } = filterSearch;
   const res = await makeApiCall<
     IGenericResponse<{
       inventoryDetails: IInventoryListResponse[];
@@ -54,6 +54,7 @@ export const inventoryDetailApi = async (
       ShopId,
       ProductId,
       ProductCode,
+      keyword,
     },
     signal: controller?.signal,
   });

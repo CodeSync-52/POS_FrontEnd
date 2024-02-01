@@ -303,9 +303,11 @@ async function fetchingCustomerGroupList(data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const pageSize =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     const res = await getCustomerGroupList({
       pageNumber: pagination.value.page,
-      pageSize: pagination.value.rowsPerPage,
+      pageSize: pageSize,
     });
     if (res?.data) {
       customerGroupRows.value = res?.data.items;

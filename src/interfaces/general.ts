@@ -79,7 +79,7 @@ const roleModuleList: Record<EUserModules, string> = {
   [EUserModules.ShopManagement]: 'Shop Management',
   [EUserModules.GoodsReceiptNotes]: 'Stock Transfer (STR)',
   [EUserModules.StockTransferRequests]: 'STR Receiving',
-  [EUserModules.SaleAndReturnManagement]: 'Sale And Return Management',
+  [EUserModules.SaleAndReturnManagement]: 'Shop Sale Management',
   [EUserModules.ShopDiscountsModule]: 'Shop Discounts',
   [EUserModules.Report]: 'Report',
 };
@@ -137,3 +137,13 @@ export interface IPagination {
   rowsPerPage: number;
   rowsNumber: number;
 }
+export enum ShopSalesStatus {
+  Completed = 1,
+  Hold = 2,
+  Cancelled = 3,
+}
+export const DisplaySalesStatus: Record<ShopSalesStatus, string> = {
+  [ShopSalesStatus.Completed]: 'Completed',
+  [ShopSalesStatus.Cancelled]: 'Cancelled',
+  [ShopSalesStatus.Hold]: 'Hold',
+};

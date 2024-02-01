@@ -240,6 +240,7 @@
             productName: item?.productName || '',
             productImage: item.productImage || '',
             masterStock: item.masterStock ?? 0,
+            retailPrice: item.retailPrice ?? 0,
           }))
         "
         :is-fetching-article-list="isFetchingArticleList"
@@ -361,6 +362,7 @@ const selectedData = (
     productName?: string;
     productImage: string | null;
     masterStock: number;
+    retailPrice: number;
   }[]
 ) => {
   if (!isEdit.value) {
@@ -546,9 +548,11 @@ const getArticleList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     const res = await articleListApi({
       PageNumber: pagination.value.page,
-      PageSize: pagination.value.rowsPerPage,
+      PageSize: rowsPerPage,
       Status: 'Active',
     });
     if (res.type === 'Success') {

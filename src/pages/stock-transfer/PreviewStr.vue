@@ -75,13 +75,7 @@
             <thead>
               <tr>
                 <th class="text-left">
-                  <div class="row items-center gap-1">
-                    <span
-                      >Product:
-                      <span class="font-semibold">{{
-                        product.productName
-                      }}</span></span
-                    >
+                  <div class="row items-center gap-3">
                     <div
                       class="w-8 h-8 rounded-full overflow-hidden"
                       :class="product.productImage && 'cursor-pointer'"
@@ -96,6 +90,20 @@
                         alt="img"
                       />
                     </div>
+                    <div class="flex flex-col gap-1">
+                      <span
+                        >Product:
+                        <span class="font-semibold">{{
+                          product.productName
+                        }}</span></span
+                      >
+                      <span
+                        >Retail Price:
+                        <span class="font-semibold">{{
+                          product.retailPrice
+                        }}</span></span
+                      >
+                    </div>
                   </div>
                 </th>
 
@@ -106,63 +114,91 @@
                 >
                   {{ firstVariant }}
                 </th>
+                <th class="text-left">Total</th>
               </tr>
             </thead>
             <tbody>
-              <tr
+              <template
                 v-for="(secondVariant, i) in uniqueVariantNames2(product.data)"
                 :key="i"
               >
-                <td class="text-left font-semibold">
-                  {{ secondVariant }}
-                </td>
-                <td
-                  v-for="(secondItem, secondItemIndex) in limitedRecord(
-                    product.data,
-                    secondVariant
-                  )"
-                  :key="secondItemIndex"
+                <tr
+                  v-if="
+                    !limitedRecord(product.data, secondVariant).every(
+                      (data) => data.quantity === 0
+                    )
+                  "
                 >
-                  <q-input
-                    type="number"
-                    dense
-                    color="btn-primary"
-                    outlined
-                    :disable="!isEdit"
-                    min="0"
-                    v-model="secondItem.quantity"
+                  <td class="text-left font-semibold">
+                    {{ secondVariant }}
+                  </td>
+                  <td
+                    v-for="(secondItem, secondItemIndex) in limitedRecord(
+                      product.data,
+                      secondVariant
+                    )"
+                    :key="secondItemIndex"
                   >
-                    <template v-if="isEdit" v-slot:append>
-                      <q-icon
-                        class="cursor-pointer"
-                        name="check"
-                        color="green"
-                        dense
-                        size="xs"
-                        @click="
-                          updateSelectedProductVariant(
-                            secondItem.selectedGrnId,
-                            secondItem.quantity
+                    <q-input
+                      type="number"
+                      dense
+                      color="btn-primary"
+                      outlined
+                      :disable="!isEdit"
+                      :min="0"
+                      @update:model-value="
+                        handleUpdateStrStockQuantity(
+                          Number($event) ?? 0,
+                          secondItem
+                        )
+                      "
+                      v-model="secondItem.quantity"
+                    >
+                      <template v-if="isEdit" v-slot:append>
+                        <q-icon
+                          class="cursor-pointer"
+                          name="check"
+                          color="green"
+                          dense
+                          size="xs"
+                          @click="
+                            updateSelectedProductVariant(
+                              secondItem.selectedGrnId,
+                              secondItem.quantity
+                            )
+                          "
+                        />
+                        <q-icon
+                          class="cursor-pointer"
+                          name="delete"
+                          @click="
+                            updateSelectedProductVariant(
+                              secondItem.selectedGrnId,
+                              0
+                            )
+                          "
+                          color="red"
+                          dense
+                          size="xs"
+                        />
+                      </template>
+                    </q-input>
+                  </td>
+                  <td>
+                    {{
+                      !Number.isNaN(
+                        getInvetoryTotalStockQuantity(
+                          limitedRecord(product.data, secondVariant)
+                        )
+                      )
+                        ? getInvetoryTotalStockQuantity(
+                            limitedRecord(product.data, secondVariant)
                           )
-                        "
-                      />
-                      <q-icon
-                        class="cursor-pointer"
-                        name="delete"
-                        @click="
-                          updateSelectedProductVariant(
-                            secondItem.selectedGrnId,
-                            0
-                          )
-                        "
-                        color="red"
-                        dense
-                        size="xs"
-                      />
-                    </template>
-                  </q-input>
-                </td>
-              </tr>
+                        : 0
+                    }}
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </q-markup-table>
         </div>
@@ -288,7 +324,20 @@ onMounted(() => {
     isEdit.value = false;
   }
 });
-
+const getInvetoryTotalStockQuantity = (variant: ProductVariant[]) => {
+  return variant.reduce((acc: number, row: ProductVariant) => {
+    return acc + (parseInt(row.quantity.toString()) ?? 0);
+  }, 0);
+};
+const handleUpdateStrStockQuantity = (value: number, row: ProductVariant) => {
+  if (!value || value <= 0) {
+    setTimeout(() => {
+      row.quantity = 0;
+    }, 0);
+  } else {
+    row.quantity = value;
+  }
+};
 const previewGrn = async (selectedId: number) => {
   isLoading.value = true;
   try {
@@ -307,6 +356,7 @@ const previewGrn = async (selectedId: number) => {
               productId,
               productName: currentDetail.productName,
               productImage: currentDetail.productImage,
+              retailPrice: currentDetail.retailPrice,
               data: [],
             };
           }
@@ -326,13 +376,11 @@ const previewGrn = async (selectedId: number) => {
               v2details: [currentDetail],
             });
           }
-
           return accumulator;
         },
         {}
       );
     }
-    console.log(grnGroupByProductId.value);
   } catch (e) {
     let message = 'Unexpected error occurred Preview Grn';
     if (isPosError(e)) {
@@ -345,7 +393,6 @@ const previewGrn = async (selectedId: number) => {
   }
   isLoading.value = false;
 };
-
 const updateSelectedProductVariant = async (
   grnDetailId: number,
   quantity: number

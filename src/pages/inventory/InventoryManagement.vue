@@ -208,6 +208,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
   ProductCode: null,
   ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+  keyword: null,
 });
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -217,6 +218,7 @@ const resetFilter = () => {
     ProductId: null,
     ProductCode: null,
     ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    keyword: '',
   };
   getInventoryList();
 };
@@ -252,6 +254,8 @@ const getInventoryList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
+    const rowsPerPage =
+      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
     if (isLoading.value && apiController.value) {
       apiController.value.abort();
       apiController.value = null;
@@ -261,7 +265,7 @@ const getInventoryList = async (data?: {
       {
         ShopId: filterSearch.value.ShopId,
         PageNumber: pagination.value.page,
-        PageSize: pagination.value.rowsPerPage,
+        PageSize: rowsPerPage,
         filterSearch: filterSearch.value,
       },
       apiController.value
