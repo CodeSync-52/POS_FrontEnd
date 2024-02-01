@@ -87,6 +87,7 @@
           align="left"
           :columns="selectedArticleColumn"
           row-key="name"
+          v-model:pagination="pagination"
         >
           <template v-slot:body-cell-image="props">
             <q-td :props="props" class="!h-[71px]">
@@ -307,7 +308,7 @@ const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 25,
   rowsNumber: 0,
 });
 const handleOutsideClick = () => {
