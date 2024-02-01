@@ -159,6 +159,7 @@
             :loading="isLoading"
             tabindex="0"
             :rows="selectedArticleData"
+            v-model:pagination="defaultPagination"
             align="left"
             :columns="selectedSalesArticleColumn"
             row-key="name"
@@ -495,13 +496,14 @@ const isAddingSale = ref(false);
 const firstRow = ref<HTMLElement | null>(null);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
-const pagination = ref<IPagination>({
+const defaultPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 25,
   rowsNumber: 0,
-});
+};
+const pagination = ref<IPagination>({ ...defaultPagination });
 const tableItems = ref<ITableItems[][]>([]);
 const addNewSale = ref<IAddNewSale>({
   userId: null,

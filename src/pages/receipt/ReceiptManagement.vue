@@ -348,7 +348,7 @@ const defaultPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 25,
   rowsNumber: 0,
 };
 const pagination = ref<IPagination>(defaultPagination);

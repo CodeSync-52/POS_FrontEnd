@@ -9,7 +9,7 @@
         <div class="col-12 col-md-6">
           <q-input
             v-model="previewCashFlow.sourceUserName"
-            label="Cash In User Name"
+            label="Receiver Username"
             outlined
             maxlength="250"
             dense
@@ -19,7 +19,7 @@
         <div class="col-12 col-md-6">
           <q-input
             v-model="previewCashFlow.targetUserName"
-            label="Cash Out User Name"
+            label="Sender Username"
             outlined
             maxlength="250"
             dense
@@ -71,12 +71,21 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-actions align="right">
+    <q-card-actions
+      align="right"
+      class="flex flex-col md:flex-row gap-2 md:gap-0 items-center"
+    >
       <q-btn
-        label="download Pdf"
+        label="download Receiver Pdf"
         unelevated
         color="btn-primary"
-        @click="downloadPdfData"
+        @click="downloadPdfData('receiver')"
+      />
+      <q-btn
+        label="download Sender Pdf"
+        unelevated
+        color="btn-primary"
+        @click="downloadPdfData('sender')"
       />
       <q-btn
         label="close"
@@ -90,16 +99,21 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { ICashFlowRecords } from '../../interfaces';
+import { ICashFlowRecords, IUserResponse } from '../../interfaces';
 import moment from 'moment';
 import {
   ITableHeaders,
   ITableItems,
   downloadPdf,
 } from 'src/utils/pdf-make/pdf-make';
+import { getUserListApi } from 'src/services';
+import { CanceledError } from 'axios';
+import { isPosError } from 'src/utils';
+import { useQuasar } from 'quasar';
 interface IProps {
   selectedData: ICashFlowRecords | null;
 }
+const $q = useQuasar();
 const props = withDefaults(defineProps<IProps>(), {
   selectedData: null,
 });
@@ -114,6 +128,7 @@ const previewCashFlow = ref<ICashFlowRecords>({
   amount: 0,
   comments: '',
 });
+const userList = ref<IUserResponse[]>([]);
 const tableItems = ref<ITableItems[][]>([]);
 onMounted(() => {
   if (props.selectedData) {
@@ -127,12 +142,13 @@ onMounted(() => {
       tableItems.value = await convertArrayToPdfData([props.selectedData]);
     }
   };
+  getUserList();
 });
 async function convertArrayToPdfData(array: ICashFlowRecords[]) {
   const tableStuff = [];
   const headerRow = [
-    'Source Username',
-    'Target Name',
+    'Sender Username',
+    'Receiver Name',
     'Amount',
     'Transaction Date',
     'Comments',
@@ -150,7 +166,7 @@ async function convertArrayToPdfData(array: ICashFlowRecords[]) {
   });
   return tableStuff;
 }
-function downloadPdfData() {
+function downloadPdfData(pdfType: 'sender' | 'receiver') {
   const {
     amount,
     transactionDate,
@@ -159,17 +175,33 @@ function downloadPdfData() {
     sourceUserName,
     cashFlowStatus,
   } = previewCashFlow.value;
+  let userOutstandingBalance = 0;
+  if (pdfType === 'sender') {
+    const selectedUserData = userList.value.find(
+      (record) => record.userId === previewCashFlow.value.sourceUserId
+    );
+    if (selectedUserData) {
+      userOutstandingBalance = selectedUserData.outStandingBalance ?? 0;
+    }
+  } else {
+    const selectedUserData = userList.value.find(
+      (record) => record.userId === previewCashFlow.value.targetUserId
+    );
+    if (selectedUserData) {
+      userOutstandingBalance = selectedUserData.outStandingBalance ?? 0;
+    }
+  }
   const headers: ITableHeaders[] = [
     {
-      heading: 'Source Username',
+      heading: 'Sender Username',
       content: sourceUserName,
     },
     {
-      heading: 'target Username',
+      heading: 'Receiver Username',
       content: targetUserName,
     },
     {
-      heading: 'Amount',
+      heading: `Amount ${pdfType === 'sender' ? 'Sent' : 'Received'}`,
       content: amount,
     },
     {
@@ -185,6 +217,17 @@ function downloadPdfData() {
       content: cashFlowStatus,
     },
   ];
+  if (pdfType === 'sender') {
+    headers.push({
+      heading: 'Sender Outstanding Balance',
+      content: '0',
+    });
+  } else {
+    headers.push({
+      heading: 'Receiver Outstanding Balance',
+      content: userOutstandingBalance,
+    });
+  }
   const fileTitle = 'CashFlow Report';
   const myFileName = 'CashFlow.pdf';
   downloadPdf({
@@ -194,4 +237,27 @@ function downloadPdfData() {
     title: fileTitle,
   });
 }
+
+const getUserList = async () => {
+  try {
+    const res = await getUserListApi({
+      pageNumber: 1,
+      pageSize: 500,
+    });
+    if (res?.data) {
+      userList.value = res.data.items;
+    }
+  } catch (e) {
+    if (e instanceof CanceledError) return;
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+};
 </script>
