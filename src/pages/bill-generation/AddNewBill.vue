@@ -438,7 +438,7 @@
         <q-card-section>
           <div class="w-full max-h-[350px] overflow-hidden">
             <img
-              class="w-full h-full bg-contain"
+              class="w-full h-full bg-cover"
               :src="selectedPreviewImage"
               alt="image"
             />

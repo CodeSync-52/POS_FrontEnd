@@ -2,7 +2,7 @@
   <div>
     <div class="mb-4 row justify-between items-center">
       <div class="text-xl text-center md:text-left font-medium">
-        <span>Add New GRN</span>
+        <span>Add New STR</span>
       </div>
     </div>
     <q-card flat>
@@ -268,6 +268,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
   ProductCode: null,
   ShopId: null,
+  keyword: null,
 });
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
