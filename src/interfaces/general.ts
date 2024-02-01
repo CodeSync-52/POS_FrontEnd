@@ -79,7 +79,7 @@ const roleModuleList: Record<EUserModules, string> = {
   [EUserModules.ShopManagement]: 'Shop Management',
   [EUserModules.GoodsReceiptNotes]: 'Stock Transfer (STR)',
   [EUserModules.StockTransferRequests]: 'STR Receiving',
-  [EUserModules.SaleAndReturnManagement]: 'Sale And Return Management',
+  [EUserModules.SaleAndReturnManagement]: 'Shop Sale Management',
   [EUserModules.ShopDiscountsModule]: 'Shop Discounts',
   [EUserModules.Report]: 'Report',
 };
