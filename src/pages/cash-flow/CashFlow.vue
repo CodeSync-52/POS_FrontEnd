@@ -87,7 +87,7 @@
                 color="btn-primary"
                 label="Receiver"
                 autofocus
-                v-model="filter.source"
+                v-model="filter.receiver"
               >
                 <template v-slot:append>
                   <q-icon name="search" />
@@ -100,7 +100,7 @@
                 debounce="300"
                 color="btn-primary"
                 label="Sender"
-                v-model="filter.target"
+                v-model="filter.sender"
               >
                 <template v-slot:append>
                   <q-icon name="search" />
@@ -214,8 +214,8 @@ const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filter = ref({
-  target: '',
-  source: '',
+  sender: '',
+  receiver: '',
 });
 const $q = useQuasar();
 const filterSearch = ref({
@@ -229,13 +229,13 @@ function setFilteredData() {
   filterChanged.value = true;
   filterChanged.value = true;
   filteredRows.value = cashFlowRecords.value.filter((row) => {
-    const sourceMatch = row.sourceUserName
+    const receiverMatch = row.sourceUserName
       .toLowerCase()
-      .includes(filter.value.source.toLowerCase().trim());
-    const targetMatch = row.targetUserName
+      .includes(filter.value.receiver.toLowerCase().trim());
+    const senderMatch = row.targetUserName
       .toLowerCase()
-      .includes(filter.value.target.toLowerCase().trim());
-    return sourceMatch && targetMatch;
+      .includes(filter.value.sender.toLowerCase().trim());
+    return receiverMatch && senderMatch;
   });
   setTimeout(() => {
     filterChanged.value = false;
@@ -256,7 +256,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 25,
   rowsNumber: 0,
 });
 const handleShowCashFlow = (selectedRow: ICashFlowRecords) => {

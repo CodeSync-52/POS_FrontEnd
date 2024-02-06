@@ -84,6 +84,7 @@
         <div class="updateBillTable">
           <q-table
             :loading="isLoading"
+            v-model:pagination="pagination"
             :rows="billGenerationData.productInfoDetailList"
             :columns="editBillGenerationRecordsColumn"
           >
@@ -309,6 +310,7 @@
         <div class="updateBillTable">
           <q-table
             :loading="isLoading"
+            v-model:pagination="pagination"
             :rows="billGenerationDetailsInfoData.productList"
             :columns="BillGenerationDetailsInfoColumn"
           >
@@ -503,6 +505,13 @@ const billGenerationData = ref<IBillDetail>({
 const selectedId = router.currentRoute.value.params.id;
 const path = router.currentRoute.value.fullPath;
 const tableItems = ref<string[][]>([]);
+const pagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 25,
+  rowsNumber: 0,
+});
 onMounted(() => {
   if (selectedId) {
     if (path.includes('preview')) {
