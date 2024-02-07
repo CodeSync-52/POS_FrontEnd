@@ -48,7 +48,11 @@
                   <div
                     class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
                   >
-                    {{ getRoleModuleDisplayName(subLinks.title) }}
+                    {{
+                      subLinks.path === 'shop-account'
+                        ? 'Shop Account'
+                        : getRoleModuleDisplayName(subLinks.title)
+                    }}
                   </div>
                 </router-link>
               </q-card-section>
@@ -172,6 +176,10 @@ const essentialLinks = [
       {
         title: EUserModules.CashInCashOutManagement,
         path: '/cash-flow',
+      },
+      {
+        title: EUserModules.CashInCashOutManagement,
+        path: '/shop-account',
       },
     ],
   },

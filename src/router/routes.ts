@@ -299,6 +299,20 @@ export const routeList = [
       module: EUserModules.StockTransferRequests,
     },
   },
+  {
+    path: '/shop-account',
+    component: () => import('src/pages/shop-account/ShopAccount.vue'),
+    meta: {
+      module: EUserModules.CashInCashOutManagement,
+    },
+  },
+  {
+    path: '/shop-account/transfer-to-shop-account',
+    component: () => import('src/pages/shop-account/TransferToShopAccount.vue'),
+    meta: {
+      module: EUserModules.CashInCashOutManagement,
+    },
+  },
 ];
 
 const routes: RouteRecordRaw[] = [
