@@ -195,6 +195,41 @@ export const routeList = [
     },
   },
   {
+    path: '/return/today-sale-summary',
+    component: () => import('src/pages/return/TodaySaleSummary.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
+    path: '/return/all-bills',
+    component: () => import('src/pages/return/AllBills.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
+    path: '/return/hold-bills',
+    component: () => import('src/pages/return/AllBills.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
+    path: '/return/:id/preview',
+    component: () => import('src/pages/return/SalesReturnManagement.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
+    path: '/return/:id/editHoldBill',
+    component: () => import('src/pages/return/SalesReturnManagement.vue'),
+    meta: {
+      module: EUserModules.SaleAndReturnManagement,
+    },
+  },
+  {
     path: '/expenses',
     component: () => import('src/pages/expenses/ShopExpenses.vue'),
     meta: {

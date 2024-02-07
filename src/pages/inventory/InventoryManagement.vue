@@ -200,7 +200,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 25,
   rowsNumber: 0,
 });
 const $q = useQuasar();
@@ -208,6 +208,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
   ProductCode: null,
   ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+  keyword: null,
 });
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
@@ -217,6 +218,7 @@ const resetFilter = () => {
     ProductId: null,
     ProductCode: null,
     ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    keyword: '',
   };
   getInventoryList();
 };

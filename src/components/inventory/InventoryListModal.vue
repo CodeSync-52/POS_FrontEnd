@@ -87,7 +87,7 @@
         v-model:pagination="InventoryPagination"
         row-key="inventoryId"
         selection="multiple"
-        class="max-h-[500px]"
+        class="max-h-[400px]"
         v-model:selected="selectedShopRecords"
         align="left"
         :loading="isLoading"
@@ -154,7 +154,7 @@ const InventoryPagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 25,
   rowsNumber: 0,
 });
 const isLoading = ref(false);
@@ -163,6 +163,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductId: null,
   ProductCode: null,
   ShopId: null,
+  keyword: null,
 });
 interface IProps {
   isFetchingRecords: boolean;
@@ -186,10 +187,12 @@ onMounted(() => {
   isFetchingArticleList.value = props.isFetchingArticle;
   selectedShopDetailList.value = props.inventoryList;
   InventoryPagination.value = props.pagination;
+  isLoading.value = props.isFetchingRecords;
 });
 onUpdated(() => {
   articleList.value = props.articleRecords;
   selectedShopDetailList.value = props.inventoryList;
+  isLoading.value = props.isFetchingRecords;
 });
 const emit = defineEmits<{
   (event: 'handle-pagination', pagination: IPagination): void;

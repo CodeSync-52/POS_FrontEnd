@@ -1,7 +1,16 @@
 <template>
   <div>
-    <div class="text-lg text-center md:text-left font-medium mb-4">
+    <div
+      class="text-lg text-center row justify-between md:text-left font-medium mb-4"
+    >
       <span>Add New Flow</span>
+      <q-btn icon="info" color="btn-primary" flat unelevated dense
+        ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+          If Outstanding balance is greater than zero, the business owner has to
+          pay. If Outstanding balance is less than zero, the business owner has
+          to receive.
+        </q-tooltip></q-btn
+      >
     </div>
     <q-card>
       <q-card-section>

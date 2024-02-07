@@ -4,16 +4,16 @@ import { ICashFlowRecords } from 'src/interfaces';
 
 export const cashFlowColumn: QTableColumn<ICashFlowRecords>[] = [
   {
-    name: 'sourceUserName',
-    label: 'Receiver',
-    align: 'left',
-    field: (row) => row.sourceUserName,
-  },
-  {
     name: 'targetUserName',
     label: 'Sender',
     align: 'left',
     field: (row) => row.targetUserName,
+  },
+  {
+    name: 'sourceUserName',
+    label: 'Receiver',
+    align: 'left',
+    field: (row) => row.sourceUserName,
   },
   {
     name: 'cashFlowStatus',
