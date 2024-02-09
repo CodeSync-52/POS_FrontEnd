@@ -23,9 +23,7 @@
                   use-input
                   popup-content-class="!max-h-[200px]"
                   @filter="filterUser"
-                  @update:model-value="
-                    handleShowOutstandingBalance($event, true)
-                  "
+                  @update:model-value="handleShowOutstandingBalance"
                   option-label="fullName"
                   option-value="userId"
                   :options="userListOptions"
@@ -198,14 +196,9 @@ const getUserList = async () => {
     });
   }
 };
-const handleShowOutstandingBalance = (
-  value: IUserResponse,
-  isSender: boolean
-) => {
-  if (isSender) {
-    addNewAccount.value.UserOutstandingBalance =
-      value?.outStandingBalance ?? null;
-  }
+const handleShowOutstandingBalance = (value: IUserResponse) => {
+  addNewAccount.value.UserOutstandingBalance =
+    value?.outStandingBalance ?? null;
 };
 const filterUser = (val: string, update: CallableFunction) => {
   update(() => {
