@@ -2,7 +2,7 @@
   <q-card class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="text-lg font-medium mb-2 row justify-between items-center">
-        <span> {{ isEditExpense ? 'Edit Expense' : 'Add New Expense' }}</span>
+        <span> {{ isEditExpense ? 'Edit ' : 'Add New' }} Expense</span>
         <q-btn icon="close" flat unelevated dense v-close-popup />
       </div>
       <q-input
@@ -25,25 +25,13 @@
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
       />
       <q-btn
-        v-if="isEditExpense"
-        label="Update"
+        :label="isEditExpense ? 'Update' : 'Add'"
         flat
         :loading="isLoading"
         unelevated
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
-        @click="saveNewExpense('edit')"
-      />
-      <q-btn
-        v-else
-        label="Add"
-        flat
-        unelevated
-        :disable="!expenseName"
-        color="signature"
-        class="bg-btn-primary hover:bg-btn-primary-hover"
-        :loading="isLoading"
-        @click="saveNewExpense('add')"
+        @click="isEditExpense ? saveNewExpense('edit') : saveNewExpense('add')"
       />
     </q-card-actions>
   </q-card>
