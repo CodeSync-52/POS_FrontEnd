@@ -3,7 +3,7 @@
     <q-card>
       <q-card-section>
         <div class="font-semibold text-lg text-center">
-          <span>Sale Summary</span>
+          <span>Balance Summary</span>
         </div>
         <div
           class="flex flex-col gap-2 md:gap-4 items-center md:items-end q-pa-md"
@@ -22,11 +22,11 @@
             />
           </div>
           <div class="md:flex gap-2 items-center">
-            <span class="font-medium md:text-lg">Sale :</span>
+            <span class="font-medium md:text-lg">Running Balance :</span>
             <q-input
-              v-model="sale"
+              v-model="runningBalance"
               type="number"
-              label="Sale"
+              label="Running Balance"
               class="max-w-[200px] min-w-[200px]"
               maxlength="250"
               outlined
@@ -35,11 +35,11 @@
             />
           </div>
           <div class="md:flex gap-2 items-center">
-            <span class="font-medium md:text-lg">Discount :</span>
+            <span class="font-medium md:text-lg">Balance Submit to HOD :</span>
             <q-input
-              v-model="discount"
+              v-model="balanceSubmitToHod"
               type="number"
-              label="Discount"
+              label="Balance Submit to HOD"
               class="max-w-[200px] min-w-[200px]"
               maxlength="250"
               outlined
@@ -62,8 +62,9 @@
                 <template
                   v-if="props.row.isEditing || props.row.id === editingRowId"
                 >
-                  <q-select
+                  <q-input
                     v-model="props.row.name"
+                    type="text"
                     label="Expense"
                     class="max-w-[200px] min-w-[200px]"
                     outlined
@@ -98,7 +99,7 @@
             </template>
             <template v-slot:body-cell-saveRow="props">
               <q-td :props="props">
-                <!-- <q-btn
+                <q-btn
                   v-if="props.row.isSavingRow && !props.row.isEditing"
                   flat
                   unelevated
@@ -111,7 +112,7 @@
                   <q-tooltip class="bg-green" :offset="[10, 10]">
                     Edit Row
                   </q-tooltip>
-                </q-btn> -->
+                </q-btn>
                 <q-btn
                   v-if="!props.row.isSavingRow || props.row.isEditing"
                   flat
@@ -200,8 +201,8 @@ import { shopSaleExpenseTableColumn } from './utils';
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
 const openingBalance = ref(0);
-const sale = ref(0);
-const discount = ref(0);
+const runningBalance = ref(0);
+const balanceSubmitToHod = ref(0);
 const ShopManagementExpenseRecords = ref<IShopSaleExpenses[]>([]);
 const editingRowId = ref<number | null>(null);
 const expenseCounter = ref(0);
@@ -242,10 +243,10 @@ const handleDeletedRow = (row: IShopSaleExpenses) => {
     ShopManagementExpenseRecords.value.filter((item) => item.id !== row.id);
   editingRowId.value = null;
 };
-// const handleEditRow = (row: IShopSaleExpenses) => {
-//   editingRowId.value = row.id;
-//   row.isSavingRow = false;
-// };
+const handleEditRow = (row: IShopSaleExpenses) => {
+  editingRowId.value = row.id;
+  row.isSavingRow = false;
+};
 const expensesTotalSum = computed(() => {
   return ShopManagementExpenseRecords.value.reduce(
     (acc, record) => acc + (record.isSavingRow ? record.amount : 0),
@@ -259,7 +260,10 @@ const showTotalExpenseRow = computed(() => {
 });
 const remainingBalance = computed(() => {
   return (
-    sale.value - openingBalance.value - discount.value - expensesTotalSum.value
+    runningBalance.value -
+    openingBalance.value -
+    balanceSubmitToHod.value -
+    expensesTotalSum.value
   );
 });
 </script>
