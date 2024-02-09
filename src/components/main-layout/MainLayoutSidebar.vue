@@ -46,11 +46,26 @@
                   :class="{ active: isActiveRoute(subLinks.path) }"
                 >
                   <div
+                    v-if="subLinks.path !== 'expenses'"
                     class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
                   >
                     {{
-                      subLinks.path === 'shop-account'
-                        ? 'Shop Account'
+                      subLinks.path === 'expenses'
+                        ? 'Expense'
+                        : getRoleModuleDisplayName(subLinks.title)
+                    }}
+                  </div>
+                  <div
+                    v-if="
+                      subLinks.path === 'expenses' &&
+                      authStore.loggedInUser?.rolePermissions.roleName ===
+                        EUserRoles.SuperAdmin.toLowerCase()
+                    "
+                    class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
+                  >
+                    {{
+                      subLinks.path === 'expenses'
+                        ? 'Expense'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -69,6 +84,7 @@ import { computed } from 'vue';
 import {
   EActionPermissions,
   EUserModules,
+  EUserRoles,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
 import { useRoute } from 'vue-router';
@@ -145,6 +161,10 @@ const essentialLinks = [
       {
         title: EUserModules.ShopDiscountsModule,
         path: '/discount',
+      },
+      {
+        title: EUserModules.ShopDiscountsModule,
+        path: 'expenses',
       },
     ],
   },
