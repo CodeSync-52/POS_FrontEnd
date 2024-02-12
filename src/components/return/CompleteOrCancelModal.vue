@@ -38,7 +38,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 const isLoading = ref(false);
-const emit = defineEmits(['confirm']);
+
+const emit = defineEmits<{ (event: 'confirm'): void }>();
 interface IModalProps {
   title: string;
   message: string;

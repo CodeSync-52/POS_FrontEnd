@@ -207,14 +207,14 @@
     </q-table>
   </div>
   <q-dialog v-model="showCancelBillModal">
-    <complete-cancel-billModal
+    <complete-cancel-bill-modal
       title="Cancel Bill"
       message="Are you sure you want to Cancel the Bill?"
       @confirm="handleCancelSale(selectedRowId)"
     />
   </q-dialog>
   <q-dialog v-model="showCompleteBillModal">
-    <complete-cancel-billModal
+    <complete-cancel-bill-modal
       title="Complete Bill"
       message="Are you sure you want to Complete the Bill?"
       @confirm="completeSale(selectedRowId, 1)"

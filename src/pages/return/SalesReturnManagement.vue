@@ -117,7 +117,10 @@
               </template>
               <template v-else v-slot:body-cell-availableQuantity="props">
                 <q-td :props="props">
-                  {{ props.row.quantity }}
+                  {{
+                    props.row.quantity +
+                    (props.row.alreadyDispatchedQuantity ?? 0)
+                  }}
                 </q-td>
               </template>
               <template v-slot:no-data>
@@ -155,7 +158,11 @@
                     :min="0"
                     :max="
                       titleAction === 'Edit Hold Bill'
-                        ? props.row.quantity + props.row.quantity
+                        ? props.row.alreadyDispatchedQuantity +
+                          selectedShopDetailRecords.find(
+                            (record) =>
+                              record.inventoryId === props.row.inventoryId
+                          )?.quantity
                         : props.row.quantity
                     "
                     @update:model-value="
@@ -732,8 +739,13 @@ const handleUpdatedispatchQuantity = (
     const val = parseInt(newVal);
     if (!val || val < 0) {
       selectedRecord.dispatchQuantity = 0;
-    } else if (val > selectedRecord.quantity) {
-      selectedRecord.dispatchQuantity = selectedRecord.quantity;
+    } else if (
+      val >
+      selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
+    ) {
+      selectedRecord.dispatchQuantity =
+        selectedRecord.quantity +
+        (selectedRecord.alreadyDispatchedQuantity ?? 0);
     } else {
       selectedRecord.dispatchQuantity = val;
     }
@@ -1025,6 +1037,7 @@ const previewBill = async (saleId: number) => {
             variantId_1: inventoryItem.variantId_1,
             variantId_2: inventoryItem.variantId_2,
             retailPrice: inventoryItem.retailPrice,
+            alreadyDispatchedQuantity: inventoryItem.quantity,
             quantity:
               titleAction.value === 'Preview Sale Bill'
                 ? inventoryItem.quantity
