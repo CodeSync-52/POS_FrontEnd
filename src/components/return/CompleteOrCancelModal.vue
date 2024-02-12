@@ -9,7 +9,7 @@
           flat
           unelevated
           dense
-          @click="closeModal"
+          v-close-popup
         />
       </div>
       <div class="text-center">
@@ -37,7 +37,6 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-const isVisible = ref(false);
 const isLoading = ref(false);
 const emit = defineEmits(['confirm']);
 interface IModalProps {
@@ -47,9 +46,6 @@ interface IModalProps {
 const props = defineProps<IModalProps>();
 const modalTitle = ref(props.title);
 const modalMessage = ref(props.message);
-const closeModal = () => {
-  isVisible.value = false;
-};
 const confirmAction = async () => {
   isLoading.value = true;
   emit('confirm');

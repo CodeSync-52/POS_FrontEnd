@@ -153,7 +153,11 @@
                     type="number"
                     v-model="props.row.dispatchQuantity"
                     :min="0"
-                    :max="props.row.quantity"
+                    :max="
+                      titleAction === 'Edit Hold Bill'
+                        ? props.row.quantity + props.row.quantity
+                        : props.row.quantity
+                    "
                     @update:model-value="
                       handleUpdatedispatchQuantity($event, props.row)
                     "
