@@ -117,10 +117,7 @@
               </template>
               <template v-else v-slot:body-cell-availableQuantity="props">
                 <q-td :props="props">
-                  {{
-                    props.row.quantity +
-                    (props.row.alreadyDispatchedQuantity ?? 0)
-                  }}
+                  {{ props.row.quantity }}
                 </q-td>
               </template>
               <template v-slot:no-data>
