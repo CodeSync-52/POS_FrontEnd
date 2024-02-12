@@ -72,6 +72,7 @@
                 color="btn-primary"
                 outlined
                 v-model="addNewAccount.amount"
+                @update:model-value="handleUpdateAmount($event)"
               />
             </div>
           </div>
@@ -194,6 +195,16 @@ const getUserList = async () => {
       color: 'red',
       icon: 'error',
     });
+  }
+};
+const handleUpdateAmount = (newVal: string | number | null) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (!val || val <= 0) {
+      addNewAccount.value.amount = 0;
+    } else if (val > 0) {
+      addNewAccount.value.amount = val;
+    }
   }
 };
 const handleShowOutstandingBalance = (value: IUserResponse) => {

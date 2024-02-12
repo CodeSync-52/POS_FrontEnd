@@ -1,21 +1,16 @@
 <template>
   <div
-    class="text-lg text-center row justify-between md:text-left font-medium mb-4"
+    class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
   >
-    <span>Transfer To Account</span>
-  </div>
-  <div class="row column items-center justify-center h-[75vh]">
-    <q-btn
-      unelevated
-      color=""
-      class="bg-btn-primary text-center p-2 text-lg text-signature w-[400px] hover:bg-btn-primary-hover"
-      label="Transfer To Shop Account"
-      icon-right="east"
-      @click="router.push('/shop-account/transfer-to-shop-account')"
-    />
+    <span class="text-xl font-medium">Shop Account</span>
+    <router-link to="/shop-account/transfer-to-shop-account">
+      <q-btn
+        unelevated
+        label="Transfer To Shop Account"
+        class="rounded-[4px] bg-btn-primary hover:bg-btn-primary-hover"
+        color=""
+      />
+    </router-link>
   </div>
 </template>
-<script setup lang="ts">
-import { useRouter } from 'vue-router';
-const router = useRouter();
-</script>
+<script setup lang="ts"></script>
