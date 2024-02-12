@@ -153,7 +153,15 @@
                     type="number"
                     v-model="props.row.dispatchQuantity"
                     :min="0"
-                    :max="props.row.quantity"
+                    :max="
+                      titleAction === 'Edit Hold Bill'
+                        ? props.row.alreadyDispatchedQuantity +
+                          selectedShopDetailRecords.find(
+                            (record) =>
+                              record.inventoryId === props.row.inventoryId
+                          )?.quantity
+                        : props.row.quantity
+                    "
                     @update:model-value="
                       handleUpdatedispatchQuantity($event, props.row)
                     "
@@ -728,8 +736,13 @@ const handleUpdatedispatchQuantity = (
     const val = parseInt(newVal);
     if (!val || val < 0) {
       selectedRecord.dispatchQuantity = 0;
-    } else if (val > selectedRecord.quantity) {
-      selectedRecord.dispatchQuantity = selectedRecord.quantity;
+    } else if (
+      val >
+      selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
+    ) {
+      selectedRecord.dispatchQuantity =
+        selectedRecord.quantity +
+        (selectedRecord.alreadyDispatchedQuantity ?? 0);
     } else {
       selectedRecord.dispatchQuantity = val;
     }
@@ -1021,6 +1034,7 @@ const previewBill = async (saleId: number) => {
             variantId_1: inventoryItem.variantId_1,
             variantId_2: inventoryItem.variantId_2,
             retailPrice: inventoryItem.retailPrice,
+            alreadyDispatchedQuantity: inventoryItem.quantity,
             quantity:
               titleAction.value === 'Preview Sale Bill'
                 ? inventoryItem.quantity
