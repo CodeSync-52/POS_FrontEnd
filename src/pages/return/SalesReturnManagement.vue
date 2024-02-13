@@ -153,7 +153,15 @@
                     type="number"
                     v-model="props.row.dispatchQuantity"
                     :min="0"
-                    :max="props.row.quantity"
+                    :max="
+                      titleAction === 'Edit Hold Bill'
+                        ? props.row.alreadyDispatchedQuantity +
+                          selectedShopDetailRecords.find(
+                            (record) =>
+                              record.inventoryId === props.row.inventoryId
+                          )?.quantity
+                        : props.row.quantity
+                    "
                     @update:model-value="
                       handleUpdatedispatchQuantity($event, props.row)
                     "
@@ -247,10 +255,7 @@
               </template>
             </q-table>
           </div>
-          <q-card-actions
-            v-if="titleAction !== pageTitle"
-            class="row justify-end"
-          >
+          <div v-if="titleAction !== pageTitle" class="row justify-end">
             <q-btn
               v-if="titleAction === 'Edit Hold Bill'"
               label="Complete Bill"
@@ -265,7 +270,7 @@
               color="btn-cancel hover:bg-btn-cancel-hover"
               @click="$router.go(-1)"
             />
-          </q-card-actions>
+          </div>
           <div
             v-if="titleAction === pageTitle"
             class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between"
@@ -732,8 +737,13 @@ const handleUpdatedispatchQuantity = (
     const val = parseInt(newVal);
     if (!val || val < 0) {
       selectedRecord.dispatchQuantity = 0;
-    } else if (val > selectedRecord.quantity) {
-      selectedRecord.dispatchQuantity = selectedRecord.quantity;
+    } else if (
+      val >
+      selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
+    ) {
+      selectedRecord.dispatchQuantity =
+        selectedRecord.quantity +
+        (selectedRecord.alreadyDispatchedQuantity ?? 0);
     } else {
       selectedRecord.dispatchQuantity = val;
     }
@@ -770,10 +780,10 @@ const handleUpdateDiscount = (
     row.discount = 0;
   } else {
     const value = parseInt(newVal.toString());
-    if (!isNaN(value) && value >= 0) {
-      row.discount = value;
-    } else {
+    if (!value) {
       row.discount = 0;
+    } else {
+      row.discount = value;
     }
   }
 };
@@ -1025,6 +1035,7 @@ const previewBill = async (saleId: number) => {
             variantId_1: inventoryItem.variantId_1,
             variantId_2: inventoryItem.variantId_2,
             retailPrice: inventoryItem.retailPrice,
+            alreadyDispatchedQuantity: inventoryItem.quantity,
             quantity:
               titleAction.value === 'Preview Sale Bill'
                 ? inventoryItem.quantity

@@ -130,7 +130,7 @@
                   EActionPermissions.Delete
                 )
               "
-              @click="handleCancelSalePopup(props.row.saleId)"
+              @click="handleCancelBill(props.row.saleId)"
             >
               <q-tooltip class="bg-red" :offset="[10, 10]">
                 Cancel Bill
@@ -189,7 +189,7 @@
               dense
               icon="check"
               class="text-green !px-[5px]"
-              @click="handleCompleteSale(props.row.saleId, 1)"
+              @click="handleCompleteSale(props.row.saleId)"
             >
               <q-tooltip class="bg-green" :offset="[10, 10]">
                 Complete Bill
@@ -206,42 +206,19 @@
       </template>
     </q-table>
   </div>
-  <q-dialog v-model="isCancelBillModalVisible">
-    <q-card class="min-w-[400px]">
-      <q-card-section>
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-lg font-medium">Cancel Bill</span>
-          <q-btn
-            class="font-medium"
-            icon="close"
-            flat
-            unelevated
-            dense
-            v-close-popup
-          />
-        </div>
-        <div class="text-center">
-          <span>Are you sure you want to Cancel the Bill?</span>
-        </div>
-      </q-card-section>
-      <q-card-actions align="right">
-        <q-btn
-          flat
-          label="No"
-          color="white"
-          v-close-popup
-          class="bg-btn-cancel hover:bg-btn-cancel-hover"
-        />
-        <q-btn
-          flat
-          label="Yes"
-          color="white"
-          :loading="isCancellingBill"
-          class="bg-btn-primary hover:bg-btn-primary-hover"
-          @click="handleCancelSale(selectedRowId)"
-        />
-      </q-card-actions>
-    </q-card>
+  <q-dialog v-model="showCancelBillModal">
+    <complete-cancel-bill-modal
+      title="Cancel Bill"
+      message="Are you sure you want to Cancel the Bill?"
+      @confirm="handleCancelSale(selectedRowId)"
+    />
+  </q-dialog>
+  <q-dialog v-model="showCompleteBillModal">
+    <complete-cancel-bill-modal
+      title="Complete Bill"
+      message="Are you sure you want to Complete the Bill?"
+      @confirm="completeSale(selectedRowId, 1)"
+    />
   </q-dialog>
   <q-card-actions class="row justify-end">
     <q-btn
@@ -254,6 +231,10 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { CanceledError } from 'axios';
+import { useQuasar } from 'quasar';
+import { date } from 'quasar';
+import { useRouter } from 'vue-router';
 import { shopAllBillsTableColumn, billStatusOptionList } from './utils';
 import {
   getSaleListApi,
@@ -270,14 +251,13 @@ import {
   EUserRoles,
 } from 'src/interfaces';
 import { isPosError } from 'src/utils';
-import { CanceledError } from 'axios';
-import { useQuasar } from 'quasar';
-import { date } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { useRouter } from 'vue-router';
+import CompleteCancelBillModal from 'components/return/CompleteOrCancelModal.vue';
 const router = useRouter();
 const timeStamp = Date.now();
 const authStore = useAuthStore();
+const showCancelBillModal = ref(false);
+const showCompleteBillModal = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past1Date = date.subtractFromDate(timeStamp, { date: 1 });
 const formattedFromDate = date.formatDate(past1Date, 'YYYY-MM-DD');
@@ -286,8 +266,6 @@ const selectedRowId = ref<number>(-1);
 const apiController = ref<AbortController | null>(null);
 const routerPath = router.currentRoute.value.fullPath;
 const titleAction = ref('All Bills');
-const isCancelBillModalVisible = ref(false);
-const isCancellingBill = ref(false);
 const isFetchingShopList = ref(false);
 const isLoading = ref(false);
 const $q = useQuasar();
@@ -436,7 +414,11 @@ const getShopList = async () => {
     isFetchingShopList.value = false;
   }
 };
-const handleCompleteSale = async (saleId: number, saleStatus: number) => {
+const handleCompleteSale = async (selectedRow: number) => {
+  selectedRowId.value = selectedRow;
+  showCompleteBillModal.value = true;
+};
+const completeSale = async (saleId: number, saleStatus: number) => {
   try {
     const response = await changeSaleStatusApi({ saleId, saleStatus });
     if (response.type === 'Success') {
@@ -461,15 +443,13 @@ const handleCompleteSale = async (saleId: number, saleStatus: number) => {
       type: 'negative',
     });
   }
+  showCompleteBillModal.value = false;
 };
-
-const handleCancelSalePopup = (selectedRow: number) => {
+const handleCancelBill = async (selectedRow: number) => {
   selectedRowId.value = selectedRow;
-  isCancelBillModalVisible.value = true;
+  showCancelBillModal.value = true;
 };
 const handleCancelSale = async (id: number) => {
-  if (isCancellingBill.value) return;
-  isCancellingBill.value = true;
   try {
     const response = await cancelSaleApi(id);
     if (response.type === 'Success') {
@@ -492,7 +472,6 @@ const handleCancelSale = async (id: number) => {
       type: 'negative',
     });
   }
-  isCancellingBill.value = false;
-  isCancelBillModalVisible.value = false;
+  showCancelBillModal.value = false;
 };
 </script>

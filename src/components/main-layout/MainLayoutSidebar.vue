@@ -39,33 +39,20 @@
             <q-card class="bg-signature">
               <q-card-section class="q-py-none q-pl-lg">
                 <router-link
-                  v-for="subLinks in link?.children"
+                  v-for="subLinks in filteredSubLinks(link.children)"
                   :key="subLinks.title"
                   :to="subLinks.path"
                   class="pl-7"
                   :class="{ active: isActiveRoute(subLinks.path) }"
                 >
                   <div
-                    v-if="subLinks.path !== 'expenses'"
                     class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
                   >
                     {{
                       subLinks.path === 'expenses'
                         ? 'Expense'
-                        : getRoleModuleDisplayName(subLinks.title)
-                    }}
-                  </div>
-                  <div
-                    v-if="
-                      subLinks.path === 'expenses' &&
-                      authStore.loggedInUser?.rolePermissions.roleName ===
-                        EUserRoles.SuperAdmin.toLowerCase()
-                    "
-                    class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
-                  >
-                    {{
-                      subLinks.path === 'expenses'
-                        ? 'Expense'
+                        : subLinks.path === '/shop-account'
+                        ? 'Shop Account'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -197,6 +184,10 @@ const essentialLinks = [
         title: EUserModules.CashInCashOutManagement,
         path: '/cash-flow',
       },
+      {
+        title: EUserModules.CashInCashOutManagement,
+        path: '/shop-account',
+      },
     ],
   },
   {
@@ -229,4 +220,19 @@ const handleChange = (newVal: boolean) => {
 };
 const isOpen = computed(() => props.modelValue);
 const props = withDefaults(defineProps<IProps>(), { modelValue: true });
+const filteredSubLinks = (
+  subLinks: { title: EUserModules; path: string }[]
+) => {
+  const isSuperAdmin =
+    authStore.loggedInUser?.rolePermissions.roleName ===
+    EUserRoles.SuperAdmin.toLowerCase();
+  if (isSuperAdmin) {
+    return subLinks;
+  } else {
+    return subLinks.filter(
+      (subLink) =>
+        subLink.path !== '/shop-account' && subLink.path !== 'expenses'
+    );
+  }
+};
 </script>

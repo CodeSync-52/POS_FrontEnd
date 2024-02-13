@@ -37,4 +37,5 @@ export interface IInventoryListResponseWithDispatchQuantity
 export interface ISaleShopSelectedInventory
   extends IInventoryListResponseWithDispatchQuantity {
   discount: number;
+  alreadyDispatchedQuantity?: number;
 }
