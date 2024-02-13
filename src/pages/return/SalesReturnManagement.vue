@@ -280,10 +280,7 @@
               </template>
             </q-table>
           </div>
-          <q-card-actions
-            v-if="titleAction !== pageTitle"
-            class="row justify-end"
-          >
+          <div v-if="titleAction !== pageTitle" class="row justify-end">
             <q-btn
               v-if="titleAction === 'Edit Hold Bill'"
               label="Complete Bill"
@@ -304,7 +301,7 @@
               color="btn-cancel hover:bg-btn-cancel-hover"
               @click="$router.go(-1)"
             />
-          </q-card-actions>
+          </div>
           <div
             v-if="titleAction === pageTitle"
             class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between"
@@ -823,10 +820,10 @@ const handleUpdateDiscount = (
     row.discount = 0;
   } else {
     const value = parseInt(newVal.toString());
-    if (!isNaN(value) && value >= 0) {
-      row.discount = value;
-    } else {
+    if (!value) {
       row.discount = 0;
+    } else {
+      row.discount = value;
     }
   }
 };
