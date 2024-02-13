@@ -12,12 +12,13 @@ export interface IAddShopSaleManagement {
   saleStatus: number;
   comments: string;
   saleDetails: ISaleDetail[];
+  returnSaleDetails?: ISaleDetail[];
 }
 
 export interface ISaleDetail {
   inventoryId?: number;
   quantity: number;
-  discount: number;
+  discount?: number;
 }
 export interface IBillStatusOptionList {
   name: string;

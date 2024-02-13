@@ -41,7 +41,8 @@
             outlined
             :disable="
               authStore.loggedInUser?.rolePermissions.roleName !==
-                EUserRoles.SuperAdmin.toLowerCase() || titleAction !== pageTitle
+                EUserRoles.SuperAdmin.toLowerCase() ||
+              (titleAction !== pageTitle && titleAction !== 'Sale Return')
             "
             v-model="selectedShop.fromShop"
             @update:model-value="handleUpdateFromShop($event)"
@@ -82,7 +83,10 @@
           </outside-click-container>
         </div>
         <div
-          v-if="selectedInventoryData.length || titleAction !== pageTitle"
+          v-if="
+            selectedInventoryData.length ||
+            (titleAction !== pageTitle && titleAction !== 'Sale Return')
+          "
           class="flex flex-col justify-between"
         >
           <div class="py-4 w-full">
@@ -145,6 +149,12 @@
                 </q-td>
               </template>
               <template
+                v-slot:header-cell-dispatchQuantity
+                v-if="titleAction === 'Sale Return'"
+              >
+                <q-th class="text-left">Quantity</q-th>
+              </template>
+              <template
                 v-if="titleAction !== 'Preview Sale Bill'"
                 v-slot:body-cell-dispatchQuantity="props"
               >
@@ -152,6 +162,7 @@
                   <q-input
                     type="number"
                     v-model="props.row.dispatchQuantity"
+                    ref="dispatchQuantityInput"
                     :min="0"
                     :max="
                       titleAction === 'Edit Hold Bill'
@@ -173,7 +184,9 @@
                 </q-td>
               </template>
               <template
-                v-if="titleAction === pageTitle"
+                v-if="
+                  titleAction === pageTitle || titleAction === 'Sale Return'
+                "
                 v-slot:body-cell-action="props"
               >
                 <q-td :props="props">
@@ -236,7 +249,13 @@
                 </q-td>
               </template>
               <template
-                v-if="titleAction !== 'Preview Sale Bill'"
+                v-if="titleAction === 'Sale Return'"
+                v-slot:body-cell-discount="props"
+              >
+                <q-td :props="props"> </q-td>
+              </template>
+              <template
+                v-else-if="titleAction !== 'Preview Sale Bill'"
                 v-slot:body-cell-discount="props"
               >
                 <q-td :props="props">
@@ -253,6 +272,12 @@
                   />
                 </q-td>
               </template>
+              <template
+                v-slot:header-cell-discount
+                v-if="titleAction === 'Sale Return'"
+              >
+                <q-th></q-th>
+              </template>
             </q-table>
           </div>
           <q-card-actions
@@ -266,7 +291,13 @@
               color="btn-primary hover:btn-primary-hover"
               @click="handleCompleteSale(Number(selectedId), 1)"
             />
-
+            <q-btn
+              v-if="titleAction === 'Sale Return'"
+              label="Create Sale Return"
+              unelevated
+              color="btn-primary hover:btn-primary-hover"
+              @click="handleReturnSale()"
+            />
             <q-btn
               label="CLOSE"
               unelevated
@@ -444,6 +475,7 @@ import {
   shopListApi,
   addShopSaleManagementApi,
   holdBillApi,
+  returnSaleApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -473,6 +505,7 @@ const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
 const salePersonCodeInput = ref<null | HTMLDivElement>(null);
+const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
 const selectedId: string | string[] = router.currentRoute.value.params.id;
 const routerPath = router.currentRoute.value.fullPath;
 const titleAction = ref('');
@@ -530,6 +563,9 @@ onMounted(async () => {
       previewBill(Number(selectedId));
       isLoading.value = false;
     }
+  } else if (routerPath.includes('/return/sale-return')) {
+    titleAction.value = 'Sale Return';
+    inventoryDetailList();
   } else {
     titleAction.value = pageTitle;
     inventoryDetailList();
@@ -547,12 +583,17 @@ watch(
       getArticleList();
       getShopList();
     }
+    if (newPath === '/return/sale-return') {
+      titleAction.value = 'Sale Return';
+      selectedInventoryData.value = [];
+    }
   }
 );
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
     if (e.key === 'F1') {
+      router.push('/return/sale-return');
     } else if (
       e.key === 'F2' &&
       selectedInventoryData.value.length &&
@@ -580,6 +621,9 @@ const handleActionKeys = (e: KeyboardEvent) => {
   }
 };
 const handleButtonClick = (button: { name: string }): void => {
+  if (button.name === 'createReturn') {
+    router.push('/return/sale-return');
+  }
   if (button.name === 'todaySaleSummary') {
     router.push('/return/today-sale-summary');
   }
@@ -942,6 +986,48 @@ const handleAddShopSale = async () => {
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       getArticleList();
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+const handleReturnSale = async () => {
+  if (
+    selectedInventoryData.value.some((record) => record.dispatchQuantity === 0)
+  ) {
+    $q.notify({
+      message: 'Add Quantity',
+      type: 'negative',
+    });
+    dispatchQuantityInput.value?.focus();
+    return false;
+  }
+  try {
+    isLoading.value = true;
+    const payload = {
+      shopId: selectedShop.value.fromShop?.shopId,
+      returnSaleDetails: selectedInventoryData.value.map((record) => ({
+        inventoryId: record.inventoryId,
+        quantity: record.dispatchQuantity,
+      })),
+    };
+    const response = await returnSaleApi(payload);
+    if (response.type === 'Success') {
+      $q.notify({
+        message: response.message,
+        type: 'positive',
+      });
+      selectedInventoryData.value = [];
+      inventoryDetailList();
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
