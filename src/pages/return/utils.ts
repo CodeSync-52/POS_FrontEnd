@@ -36,12 +36,6 @@ export const buttons = [
     shortcut: 'F7',
     name: 'todaySaleSummary',
   },
-  {
-    label: 'Close Shop (Ctrl + F9)',
-    icon: 'paid',
-    shortcut: 'F9',
-    name: 'closeShop',
-  },
 ];
 export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithdiscount>[] =
   [
@@ -90,11 +84,11 @@ export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWi
   ];
 export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
   {
-    name: 'name',
+    name: 'expenseName',
     required: true,
     label: 'Expense Name',
     align: 'left',
-    field: (row) => row.name,
+    field: (row) => row.expenseName,
   },
   {
     name: 'amount',
@@ -104,11 +98,11 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
     field: (row) => row.amount,
   },
   {
-    name: 'saveRow',
+    name: 'comment',
     required: true,
-    label: 'Action',
+    label: 'Comments',
     align: 'left',
-    field: () => '',
+    field: (row) => row.comment || '-',
   },
 ];
 export const shopAllBillsTableColumn: QTableColumn[] = [
