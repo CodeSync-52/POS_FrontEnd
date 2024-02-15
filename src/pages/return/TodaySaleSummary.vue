@@ -1,8 +1,10 @@
 <template>
   <div>
     <div class="font-semibold text-lg text-center">
-      <span>Shop Summary : {{ shopName }} </span>
-      <div>{{ moment(createdDate).format('dddd, D MMMM, YYYY') }}</div>
+      <span>Shop Summary : {{ SaleSummary.shopName }} </span>
+      <div>
+        {{ moment(SaleSummary.createdDate).format('dddd, D MMMM, YYYY') }}
+      </div>
     </div>
     <div
       class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-between q-pa-md"
@@ -12,21 +14,21 @@
       >
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Status :</span>
-          <span class="md:text-lg"> {{ shopAccountStatus }}</span>
+          <span class="md:text-lg"> {{ SaleSummary.shopAccountStatus }}</span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Last Closing Date :</span>
           <span class="md:text-lg">
-            {{ moment(lastClosingDate).format('ddd, D MMM, YYYY') }}
+            {{ moment(SaleSummary.lastClosingDate).format('ddd, D MMM, YYYY') }}
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Available Stock :</span>
-          <span class="md:text-lg"> {{ availableStock }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.availableStock }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Item's Sold Today :</span>
-          <span class="md:text-lg"> {{ totalItemsSale }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.totalItemsSale }} </span>
         </div>
       </div>
       <div
@@ -34,30 +36,34 @@
       >
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Opening Balance :</span>
-          <span class="md:text-lg"> {{ openingBalance }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.openingBalance }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Gross Sales :</span>
-          <span class="md:text-lg"> {{ todaySale }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.todaySale }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Overall Discounts :</span>
-          <span class="md:text-lg"> {{ totalDiscount }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">HO Incoming :</span>
-          <span class="md:text-lg"> {{ totalIncomingFromHO }} </span>
+          <span class="md:text-lg">
+            {{ SaleSummary.totalIncomingFromHO }}
+          </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Overall Refunds :</span>
-          <span class="md:text-lg"> {{ totalReturnSaleAmount }} </span>
+          <span class="md:text-lg">
+            {{ SaleSummary.totalReturnSaleAmount }}
+          </span>
         </div>
       </div>
     </div>
     <div class="q-pa-md">
       <q-table
         bordered
-        :rows="ShopManagementExpenseRecords"
+        :rows="SaleSummary.ShopManagementExpenseRecords"
         :columns="shopSaleExpenseTableColumn"
         row-key="id"
       >
@@ -88,15 +94,15 @@
       >
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Overall Expense:</span>
-          <span class="md:text-lg"> {{ totalExpense }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.totalExpense }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">HO Outgoing:</span>
-          <span class="md:text-lg"> {{ totalOutgoingToHO }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.totalOutgoingToHO }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Remaining Balance :</span>
-          <span class="md:text-lg"> {{ remainingBalance }} </span>
+          <span class="md:text-lg"> {{ SaleSummary.remainingBalance }} </span>
         </div>
       </div>
     </div>
@@ -126,22 +132,40 @@ import { useAuthStore } from 'src/stores';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const showAddNewExpenseModal = ref(false);
-const openingBalance = ref(0);
-const todaySale = ref(0);
-const totalDiscount = ref(0);
-const shopAccountStatus = ref('');
-const createdDate = ref('');
-const lastClosingDate = ref('');
-const shopName = ref('');
-const totalItemsSale = ref(0);
-const totalExpense = ref(0);
-const availableStock = ref(0);
-const remainingBalance = ref(0);
-const totalIncomingFromHO = ref(0);
-const totalOutgoingToHO = ref(0);
-const totalReturnSaleAmount = ref(0);
-const ShopManagementExpenseRecords = ref<IShopSaleExpenses[]>([]);
 const ShopId = authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
+const SaleSummary = ref<{
+  openingBalance: number;
+  todaySale: number;
+  totalDiscount: number;
+  shopAccountStatus: string;
+  createdDate: string;
+  lastClosingDate: string;
+  shopName: string;
+  totalItemsSale: number;
+  totalExpense: number;
+  availableStock: number;
+  remainingBalance: number;
+  totalIncomingFromHO: number;
+  totalOutgoingToHO: number;
+  totalReturnSaleAmount: number;
+  ShopManagementExpenseRecords: IShopSaleExpenses[];
+}>({
+  openingBalance: 0,
+  todaySale: 0,
+  totalDiscount: 0,
+  shopAccountStatus: '',
+  createdDate: '',
+  lastClosingDate: '',
+  shopName: '',
+  totalItemsSale: 0,
+  totalExpense: 0,
+  availableStock: 0,
+  remainingBalance: 0,
+  totalIncomingFromHO: 0,
+  totalOutgoingToHO: 0,
+  totalReturnSaleAmount: 0,
+  ShopManagementExpenseRecords: [],
+});
 onMounted(async () => {
   await updateSaleSummary();
 });
@@ -154,21 +178,23 @@ const updateSaleSummary = async () => {
     if (res.type === 'Success') {
       const responseData = res.data as SaleSummaryResponse | null;
       if (responseData) {
-        shopName.value = responseData.shopName;
-        shopAccountStatus.value = responseData.shopAccountStatus;
-        openingBalance.value = responseData.openingBalance;
-        remainingBalance.value = responseData.remainingBalance;
-        availableStock.value = responseData.availableStock;
-        totalItemsSale.value = responseData.totalItemsSale;
-        totalDiscount.value = responseData.totalDiscount;
-        totalIncomingFromHO.value = responseData.totalIncomingFromHO;
-        totalOutgoingToHO.value = responseData.totalOutgoingToHO;
-        todaySale.value = responseData.totalSale;
-        totalExpense.value = responseData.totalExpense;
-        createdDate.value = responseData.createdDate;
-        lastClosingDate.value = responseData.lastClosingDate;
-        totalReturnSaleAmount.value = responseData.totalReturnSaleAmount;
-        ShopManagementExpenseRecords.value = responseData.salesExpenseSummary;
+        SaleSummary.value = {
+          openingBalance: responseData.openingBalance,
+          todaySale: responseData.totalSale,
+          totalDiscount: responseData.totalDiscount,
+          shopAccountStatus: responseData.shopAccountStatus,
+          createdDate: responseData.createdDate,
+          lastClosingDate: responseData.lastClosingDate,
+          shopName: responseData.shopName,
+          totalItemsSale: responseData.totalItemsSale,
+          totalExpense: responseData.totalExpense,
+          availableStock: responseData.availableStock,
+          remainingBalance: responseData.remainingBalance,
+          totalIncomingFromHO: responseData.totalIncomingFromHO,
+          totalOutgoingToHO: responseData.totalOutgoingToHO,
+          totalReturnSaleAmount: responseData.totalReturnSaleAmount,
+          ShopManagementExpenseRecords: responseData.salesExpenseSummary,
+        };
       }
     }
   } catch (error) {

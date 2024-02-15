@@ -290,6 +290,7 @@
             />
             <q-btn
               v-if="titleAction === 'Sale Return'"
+              class="mr-3"
               label="Create Sale Return"
               unelevated
               color="btn-primary hover:btn-primary-hover"
