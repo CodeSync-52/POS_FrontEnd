@@ -75,3 +75,23 @@ export const addShopAccountApi = async ({
   });
   return res;
 };
+export const returnShopAccountApi = async ({
+  shopId,
+  amount,
+  transactionUserId,
+}: {
+  shopId: number;
+  amount: number;
+  transactionUserId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/shopaccount/cash/return/warehouse',
+    data: {
+      shopId,
+      amount,
+      transactionUserId,
+    },
+  });
+  return res;
+};
