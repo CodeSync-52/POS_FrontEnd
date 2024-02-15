@@ -106,12 +106,20 @@
         </div>
       </div>
     </div>
-    <div class="row justify-end">
+    <div class="row justify-center md:justify-end">
       <q-btn
-        label="CLOSE"
+        class="mr-2"
+        label="Close Shop"
+        unelevated
+        color="btn-primary hover:bg-btn-cancel-hover"
+        @click="handleColseShop()"
+      />
+      <q-btn
+        class="mr-5"
+        label="Back"
         unelevated
         color="btn-cancel hover:bg-btn-cancel-hover"
-        @click="handleColseShop()"
+        @click="$router.go(-1)"
       />
     </div>
     <q-dialog v-model="showAddNewExpenseModal">
