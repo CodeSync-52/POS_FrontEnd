@@ -1,10 +1,3 @@
-export interface IShopSaleExpenses {
-  id: number;
-  name: string;
-  amount: number;
-  isSavingRow: boolean;
-  isEditing: boolean;
-}
 export interface IAddShopSaleManagement {
   shopId: number | undefined;
   totalDiscount: number;
@@ -44,4 +37,30 @@ export interface ISaleListResponse {
   shopId: number;
   saleId: number;
   totalSalesAmount: number;
+}
+export interface SaleSummaryResponse {
+  shopId: number;
+  shopAccountId: number;
+  shopName: string;
+  openingBalance: number;
+  remainingBalance: number;
+  shopAccountStatus: string;
+  availableStock: number;
+  totalItemsSale: number;
+  totalDiscount: number;
+  totalIncomingFromHO: number;
+  totalOutgoingToHO: number;
+  totalSale: number;
+  totalExpense: number;
+  totalReturnSaleAmount: number;
+  lastClosingDate: string;
+  createdDate: string;
+  salesExpenseSummary: IShopSaleExpenses[];
+}
+export interface IShopSaleExpenses {
+  expenseTypeId: number;
+  expenseName: string;
+  amount: number;
+  comment: string | null;
+  transactionDate: string;
 }

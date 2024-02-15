@@ -179,3 +179,36 @@ export const returnSaleApi = async ({
   });
   return res;
 };
+export const saleSummaryApi = async (shopId: number) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/shopaccount/summary',
+    method: 'GET',
+    params: {
+      shopId,
+    },
+  });
+  return res;
+};
+export const addExpenseApi = async ({
+  expenseId,
+  shopId,
+  amount,
+  comments,
+}: {
+  expenseId: number;
+  shopId: number;
+  amount: number;
+  comments?: string;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/shopaccount/add/expense',
+    data: {
+      expenseId,
+      shopId,
+      amount,
+      comments,
+    },
+  });
+  return res;
+};

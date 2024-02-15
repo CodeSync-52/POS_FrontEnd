@@ -290,6 +290,7 @@
             />
             <q-btn
               v-if="titleAction === 'Sale Return'"
+              class="mr-3"
               label="Create Sale Return"
               unelevated
               color="btn-primary hover:btn-primary-hover"
@@ -605,7 +606,6 @@ const handleActionKeys = (e: KeyboardEvent) => {
       router.push('/return/hold-bills');
     } else if (e.key === 'F7') {
       router.push('/return/today-sale-summary');
-    } else if (e.key === 'F9') {
     } else if (
       e.key === 'Enter' &&
       selectedInventoryData.value.length &&
