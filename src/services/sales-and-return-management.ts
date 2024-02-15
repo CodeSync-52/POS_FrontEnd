@@ -165,3 +165,17 @@ export const changeSaleStatusApi = async ({
   });
   return res;
 };
+export const returnSaleApi = async ({
+  shopId,
+  returnSaleDetails,
+}: Partial<IAddShopSaleManagement>) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/sale/return',
+    method: 'PUT',
+    data: {
+      shopId,
+      returnSaleDetails,
+    },
+  });
+  return res;
+};
