@@ -106,9 +106,17 @@
         </div>
       </div>
     </div>
-    <div class="row justify-end">
+    <div class="row justify-center md:justify-end">
       <q-btn
-        label="CLOSE"
+        class="mr-2"
+        label="Close Shop"
+        unelevated
+        color="btn-primary hover:bg-btn-cancel-hover"
+        @click="handleColseShop()"
+      />
+      <q-btn
+        class="mr-5"
+        label="Back"
         unelevated
         color="btn-cancel hover:bg-btn-cancel-hover"
         @click="$router.go(-1)"
@@ -117,12 +125,16 @@
     <q-dialog v-model="showAddNewExpenseModal">
       <add-new-expense-modal @confirm="updateSaleSummary()" />
     </q-dialog>
+    <q-dialog v-model="showCloseShopModal">
+      <close-shop-modal @confirm="updateSaleSummary()" />
+    </q-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { IShopSaleExpenses, SaleSummaryResponse } from 'src/interfaces';
 import AddNewExpenseModal from 'components/today-sale-summary/AddNewExpenseModal.vue';
+import CloseShopModal from 'components/today-sale-summary/CloseShop.vue';
 import { saleSummaryApi } from 'src/services';
 import { shopSaleExpenseTableColumn } from './utils';
 import { isPosError } from 'src/utils';
@@ -131,7 +143,9 @@ import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 const $q = useQuasar();
 const authStore = useAuthStore();
+const todayDate = Date.now();
 const showAddNewExpenseModal = ref(false);
+const showCloseShopModal = ref(false);
 const ShopId = authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
 const SaleSummary = ref<{
   openingBalance: number;
@@ -172,6 +186,9 @@ onMounted(async () => {
 const handleAddNewExpense = async () => {
   showAddNewExpenseModal.value = true;
 };
+const handleColseShop = async () => {
+  showCloseShopModal.value = true;
+};
 const updateSaleSummary = async () => {
   try {
     const res = await saleSummaryApi(ShopId);
@@ -183,7 +200,7 @@ const updateSaleSummary = async () => {
           todaySale: responseData.totalSale,
           totalDiscount: responseData.totalDiscount,
           shopAccountStatus: responseData.shopAccountStatus,
-          createdDate: responseData.createdDate,
+          createdDate: responseData.createdDate ?? todayDate,
           lastClosingDate: responseData.lastClosingDate,
           shopName: responseData.shopName,
           totalItemsSale: responseData.totalItemsSale,
