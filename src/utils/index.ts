@@ -10,3 +10,4 @@ export * from './category-management';
 export * from './cash-flow';
 export * from './shop-managment';
 export * from './grn';
+export * from './shop-account';

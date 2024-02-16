@@ -66,7 +66,6 @@
     />
     <q-input
       v-model="filterSearch.endDate"
-      :max="filterSearch.endDate"
       :min="filterSearch.startDate"
       label="To"
       type="date"
