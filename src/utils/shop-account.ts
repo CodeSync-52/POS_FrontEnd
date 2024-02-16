@@ -1,6 +1,10 @@
 import moment from 'moment';
 import { QTableColumn } from 'quasar';
-import { IShopAccountReport } from 'src/interfaces';
+import {
+  IShopAccountReport,
+  IShopExpenses,
+  InComingOutgoingToHo,
+} from 'src/interfaces';
 export const shopAccountReportTableColumn: QTableColumn<IShopAccountReport>[] =
   [
     {
@@ -69,5 +73,66 @@ export const shopAccountReportTableColumn: QTableColumn<IShopAccountReport>[] =
       label: 'Action',
       field: () => '',
       align: 'left',
+    },
+  ];
+export const shopExpenseTableColumn: QTableColumn<IShopExpenses>[] = [
+  {
+    name: 'expenseName',
+    required: true,
+    label: 'Expense Name',
+    align: 'left',
+    field: (row) => row.expenseName,
+  },
+  {
+    name: 'amount',
+    required: true,
+    label: 'Amount',
+    align: 'left',
+    field: (row) => row.amount,
+  },
+  {
+    name: 'comment',
+    required: true,
+    label: 'Comments',
+    align: 'left',
+    field: (row) => row.comment || '-',
+  },
+];
+export const incomingOutgoingToHoTableColumn: QTableColumn<InComingOutgoingToHo>[] =
+  [
+    {
+      name: 'userId',
+      required: true,
+      label: 'User Id',
+      align: 'left',
+      field: (row) => row.userId,
+    },
+    {
+      name: 'userName',
+      required: true,
+      label: 'User Name',
+      align: 'left',
+      field: (row) => row.userName,
+    },
+    {
+      name: 'amount',
+      required: true,
+      label: 'Amount',
+      align: 'left',
+      field: (row) => row.amount,
+    },
+    {
+      name: 'comment',
+      required: true,
+      label: 'Comments',
+      align: 'left',
+      field: (row) => row.comment || '-',
+    },
+    {
+      name: 'transactionDate',
+      required: true,
+      label: 'Transaction Date',
+      align: 'left',
+      field: (row) => moment(row.transactionDate).format('DD-MM-YYYY'),
     },
   ];

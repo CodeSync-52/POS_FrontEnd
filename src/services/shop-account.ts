@@ -26,3 +26,13 @@ export const getShopAccountReportApi = async ({
   });
   return res;
 };
+export const accountSummaryApi = async (shopAccountId: number) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/shopaccount/shopaccount',
+    method: 'GET',
+    params: {
+      shopAccountId,
+    },
+  });
+  return res;
+};

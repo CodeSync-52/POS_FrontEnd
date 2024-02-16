@@ -15,7 +15,21 @@ export interface IShopAccountReport {
   totalReturnSaleAmount: number;
   lastClosingDate: string;
   createdDate: string;
-  inComingFromHO?: [];
-  outgoingToHO?: [];
-  salesExpenseSummary?: [];
+  inComingFromHO?: InComingOutgoingToHo[];
+  outgoingToHO?: InComingOutgoingToHo[];
+  salesExpenseSummary?: IShopExpenses[];
+}
+export interface IShopExpenses {
+  expenseTypeId: number;
+  expenseName: string;
+  amount: number;
+  comment: string | null;
+  transactionDate: string;
+}
+export interface InComingOutgoingToHo {
+  userId: number;
+  userName: string;
+  amount: number;
+  comment: string;
+  transactionDate: string;
 }

@@ -98,6 +98,7 @@
             size="sm"
             icon="visibility"
             color="green"
+            @click="router.push(`/shop-account/${props.row.shopAccountId}`)"
           >
             <q-tooltip class="bg-green" :offset="[10, 10]">
               Preview Bill
@@ -122,8 +123,10 @@ import { shopAccountReportTableColumn } from 'src/utils';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
 import { date } from 'quasar';
 const $q = useQuasar();
+const router = useRouter();
 const authStore = useAuthStore();
 const isLoading = ref(false);
 const timeStamp = Date.now();
