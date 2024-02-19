@@ -57,7 +57,7 @@
           class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-2 md:gap-16"
         >
           <div class="row gap-6 items-center">
-            <span class="text-base">Add Inventory</span>
+            <span class="text-base">Add Articles</span>
             <q-btn
               icon="add"
               rounded
@@ -280,7 +280,7 @@
               </template>
             </q-table>
           </div>
-          <div v-if="titleAction !== pageTitle" class="row justify-end">
+          <div v-if="titleAction !== pageTitle" class="row justify-end gap-2">
             <q-btn
               v-if="titleAction === 'Edit Hold Bill'"
               label="Complete Bill"
@@ -425,6 +425,7 @@
     </q-dialog>
     <q-dialog v-model="isInventoryListModalVisible">
       <inventory-list-modal
+        title="Articles"
         :is-fetching-article="isFetchingArticleList"
         :isFetchingRecords="isFetchingRecords"
         :article-records="articleList"
@@ -561,7 +562,7 @@ onMounted(async () => {
       previewBill(Number(selectedId));
       isLoading.value = false;
     }
-  } else if (routerPath.includes('/return/sale-return')) {
+  } else if (routerPath.includes('/shop-sale/sale-return')) {
     titleAction.value = 'Sale Return';
     inventoryDetailList();
   } else {
@@ -574,14 +575,14 @@ onMounted(async () => {
 watch(
   () => router.currentRoute.value.fullPath,
   (newPath) => {
-    if (newPath === '/return') {
+    if (newPath === '/shop-sale') {
       titleAction.value = pageTitle;
       selectedInventoryData.value = [];
       inventoryDetailList();
       getArticleList();
       getShopList();
     }
-    if (newPath === '/return/sale-return') {
+    if (newPath === '/shop-sale/sale-return') {
       titleAction.value = 'Sale Return';
       selectedInventoryData.value = [];
     }
@@ -591,7 +592,7 @@ const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
     if (e.key === 'F1') {
-      router.push('/return/sale-return');
+      router.push('/shop-sale/sale-return');
     } else if (
       e.key === 'F2' &&
       selectedInventoryData.value.length &&
@@ -601,11 +602,11 @@ const handleActionKeys = (e: KeyboardEvent) => {
     ) {
       handleHoldBill();
     } else if (e.key === 'F5') {
-      router.push('/return/all-bills');
+      router.push('/shop-sale/all-bills');
     } else if (e.key === 'F6') {
-      router.push('/return/hold-bills');
+      router.push('/shop-sale/hold-bills');
     } else if (e.key === 'F7') {
-      router.push('/return/today-sale-summary');
+      router.push('/shop-sale/today-sale-summary');
     } else if (
       e.key === 'Enter' &&
       selectedInventoryData.value.length &&
@@ -619,16 +620,16 @@ const handleActionKeys = (e: KeyboardEvent) => {
 };
 const handleButtonClick = (button: { name: string }): void => {
   if (button.name === 'createReturn') {
-    router.push('/return/sale-return');
+    router.push('/shop-sale/sale-return');
   }
   if (button.name === 'todaySaleSummary') {
-    router.push('/return/today-sale-summary');
+    router.push('/shop-sale/today-sale-summary');
   }
   if (button.name === 'showAllBill') {
-    router.push('/return/all-bills');
+    router.push('/shop-sale/all-bills');
   }
   if (button.name === 'showHoldBill') {
-    router.push('/return/hold-bills');
+    router.push('/shop-sale/hold-bills');
   }
   if (button.name === 'holdBill') {
     handleHoldBill();
@@ -983,6 +984,7 @@ const handleAddShopSale = async () => {
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       getArticleList();
+      inventoryDetailList();
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
@@ -1076,6 +1078,7 @@ const handleHoldBill = async () => {
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       getArticleList();
+      inventoryDetailList();
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';

@@ -143,11 +143,7 @@ const essentialLinks = [
       },
       {
         title: EUserModules.SaleAndReturnManagement,
-        path: '/return',
-      },
-      {
-        title: EUserModules.ShopDiscountsModule,
-        path: '/discount',
+        path: '/shop-sale',
       },
       {
         title: EUserModules.ShopDiscountsModule,

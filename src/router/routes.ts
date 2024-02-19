@@ -181,56 +181,49 @@ export const routeList = [
     },
   },
   {
-    path: '/discount',
-    component: () => import('src/pages/discount/ShopDiscount.vue'),
-    meta: {
-      module: EUserModules.ShopDiscountsModule,
-    },
-  },
-  {
-    path: '/return',
+    path: '/shop-sale',
     component: () => import('src/pages/return/SalesReturnManagement.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
-    path: '/return/sale-return',
+    path: '/shop-sale/sale-return',
     component: () => import('src/pages/return/SalesReturnManagement.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
-    path: '/return/today-sale-summary',
+    path: '/shop-sale/today-sale-summary',
     component: () => import('src/pages/return/TodaySaleSummary.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
-    path: '/return/all-bills',
+    path: '/shop-sale/all-bills',
     component: () => import('src/pages/return/AllBills.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
-    path: '/return/hold-bills',
+    path: '/shop-sale/hold-bills',
     component: () => import('src/pages/return/AllBills.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
-    path: '/return/:id/preview',
+    path: '/shop-sale/:id/preview',
     component: () => import('src/pages/return/SalesReturnManagement.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
-    path: '/return/:id/editHoldBill',
+    path: '/shop-sale/:id/editHoldBill',
     component: () => import('src/pages/return/SalesReturnManagement.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
