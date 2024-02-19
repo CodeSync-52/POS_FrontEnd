@@ -327,6 +327,13 @@ export const routeList = [
       module: EUserModules.CashInCashOutManagement,
     },
   },
+  {
+    path: '/shop-account/:id',
+    component: () => import('src/pages/shop-account/ShopAccountSummary.vue'),
+    meta: {
+      module: EUserModules.CashInCashOutManagement,
+    },
+  },
 ];
 
 const routes: RouteRecordRaw[] = [
