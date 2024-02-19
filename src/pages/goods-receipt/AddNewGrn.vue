@@ -98,6 +98,8 @@
         <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
           <q-table
             :rows="selectedInventoryData"
+            hide-pagination
+            v-model:pagination="selectedInventoryPagination"
             :columns="selectedGrnInventoryTableColumn"
           >
             <template v-slot:no-data>
@@ -257,6 +259,16 @@ const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
 const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
+const selectedInventoryData = ref<IInventoryListResponseWithDispatchQuantity[]>(
+  []
+);
+const selectedInventoryPagination = {
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: -1,
+  rowsNumber: 0,
+};
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -412,9 +424,7 @@ const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   inventoryDetailList();
 };
-const selectedInventoryData = ref<IInventoryListResponseWithDispatchQuantity[]>(
-  []
-);
+
 const handleSelectedData = (payload: IInventoryListResponse[]) => {
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   const filteredOldIdList = oldIdList.filter((oldId) =>

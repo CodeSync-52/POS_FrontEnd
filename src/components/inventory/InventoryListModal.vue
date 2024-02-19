@@ -2,7 +2,9 @@
   <q-card class="!max-w-[800px]">
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-lg font-medium"> Select Inventory</span>
+        <span class="text-lg font-medium">
+          Select {{ title ?? 'Inventory' }}
+        </span>
         <span
           ><q-btn
             class="close-modal"
@@ -166,6 +168,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   keyword: null,
 });
 interface IProps {
+  title?: string;
   isFetchingRecords: boolean;
   isFetchingArticle: boolean;
   articleRecords: IArticleData[];
