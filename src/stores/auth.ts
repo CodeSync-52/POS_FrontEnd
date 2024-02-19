@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import {
   EActionPermissions,
   EUserModules,
+  EUserRoles,
   IGenericResponse,
   IUser,
 } from 'src/interfaces';
@@ -40,7 +41,15 @@ export const useAuthStore = defineStore('login', () => {
       data: params,
     });
     loggedInUser.value = res.data;
-    router.push('/role');
+    const role = loggedInUser.value.rolePermissions.roleName.toLowerCase();
+    if (
+      role === EUserRoles.ShopManager.toLowerCase() ||
+      role === EUserRoles.ShopOfficer.toLowerCase()
+    ) {
+      router.push('/shop-sale');
+    } else {
+      router.push('/role');
+    }
     return res;
   }
 
