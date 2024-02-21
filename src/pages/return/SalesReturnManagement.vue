@@ -237,7 +237,7 @@
                 </q-td>
               </template>
               <template
-                v-else-if="titleAction !== 'Preview Sale Bill'"
+                v-if="titleAction !== 'Preview Sale Bill'"
                 v-slot:body-cell-discount="props"
               >
                 <q-td :props="props">
@@ -256,27 +256,13 @@
               </template>
             </q-table>
           </div>
-          <div v-if="titleAction !== pageTitle" class="row justify-end gap-2">
-            <q-btn
-              v-if="titleAction === 'Edit Hold Bill'"
-              label="Complete Bill"
-              unelevated
-              color="btn-primary hover:btn-primary-hover"
-              @click="handleCompleteSale(Number(selectedId), 1)"
-            />
-            <q-btn
-              label="CLOSE"
-              unelevated
-              color="btn-cancel hover:bg-btn-cancel-hover"
-              @click="$router.go(-1)"
-            />
-          </div>
+
           <div
-            v-if="titleAction === pageTitle"
-            class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between"
+            class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between mb-3"
           >
             <div class="max-w-[300px] min-w-[200px] md:w-1/3">
               <q-input
+                v-if="titleAction === pageTitle"
                 v-model="shopSale.comment"
                 maxlength="250"
                 outlined
@@ -319,6 +305,21 @@
                 label="Net Total"
               />
             </div>
+          </div>
+          <div v-if="titleAction !== pageTitle" class="row justify-end gap-2">
+            <q-btn
+              v-if="titleAction === 'Edit Hold Bill'"
+              label="Complete Bill"
+              unelevated
+              color="btn-primary hover:btn-primary-hover"
+              @click="handleCompleteSale(Number(selectedId), 1)"
+            />
+            <q-btn
+              label="CLOSE"
+              unelevated
+              color="btn-cancel hover:bg-btn-cancel-hover"
+              @click="$router.go(-1)"
+            />
           </div>
         </div>
       </div>
