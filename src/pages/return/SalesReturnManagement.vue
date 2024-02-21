@@ -258,7 +258,6 @@
           </div>
 
           <div
-            v-if="titleAction !== 'Preview Sale Bill'"
             class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between mb-3"
           >
             <div class="max-w-[300px] min-w-[200px] md:w-1/3">
