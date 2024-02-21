@@ -64,7 +64,7 @@ async function makeApiCall<T>({
     }
     return response.data;
   } catch (e) {
-    if (e instanceof AxiosError && e.code === 'ERR_NETWORK') {
+    if (e instanceof AxiosError && e.response?.status === 401) {
       localStorage.removeItem('storeData');
       authStore.logoutUser();
       return;

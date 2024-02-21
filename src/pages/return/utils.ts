@@ -7,13 +7,13 @@ import {
 } from 'src/interfaces';
 export const buttons = [
   {
-    label: 'Create Return (Ctrl + F1)',
-    icon: 'cached',
-    shortcut: 'F2',
-    name: 'createReturn',
+    label: 'Show Return Sales (Ctrl + F1)',
+    icon: 'receipt',
+    shortcut: 'F1',
+    name: 'showReturnSales',
   },
   {
-    label: 'Hold Bill (Ctrl + F2)',
+    label: 'Hold Bill (Ctrl + F3)',
     icon: 'hourglass_empty',
     shortcut: 'F3',
     name: 'holdBill',
@@ -21,7 +21,7 @@ export const buttons = [
   {
     label: 'Show All Bill (Ctrl + F5)',
     icon: 'receipt',
-    shortcut: 'F3',
+    shortcut: 'F5',
     name: 'showAllBill',
   },
   {
