@@ -41,8 +41,7 @@
             outlined
             :disable="
               authStore.loggedInUser?.rolePermissions.roleName !==
-                EUserRoles.SuperAdmin.toLowerCase() ||
-              (titleAction !== pageTitle && titleAction !== 'Sale Return')
+                EUserRoles.SuperAdmin.toLowerCase() || titleAction !== pageTitle
             "
             v-model="selectedShop.fromShop"
             @update:model-value="handleUpdateFromShop($event)"
@@ -83,10 +82,7 @@
           </outside-click-container>
         </div>
         <div
-          v-if="
-            selectedInventoryData.length ||
-            (titleAction !== pageTitle && titleAction !== 'Sale Return')
-          "
+          v-if="selectedInventoryData.length || titleAction !== pageTitle"
           class="flex flex-col justify-between"
         >
           <div class="py-4 w-full">
@@ -149,12 +145,6 @@
                 </q-td>
               </template>
               <template
-                v-slot:header-cell-dispatchQuantity
-                v-if="titleAction === 'Sale Return'"
-              >
-                <q-th class="text-left">Quantity</q-th>
-              </template>
-              <template
                 v-if="titleAction !== 'Preview Sale Bill'"
                 v-slot:body-cell-dispatchQuantity="props"
               >
@@ -184,9 +174,7 @@
                 </q-td>
               </template>
               <template
-                v-if="
-                  titleAction === pageTitle || titleAction === 'Sale Return'
-                "
+                v-if="titleAction === pageTitle"
                 v-slot:body-cell-action="props"
               >
                 <q-td :props="props">
@@ -249,12 +237,6 @@
                 </q-td>
               </template>
               <template
-                v-if="titleAction === 'Sale Return'"
-                v-slot:body-cell-discount="props"
-              >
-                <q-td :props="props"> </q-td>
-              </template>
-              <template
                 v-else-if="titleAction !== 'Preview Sale Bill'"
                 v-slot:body-cell-discount="props"
               >
@@ -272,12 +254,6 @@
                   />
                 </q-td>
               </template>
-              <template
-                v-slot:header-cell-discount
-                v-if="titleAction === 'Sale Return'"
-              >
-                <q-th></q-th>
-              </template>
             </q-table>
           </div>
           <div v-if="titleAction !== pageTitle" class="row justify-end gap-2">
@@ -287,14 +263,6 @@
               unelevated
               color="btn-primary hover:btn-primary-hover"
               @click="handleCompleteSale(Number(selectedId), 1)"
-            />
-            <q-btn
-              v-if="titleAction === 'Sale Return'"
-              class="mr-3"
-              label="Create Sale Return"
-              unelevated
-              color="btn-primary hover:btn-primary-hover"
-              @click="handleReturnSale()"
             />
             <q-btn
               label="CLOSE"
@@ -474,7 +442,6 @@ import {
   shopListApi,
   addShopSaleManagementApi,
   holdBillApi,
-  returnSaleApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -562,9 +529,6 @@ onMounted(async () => {
       previewBill(Number(selectedId));
       isLoading.value = false;
     }
-  } else if (routerPath.includes('/shop-sale/sale-return')) {
-    titleAction.value = 'Sale Return';
-    inventoryDetailList();
   } else {
     titleAction.value = pageTitle;
     inventoryDetailList();
@@ -582,19 +546,15 @@ watch(
       getArticleList();
       getShopList();
     }
-    if (newPath === '/shop-sale/sale-return') {
-      titleAction.value = 'Sale Return';
-      selectedInventoryData.value = [];
-    }
   }
 );
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
     if (e.key === 'F1') {
-      router.push('/shop-sale/sale-return');
+      router.push('/shop-sale/return-sales');
     } else if (
-      e.key === 'F2' &&
+      e.key === 'F3' &&
       selectedInventoryData.value.length &&
       selectedInventoryData.value.every(
         (record) => record.dispatchQuantity !== 0
@@ -619,8 +579,8 @@ const handleActionKeys = (e: KeyboardEvent) => {
   }
 };
 const handleButtonClick = (button: { name: string }): void => {
-  if (button.name === 'createReturn') {
-    router.push('/shop-sale/sale-return');
+  if (button.name === 'showReturnSales') {
+    router.push('/shop-sale/return-sales');
   }
   if (button.name === 'todaySaleSummary') {
     router.push('/shop-sale/today-sale-summary');
@@ -999,48 +959,7 @@ const handleAddShopSale = async () => {
     isLoading.value = false;
   }
 };
-const handleReturnSale = async () => {
-  if (
-    selectedInventoryData.value.some((record) => record.dispatchQuantity === 0)
-  ) {
-    $q.notify({
-      message: 'Add Quantity',
-      type: 'negative',
-    });
-    dispatchQuantityInput.value?.focus();
-    return false;
-  }
-  try {
-    isLoading.value = true;
-    const payload = {
-      shopId: selectedShop.value.fromShop?.shopId,
-      returnSaleDetails: selectedInventoryData.value.map((record) => ({
-        inventoryId: record.inventoryId,
-        quantity: record.dispatchQuantity,
-      })),
-    };
-    const response = await returnSaleApi(payload);
-    if (response.type === 'Success') {
-      $q.notify({
-        message: response.message,
-        type: 'positive',
-      });
-      selectedInventoryData.value = [];
-      inventoryDetailList();
-    }
-  } catch (error) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(error)) {
-      message = error.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  } finally {
-    isLoading.value = false;
-  }
-};
+
 const isPersonCodeEmpty = () => {
   const personCode = shopSale.value.salePersonCode;
   if (!personCode || personCode.trim() === '') {

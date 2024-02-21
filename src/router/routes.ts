@@ -188,8 +188,8 @@ export const routeList = [
     },
   },
   {
-    path: '/shop-sale/sale-return',
-    component: () => import('src/pages/return/SalesReturnManagement.vue'),
+    path: '/shop-sale/return-sales',
+    component: () => import('src/pages/return/ReturnSales.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
