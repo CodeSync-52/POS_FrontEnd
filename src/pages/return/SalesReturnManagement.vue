@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
-      <div class="col-xs-12" :class="{ 'col-md-9': titleAction === pageTitle }">
+      <div
+        class="col-xs-12"
+        :class="{ 'col-md-10': titleAction === pageTitle }"
+      >
         <div
           class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
         >
@@ -171,6 +174,11 @@
                     class="w-[150px]"
                     color="btn-primary"
                   />
+                  <span
+                    v-if="props.row.errorMessage"
+                    class="text-red text-sm"
+                    >{{ props.row.errorMessage }}</span
+                  >
                 </q-td>
               </template>
               <template
@@ -353,7 +361,7 @@
       </q-fab>
       <div
         v-if="titleAction === pageTitle"
-        class="col-3 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
+        class="col-2 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
       >
         <div class="flex flex-nowrap flex-col h-full gap-3 lg:gap-4">
           <q-btn
@@ -739,15 +747,23 @@ const handleUpdatedispatchQuantity = (
     const val = parseInt(newVal);
     if (!val || val < 0) {
       selectedRecord.dispatchQuantity = 0;
+      selectedRecord.errorMessage = '';
     } else if (
       val >
       selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
     ) {
       selectedRecord.dispatchQuantity =
-        selectedRecord.quantity +
-        (selectedRecord.alreadyDispatchedQuantity ?? 0);
+        // selectedRecord.quantity +
+        0 + (selectedRecord.alreadyDispatchedQuantity ?? 0);
+      selectedRecord.errorMessage = 'Invalid Quantity !';
+      $q.notify({
+        message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
+        color: 'red',
+        icon: 'warning',
+      });
     } else {
       selectedRecord.dispatchQuantity = val;
+      selectedRecord.errorMessage = '';
     }
   }
 };

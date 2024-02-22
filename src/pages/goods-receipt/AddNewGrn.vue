@@ -141,6 +141,9 @@
                   class="w-[150px]"
                   color="btn-primary"
                 />
+                <span v-if="props.row.errorMessage" class="text-red text-sm">{{
+                  props.row.errorMessage
+                }}</span>
               </q-td>
             </template>
             <template v-slot:body-cell-action="props">
@@ -390,13 +393,22 @@ const handleUpdatedispatchQuantity = (
     const val = parseInt(newVal);
     if (!val || val < 0) {
       selectedRecord.dispatchQuantity = 0;
+      selectedRecord.errorMessage = '';
     } else if (val > selectedRecord.quantity) {
-      selectedRecord.dispatchQuantity = selectedRecord.quantity;
+      selectedRecord.dispatchQuantity = 0;
+      selectedRecord.errorMessage = 'Invalid Quantity !';
+      $q.notify({
+        message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
+        color: 'red',
+        icon: 'warning',
+      });
     } else {
       selectedRecord.dispatchQuantity = val;
+      selectedRecord.errorMessage = '';
     }
   }
 };
+
 const handleFilterArticle = (searchedArticle: string) => {
   getArticleList(searchedArticle);
 };

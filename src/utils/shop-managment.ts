@@ -46,13 +46,6 @@ export const shopColumn: QTableColumn<IShopResponse>[] = [
     field: (row) => row.code,
   },
   {
-    name: 'closingBalance',
-    required: true,
-    label: 'Closing Balance',
-    align: 'left',
-    field: (row) => row.closingBalance,
-  },
-  {
     name: 'status',
     required: true,
     label: 'Shop Status',
