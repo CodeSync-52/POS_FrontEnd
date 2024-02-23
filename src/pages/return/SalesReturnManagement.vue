@@ -94,7 +94,7 @@
               :loading="isLoading"
               :rows="selectedInventoryData"
               :columns="saleShopSelectedGrnInventoryTableColumn"
-              class="max-h-[39.5vh] lg:max-h-[35vh] 3xl:max-h-[45vh]"
+              :rows-per-page-options="[0]"
               row-key="id"
             >
               <template
@@ -186,7 +186,7 @@
                 v-slot:body-cell-action="props"
               >
                 <q-td :props="props">
-                  <div>
+                  <div class="flex min-w-[72px]">
                     <q-btn
                       dense
                       size="sm"
@@ -200,6 +200,18 @@
                         Delete Article
                       </q-tooltip>
                     </q-btn>
+                    <div>
+                      <q-toggle
+                        checked-icon="autorenew"
+                        color="red"
+                        unchecked-icon="clear"
+                        size="sm"
+                        v-model="props.row.returnItem"
+                      />
+                      <q-tooltip class="bg-red" :offset="[10, 10]">
+                        Return Item
+                      </q-tooltip>
+                    </div>
                   </div>
                 </q-td>
               </template>
@@ -254,6 +266,7 @@
                     @update:model-value="
                       handleUpdateDiscount($event, props.row)
                     "
+                    :disable="props.row.returnItem"
                     type="number"
                     dense
                     outlined
@@ -301,6 +314,16 @@
                 dense
                 color="btn-primary"
                 label="Discount"
+              />
+              <q-input
+                v-model="shopSalesReturnItems"
+                type="number"
+                maxlength="250"
+                disable
+                outlined
+                dense
+                color="btn-primary"
+                label="Return"
               />
               <q-input
                 v-model="shopSalesNetAmount"
@@ -471,6 +494,7 @@ const isPreviewImageModalVisible = ref(false);
 const selectedPreviewImage = ref('');
 const isInventoryListModalVisible = ref(false);
 const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
+const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
 const isSelectedShopDetailTableVisible = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
@@ -619,6 +643,17 @@ const shopSalesTotalDiscount = computed(() => {
     return amount + row.discount * row.dispatchQuantity;
   }, 0);
 });
+const shopSalesReturnItems = computed(() => {
+  if (selectedInventoryData.value.some((toggle) => toggle.returnItem)) {
+    return selectedInventoryData.value
+      .filter((row) => row.returnItem)
+      .reduce((amount: number, row) => {
+        return amount + row.retailPrice * row.dispatchQuantity;
+      }, 0);
+  } else {
+    return 0;
+  }
+});
 const shopSalesNetAmount = computed(() => {
   const totalAmount = selectedInventoryData.value.reduce(
     (amount: number, row) => {
@@ -626,7 +661,9 @@ const shopSalesNetAmount = computed(() => {
     },
     0
   );
-  const netAmount = totalAmount - shopSalesTotalDiscount.value;
+  const netAmountBeforeReturns = totalAmount - shopSalesTotalDiscount.value;
+  const returnItemsAmount = shopSalesReturnItems.value;
+  const netAmount = netAmountBeforeReturns - returnItemsAmount;
   return netAmount;
 });
 const handleUpdateShopSaleDiscount = (newValue: string | null | number) => {
@@ -753,7 +790,6 @@ const handleUpdatedispatchQuantity = (
       selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
     ) {
       selectedRecord.dispatchQuantity =
-        // selectedRecord.quantity +
         0 + (selectedRecord.alreadyDispatchedQuantity ?? 0);
       selectedRecord.errorMessage = 'Invalid Quantity !';
       $q.notify({
@@ -809,7 +845,6 @@ const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   inventoryDetailList();
 };
-const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
 const handleSelectedData = (payload: IInventoryListResponse[]) => {
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   const filteredOldIdList = oldIdList.filter((oldId) =>
@@ -824,6 +859,7 @@ const handleSelectedData = (payload: IInventoryListResponse[]) => {
         ...item,
         dispatchQuantity: 0,
         discount: 0,
+        returnItem: false,
       });
     }
   });
@@ -949,6 +985,7 @@ const handleAddShopSale = async () => {
         inventoryId: record.inventoryId,
         quantity: record.dispatchQuantity,
         discount: record.discount,
+        returnItem: record.returnItem,
       })),
     };
     const response = await addShopSaleManagementApi(payload);
@@ -992,6 +1029,14 @@ const isPersonCodeEmpty = () => {
 const handleHoldBill = async () => {
   const res = isPersonCodeEmpty();
   if (!res) return;
+  if (selectedInventoryData.value.some((record) => record.returnItem)) {
+    $q.notify({
+      message:
+        'Return item is selected. Please disable the "Return Item" option or save the bill without holding.',
+      type: 'warning',
+    });
+    return;
+  }
   try {
     isLoading.value = true;
     const payload = {
