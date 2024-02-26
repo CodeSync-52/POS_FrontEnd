@@ -342,6 +342,9 @@
                     style="max-width: 200px"
                   />
                 </div>
+                <span v-if="props.row.errorMessage" class="text-red text-sm">{{
+                  props.row.errorMessage
+                }}</span>
               </q-td>
             </template>
             <template v-slot:body-cell-productName="props">
@@ -575,18 +578,26 @@ function handleUpdateAmount(newVal: unknown, scope: { value: string }) {
   }
 }
 const handleUpdateQuantity = (
-  newVal: unknown,
+  newVal: string | number | null,
   row: ISelectedWholeSaleArticleData
 ) => {
   if (typeof newVal === 'string') {
     const val = parseInt(newVal);
-    if (val >= 0 && val <= (row.masterStock ?? 0)) {
+    const masterStock = row.masterStock ?? 0;
+    if (val >= 0 && val <= masterStock) {
       row.quantity = val;
-    }
-    if (val >= (row.masterStock ?? 0)) {
-      row.quantity = row.masterStock;
+      row.errorMessage = '';
+    } else if (val > masterStock) {
+      row.quantity = 0;
+      row.errorMessage = 'Invalid Quantity!';
+      $q.notify({
+        message: `Product ${row.productName} quantity is more than the available quantity. Please add the quantity again!`,
+        color: 'red',
+        icon: 'warning',
+      });
     } else if (val < 0 || !val) {
       row.quantity = 0;
+      row.errorMessage = '';
     }
   }
 };
