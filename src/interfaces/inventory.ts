@@ -39,5 +39,5 @@ export interface ISaleShopSelectedInventory
   extends IInventoryListResponseWithDispatchQuantity {
   discount: number;
   alreadyDispatchedQuantity?: number;
-  returnItem?: boolean;
+  isReturn?: boolean;
 }

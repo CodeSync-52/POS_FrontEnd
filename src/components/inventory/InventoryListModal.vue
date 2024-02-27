@@ -70,6 +70,7 @@
               class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
               icon="search"
               label="Search"
+              :disable="isBothInputsEmpty"
               @click="handleSelectedFilters"
             />
             <q-btn
@@ -86,6 +87,7 @@
         :columns="InventoryListColumn"
         @request="handlePagination($event.pagination)"
         :rows="selectedShopDetailList"
+        :rows-per-page-options="[0]"
         v-model:pagination="InventoryPagination"
         row-key="inventoryId"
         selection="multiple"
@@ -147,7 +149,7 @@ import {
   IPagination,
 } from 'src/interfaces';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { onMounted, onUpdated, ref } from 'vue';
+import { onMounted, onUpdated, ref, computed } from 'vue';
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const selectedShopDetailList = ref<IInventoryListResponse[]>([]);
@@ -188,7 +190,6 @@ const selectedShopRecords = ref<IInventoryListResponse[]>([
 onMounted(() => {
   articleList.value = props.articleRecords;
   isFetchingArticleList.value = props.isFetchingArticle;
-  selectedShopDetailList.value = props.inventoryList;
   InventoryPagination.value = props.pagination;
   isLoading.value = props.isFetchingRecords;
 });
@@ -200,13 +201,9 @@ onUpdated(() => {
 const emit = defineEmits<{
   (event: 'handle-pagination', pagination: IPagination): void;
   (event: 'filter-article-list', val: string): void;
+  (event: 'clear-filter'): void;
   (
     event: 'selected-inventory-filters',
-    filters: IInventoryFilterSearch,
-    callback: () => void
-  ): void;
-  (
-    event: 'removed-inventory-filters',
     filters: IInventoryFilterSearch,
     callback: () => void
   ): void;
@@ -222,11 +219,12 @@ const handleSelectedFilters = () => {
 };
 const handleRemoveInventoryFilter = () => {
   isLoading.value = true;
-  emit(
-    'removed-inventory-filters',
-    filterSearch.value,
-    () => (isLoading.value = false)
-  );
+  filterSearch.value.ProductId = null;
+  filterSearch.value.ProductCode = null;
+  selectedShopDetailList.value = [];
+  selectedShopRecords.value = [];
+  isLoading.value = false;
+  emit('clear-filter');
 };
 const filterProduct = (val: string, update: CallableFunction) => {
   update(() => {
@@ -245,7 +243,9 @@ const getImageUrl = (base64Image: string) => {
   }
   return '';
 };
-
+const isBothInputsEmpty = computed(() => {
+  return !filterSearch.value.ProductId && !filterSearch.value.ProductCode;
+});
 const handlePagination = (newVal: Omit<IPagination, 'rowsNumber'>) => {
   const selectedPagination = {
     ...newVal,

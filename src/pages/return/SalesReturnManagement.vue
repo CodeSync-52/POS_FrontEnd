@@ -206,7 +206,7 @@
                         color="red"
                         unchecked-icon="clear"
                         size="sm"
-                        v-model="props.row.returnItem"
+                        v-model="props.row.isReturn"
                       />
                       <q-tooltip class="bg-red" :offset="[10, 10]">
                         Return Item
@@ -266,7 +266,7 @@
                     @update:model-value="
                       handleUpdateDiscount($event, props.row)
                     "
-                    :disable="props.row.returnItem"
+                    :disable="props.row.isReturn"
                     type="number"
                     dense
                     outlined
@@ -434,9 +434,9 @@
         @filter-article-list="handleFilterArticle"
         @selected-data="handleSelectedData"
         @handle-pagination="handlePagination"
+        @clear-filter="handleClearFilters"
         :inventory-list="selectedShopDetailRecords"
         @selected-inventory-filters="handleSelectedInventoryFilters"
-        @removed-inventory-filters="handleRemoveInventoryFilter"
       />
     </q-dialog>
   </div>
@@ -564,8 +564,6 @@ onMounted(async () => {
     }
   } else {
     titleAction.value = pageTitle;
-    inventoryDetailList();
-    getArticleList();
     getShopList();
   }
 });
@@ -575,8 +573,6 @@ watch(
     if (newPath === '/shop-sale') {
       titleAction.value = pageTitle;
       selectedInventoryData.value = [];
-      inventoryDetailList();
-      getArticleList();
       getShopList();
     }
   }
@@ -644,9 +640,9 @@ const shopSalesTotalDiscount = computed(() => {
   }, 0);
 });
 const shopSalesReturnItems = computed(() => {
-  if (selectedInventoryData.value.some((toggle) => toggle.returnItem)) {
+  if (selectedInventoryData.value.some((toggle) => toggle.isReturn)) {
     return selectedInventoryData.value
-      .filter((row) => row.returnItem)
+      .filter((row) => row.isReturn)
       .reduce((amount: number, row) => {
         return amount + row.retailPrice * row.dispatchQuantity;
       }, 0);
@@ -806,6 +802,9 @@ const handleUpdatedispatchQuantity = (
 const handleFilterArticle = (searchedArticle: string) => {
   getArticleList(searchedArticle);
 };
+const handleClearFilters = () => {
+  selectedShopDetailRecords.value = [];
+};
 const handleSelectedInventoryFilters = (
   selectedInventoryFilters: IInventoryFilterSearch,
   callback: () => void
@@ -813,18 +812,6 @@ const handleSelectedInventoryFilters = (
   filterSearch.value.ProductCode = selectedInventoryFilters.ProductCode;
   filterSearch.value.ProductId = selectedInventoryFilters.ProductId;
   inventoryDetailList().then(() => callback());
-};
-const handleRemoveInventoryFilter = async (
-  selectedInventoryFilters: IInventoryFilterSearch,
-  callback: () => void
-) => {
-  if (!Object.values(filterSearch.value).every((filter) => filter === null)) {
-    filterSearch.value.ProductCode = null;
-    filterSearch.value.ProductId = null;
-    selectedInventoryFilters.ProductCode = null;
-    selectedInventoryFilters.ProductId = null;
-    inventoryDetailList().then(() => callback());
-  }
 };
 const handleUpdateDiscount = (
   newVal: string | number | null,
@@ -859,7 +846,7 @@ const handleSelectedData = (payload: IInventoryListResponse[]) => {
         ...item,
         dispatchQuantity: 0,
         discount: 0,
-        returnItem: false,
+        isReturn: false,
       });
     }
   });
@@ -887,7 +874,7 @@ const getArticleList = async (productName?: string) => {
   try {
     const res = await articleListApi({
       PageNumber: 1,
-      PageSize: 50,
+      PageSize: 10000,
       Status: 'Active',
       Name: productName,
     });
@@ -985,7 +972,7 @@ const handleAddShopSale = async () => {
         inventoryId: record.inventoryId,
         quantity: record.dispatchQuantity,
         discount: record.discount,
-        returnItem: record.returnItem,
+        isReturn: record.isReturn,
       })),
     };
     const response = await addShopSaleManagementApi(payload);
@@ -997,8 +984,7 @@ const handleAddShopSale = async () => {
       shopSale.value.salePersonCode = '';
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
-      getArticleList();
-      inventoryDetailList();
+      selectedShopDetailRecords.value = [];
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
@@ -1029,7 +1015,7 @@ const isPersonCodeEmpty = () => {
 const handleHoldBill = async () => {
   const res = isPersonCodeEmpty();
   if (!res) return;
-  if (selectedInventoryData.value.some((record) => record.returnItem)) {
+  if (selectedInventoryData.value.some((record) => record.isReturn)) {
     $q.notify({
       message:
         'Return item is selected. Please disable the "Return Item" option or save the bill without holding.',
@@ -1058,8 +1044,7 @@ const handleHoldBill = async () => {
       shopSale.value.salePersonCode = '';
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
-      getArticleList();
-      inventoryDetailList();
+      selectedShopDetailRecords.value = [];
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';

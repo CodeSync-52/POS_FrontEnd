@@ -31,7 +31,7 @@ export const newArticleApi = async ({
 export const articleListApi = async (
   {
     PageNumber = 1,
-    PageSize = 50,
+    PageSize = 10000,
     Name,
     Status,
   }: {
