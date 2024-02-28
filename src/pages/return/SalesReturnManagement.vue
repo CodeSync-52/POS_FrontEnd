@@ -1018,7 +1018,7 @@ const handleHoldBill = async () => {
   if (selectedInventoryData.value.some((record) => record.isReturn)) {
     $q.notify({
       message:
-        'Return item is selected. Please disable the "Return Item" option or save the bill without holding.',
+        'You cannot HOLD this bill, as it contains a Return Item.',
       type: 'warning',
     });
     return;
