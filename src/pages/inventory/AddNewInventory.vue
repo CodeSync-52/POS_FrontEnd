@@ -109,10 +109,7 @@
                   <div class="w-8 h-8 rounded-full overflow-hidden">
                     <img
                       class="w-full h-full object-cover"
-                      :src="
-                        getImageUrl(product.productImage) ||
-                        'assets/default-image.png'
-                      "
+                      :src="product.productImage || 'assets/default-image.png'"
                       alt="img"
                     />
                   </div>
@@ -737,12 +734,6 @@ function setProductKeys() {
     });
   });
 }
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
-};
 const showBarcodeScreen = ref(false);
 const handleSaveInventory = () => {
   const selectedInventorylist: IProductWithVariantDTOs[] = [];

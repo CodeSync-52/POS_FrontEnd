@@ -54,10 +54,7 @@
                 >
                   <img
                     class="w-full h-full object-cover"
-                    :src="
-                      getImageUrl(props.row.productImage) ||
-                      'assets/default-image.png'
-                    "
+                    :src="props.row.productImage || 'assets/default-image.png'"
                     alt="article"
                   />
                 </div>
@@ -251,12 +248,6 @@ watch(props, setFilteredData, {
 });
 const handleSave = () => {
   emit('selected-data', selectedArticles.value);
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 const handlePagination = (newVal: Omit<IPagination, 'rowsNumber'>) => {
   const selectedPagination = {

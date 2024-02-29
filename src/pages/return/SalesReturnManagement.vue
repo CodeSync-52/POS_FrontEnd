@@ -139,8 +139,7 @@
                     <img
                       class="w-full h-full object-cover"
                       :src="
-                        getImageUrl(props.row.productImage) ||
-                        'assets/default-image.png'
+                        props.row.productImage || 'assets/default-image.png'
                       "
                       alt="img"
                     />
@@ -680,16 +679,11 @@ const handleUpdateFromShop = (newVal: IShopResponse) => {
 };
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
 };
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
-};
+
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
@@ -1017,8 +1011,7 @@ const handleHoldBill = async () => {
   if (!res) return;
   if (selectedInventoryData.value.some((record) => record.isReturn)) {
     $q.notify({
-      message:
-        'You cannot HOLD this bill, as it contains a Return Item.',
+      message: 'You cannot HOLD this bill, as it contains a Return Item.',
       type: 'warning',
     });
     return;
