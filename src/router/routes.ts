@@ -217,14 +217,14 @@ export const routeList = [
   },
   {
     path: '/shop-sale/:id/preview',
-    component: () => import('src/pages/return/SalesReturnManagement.vue'),
+    component: () => import('src/pages/return/PreviewSale.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
     path: '/shop-sale/:id/editHoldBill',
-    component: () => import('src/pages/return/SalesReturnManagement.vue'),
+    component: () => import('src/pages/return/PreviewSale.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },

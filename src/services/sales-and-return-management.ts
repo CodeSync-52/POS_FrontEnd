@@ -3,7 +3,7 @@ import {
   IGenericResponse,
   ISaleFilterList,
   ISaleListResponse,
-  ISaleShopSelectedInventory,
+  IPreviewSaleResponse,
   ISaleDetail,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
@@ -85,7 +85,7 @@ export const cancelSaleApi = async (saleId: number) => {
   return res;
 };
 export const previewSaleApi = async (saleId: number) => {
-  const res = await makeApiCall<IGenericResponse<ISaleShopSelectedInventory[]>>(
+  const res = await makeApiCall<IGenericResponse<IPreviewSaleResponse>>(
     {
       url: 'api/sale/preview',
       method: 'GET',

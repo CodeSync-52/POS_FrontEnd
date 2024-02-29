@@ -1059,56 +1059,56 @@ const handleHoldBill = async () => {
     isLoading.value = false;
   }
 };
-const previewBill = async (saleId: number) => {
-  try {
-    isLoading.value = true;
-    const res = await previewSaleApi(saleId);
-    if (res.type === 'Success') {
-      const PreviewRecords = selectedShopDetailRecords.value
-        .filter((inventoryRecord) =>
-          res.data.some(
-            (selectedRecord) =>
-              selectedRecord.inventoryId === inventoryRecord.inventoryId
-          )
-        )
-        .map((record) => record.quantity);
-      selectedInventoryData.value.push(
-        ...res.data.map(
-          (inventoryItem: ISaleShopSelectedInventory, index: number) => ({
-            discount: inventoryItem.discount,
-            dispatchQuantity: inventoryItem.quantity,
-            addedDate: inventoryItem.addedDate,
-            productId: inventoryItem.productId,
-            productName: inventoryItem.productName,
-            productImage: inventoryItem.productImage,
-            inventoryId: inventoryItem.inventoryId,
-            productCode: inventoryItem.productCode,
-            variantId_1: inventoryItem.variantId_1,
-            variantId_2: inventoryItem.variantId_2,
-            retailPrice: inventoryItem.retailPrice,
-            alreadyDispatchedQuantity: inventoryItem.quantity,
-            quantity:
-              titleAction.value === 'Preview Sale Bill'
-                ? inventoryItem.quantity
-                : PreviewRecords[index],
-            saleDetailId: inventoryItem.saleDetailId,
-          })
-        )
-      );
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  } finally {
-    isLoading.value = false;
-  }
-};
+// const previewBill = async (saleId: number) => {
+//   try {
+//     isLoading.value = true;
+//     const res = await previewSaleApi(saleId);
+//     if (res.type === 'Success') {
+//       const PreviewRecords = selectedShopDetailRecords.value
+//         .filter((inventoryRecord) =>
+//           res.data.some(
+//             (selectedRecord) =>
+//               selectedRecord.inventoryId === inventoryRecord.inventoryId
+//           )
+//         )
+//         .map((record) => record.quantity);
+//       selectedInventoryData.value.push(
+//         ...res.data.map(
+//           (inventoryItem: ISaleShopSelectedInventory, index: number) => ({
+//             discount: inventoryItem.discount,
+//             dispatchQuantity: inventoryItem.quantity,
+//             addedDate: inventoryItem.addedDate,
+//             productId: inventoryItem.productId,
+//             productName: inventoryItem.productName,
+//             productImage: inventoryItem.productImage,
+//             inventoryId: inventoryItem.inventoryId,
+//             productCode: inventoryItem.productCode,
+//             variantId_1: inventoryItem.variantId_1,
+//             variantId_2: inventoryItem.variantId_2,
+//             retailPrice: inventoryItem.retailPrice,
+//             alreadyDispatchedQuantity: inventoryItem.quantity,
+//             quantity:
+//               titleAction.value === 'Preview Sale Bill'
+//                 ? inventoryItem.quantity
+//                 : PreviewRecords[index],
+//             saleDetailId: inventoryItem.saleDetailId,
+//           })
+//         )
+//       );
+//     }
+//   } catch (e) {
+//     let message = 'Unexpected Error Occurred';
+//     if (isPosError(e)) {
+//       message = e.message;
+//     }
+//     $q.notify({
+//       message,
+//       type: 'negative',
+//     });
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
 const handleAddSaleItem = async (saleId: number, saleDetails: ISaleDetail) => {
   try {
     const res = await addSaleItemApi({
