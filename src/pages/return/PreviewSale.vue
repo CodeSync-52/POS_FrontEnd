@@ -79,6 +79,7 @@
         :loading="isLoading"
         :rows="SaleSummary.saleDetailInfos"
         :columns="shopSalePreviewTableColumn"
+        :visible-columns="routerPath.includes('preview') ? ['productImage', 'productName','dispatchQuantity', 'amount', 'discount', 'isReturn'] : ['productImage', 'productName', 'availableQuantity', 'retailPrice', 'dispatchQuantity', 'amount', 'discount', 'isReturn', 'action']"
         :rows-per-page-options="[0]"
         row-key="id"
       >
@@ -117,11 +118,11 @@
           ref="dispatchQuantityInput"
           :min="0"
           :max=" routerPath.includes('editHoldBill')?
-          props.row.alreadyDispatchedQuantity +
+          props.row.dispatchQuantity +
           SaleSummary.saleDetailInfos.find(
                   (record) =>
                     record.inventoryId === props.row.inventoryId
-                )?.quantity
+                )?.availableQuantity
                 : props.row.quantity
           "
           @update:model-value="
@@ -147,7 +148,6 @@
       <q-td :props="props">
         <q-input
           v-model="props.row.discount"
-
           :disable="props.row.isReturn"
           type="number"
           dense
@@ -155,9 +155,7 @@
           color="btn-primary"
           class="w-[150px]"
         />
-        <!-- @update:model-value="
-        handleUpdateDiscount($event, props.row)
-      " -->
+
       </q-td>
     </template>
 
@@ -336,6 +334,8 @@ const dialogClose = (e: KeyboardEvent) => {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
+
+
 const handleSelectedData = (payload: ISaleInfo[]) => {
 
   const oldIdList = SaleSummary.value.saleDetailInfos.map((item) => item.inventoryId);
@@ -374,14 +374,14 @@ const handleUpdatedispatchQuantity = (
   if (typeof newVal === 'string') {
     const val = parseInt(newVal);
     if (!val || val < 0) {
-      selectedRecord.quantity = 0;
+      selectedRecord.availableQuantity = 0;
       selectedRecord.errorMessage = '';
     } else if (
       val >
-      selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
+      selectedRecord.availableQuantity + (selectedRecord.dispatchQuantity ?? 0)
     ) {
-      selectedRecord.quantity =
-        0 + (selectedRecord.alreadyDispatchedQuantity ?? 0);
+      selectedRecord.availableQuantity =
+        0 + (selectedRecord.dispatchQuantity ?? 0);
       selectedRecord.errorMessage = 'Invalid Quantity !';
       $q.notify({
         message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
@@ -389,7 +389,7 @@ const handleUpdatedispatchQuantity = (
         icon: 'warning',
       });
     } else {
-      selectedRecord.quantity = val;
+      selectedRecord.availableQuantity = val;
       selectedRecord.errorMessage = '';
     }
   }
@@ -500,7 +500,7 @@ const handleEditBill = async (id: number) => {
     (row) => row.inventoryId === id
   );
   if (selectedRow) {
-    if (selectedRow.quantity === 0) {
+    if (selectedRow.dispatchQuantity === 0) {
       let message = 'Dispatch Quantity Required';
       $q.notify({
         message,
@@ -509,13 +509,13 @@ const handleEditBill = async (id: number) => {
       });
     } else if (selectedRow.saleDetailId) {
       await handleUpdateSaleItem(selectedRow.saleDetailId, {
-        quantity: selectedRow.quantity,
+        quantity: selectedRow.dispatchQuantity,
         discount: selectedRow.discount,
       });
     } else {
       const saleDetails = {
         inventoryId: selectedRow.inventoryId,
-        quantity: selectedRow.quantity,
+        quantity: selectedRow.dispatchQuantity,
         discount: selectedRow.discount,
       };
       await handleAddSaleItem(saleId, saleDetails);

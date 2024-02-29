@@ -112,19 +112,25 @@ export const shopSalePreviewTableColumn: QTableColumn<ISaleInfo>[] =
     {
       name: 'availableQuantity',
       label: 'Available Quantity',
-      field: (row) => row.quantity,
+      field: (row) => row.availableQuantity,
       align: 'left',
     },
     {
       name: 'dispatchQuantity',
       label: 'Dispatch Quantity',
-      field: (row) => row.quantity,
+      field: (row) => row.dispatchQuantity,
       align: 'left',
     },
     {
       name: 'retailPrice',
       label: 'Retail Price',
       field: (row) => row.retailPrice,
+      align: 'left',
+    },
+    {
+      name: 'amount',
+      label: 'Amount',
+      field: (row) => row.amount,
       align: 'left',
     },
     {
@@ -146,6 +152,8 @@ export const shopSalePreviewTableColumn: QTableColumn<ISaleInfo>[] =
       align: 'left',
     },
   ];
+
+
 export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
   {
     name: 'expenseName',

@@ -82,21 +82,18 @@ export interface IPreviewSaleResponse {
   saleDetailInfos: ISaleInfo[];
 }
 export interface ISaleInfo {
-        saleDetailId: number,
-        returnSaleDetailId: number,
-        productId: number,
-        productCode: string,
-        quantity: number,
-        dispatchQuantity?: number,
-        discount: number,
-        amount: number,
-        inventoryId: number,
-        productName: string,
-        productImage: string,
-        retailPrice: number,
-        isReturn: boolean,
-        alreadyDispatchedQuantity?: number;
-        errorMessage?: string;
+  saleDetailId: number,
+  returnSaleDetailId: number,
+  productId: number,
+  productCode: string,
+  availableQuantity: number,
+  dispatchQuantity?: number,
+  discount: number,
+  amount: number,
+  inventoryId: number,
+  productName: string,
+  productImage: string,
+  retailPrice: number,
+  isReturn: boolean,
+  errorMessage?: string;
 }
-
-

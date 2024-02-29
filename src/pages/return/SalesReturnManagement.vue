@@ -554,12 +554,10 @@ onMounted(async () => {
   if (selectedId) {
     if (routerPath.includes('preview')) {
       titleAction.value = 'Preview Sale Bill';
-      previewBill(Number(selectedId));
     } else if (routerPath.includes('editHoldBill')) {
       titleAction.value = 'Edit Hold Bill';
       isLoading.value = true;
       await inventoryDetailList();
-      previewBill(Number(selectedId));
       isLoading.value = false;
     }
   } else {
@@ -1059,145 +1057,6 @@ const handleHoldBill = async () => {
     isLoading.value = false;
   }
 };
-// const previewBill = async (saleId: number) => {
-//   try {
-//     isLoading.value = true;
-//     const res = await previewSaleApi(saleId);
-//     if (res.type === 'Success') {
-//       const PreviewRecords = selectedShopDetailRecords.value
-//         .filter((inventoryRecord) =>
-//           res.data.some(
-//             (selectedRecord) =>
-//               selectedRecord.inventoryId === inventoryRecord.inventoryId
-//           )
-//         )
-//         .map((record) => record.quantity);
-//       selectedInventoryData.value.push(
-//         ...res.data.map(
-//           (inventoryItem: ISaleShopSelectedInventory, index: number) => ({
-//             discount: inventoryItem.discount,
-//             dispatchQuantity: inventoryItem.quantity,
-//             addedDate: inventoryItem.addedDate,
-//             productId: inventoryItem.productId,
-//             productName: inventoryItem.productName,
-//             productImage: inventoryItem.productImage,
-//             inventoryId: inventoryItem.inventoryId,
-//             productCode: inventoryItem.productCode,
-//             variantId_1: inventoryItem.variantId_1,
-//             variantId_2: inventoryItem.variantId_2,
-//             retailPrice: inventoryItem.retailPrice,
-//             alreadyDispatchedQuantity: inventoryItem.quantity,
-//             quantity:
-//               titleAction.value === 'Preview Sale Bill'
-//                 ? inventoryItem.quantity
-//                 : PreviewRecords[index],
-//             saleDetailId: inventoryItem.saleDetailId,
-//           })
-//         )
-//       );
-//     }
-//   } catch (e) {
-//     let message = 'Unexpected Error Occurred';
-//     if (isPosError(e)) {
-//       message = e.message;
-//     }
-//     $q.notify({
-//       message,
-//       type: 'negative',
-//     });
-//   } finally {
-//     isLoading.value = false;
-//   }
-// };
-const handleAddSaleItem = async (saleId: number, saleDetails: ISaleDetail) => {
-  try {
-    const res = await addSaleItemApi({
-      saleId,
-      saleDetails: { ...saleDetails },
-    });
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        color: 'green',
-      });
-      isLoading.value = true;
-      selectedInventoryData.value = [];
-      await inventoryDetailList();
-      isLoading.value = false;
-      previewBill(Number(selectedId));
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      icon: 'error',
-      color: 'red',
-    });
-  }
-};
-const handleEditBill = async (id: number) => {
-  const saleId = Number(selectedId);
-  const selectedRow = selectedInventoryData.value.find(
-    (row) => row.inventoryId === id
-  );
-  if (selectedRow) {
-    if (selectedRow.dispatchQuantity === 0) {
-      let message = 'Dispatch Quantity Required';
-      $q.notify({
-        message,
-        icon: 'error',
-        color: 'orange',
-      });
-    } else if (selectedRow.saleDetailId) {
-      await handleUpdateSaleItem(selectedRow.saleDetailId, {
-        quantity: selectedRow.dispatchQuantity,
-        discount: selectedRow.discount,
-      });
-    } else {
-      const saleDetails = {
-        inventoryId: selectedRow.inventoryId,
-        quantity: selectedRow.dispatchQuantity,
-        discount: selectedRow.discount,
-      };
-      await handleAddSaleItem(saleId, saleDetails);
-    }
-  }
-};
-const handleUpdateSaleItem = async (
-  saleDetailId: number,
-  saleDetails: ISaleDetail
-) => {
-  try {
-    const res = await updateSaleItemApi({
-      saleDetailId,
-      saleDetails: { ...saleDetails },
-    });
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        color: 'green',
-      });
-      isLoading.value = true;
-      selectedInventoryData.value = [];
-      await inventoryDetailList();
-      isLoading.value = false;
-      previewBill(Number(selectedId));
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      icon: 'error',
-      color: 'red',
-    });
-  }
-};
 
 const handleCompleteSale = async (saleId: number, saleStatus: number) => {
   try {
@@ -1219,35 +1078,6 @@ const handleCompleteSale = async (saleId: number, saleStatus: number) => {
       type: 'negative',
     });
   }
-};
-const handleDeleteSaleItem = async (saleId: number, saleDetailId: number) => {
-  try {
-    const response = await deleteSaleApi({ saleId, saleDetailId });
-    if (response.type === 'Success') {
-      $q.notify({
-        message: response.message,
-        type: 'positive',
-      });
-      const indexToRemove = selectedInventoryData.value.findIndex(
-        (row) => row.saleDetailId === saleDetailId
-      );
-      if (indexToRemove !== -1) {
-        selectedInventoryData.value.splice(indexToRemove, 1);
-      }
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
-  }
-};
-const isDeleteButtonDisabled = (row: ISaleShopSelectedInventory) => {
-  return !row.saleDetailId;
 };
 </script>
 <style scoped lang="scss">
