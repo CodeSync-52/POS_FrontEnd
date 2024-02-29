@@ -454,10 +454,6 @@ import {
 } from 'src/interfaces';
 import {
   articleListApi,
-  previewSaleApi,
-  addSaleItemApi,
-  deleteSaleApi,
-  updateSaleItemApi,
   changeSaleStatusApi,
 } from 'src/services';
 import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
@@ -467,7 +463,6 @@ import {
   IInventoryListResponse,
   IShopResponse,
   EUserRoles,
-  ISaleDetail,
 } from 'src/interfaces';
 import {
   inventoryDetailApi,
