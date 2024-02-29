@@ -318,7 +318,7 @@ const handleImageUpload = (file: File | null) => {
   if (imagePreview.value !== '') {
     URL.revokeObjectURL(imagePreview.value);
     if (isUpdate.value && imageData.value) {
-      imagePreview.value = getImageUrl(imageData.value) || '';
+      imagePreview.value = imageData.value || '';
     } else {
       imagePreview.value = '';
     }
@@ -327,12 +327,6 @@ const handleImageUpload = (file: File | null) => {
     const url = URL.createObjectURL(file);
     imagePreview.value = url;
   }
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 async function addNewArticle() {
   if (isLoading.value) return;
@@ -398,7 +392,7 @@ const getArticleDetail = async (productId: number) => {
     const res = await articleDetailApi(productId);
     if (res.type === 'Success') {
       newArticle.value = { ...res.data, productImage: null };
-      const previewUrl = getImageUrl(res.data.productImage);
+      const previewUrl = res.data.productImage;
       if (res.data.productImage) {
         imageData.value = res.data.productImage;
       }

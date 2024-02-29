@@ -167,7 +167,7 @@ onMounted(() => {
     articleInfo.value.wholeSalePrice = props.selectedRow.wholeSalePrice;
   }
   if (props.selectedRow?.productImage) {
-    const properBase64 = getImageUrl(props.selectedRow?.productImage);
+    const properBase64 = props.selectedRow?.productImage;
     if (properBase64) {
       imagePreview.value = properBase64;
     }
@@ -175,12 +175,6 @@ onMounted(() => {
     articleInfo.value.productImage = image;
   }
 });
-const getImageUrl = (base64Image: string) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
-};
 function base64ToFile(
   base64String: string | undefined,
   fileName = 'image.jpeg'

@@ -132,9 +132,7 @@
                 >
                   <img
                     class="w-full h-full object-cover"
-                    :src="
-                      getImageUrl(props.row.image) || 'assets/default-image.png'
-                    "
+                    :src="props.row.image || 'assets/default-image.png'"
                     alt="img"
                   />
                 </div>
@@ -361,9 +359,7 @@
                 >
                   <img
                     class="object-cover h-full w-full"
-                    :src="
-                      getImageUrl(props.row.image) || 'assets/default-image.png'
-                    "
+                    :src="props.row.image || 'assets/default-image.png'"
                     alt="img"
                   />
                 </div>
@@ -641,15 +637,9 @@ const addNewBill = async (newBillInfo: INewBillData) => {
 };
 const handleShowImagePreview = (selectedImage: string) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 const getBillDetailInfo = async (BillId: number) => {
   if (isLoading.value) return;
@@ -819,7 +809,7 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
   array.forEach((item: IBillGenerationDetailsInfoProductList) => {
     const row = [
       {
-        image: 'data:image/png;base64,' + (item.image || defaultImage.value),
+        image: item.image || defaultImage.value,
         width: 50,
         height: 50,
         margin: 2,

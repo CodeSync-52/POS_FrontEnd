@@ -114,10 +114,7 @@
             >
               <img
                 class="w-full h-full object-cover"
-                :src="
-                  getImageUrl(props.row.productImage) ||
-                  'assets/default-image.png'
-                "
+                :src="props.row.productImage || 'assets/default-image.png'"
                 alt="img"
               />
             </div>
@@ -256,7 +253,7 @@ const isPreviewImageModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
 };
@@ -294,12 +291,6 @@ onMounted(() => {
 });
 const handleFilterSearch = () => {
   getArticleList();
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 const handleEditStatusPopup = (row: IArticleData) => {
   selectedStatus.value = row.status;

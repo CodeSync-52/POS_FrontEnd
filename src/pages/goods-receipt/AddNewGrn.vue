@@ -117,10 +117,7 @@
                 >
                   <img
                     class="w-full h-full object-cover"
-                    :src="
-                      getImageUrl(props.row.productImage) ||
-                      'assets/default-image.png'
-                    "
+                    :src="props.row.productImage || 'assets/default-image.png'"
                     alt="img"
                   />
                 </div>
@@ -503,15 +500,9 @@ const isButtonDisable = computed(() => {
 
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
-};
-const getImageUrl = (base64Image: string) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
