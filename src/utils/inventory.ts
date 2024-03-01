@@ -1,7 +1,6 @@
 import { QTableColumn } from 'quasar';
 import { IInventoryListResponse } from 'src/interfaces';
 export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
-
   {
     name: 'productName',
     label: 'Product Name',

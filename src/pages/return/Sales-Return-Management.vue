@@ -452,10 +452,7 @@ import {
   getRoleModuleDisplayName,
   EUserModules,
 } from 'src/interfaces';
-import {
-  articleListApi,
-  changeSaleStatusApi,
-} from 'src/services';
+import { articleListApi, changeSaleStatusApi } from 'src/services';
 import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
 import moment from 'moment';
 import { useQuasar } from 'quasar';

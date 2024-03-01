@@ -2,9 +2,7 @@
   <q-card class="!max-w-[800px]">
     <q-card-section>
       <div class="row justify-between items-center mb-2">
-        <span class="text-lg font-medium">
-          Select Articles
-        </span>
+        <span class="text-lg font-medium"> Select Articles </span>
         <span
           ><q-btn
             class="close-modal"
@@ -36,7 +34,7 @@
             color="btn-primary"
             option-label="name"
             option-value="productId"
-            >
+          >
             <template v-slot:no-option>
               <q-item>
                 <q-item-section class="text-grey"> No results </q-item-section>
@@ -156,14 +154,14 @@ import { articleListApi, inventoryDetailApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { ref} from 'vue';
+import { ref } from 'vue';
 
-const $q = useQuasar()
-const authStore = useAuthStore()
+const $q = useQuasar();
+const authStore = useAuthStore();
 const articleList = ref<IArticleData[]>([]);
-const selected = ref([])
+const selected = ref([]);
 const apiController = ref<AbortController | null>(null);
-const isFetchingRecords = ref(false)
+const isFetchingRecords = ref(false);
 const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
@@ -194,20 +192,20 @@ const getImageUrl = (base64Image: string | null) => {
   }
   return '';
 };
-    const emit = defineEmits<{
-      (event: 'selected-data', payload: ISaleInfo[]): void;
-    }>();
-    const handleSaveSelectedInventory = () => {
+const emit = defineEmits<{
+  (event: 'selected-data', payload: ISaleInfo[]): void;
+}>();
+const handleSaveSelectedInventory = () => {
   emit('selected-data', selected.value);
 };
-const handleSearchArticles =()=>{
-  inventoryDetailList()
-}
-const handleFilterArticles=(value:any,update:CallableFunction)=>{
-  update(()=>{
-    getArticleList(value)
-  })
-}
+const handleSearchArticles = () => {
+  inventoryDetailList();
+};
+const handleFilterArticles = (value: any, update: CallableFunction) => {
+  update(() => {
+    getArticleList(value);
+  });
+};
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;

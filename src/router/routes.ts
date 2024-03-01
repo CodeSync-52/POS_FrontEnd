@@ -182,7 +182,7 @@ export const routeList = [
   },
   {
     path: '/shop-sale',
-    component: () => import('src/pages/return/SalesReturnManagement.vue'),
+    component: () => import('src/pages/return/Sales-Return-Management.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
@@ -196,42 +196,42 @@ export const routeList = [
   },
   {
     path: '/shop-sale/today-sale-summary',
-    component: () => import('src/pages/return/TodaySaleSummary.vue'),
+    component: () => import('src/pages/return/Today-Sale-Summary.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
     path: '/shop-sale/all-bills',
-    component: () => import('src/pages/return/AllBills.vue'),
+    component: () => import('src/pages/return/All-Bills.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
     path: '/shop-sale/hold-bills',
-    component: () => import('src/pages/return/AllBills.vue'),
+    component: () => import('src/pages/return/All-Bills.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
     path: '/shop-sale/:id/preview',
-    component: () => import('src/pages/return/PreviewSale.vue'),
+    component: () => import('src/pages/return/Preview-Sale.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
     path: '/shop-sale/:id/editHoldBill',
-    component: () => import('src/pages/return/PreviewSale.vue'),
+    component: () => import('src/pages/return/Preview-Sale.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
   },
   {
     path: '/expenses',
-    component: () => import('src/pages/expenses/ShopExpenses.vue'),
+    component: () => import('src/pages/expenses/Shop-Expenses.vue'),
     meta: {
       module: EUserModules.SaleAndReturnManagement,
     },
@@ -308,21 +308,22 @@ export const routeList = [
   },
   {
     path: '/shop-account',
-    component: () => import('src/pages/shop-account/ShopAccount.vue'),
+    component: () => import('src/pages/shop-account/Shop-Account.vue'),
     meta: {
       module: EUserModules.CashInCashOutManagement,
     },
   },
   {
     path: '/shop-account/transfer-to-shop-account',
-    component: () => import('src/pages/shop-account/TransferToShopAccount.vue'),
+    component: () =>
+      import('src/pages/shop-account/Transfer-To-Shop-Account.vue'),
     meta: {
       module: EUserModules.CashInCashOutManagement,
     },
   },
   {
     path: '/shop-account/:id',
-    component: () => import('src/pages/shop-account/ShopAccountSummary.vue'),
+    component: () => import('src/pages/shop-account/Shop-Account-Summary.vue'),
     meta: {
       module: EUserModules.CashInCashOutManagement,
     },
