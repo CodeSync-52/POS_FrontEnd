@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <span class="font-semibold text-lg"> {{ titleAction }} </span> -->
     <div class="font-semibold text-lg text-center">
       <div>Invoice Number : {{ SaleSummary.invoiceNumber }}</div>
       <div>
@@ -23,10 +22,7 @@
             {{ SaleSummary.shopName }}
           </span>
         </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Sale Person Code :</span>
-          <span class="md:text-lg"> {{ SaleSummary.salePersonCode }} </span>
-        </div>
+
         <div
           v-if="routerPath.includes('editHoldBill')"
           class="md:flex md:justify-between md:w-full items-center"
@@ -42,20 +38,6 @@
               @click="isInventoryListModalVisible = true"
             />
           </div>
-          <!-- <outside-click-container @outside-click="handleOutsideClick">
-            <q-input
-              autofocus
-              ref="scannedLabelInput"
-              class=" max-w-[200px]"
-              v-model="scannedLabel"
-              :loading="scannedLabelLoading"
-              outlined
-              dense
-              @keydown="dialogClose"
-              label="Scan label"
-              color="btn-primary"
-            />
-          </outside-click-container> -->
         </div>
       </div>
       <div
@@ -70,8 +52,8 @@
           <span class="md:text-lg"> {{ SaleSummary.saleId }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Overall Discounts :</span>
-          <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
+          <span class="font-medium md:text-lg">Sale Person Code :</span>
+          <span class="md:text-lg"> {{ SaleSummary.salePersonCode }} </span>
         </div>
       </div>
     </div>
@@ -98,7 +80,6 @@
                 'retailPrice',
                 'dispatchQuantity',
                 'discount',
-                'isReturn',
                 'action',
               ]
         "
@@ -139,22 +120,16 @@
               v-model="props.row.dispatchQuantity"
               ref="dispatchQuantityInput"
               :min="0"
-              :max="
-                routerPath.includes('editHoldBill')
-                  ? props.row.dispatchQuantity +
-                    SaleSummary.saleDetailInfos.find(
-                      (record) => record.inventoryId === props.row.inventoryId
-                    )?.availableQuantity
-                  : props.row.dispatchQuantity
-              "
+              :max="props.row.availableQuantity"
               dense
               outlined
               class="w-[150px]"
               color="btn-primary"
+              @update:model-value="
+                handleUpdatedispatchQuantity($event, props.row)
+              "
             />
-            <!-- @update:model-value="
-            handleUpdatedispatchQuantity($event, props.row)
-          " -->
+
             <span v-if="props.row.errorMessage" class="text-red text-sm">{{
               props.row.errorMessage
             }}</span>
@@ -173,6 +148,7 @@
               outlined
               color="btn-primary"
               class="w-[150px]"
+              @update:model-value="handleUpdateDiscount($event, props.row)"
             />
           </q-td>
         </template>
@@ -238,6 +214,13 @@
           <span class="md:text-lg"> {{ SaleSummary.totalSalesAmount }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">Total Discount :</span>
+          <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
+        </div>
+        <div
+          v-if="routerPath.includes('preview')"
+          class="md:flex md:justify-between md:w-full items-center"
+        >
           <span class="font-medium md:text-lg">Refund :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalReturnAmount }} </span>
         </div>
@@ -289,7 +272,6 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ISaleInfo, IPreviewSaleResponse, ISaleDetail } from 'src/interfaces';
 import InventoryListModal from 'src/components/inventory/NewInventoryListModal.vue';
-// import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
 import {
   previewSaleApi,
   changeSaleStatusApi,
@@ -308,9 +290,6 @@ const isPreviewImageModalVisible = ref(false);
 const isInventoryListModalVisible = ref(false);
 const titleAction = ref('Preview Sale Bill');
 const selectedPreviewImage = ref('');
-// const scannedLabel = ref('');
-// const scannedLabelInput = ref<null | HTMLDivElement>(null);
-// const scannedLabelLoading = ref(false);
 const routerPath = router.currentRoute.value.fullPath;
 const selectedId: string | string[] = router.currentRoute.value.params.id;
 const SaleSummary = ref<{
@@ -351,12 +330,6 @@ onMounted(async () => {
   }
   console.log(SaleSummary.value.saleDetailInfos);
 });
-// const dialogClose = (e: KeyboardEvent) => {
-//   if (e.key === 'n' || e.key === 'N') {
-//     window.removeEventListener('keypress', handleKeyPress);
-//   }
-// };
-
 const handleSelectedData = (payload: ISaleInfo[]) => {
   const oldIdList = SaleSummary.value.saleDetailInfos.map(
     (item) => item.inventoryId
@@ -366,6 +339,7 @@ const handleSelectedData = (payload: ISaleInfo[]) => {
     if (!oldIdList.includes(item.inventoryId)) {
       SaleSummary.value.saleDetailInfos.push({
         ...item,
+        availableQuantity: item.quantity,
         dispatchQuantity: 0,
         discount: 0,
         isReturn: false,
@@ -375,9 +349,6 @@ const handleSelectedData = (payload: ISaleInfo[]) => {
 
   isInventoryListModalVisible.value = false;
 };
-// const handleOutsideClick = () => {
-//   window.addEventListener('keypress', handleKeyPress);
-// };
 const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
@@ -390,33 +361,44 @@ const handlePreviewImage = (selectedImage: string) => {
     isPreviewImageModalVisible.value = true;
   }
 };
-// const handleUpdatedispatchQuantity = (
-//   newVal: string | number | null,
-//   selectedRecord: ISaleInfo
-// ) => {
-//   if (typeof newVal === 'string') {
-//     const val = parseInt(newVal);
-//     if (!val || val < 0) {
-//       selectedRecord.availableQuantity = 0;
-//       selectedRecord.errorMessage = '';
-//     } else if (
-//       val >
-//       selectedRecord.availableQuantity + (selectedRecord.dispatchQuantity ?? 0)
-//     ) {
-//       selectedRecord.availableQuantity =
-//         0 + (selectedRecord.dispatchQuantity ?? 0);
-//       selectedRecord.errorMessage = 'Invalid Quantity !';
-//       $q.notify({
-//         message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
-//         color: 'red',
-//         icon: 'warning',
-//       });
-//     } else {
-//       selectedRecord.availableQuantity = val;
-//       selectedRecord.errorMessage = '';
-//     }
-//   }
-// };
+const handleUpdatedispatchQuantity = (
+  newVal: string | number | null,
+  selectedRecord: ISaleInfo
+) => {
+  if (typeof newVal === 'string') {
+    const val = parseInt(newVal);
+    if (!val || val < 0) {
+      selectedRecord.dispatchQuantity = 0;
+      selectedRecord.errorMessage = '';
+    } else if (val > selectedRecord.quantity) {
+      selectedRecord.dispatchQuantity = 0;
+      selectedRecord.errorMessage = 'Invalid Quantity !';
+      $q.notify({
+        message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
+        color: 'red',
+        icon: 'warning',
+      });
+    } else {
+      selectedRecord.dispatchQuantity = val;
+      selectedRecord.errorMessage = '';
+    }
+  }
+};
+const handleUpdateDiscount = (
+  newVal: string | number | null,
+  row: ISaleInfo
+) => {
+  if (newVal === null || newVal === '') {
+    row.discount = 0;
+  } else {
+    const value = parseInt(newVal.toString());
+    if (!value) {
+      row.discount = 0;
+    } else {
+      row.discount = value;
+    }
+  }
+};
 const previewBill = async (saleId: number) => {
   try {
     isLoading.value = true;
@@ -500,6 +482,7 @@ const handleDeleteSaleItem = async (
         if (indexToRemove !== -1) {
           SaleSummary.value.saleDetailInfos.splice(indexToRemove, 1);
         }
+        previewBill(Number(selectedId));
       }
     }
   } catch (e) {
@@ -513,10 +496,6 @@ const handleDeleteSaleItem = async (
     });
   }
 };
-// const isDeleteButtonDisabled = (row: ISaleInfo) => {
-//   return !row.saleDetailId;
-// };
-
 const handleEditBill = async (id: number) => {
   const saleId = Number(selectedId);
   const selectedRow = SaleSummary.value.saleDetailInfos.find(
@@ -561,7 +540,6 @@ const handleUpdateSaleItem = async (
       });
       isLoading.value = true;
       SaleSummary.value.saleDetailInfos = [];
-      // await inventoryDetailList();
       isLoading.value = false;
       previewBill(Number(selectedId));
     }
@@ -591,7 +569,6 @@ const handleAddSaleItem = async (saleId: number, saleDetails: ISaleDetail) => {
       });
       isLoading.value = true;
       SaleSummary.value.saleDetailInfos = [];
-      // await inventoryDetailList();
       isLoading.value = false;
       previewBill(Number(selectedId));
     }

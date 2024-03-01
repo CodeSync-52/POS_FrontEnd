@@ -80,7 +80,6 @@
           </div>
         </div>
       </div>
-      {{ selected }}
       <q-table
         :columns="InventoryListColumn"
         :rows="selectedShopDetailRecords"

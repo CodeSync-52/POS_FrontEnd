@@ -87,8 +87,9 @@ export interface ISaleInfo {
   productId: number;
   productCode: string;
   availableQuantity: number;
-  dispatchQuantity?: number;
+  dispatchQuantity: number;
   discount: number;
+  quantity: number;
   amount: number;
   inventoryId: number;
   productName: string;
