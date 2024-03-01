@@ -89,70 +89,68 @@ export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWi
       align: 'left',
     },
   ];
-export const shopSalePreviewTableColumn: QTableColumn<ISaleInfo>[] =
-  [
-    {
-      name: 'productImage',
-      label: 'Product Image',
-      field: (row) => row.productImage,
-      align: 'left',
-    },
-    {
-      name: 'productName',
-      label: 'Product Name',
-      field: (row) => row.productName,
-      align: 'left',
-    },
-    {
-      name: 'productCode',
-      label: 'Product Code',
-      field: (row) => row.productCode?.split(',')[0] || '-',
-      align: 'left',
-    },
-    {
-      name: 'availableQuantity',
-      label: 'Available Quantity',
-      field: (row) => row.availableQuantity,
-      align: 'left',
-    },
-    {
-      name: 'dispatchQuantity',
-      label: 'Dispatch Quantity',
-      field: (row) => row.dispatchQuantity,
-      align: 'left',
-    },
-    {
-      name: 'retailPrice',
-      label: 'Retail Price',
-      field: (row) => row.retailPrice,
-      align: 'left',
-    },
-    {
-      name: 'amount',
-      label: 'Amount',
-      field: (row) => row.amount,
-      align: 'left',
-    },
-    {
-      name: 'discount',
-      label: 'Discount',
-      field: (row) => row.discount,
-      align: 'left',
-    },
-    {
-      name: 'isReturn',
-      label: 'Return',
-      field: (row) => row.isReturn ? 'Yes' : 'No',
-      align: 'left',
-    },
-    {
-      name: 'action',
-      label: 'Action',
-      field: () => '',
-      align: 'left',
-    },
-  ];
-
+export const shopSalePreviewTableColumn: QTableColumn<ISaleInfo>[] = [
+  {
+    name: 'productImage',
+    label: 'Product Image',
+    field: (row) => row.productImage,
+    align: 'left',
+  },
+  {
+    name: 'productName',
+    label: 'Product Name',
+    field: (row) => row.productName,
+    align: 'left',
+  },
+  {
+    name: 'productCode',
+    label: 'Product Code',
+    field: (row) => row.productCode?.split(',')[0] || '-',
+    align: 'left',
+  },
+  {
+    name: 'availableQuantity',
+    label: 'Available Quantity',
+    field: (row) => row.availableQuantity,
+    align: 'left',
+  },
+  {
+    name: 'dispatchQuantity',
+    label: 'Dispatch Quantity',
+    field: (row) => row.dispatchQuantity,
+    align: 'left',
+  },
+  {
+    name: 'retailPrice',
+    label: 'Retail Price',
+    field: (row) => row.retailPrice,
+    align: 'left',
+  },
+  {
+    name: 'amount',
+    label: 'Amount',
+    field: (row) => row.amount,
+    align: 'left',
+  },
+  {
+    name: 'discount',
+    label: 'Discount',
+    field: (row) => row.discount,
+    align: 'left',
+  },
+  {
+    name: 'isReturn',
+    label: 'Return',
+    field: (row) => (row.isReturn ? 'Yes' : 'No'),
+    align: 'left',
+  },
+  {
+    name: 'action',
+    label: 'Action',
+    field: () => '',
+    align: 'left',
+  },
+];
 
 export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
   {

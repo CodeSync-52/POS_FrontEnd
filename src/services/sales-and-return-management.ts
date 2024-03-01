@@ -85,15 +85,13 @@ export const cancelSaleApi = async (saleId: number) => {
   return res;
 };
 export const previewSaleApi = async (saleId: number) => {
-  const res = await makeApiCall<IGenericResponse<IPreviewSaleResponse>>(
-    {
-      url: 'api/sale/preview',
-      method: 'GET',
-      params: {
-        saleId,
-      },
-    }
-  );
+  const res = await makeApiCall<IGenericResponse<IPreviewSaleResponse>>({
+    url: 'api/sale/preview',
+    method: 'GET',
+    params: {
+      saleId,
+    },
+  });
   return res;
 };
 export const addSaleItemApi = async ({

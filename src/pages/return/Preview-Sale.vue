@@ -2,7 +2,7 @@
   <div>
     <!-- <span class="font-semibold text-lg"> {{ titleAction }} </span> -->
     <div class="font-semibold text-lg text-center">
-      <div>Invoice Number : {{ SaleSummary.invoiceNumber }} </div>
+      <div>Invoice Number : {{ SaleSummary.invoiceNumber }}</div>
       <div>
         {{ moment(SaleSummary.saleDate).format('dddd, D MMMM, YYYY') }}
       </div>
@@ -15,7 +15,7 @@
       >
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Status:</span>
-          <span class="md:text-lg"> {{ SaleSummary.status}}</span>
+          <span class="md:text-lg"> {{ SaleSummary.status }}</span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Shop Name :</span>
@@ -27,7 +27,10 @@
           <span class="font-medium md:text-lg">Sale Person Code :</span>
           <span class="md:text-lg"> {{ SaleSummary.salePersonCode }} </span>
         </div>
-        <div v-if="routerPath.includes('editHoldBill')" class="md:flex md:justify-between md:w-full items-center">
+        <div
+          v-if="routerPath.includes('editHoldBill')"
+          class="md:flex md:justify-between md:w-full items-center"
+        >
           <div class="row gap-6 items-center">
             <span class="font-medium md:text-lg">Add Articles</span>
             <q-btn
@@ -39,7 +42,7 @@
               @click="isInventoryListModalVisible = true"
             />
           </div>
-          <outside-click-container @outside-click="handleOutsideClick">
+          <!-- <outside-click-container @outside-click="handleOutsideClick">
             <q-input
               autofocus
               ref="scannedLabelInput"
@@ -52,7 +55,7 @@
               label="Scan label"
               color="btn-primary"
             />
-          </outside-click-container>
+          </outside-click-container> -->
         </div>
       </div>
       <div
@@ -60,7 +63,7 @@
       >
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Total Quantity :</span>
-          <span class="md:text-lg"> {{ SaleSummary.totalQuantity}} </span>
+          <span class="md:text-lg"> {{ SaleSummary.totalQuantity }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg">Sale Id :</span>
@@ -71,7 +74,6 @@
           <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
         </div>
       </div>
-
     </div>
     <div class="py-4 w-full">
       <q-table
@@ -79,137 +81,152 @@
         :loading="isLoading"
         :rows="SaleSummary.saleDetailInfos"
         :columns="shopSalePreviewTableColumn"
-        :visible-columns="routerPath.includes('preview') ? ['productImage', 'productName','dispatchQuantity', 'amount', 'discount', 'isReturn'] : ['productImage', 'productName', 'availableQuantity', 'retailPrice', 'dispatchQuantity', 'discount', 'isReturn', 'action']"
+        :visible-columns="
+          routerPath.includes('preview')
+            ? [
+                'productImage',
+                'productName',
+                'dispatchQuantity',
+                'amount',
+                'discount',
+                'isReturn',
+              ]
+            : [
+                'productImage',
+                'productName',
+                'availableQuantity',
+                'retailPrice',
+                'dispatchQuantity',
+                'discount',
+                'isReturn',
+                'action',
+              ]
+        "
         :rows-per-page-options="[0]"
         row-key="id"
       >
-      <template v-slot:body-cell-productImage="props">
-        <q-td :props="props">
-          <div
-            @click="handlePreviewImage(props.row.productImage)"
-            class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
-            :class="props.row.productImage ? 'cursor-pointer' : ''"
-          >
-            <img
-              class="w-full h-full object-cover"
-              :src="
-                getImageUrl(props.row.productImage) ||
-                'assets/default-image.png'
+        <template v-slot:body-cell-productImage="props">
+          <q-td :props="props">
+            <div
+              @click="handlePreviewImage(props.row.productImage)"
+              class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
+              :class="props.row.productImage ? 'cursor-pointer' : ''"
+            >
+              <img
+                class="w-full h-full object-cover"
+                :src="
+                  getImageUrl(props.row.productImage) ||
+                  'assets/default-image.png'
+                "
+                alt="img"
+              />
+            </div>
+          </q-td>
+        </template>
+        <template
+          v-slot:header-cell-action
+          v-if="routerPath.includes('preview')"
+        >
+          <q-th></q-th>
+        </template>
+        <template
+          v-if="routerPath.includes('editHoldBill')"
+          v-slot:body-cell-dispatchQuantity="props"
+        >
+          <q-td :props="props">
+            <q-input
+              type="number"
+              v-model="props.row.dispatchQuantity"
+              ref="dispatchQuantityInput"
+              :min="0"
+              :max="
+                routerPath.includes('editHoldBill')
+                  ? props.row.dispatchQuantity +
+                    SaleSummary.saleDetailInfos.find(
+                      (record) => record.inventoryId === props.row.inventoryId
+                    )?.availableQuantity
+                  : props.row.dispatchQuantity
               "
-              alt="img"
+              dense
+              outlined
+              class="w-[150px]"
+              color="btn-primary"
             />
-          </div>
-        </q-td>
-      </template>
-      <template
-      v-slot:header-cell-action
-      v-if="routerPath.includes('preview')"
-    >
-      <q-th></q-th>
-    </template>
-      <template
-      v-if="routerPath.includes('editHoldBill')"
-      v-slot:body-cell-dispatchQuantity="props"
-    >
-      <q-td :props="props">
-        <q-input
-          type="number"
-          v-model="props.row.dispatchQuantity"
-          ref="dispatchQuantityInput"
-          :min="0"
-          :max=" routerPath.includes('editHoldBill')?
-          props.row.dispatchQuantity +
-          SaleSummary.saleDetailInfos.find(
-                  (record) =>
-                    record.inventoryId === props.row.inventoryId
-                )?.availableQuantity
-                : props.row.dispatchQuantity
-          "
-
-          dense
-          outlined
-          class="w-[150px]"
-          color="btn-primary"
-        />
-        <!-- @update:model-value="
+            <!-- @update:model-value="
             handleUpdatedispatchQuantity($event, props.row)
           " -->
-        <span
-          v-if="props.row.errorMessage"
-          class="text-red text-sm"
-          >{{ props.row.errorMessage }}</span
+            <span v-if="props.row.errorMessage" class="text-red text-sm">{{
+              props.row.errorMessage
+            }}</span>
+          </q-td>
+        </template>
+        <template
+          v-if="routerPath.includes('editHoldBill')"
+          v-slot:body-cell-discount="props"
         >
-      </q-td>
-    </template>
-      <template
-      v-if="routerPath.includes('editHoldBill')"
-      v-slot:body-cell-discount="props"
-    >
-      <q-td :props="props">
-        <q-input
-          v-model="props.row.discount"
-          :disable="props.row.isReturn"
-          type="number"
-          dense
-          outlined
-          color="btn-primary"
-          class="w-[150px]"
-        />
+          <q-td :props="props">
+            <q-input
+              v-model="props.row.discount"
+              :disable="props.row.isReturn"
+              type="number"
+              dense
+              outlined
+              color="btn-primary"
+              class="w-[150px]"
+            />
+          </q-td>
+        </template>
 
-      </q-td>
-    </template>
+        <template
+          v-if="routerPath.includes('editHoldBill')"
+          v-slot:body-cell-action="props"
+        >
+          <q-td :props="props">
+            <div>
+              <q-btn
+                dense
+                size="md"
+                icon="check"
+                flat
+                unelevated
+                color="green"
+                @click="handleEditBill(props.row.inventoryId)"
+              >
+                <q-tooltip class="bg-green" :offset="[10, 10]">
+                  Add Sale
+                </q-tooltip>
+              </q-btn>
+              <q-btn
+                dense
+                size="md"
+                icon="delete"
+                flat
+                unelevated
+                color="red"
+                @click="
+                  handleDeleteSaleItem(
+                    Number(selectedId),
+                    props.row.saleDetailId,
+                    props.row.inventoryId
+                  )
+                "
+              >
+                <q-tooltip class="bg-red" :offset="[10, 10]">
+                  Delete Sale
+                </q-tooltip>
+              </q-btn>
+            </div>
+          </q-td>
+        </template>
 
-    <template
-    v-if="routerPath.includes('editHoldBill')"
-    v-slot:body-cell-action="props"
-  >
-    <q-td :props="props">
-      <div>
-        <q-btn
-          dense
-          size="md"
-          icon="check"
-          flat
-          unelevated
-          color="green"
-          @click="handleEditBill(props.row.inventoryId)"
-          >
-          <q-tooltip class="bg-green" :offset="[10, 10]">
-            Add Sale
-          </q-tooltip>
-        </q-btn>
-        <q-btn
-          dense
-          size="md"
-          icon="delete"
-          flat
-          unelevated
-          color="red"
-
-          @click="
-          handleDeleteSaleItem(
-              Number(selectedId),
-              props.row.saleDetailId,
-              props.row.inventoryId
-            )
-          "
-          >
-          <q-tooltip class="bg-red" :offset="[10, 10]">
-            Delete Sale
-          </q-tooltip>
-        </q-btn>
-      </div>
-    </q-td>
-  </template>
-
-      <template v-slot:no-data>
-        <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-          <q-icon name="warning" size="xs" />
-          <span class="text-md font-medium"> No data available.</span>
-        </div>
-      </template>
-    </q-table>
- </div>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available.</span>
+          </div>
+        </template>
+      </q-table>
+    </div>
     <div
       class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-end q-pa-md"
     >
@@ -231,13 +248,13 @@
       </div>
     </div>
     <div class="row justify-center md:justify-end gap-2">
-           <q-btn
-              v-if="routerPath.includes('editHoldBill')"
-              label="Complete Bill"
-              unelevated
-              color="btn-primary hover:btn-primary-hover"
-              @click="handleCompleteSale(Number(selectedId), 1)"
-            />
+      <q-btn
+        v-if="routerPath.includes('editHoldBill')"
+        label="Complete Bill"
+        unelevated
+        color="btn-primary hover:btn-primary-hover"
+        @click="handleCompleteSale(Number(selectedId), 1)"
+      />
       <q-btn
         class="mr-5"
         label="Back"
@@ -268,12 +285,18 @@
   </q-dialog>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted} from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import {  ISaleInfo,IPreviewSaleResponse,ISaleDetail } from 'src/interfaces';
+import { ISaleInfo, IPreviewSaleResponse, ISaleDetail } from 'src/interfaces';
 import InventoryListModal from 'src/components/inventory/NewInventoryListModal.vue';
-import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
-import { previewSaleApi,changeSaleStatusApi,deleteSaleApi,addSaleItemApi,updateSaleItemApi } from 'src/services';
+// import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
+import {
+  previewSaleApi,
+  changeSaleStatusApi,
+  deleteSaleApi,
+  addSaleItemApi,
+  updateSaleItemApi,
+} from 'src/services';
 import { shopSalePreviewTableColumn } from './utils';
 import { isPosError } from 'src/utils';
 import moment from 'moment';
@@ -285,26 +308,26 @@ const isPreviewImageModalVisible = ref(false);
 const isInventoryListModalVisible = ref(false);
 const titleAction = ref('Preview Sale Bill');
 const selectedPreviewImage = ref('');
-const scannedLabel = ref('');
-const scannedLabelInput = ref<null | HTMLDivElement>(null);
-const scannedLabelLoading = ref(false);
+// const scannedLabel = ref('');
+// const scannedLabelInput = ref<null | HTMLDivElement>(null);
+// const scannedLabelLoading = ref(false);
 const routerPath = router.currentRoute.value.fullPath;
 const selectedId: string | string[] = router.currentRoute.value.params.id;
 const SaleSummary = ref<{
-  totalReturnAmount: number,
-  saleId: number,
-  invoiceNumber: string,
-  salePersonCode: string,
-  shopId: number,
-  totalQuantity: number,
-  totalSalesAmount: number,
-  totalDiscount: number,
-  netAmount: number,
-  comments: string,
-  status: string,
-  shopName: string,
-  saleDate: string,
-  saleDetailInfos:ISaleInfo[];
+  totalReturnAmount: number;
+  saleId: number;
+  invoiceNumber: string;
+  salePersonCode: string;
+  shopId: number;
+  totalQuantity: number;
+  totalSalesAmount: number;
+  totalDiscount: number;
+  netAmount: number;
+  comments: string;
+  status: string;
+  shopName: string;
+  saleDate: string;
+  saleDetailInfos: ISaleInfo[];
 }>({
   totalReturnAmount: 0,
   saleId: 0,
@@ -313,7 +336,7 @@ const SaleSummary = ref<{
   shopId: 0,
   totalQuantity: 0,
   totalSalesAmount: 0,
-  totalDiscount:0,
+  totalDiscount: 0,
   netAmount: 0,
   comments: '',
   status: '-',
@@ -322,29 +345,28 @@ const SaleSummary = ref<{
   saleDetailInfos: [],
 });
 onMounted(async () => {
-   await previewBill(Number(selectedId));
-   if (routerPath.includes('editHoldBill')) {
-     titleAction.value = 'Edit Hold Bill';
-   }
-   console.log(SaleSummary.value.saleDetailInfos);
-
-});
-const dialogClose = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
-    window.removeEventListener('keypress', handleKeyPress);
+  await previewBill(Number(selectedId));
+  if (routerPath.includes('editHoldBill')) {
+    titleAction.value = 'Edit Hold Bill';
   }
-};
-
+  console.log(SaleSummary.value.saleDetailInfos);
+});
+// const dialogClose = (e: KeyboardEvent) => {
+//   if (e.key === 'n' || e.key === 'N') {
+//     window.removeEventListener('keypress', handleKeyPress);
+//   }
+// };
 
 const handleSelectedData = (payload: ISaleInfo[]) => {
-
-  const oldIdList = SaleSummary.value.saleDetailInfos.map((item) => item.inventoryId);
+  const oldIdList = SaleSummary.value.saleDetailInfos.map(
+    (item) => item.inventoryId
+  );
 
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
       SaleSummary.value.saleDetailInfos.push({
         ...item,
-        dispatchQuantity:0,
+        dispatchQuantity: 0,
         discount: 0,
         isReturn: false,
       });
@@ -353,9 +375,9 @@ const handleSelectedData = (payload: ISaleInfo[]) => {
 
   isInventoryListModalVisible.value = false;
 };
-const handleOutsideClick = () => {
-  window.addEventListener('keypress', handleKeyPress);
-};
+// const handleOutsideClick = () => {
+//   window.addEventListener('keypress', handleKeyPress);
+// };
 const getImageUrl = (base64Image: string | null) => {
   if (base64Image) {
     return `data:image/png;base64,${base64Image}`;
@@ -368,33 +390,33 @@ const handlePreviewImage = (selectedImage: string) => {
     isPreviewImageModalVisible.value = true;
   }
 };
-const handleUpdatedispatchQuantity = (
-  newVal: string | number | null,
-  selectedRecord: ISaleInfo
-) => {
-  if (typeof newVal === 'string') {
-    const val = parseInt(newVal);
-    if (!val || val < 0) {
-      selectedRecord.availableQuantity = 0;
-      selectedRecord.errorMessage = '';
-    } else if (
-      val >
-      selectedRecord.availableQuantity + (selectedRecord.dispatchQuantity ?? 0)
-    ) {
-      selectedRecord.availableQuantity =
-        0 + (selectedRecord.dispatchQuantity ?? 0);
-      selectedRecord.errorMessage = 'Invalid Quantity !';
-      $q.notify({
-        message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
-        color: 'red',
-        icon: 'warning',
-      });
-    } else {
-      selectedRecord.availableQuantity = val;
-      selectedRecord.errorMessage = '';
-    }
-  }
-};
+// const handleUpdatedispatchQuantity = (
+//   newVal: string | number | null,
+//   selectedRecord: ISaleInfo
+// ) => {
+//   if (typeof newVal === 'string') {
+//     const val = parseInt(newVal);
+//     if (!val || val < 0) {
+//       selectedRecord.availableQuantity = 0;
+//       selectedRecord.errorMessage = '';
+//     } else if (
+//       val >
+//       selectedRecord.availableQuantity + (selectedRecord.dispatchQuantity ?? 0)
+//     ) {
+//       selectedRecord.availableQuantity =
+//         0 + (selectedRecord.dispatchQuantity ?? 0);
+//       selectedRecord.errorMessage = 'Invalid Quantity !';
+//       $q.notify({
+//         message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
+//         color: 'red',
+//         icon: 'warning',
+//       });
+//     } else {
+//       selectedRecord.availableQuantity = val;
+//       selectedRecord.errorMessage = '';
+//     }
+//   }
+// };
 const previewBill = async (saleId: number) => {
   try {
     isLoading.value = true;
@@ -402,7 +424,7 @@ const previewBill = async (saleId: number) => {
     if (res.type === 'Success') {
       const responseData = res.data as IPreviewSaleResponse | null;
       if (responseData) {
-          SaleSummary.value = {
+        SaleSummary.value = {
           totalReturnAmount: responseData.totalReturnAmount,
           saleId: responseData.saleId,
           invoiceNumber: responseData.invoiceNumber,
@@ -418,7 +440,6 @@ const previewBill = async (saleId: number) => {
           saleDate: responseData.saleDate,
           saleDetailInfos: responseData.saleDetailInfos,
         };
-
       }
     }
   } catch (error) {
@@ -436,7 +457,6 @@ const previewBill = async (saleId: number) => {
 };
 const handleCompleteSale = async (saleId: number, saleStatus: number) => {
   try {
-
     const response = await changeSaleStatusApi({ saleId, saleStatus });
     if (response.type === 'Success') {
       $q.notify({
@@ -456,30 +476,32 @@ const handleCompleteSale = async (saleId: number, saleStatus: number) => {
     });
   }
 };
-const handleDeleteSaleItem = async (saleId: number, saleDetailId: number, inventoryId: number) => {
+const handleDeleteSaleItem = async (
+  saleId: number,
+  saleDetailId: number,
+  inventoryId: number
+) => {
   try {
-
-    if(!saleDetailId){
+    if (!saleDetailId) {
       const indexToRemove = SaleSummary.value.saleDetailInfos.findIndex(
         (row) => row.inventoryId === inventoryId
       );
       SaleSummary.value.saleDetailInfos.splice(indexToRemove, 1);
-    }
-    else{
-    const response = await deleteSaleApi({ saleId, saleDetailId });
-    if (response.type === 'Success') {
-      $q.notify({
-        message: response.message,
-        type: 'positive',
-      });
-      const indexToRemove = SaleSummary.value.saleDetailInfos.findIndex(
-        (row) => row.saleDetailId === saleDetailId
-      );
-      if (indexToRemove !== -1) {
-        SaleSummary.value.saleDetailInfos.splice(indexToRemove, 1);
+    } else {
+      const response = await deleteSaleApi({ saleId, saleDetailId });
+      if (response.type === 'Success') {
+        $q.notify({
+          message: response.message,
+          type: 'positive',
+        });
+        const indexToRemove = SaleSummary.value.saleDetailInfos.findIndex(
+          (row) => row.saleDetailId === saleDetailId
+        );
+        if (indexToRemove !== -1) {
+          SaleSummary.value.saleDetailInfos.splice(indexToRemove, 1);
+        }
       }
     }
-  }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
@@ -585,5 +607,4 @@ const handleAddSaleItem = async (saleId: number, saleDetails: ISaleDetail) => {
     });
   }
 };
-
 </script>

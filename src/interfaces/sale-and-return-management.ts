@@ -66,34 +66,34 @@ export interface IShopSaleExpenses {
 }
 
 export interface IPreviewSaleResponse {
-  totalReturnAmount: number,
-  saleId: number,
-  invoiceNumber: string,
-  salePersonCode: string,
-  shopId: number,
-  totalQuantity: number,
-  totalSalesAmount: number,
-  totalDiscount: number,
-  netAmount: number,
-  comments: string,
-  status: string,
-  shopName: string,
-  saleDate: string,
+  totalReturnAmount: number;
+  saleId: number;
+  invoiceNumber: string;
+  salePersonCode: string;
+  shopId: number;
+  totalQuantity: number;
+  totalSalesAmount: number;
+  totalDiscount: number;
+  netAmount: number;
+  comments: string;
+  status: string;
+  shopName: string;
+  saleDate: string;
   saleDetailInfos: ISaleInfo[];
 }
 export interface ISaleInfo {
-  saleDetailId: number,
-  returnSaleDetailId: number,
-  productId: number,
-  productCode: string,
-  availableQuantity: number,
-  dispatchQuantity?: number,
-  discount: number,
-  amount: number,
-  inventoryId: number,
-  productName: string,
-  productImage: string,
-  retailPrice: number,
-  isReturn: boolean,
+  saleDetailId: number;
+  returnSaleDetailId: number;
+  productId: number;
+  productCode: string;
+  availableQuantity: number;
+  dispatchQuantity?: number;
+  discount: number;
+  amount: number;
+  inventoryId: number;
+  productName: string;
+  productImage: string;
+  retailPrice: number;
+  isReturn: boolean;
   errorMessage?: string;
 }
