@@ -4,14 +4,14 @@ import { RouteRecordRaw } from 'vue-router';
 export const routeList = [
   {
     path: '/role',
-    component: () => import('src/pages/role/RoleManagement.vue'),
+    component: () => import('src/pages/role/Role-Management.vue'),
     meta: {
       module: EUserModules.RolePermission,
     },
   },
   {
     path: '/user',
-    component: () => import('src/pages/users/UserManagement.vue'),
+    component: () => import('src/pages/users/User-Management.vue'),
     meta: {
       module: EUserModules.UserManagment,
     },
@@ -19,21 +19,21 @@ export const routeList = [
   {
     path: '/customer-group',
     component: () =>
-      import('src/pages/customer-group/CustomerGroupManagement.vue'),
+      import('src/pages/customer-group/Customer-Group-Management.vue'),
     meta: {
       module: EUserModules.CustomerGroupManagement,
     },
   },
   {
     path: '/variant/:name/:id/:status',
-    component: () => import('src/pages/variant/SelectedVariantDetails.vue'),
+    component: () => import('src/pages/variant/Selected-Variant-Details.vue'),
     meta: {
       module: EUserModules.VariantManagement,
     },
   },
   {
     path: '/variant',
-    component: () => import('src/pages/variant/VariantManagement.vue'),
+    component: () => import('src/pages/variant/Variant-Management.vue'),
     meta: {
       module: EUserModules.VariantManagement,
     },
@@ -41,14 +41,14 @@ export const routeList = [
 
   {
     path: '/category/:name/:id',
-    component: () => import('src/pages/category/SelectedCategoryDetails.vue'),
+    component: () => import('src/pages/category/Selected-Category-Details.vue'),
     meta: {
       module: EUserModules.CategoryManagement,
     },
   },
   {
     path: '/category',
-    component: () => import('src/pages/category/CategoryManagement.vue'),
+    component: () => import('src/pages/category/Category-Management.vue'),
     meta: {
       module: EUserModules.CategoryManagement,
     },
@@ -56,126 +56,126 @@ export const routeList = [
 
   {
     path: '/sale',
-    component: () => import('src/pages/sale/SalesManagement.vue'),
+    component: () => import('src/pages/sale/Sales-Management.vue'),
     meta: {
       module: EUserModules.SalesManagement,
     },
   },
   {
     path: '/sale/:id',
-    component: () => import('src/pages/sale/AddNewSale.vue'),
+    component: () => import('src/pages/sale/Add-New-Sale.vue'),
     meta: {
       module: EUserModules.SalesManagement,
     },
   },
   {
     path: '/sale/add-new',
-    component: () => import('src/pages/sale/AddNewSale.vue'),
+    component: () => import('src/pages/sale/Add-New-Sale.vue'),
     meta: {
       module: EUserModules.SalesManagement,
     },
   },
   {
     path: '/sale/:id/preview',
-    component: () => import('src/pages/sale/AddNewSale.vue'),
+    component: () => import('src/pages/sale/Add-New-Sale.vue'),
     meta: {
       module: EUserModules.SalesManagement,
     },
   },
   {
     path: '/receipt',
-    component: () => import('src/pages/receipt/ReceiptManagement.vue'),
+    component: () => import('src/pages/receipt/Receipt-Management.vue'),
     meta: {
       module: EUserModules.ReceiptManagement,
     },
   },
   {
     path: '/receipt/add-new',
-    component: () => import('src/pages/receipt/AddNewReceipt.vue'),
+    component: () => import('src/pages/receipt/Add-New-Receipt.vue'),
     meta: {
       module: EUserModules.ReceiptManagement,
     },
   },
   {
     path: '/receipt/:id',
-    component: () => import('src/pages/receipt/AddNewReceipt.vue'),
+    component: () => import('src/pages/receipt/Add-New-Receipt.vue'),
     meta: {
       module: EUserModules.ReceiptManagement,
     },
   },
   {
     path: '/receipt/:id/preview',
-    component: () => import('src/pages/receipt/AddNewReceipt.vue'),
+    component: () => import('src/pages/receipt/Add-New-Receipt.vue'),
     meta: {
       module: EUserModules.ReceiptManagement,
     },
   },
   {
     path: '/bill-generation',
-    component: () => import('src/pages/bill-generation/BillGeneration.vue'),
+    component: () => import('src/pages/bill-generation/Bill-Generation.vue'),
     meta: {
       module: EUserModules.BillGeneration,
     },
   },
   {
     path: '/bill-generation/add-new',
-    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    component: () => import('src/pages/bill-generation/Add-New-Bill.vue'),
     meta: {
       module: EUserModules.BillGeneration,
     },
   },
   {
     path: '/bill-generation/:id/generate-receipt-bill',
-    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    component: () => import('src/pages/bill-generation/Add-New-Bill.vue'),
     meta: {
       module: EUserModules.BillGeneration,
     },
   },
   {
     path: '/bill-generation/:id/edit-bill',
-    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    component: () => import('src/pages/bill-generation/Add-New-Bill.vue'),
     meta: {
       module: EUserModules.BillGeneration,
     },
   },
   {
     path: '/bill-generation/:id/preview',
-    component: () => import('src/pages/bill-generation/AddNewBill.vue'),
+    component: () => import('src/pages/bill-generation/Add-New-Bill.vue'),
     meta: {
       module: EUserModules.BillGeneration,
     },
   },
   {
     path: '/inventory',
-    component: () => import('src/pages/inventory/InventoryManagement.vue'),
+    component: () => import('src/pages/inventory/Inventory-Management.vue'),
     meta: {
       module: EUserModules.InventoryManagement,
     },
   },
   {
     path: '/inventory/add-new/:id?',
-    component: () => import('src/pages/inventory/AddNewInventory.vue'),
+    component: () => import('src/pages/inventory/Add-New-Inventory.vue'),
     meta: {
       module: EUserModules.InventoryManagement,
     },
   },
   {
     path: '/inventory/add-custom',
-    component: () => import('src/pages/inventory/AddNewInventory.vue'),
+    component: () => import('src/pages/inventory/Add-New-Inventory.vue'),
     meta: {
       module: EUserModules.InventoryManagement,
     },
   },
   {
     path: '/goods-receipt',
-    component: () => import('src/pages/goods-receipt/GoodReceiptNotes.vue'),
+    component: () => import('src/pages/goods-receipt/Good-Receipt-Notes.vue'),
     meta: {
       module: EUserModules.GoodsReceiptNotes,
     },
   },
   {
     path: '/goods-receipt/add-new',
-    component: () => import('src/pages/goods-receipt/AddNewGrn.vue'),
+    component: () => import('src/pages/goods-receipt/Add-New-Grn.vue'),
     meta: {
       module: EUserModules.GoodsReceiptNotes,
     },
@@ -245,63 +245,63 @@ export const routeList = [
   },
   {
     path: '/cash-flow',
-    component: () => import('src/pages/cash-flow/CashFlow.vue'),
+    component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {
       module: EUserModules.CashInCashOutManagement,
     },
   },
   {
     path: '/cash-flow/add-new',
-    component: () => import('src/pages/cash-flow/AddNewCashFlow.vue'),
+    component: () => import('src/pages/cash-flow/Add-New-Cash-Flow.vue'),
     meta: {
       module: EUserModules.CashInCashOutManagement,
     },
   },
   {
     path: '/article',
-    component: () => import('pages/article/ArticleManagement.vue'),
+    component: () => import('pages/article/Article-Management.vue'),
     meta: {
       module: EUserModules.ArticleManagement,
     },
   },
   {
     path: '/article/add-new',
-    component: () => import('pages/article/AddNewArticle.vue'),
+    component: () => import('pages/article/Add-New-Article.vue'),
     meta: {
       module: EUserModules.ArticleManagement,
     },
   },
   {
     path: '/article/:id/update',
-    component: () => import('pages/article/AddNewArticle.vue'),
+    component: () => import('pages/article/Add-New-Article.vue'),
     meta: {
       module: EUserModules.ArticleManagement,
     },
   },
   {
     path: '/shop',
-    component: () => import('src/pages/shop/ShopManagement.vue'),
+    component: () => import('src/pages/shop/Shop-Management.vue'),
     meta: {
       module: EUserModules.ShopManagement,
     },
   },
   {
     path: '/stock-transfer',
-    component: () => import('pages/stock-transfer/StockTransferRequest.vue'),
+    component: () => import('pages/stock-transfer/Stock-Transfer-Request.vue'),
     meta: {
       module: EUserModules.StockTransferRequests,
     },
   },
   {
     path: '/stock-transfer/:id',
-    component: () => import('pages/stock-transfer/PreviewStr.vue'),
+    component: () => import('pages/stock-transfer/Preview-Str.vue'),
     meta: {
       module: EUserModules.StockTransferRequests,
     },
   },
   {
     path: '/stock-transfer/:id/edit',
-    component: () => import('pages/stock-transfer/PreviewStr.vue'),
+    component: () => import('pages/stock-transfer/Preview-Str.vue'),
     meta: {
       module: EUserModules.StockTransferRequests,
     },
@@ -332,7 +332,7 @@ export const routeList = [
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
-    component: () => import('src/pages/auth/LoginPage.vue'),
+    component: () => import('src/pages/auth/Login-Page.vue'),
     name: 'Login',
   },
   {
