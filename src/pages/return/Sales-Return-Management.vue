@@ -946,6 +946,13 @@ const inventoryDetailList = async (data?: {
 const handleAddShopSale = async () => {
   const res = isPersonCodeEmpty();
   if (!res) return;
+  if (selectedInventoryData.value.every((record) => record.isReturn)) {
+    $q.notify({
+      message: 'You cannot Save this Bill, as it contains only Return Item.',
+      type: 'warning',
+    });
+    return;
+  }
   try {
     isLoading.value = true;
     const payload = {
