@@ -2,13 +2,6 @@ import { QTableColumn } from 'quasar';
 import { IInventoryListResponse } from 'src/interfaces';
 export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
   {
-    name: 'productId',
-    required: true,
-    label: 'Product Id',
-    align: 'left',
-    field: (row) => row.productId,
-  },
-  {
     name: 'productName',
     label: 'Product Name',
     align: 'left',
@@ -25,6 +18,13 @@ export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
     label: 'Product Code',
     align: 'left',
     field: (row) => row.productCode.split(',')[0] || '-',
+  },
+  {
+    name: 'retailPrice',
+    required: true,
+    label: 'Retail Price',
+    align: 'left',
+    field: (row) => row.retailPrice,
   },
   {
     name: 'quantity',
