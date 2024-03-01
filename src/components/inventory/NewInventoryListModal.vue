@@ -150,6 +150,7 @@ import {
   IInventoryFilterSearch,
   IInventoryListResponse,
   IPagination,
+  ISaleInfo,
 } from 'src/interfaces';
 import { articleListApi, inventoryDetailApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
@@ -159,11 +160,9 @@ import { ref} from 'vue';
 
 const $q = useQuasar()
 const authStore = useAuthStore()
-// const selectedShopDetailList = ref<IInventoryListResponse[]>([]);
 const articleList = ref<IArticleData[]>([]);
 const selected = ref([])
 const apiController = ref<AbortController | null>(null);
-// const isFetchingArticle = ref(false)
 const isFetchingRecords = ref(false)
 const pagination = ref<IPagination>({
   sortBy: 'desc',
@@ -196,7 +195,7 @@ const getImageUrl = (base64Image: string | null) => {
   return '';
 };
     const emit = defineEmits<{
-      (event: 'selected-data', payload: IInventoryListResponse[]): void;
+      (event: 'selected-data', payload: ISaleInfo[]): void;
     }>();
     const handleSaveSelectedInventory = () => {
   emit('selected-data', selected.value);

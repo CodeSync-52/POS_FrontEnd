@@ -79,7 +79,7 @@
         :loading="isLoading"
         :rows="SaleSummary.saleDetailInfos"
         :columns="shopSalePreviewTableColumn"
-        :visible-columns="routerPath.includes('preview') ? ['productImage', 'productName','dispatchQuantity', 'amount', 'discount', 'isReturn'] : ['productImage', 'productName', 'availableQuantity', 'retailPrice', 'dispatchQuantity', 'amount', 'discount', 'isReturn', 'action']"
+        :visible-columns="routerPath.includes('preview') ? ['productImage', 'productName','dispatchQuantity', 'amount', 'discount', 'isReturn'] : ['productImage', 'productName', 'availableQuantity', 'retailPrice', 'dispatchQuantity', 'discount', 'isReturn', 'action']"
         :rows-per-page-options="[0]"
         row-key="id"
       >
@@ -123,16 +123,17 @@
                   (record) =>
                     record.inventoryId === props.row.inventoryId
                 )?.availableQuantity
-                : props.row.quantity
+                : props.row.dispatchQuantity
           "
-          @update:model-value="
-            handleUpdatedispatchQuantity($event, props.row)
-          "
+
           dense
           outlined
           class="w-[150px]"
           color="btn-primary"
         />
+        <!-- @update:model-value="
+            handleUpdatedispatchQuantity($event, props.row)
+          " -->
         <span
           v-if="props.row.errorMessage"
           class="text-red text-sm"
@@ -140,7 +141,6 @@
         >
       </q-td>
     </template>
-
       <template
       v-if="routerPath.includes('editHoldBill')"
       v-slot:body-cell-discount="props"
@@ -344,6 +344,7 @@ const handleSelectedData = (payload: ISaleInfo[]) => {
     if (!oldIdList.includes(item.inventoryId)) {
       SaleSummary.value.saleDetailInfos.push({
         ...item,
+        dispatchQuantity:0,
         discount: 0,
         isReturn: false,
       });
@@ -490,9 +491,9 @@ const handleDeleteSaleItem = async (saleId: number, saleDetailId: number, invent
     });
   }
 };
-const isDeleteButtonDisabled = (row: ISaleInfo) => {
-  return !row.saleDetailId;
-};
+// const isDeleteButtonDisabled = (row: ISaleInfo) => {
+//   return !row.saleDetailId;
+// };
 
 const handleEditBill = async (id: number) => {
   const saleId = Number(selectedId);
