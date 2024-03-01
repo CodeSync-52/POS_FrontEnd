@@ -17,7 +17,7 @@
             <img
               class="w-full h-full object-cover"
               :src="
-                getImageUrl(props.selectedArticle[0].productImage) ||
+                props.selectedArticle[0].productImage ||
                 'assets/default-image.png'
               "
               alt="img"
@@ -426,13 +426,7 @@ const handleAddVariantDetails = () => {
 
 const handlePreviewImage = (selectedImage: string | null) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
   }
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 </script>

@@ -84,8 +84,7 @@
                       <img
                         class="w-full h-full object-cover"
                         :src="
-                          getImageUrl(product.productImage) ||
-                          'assets/default-image.png'
+                          product.productImage || 'assets/default-image.png'
                         "
                         alt="img"
                       />
@@ -305,15 +304,9 @@ const grnGroupByProductId = ref<IProductGRN[] | null>(null);
 
 const handlePreviewImage = (selectedImage: string | null) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 onMounted(() => {
   selectedGrnId.value = Number(router.currentRoute.value.params.id);
