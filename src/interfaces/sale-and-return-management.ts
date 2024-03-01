@@ -10,7 +10,7 @@ export interface IAddShopSaleManagement {
 
 export interface ISaleDetail {
   inventoryId?: number;
-  quantity: number;
+  quantity: number | undefined;
   discount?: number;
 }
 export interface IBillStatusOptionList {
@@ -63,4 +63,38 @@ export interface IShopSaleExpenses {
   amount: number;
   comment: string | null;
   transactionDate: string;
+}
+
+export interface IPreviewSaleResponse {
+  totalReturnAmount: number;
+  saleId: number;
+  invoiceNumber: string;
+  salePersonCode: string;
+  shopId: number;
+  totalQuantity: number;
+  totalSalesAmount: number;
+  totalDiscount: number;
+  netAmount: number;
+  comments: string;
+  status: string;
+  shopName: string;
+  saleDate: string;
+  saleDetailInfos: ISaleInfo[];
+}
+export interface ISaleInfo {
+  saleDetailId: number;
+  returnSaleDetailId: number;
+  productId: number;
+  productCode: string;
+  availableQuantity: number;
+  dispatchQuantity: number;
+  discount: number;
+  quantity: number;
+  amount: number;
+  inventoryId: number;
+  productName: string;
+  productImage: string;
+  retailPrice: number;
+  isReturn: boolean;
+  errorMessage?: string;
 }

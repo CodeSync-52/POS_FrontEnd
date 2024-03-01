@@ -102,6 +102,7 @@
       :columns="shopAllBillsTableColumn"
       row-key="id"
       v-model:pagination="pagination"
+      :rows-per-page-options="[0]"
       @request="searchBills"
     >
       <template v-slot:body-cell-comments="props">
