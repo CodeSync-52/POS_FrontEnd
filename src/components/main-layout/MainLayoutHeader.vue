@@ -103,7 +103,7 @@
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import AccountInfoModal from '../../components/header/AccountInfoModal.vue';
+import AccountInfoModal from 'src/components/header/Account-Info-Modal.vue';
 import OutsideClickContainer from '../common/OutsideClickContainer.vue';
 import { logoutUser } from 'src/services';
 import { isPosError } from 'src/utils';
