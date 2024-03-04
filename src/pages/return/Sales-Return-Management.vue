@@ -1,18 +1,12 @@
 <template>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
-      <div
-        class="col-xs-12"
-        :class="{ 'col-md-10': titleAction === pageTitle }"
-      >
+      <div class="col-xs-12 col-md-10">
         <div
           class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4"
         >
-          <span class="text-lg font-medium">{{ titleAction }}</span>
-          <div
-            v-if="titleAction === pageTitle"
-            class="text-base flex items-center gap-1"
-          >
+          <span class="text-lg font-medium">{{ pageTitle }}</span>
+          <div class="text-base flex items-center gap-1">
             <span class="text-[18px] font-semibold">
               {{ moment(timeStamp).format('LL') }}
             </span>
@@ -22,7 +16,6 @@
           class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
         >
           <q-input
-            v-if="titleAction === pageTitle"
             v-model="shopSale.salePersonCode"
             ref="salePersonCodeInput"
             class="max-w-[200px] min-w-[200px]"
@@ -44,7 +37,7 @@
             outlined
             :disable="
               authStore.loggedInUser?.rolePermissions.roleName !==
-                EUserRoles.SuperAdmin.toLowerCase() || titleAction !== pageTitle
+              EUserRoles.SuperAdmin.toLowerCase()
             "
             v-model="selectedShop.fromShop"
             @update:model-value="handleUpdateFromShop($event)"
@@ -55,7 +48,6 @@
           />
         </div>
         <div
-          v-if="titleAction !== 'Preview Sale Bill'"
           class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-2 md:gap-16"
         >
           <div class="row gap-6 items-center">
@@ -85,7 +77,7 @@
           </outside-click-container>
         </div>
         <div
-          v-if="selectedInventoryData.length || titleAction !== pageTitle"
+          v-if="selectedInventoryData.length"
           class="flex flex-col justify-between"
         >
           <div class="py-4 w-full">
@@ -97,38 +89,6 @@
               :rows-per-page-options="[0]"
               row-key="id"
             >
-              <template
-                v-slot:header-cell-action
-                v-if="titleAction === 'Preview Sale Bill'"
-              >
-                <q-th></q-th>
-              </template>
-              <template
-                v-if="titleAction === 'Preview Sale Bill'"
-                v-slot:header-cell-availableQuantity
-              >
-                <q-th></q-th>
-              </template>
-              <template v-else v-slot:header-cell-availableQuantity>
-                <q-th class="text-left">Available Quantity</q-th>
-              </template>
-              <template
-                v-if="titleAction === 'Preview Sale Bill'"
-                v-slot:body-cell-availableQuantity="props"
-              >
-                <q-td :props="props"> </q-td>
-              </template>
-              <template v-else v-slot:body-cell-availableQuantity="props">
-                <q-td :props="props">
-                  {{ props.row.quantity }}
-                </q-td>
-              </template>
-              <template v-slot:no-data>
-                <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-                  <q-icon name="warning" size="xs" />
-                  <span class="text-md font-medium"> No data available.</span>
-                </div>
-              </template>
               <template v-slot:body-cell-productImage="props">
                 <q-td :props="props">
                   <div
@@ -146,25 +106,14 @@
                   </div>
                 </q-td>
               </template>
-              <template
-                v-if="titleAction !== 'Preview Sale Bill'"
-                v-slot:body-cell-dispatchQuantity="props"
-              >
+              <template v-slot:body-cell-dispatchQuantity="props">
                 <q-td :props="props">
                   <q-input
                     type="number"
                     v-model="props.row.dispatchQuantity"
                     ref="dispatchQuantityInput"
                     :min="0"
-                    :max="
-                      titleAction === 'Edit Hold Bill'
-                        ? props.row.alreadyDispatchedQuantity +
-                          selectedShopDetailRecords.find(
-                            (record) =>
-                              record.inventoryId === props.row.inventoryId
-                          )?.quantity
-                        : props.row.quantity
-                    "
+                    :max="!props.row.isReturn ? props.row.quantity : Infinity"
                     @update:model-value="
                       handleUpdatedispatchQuantity($event, props.row)
                     "
@@ -180,10 +129,23 @@
                   >
                 </q-td>
               </template>
-              <template
-                v-if="titleAction === pageTitle"
-                v-slot:body-cell-action="props"
-              >
+              <template v-slot:body-cell-discount="props">
+                <q-td :props="props">
+                  <q-input
+                    v-model="props.row.discount"
+                    @update:model-value="
+                      handleUpdateDiscount($event, props.row)
+                    "
+                    :disable="props.row.isReturn"
+                    type="number"
+                    dense
+                    outlined
+                    color="btn-primary"
+                    class="w-[150px]"
+                  />
+                </q-td>
+              </template>
+              <template v-slot:body-cell-action="props">
                 <q-td :props="props">
                   <div class="flex min-w-[72px]">
                     <q-btn
@@ -206,6 +168,7 @@
                         unchecked-icon="clear"
                         size="sm"
                         v-model="props.row.isReturn"
+                        @click="handleReturnMode(props.row)"
                       />
                       <q-tooltip class="bg-red" :offset="[10, 10]">
                         Return Item
@@ -214,75 +177,19 @@
                   </div>
                 </q-td>
               </template>
-              <template
-                v-else-if="titleAction === 'Edit Hold Bill'"
-                v-slot:body-cell-action="props"
-              >
-                <q-td :props="props">
-                  <div>
-                    <q-btn
-                      dense
-                      size="md"
-                      icon="check"
-                      flat
-                      unelevated
-                      color="green"
-                      @click="handleEditBill(props.row.inventoryId)"
-                    >
-                      <q-tooltip class="bg-green" :offset="[10, 10]">
-                        Add Sale
-                      </q-tooltip>
-                    </q-btn>
-                    <q-btn
-                      dense
-                      size="md"
-                      icon="delete"
-                      flat
-                      unelevated
-                      color="red"
-                      :disable="isDeleteButtonDisabled(props.row)"
-                      @click="
-                        handleDeleteSaleItem(
-                          Number(selectedId),
-                          props.row.saleDetailId
-                        )
-                      "
-                    >
-                      <q-tooltip class="bg-red" :offset="[10, 10]">
-                        Delete Sale
-                      </q-tooltip>
-                    </q-btn>
-                  </div>
-                </q-td>
-              </template>
-              <template
-                v-if="titleAction !== 'Preview Sale Bill'"
-                v-slot:body-cell-discount="props"
-              >
-                <q-td :props="props">
-                  <q-input
-                    v-model="props.row.discount"
-                    @update:model-value="
-                      handleUpdateDiscount($event, props.row)
-                    "
-                    :disable="props.row.isReturn"
-                    type="number"
-                    dense
-                    outlined
-                    color="btn-primary"
-                    class="w-[150px]"
-                  />
-                </q-td>
+              <template v-slot:no-data>
+                <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+                  <q-icon name="warning" size="xs" />
+                  <span class="text-md font-medium"> No data available.</span>
+                </div>
               </template>
             </q-table>
           </div>
-
           <div
             class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between mb-3"
           >
             <div class="max-w-[300px] min-w-[200px] md:w-1/3">
               <q-input
-                v-if="titleAction === pageTitle"
                 v-model="shopSale.comment"
                 maxlength="250"
                 outlined
@@ -336,21 +243,6 @@
               />
             </div>
           </div>
-          <div v-if="titleAction !== pageTitle" class="row justify-end gap-2">
-            <q-btn
-              v-if="titleAction === 'Edit Hold Bill'"
-              label="Complete Bill"
-              unelevated
-              color="btn-primary hover:btn-primary-hover"
-              @click="handleCompleteSale(Number(selectedId), 1)"
-            />
-            <q-btn
-              label="CLOSE"
-              unelevated
-              color="btn-cancel hover:bg-btn-cancel-hover"
-              @click="$router.go(-1)"
-            />
-          </div>
         </div>
       </div>
       <q-fab
@@ -358,7 +250,6 @@
         color="btn-primary"
         direction="up"
         class="lg:!hidden sm:fixed bottom-1 end-1"
-        v-if="titleAction === pageTitle"
       >
         <q-fab-action
           v-for="(button, index) in buttons"
@@ -382,7 +273,6 @@
         />
       </q-fab>
       <div
-        v-if="titleAction === pageTitle"
         class="col-2 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
       >
         <div class="flex flex-nowrap flex-col h-full gap-3 lg:gap-4">
@@ -450,17 +340,15 @@ import {
   ISaleShopSelectedInventory,
   getRoleModuleDisplayName,
   EUserModules,
-} from 'src/interfaces';
-import { articleListApi, changeSaleStatusApi } from 'src/services';
-import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
-import moment from 'moment';
-import { useQuasar } from 'quasar';
-import {
   IInventoryListResponse,
   IShopResponse,
   EUserRoles,
 } from 'src/interfaces';
+import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
+import moment from 'moment';
+import { useQuasar } from 'quasar';
 import {
+  articleListApi,
   inventoryDetailApi,
   shopListApi,
   addShopSaleManagementApi,
@@ -468,7 +356,7 @@ import {
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
@@ -496,9 +384,6 @@ const filterChanged = ref(false);
 const isLoading = ref(false);
 const salePersonCodeInput = ref<null | HTMLDivElement>(null);
 const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
-const selectedId: string | string[] = router.currentRoute.value.params.id;
-const routerPath = router.currentRoute.value.fullPath;
-const titleAction = ref('');
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
 });
@@ -542,30 +427,8 @@ onMounted(async () => {
     address: '',
     code: '',
   };
-  if (selectedId) {
-    if (routerPath.includes('preview')) {
-      titleAction.value = 'Preview Sale Bill';
-    } else if (routerPath.includes('editHoldBill')) {
-      titleAction.value = 'Edit Hold Bill';
-      isLoading.value = true;
-      await inventoryDetailList();
-      isLoading.value = false;
-    }
-  } else {
-    titleAction.value = pageTitle;
-    getShopList();
-  }
+  getShopList();
 });
-watch(
-  () => router.currentRoute.value.fullPath,
-  (newPath) => {
-    if (newPath === '/shop-sale') {
-      titleAction.value = pageTitle;
-      selectedInventoryData.value = [];
-      getShopList();
-    }
-  }
-);
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
@@ -756,6 +619,34 @@ const dialogClose = (e: KeyboardEvent) => {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
+// const handleUpdatedispatchQuantity = (
+//   newVal: string | number | null,
+//   selectedRecord: ISaleShopSelectedInventory
+// ) => {
+//   if (typeof newVal === 'string') {
+//     const val = parseInt(newVal);
+//     if (!val || val < 0) {
+//       selectedRecord.dispatchQuantity = 0;
+//       selectedRecord.errorMessage = '';
+//     } else if (
+//       val >
+//       selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
+//     ) {
+//       selectedRecord.dispatchQuantity =
+//         0 + (selectedRecord.alreadyDispatchedQuantity ?? 0);
+//       selectedRecord.errorMessage = 'Invalid Quantity !';
+//       $q.notify({
+//         message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
+//         color: 'red',
+//         icon: 'warning',
+//       });
+//     } else {
+//       selectedRecord.dispatchQuantity = val;
+//       selectedRecord.errorMessage = '';
+//     }
+//   }
+// };
+
 const handleUpdatedispatchQuantity = (
   newVal: string | number | null,
   selectedRecord: ISaleShopSelectedInventory
@@ -765,12 +656,8 @@ const handleUpdatedispatchQuantity = (
     if (!val || val < 0) {
       selectedRecord.dispatchQuantity = 0;
       selectedRecord.errorMessage = '';
-    } else if (
-      val >
-      selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
-    ) {
-      selectedRecord.dispatchQuantity =
-        0 + (selectedRecord.alreadyDispatchedQuantity ?? 0);
+    } else if (!selectedRecord.isReturn && val > selectedRecord.quantity) {
+      selectedRecord.dispatchQuantity = 0;
       selectedRecord.errorMessage = 'Invalid Quantity !';
       $q.notify({
         message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
@@ -783,6 +670,7 @@ const handleUpdatedispatchQuantity = (
     }
   }
 };
+
 const handleFilterArticle = (searchedArticle: string) => {
   getArticleList(searchedArticle);
 };
@@ -810,6 +698,13 @@ const handleUpdateDiscount = (
     } else {
       row.discount = value;
     }
+  }
+};
+const handleReturnMode = (row: ISaleShopSelectedInventory) => {
+  if (row.isReturn) {
+    row.discount = 0;
+  } else if (!row.isReturn) {
+    row.dispatchQuantity = 0;
   }
 };
 const handlePagination = (selectedPagination: IPagination) => {
@@ -946,6 +841,13 @@ const inventoryDetailList = async (data?: {
 const handleAddShopSale = async () => {
   const res = isPersonCodeEmpty();
   if (!res) return;
+  if (selectedInventoryData.value.every((record) => record.isReturn)) {
+    $q.notify({
+      message: 'You cannot Save this Bill, as it contains only Return Item.',
+      type: 'warning',
+    });
+    return;
+  }
   try {
     isLoading.value = true;
     const payload = {
@@ -983,7 +885,6 @@ const handleAddShopSale = async () => {
     isLoading.value = false;
   }
 };
-
 const isPersonCodeEmpty = () => {
   const personCode = shopSale.value.salePersonCode;
   if (!personCode || personCode.trim() === '') {
@@ -1040,28 +941,6 @@ const handleHoldBill = async () => {
     });
   } finally {
     isLoading.value = false;
-  }
-};
-
-const handleCompleteSale = async (saleId: number, saleStatus: number) => {
-  try {
-    const response = await changeSaleStatusApi({ saleId, saleStatus });
-    if (response.type === 'Success') {
-      $q.notify({
-        message: response.message,
-        type: 'positive',
-      });
-      router.go(-1);
-    }
-  } catch (e) {
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      type: 'negative',
-    });
   }
 };
 </script>

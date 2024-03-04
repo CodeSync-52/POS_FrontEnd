@@ -107,10 +107,7 @@
             >
               <img
                 class="w-full h-full object-cover"
-                :src="
-                  getImageUrl(props.row.productImage) ||
-                  'assets/default-image.png'
-                "
+                :src="props.row.productImage || 'assets/default-image.png'"
                 alt="img"
               />
             </div>
@@ -181,15 +178,9 @@ const filterSearch = ref<IInventoryFilterSearch>({
 });
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
-};
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
 };
 const emit = defineEmits<{
   (event: 'selected-data', payload: ISaleInfo[]): void;
