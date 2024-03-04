@@ -5,6 +5,7 @@ import {
   ISaleListResponse,
   IPreviewSaleResponse,
   ISaleDetail,
+  IUserResponse,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -207,6 +208,41 @@ export const addExpenseApi = async ({
       amount,
       comments,
     },
+  });
+  return res;
+};
+export const getShopOfficersApi = async (
+  {
+    RoleName,
+    ShopId,
+    Status,
+    pageNumber = 1,
+    pageSize = 10000,
+  }: {
+    RoleName?: string | null;
+    ShopId?: number | null;
+    Status?: string | null;
+    pageNumber?: number;
+    pageSize?: number;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<{
+      totalItemCount: number;
+      items: IUserResponse[];
+    }>
+  >({
+    method: 'GET',
+    url: 'api/User/list',
+    params: {
+      RoleName: RoleName,
+      ShopId: ShopId,
+      Status: Status,
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+    },
+    signal: controller?.signal,
   });
   return res;
 };

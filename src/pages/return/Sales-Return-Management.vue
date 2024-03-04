@@ -15,17 +15,6 @@
         <div
           class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
         >
-          <q-input
-            v-model="shopSale.salePersonCode"
-            ref="salePersonCodeInput"
-            class="max-w-[200px] min-w-[200px]"
-            maxlength="250"
-            outlined
-            dense
-            color="btn-primary"
-            label="Sale Person Code"
-            @keydown="dialogClose"
-          />
           <q-select
             :loading="isFetchingShopList"
             popup-content-class="!max-h-[200px]"
@@ -46,9 +35,27 @@
             option-label="name"
             option-value="shopId"
           />
+          <q-select
+            :loading="isLoading"
+            dense
+            class="max-w-[200px] min-w-[200px]"
+            outlined
+            use-input
+            map-options
+            clearable
+            v-model="shopSale.salePersonCode"
+            ref="salePersonCodeInput"
+            popup-content-class="!max-h-[200px]"
+            :options="roleDropdownOptions"
+            @update:model-value="handleUpdateSalePersonCode($event)"
+            option-label="fullName"
+            option-value="userId"
+            label="Sale Person"
+            color="btn-primary"
+          />
         </div>
         <div
-          class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-2 md:gap-16"
+          class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-3 md:gap-16 md:ml-2"
         >
           <div class="row gap-6 items-center">
             <span class="text-base">Add Articles</span>
@@ -343,6 +350,7 @@ import {
   IInventoryListResponse,
   IShopResponse,
   EUserRoles,
+  IUserResponse,
 } from 'src/interfaces';
 import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
 import moment from 'moment';
@@ -353,6 +361,7 @@ import {
   shopListApi,
   addShopSaleManagementApi,
   holdBillApi,
+  getShopOfficersApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -373,6 +382,7 @@ const isPreviewImageModalVisible = ref(false);
 const selectedPreviewImage = ref('');
 const isInventoryListModalVisible = ref(false);
 const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
+const roleDropdownOptions = ref<IUserResponse[]>([]);
 const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
 const isSelectedShopDetailTableVisible = ref(false);
 const isFetchingArticleList = ref(false);
@@ -386,6 +396,9 @@ const salePersonCodeInput = ref<null | HTMLDivElement>(null);
 const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
+});
+const selectedUser = ref<{ user: IUserResponse | null }>({
+  user: null,
 });
 const filterSearch = ref<{
   keyword: string;
@@ -408,11 +421,11 @@ const pagination = ref({
 const shopSale = ref<{
   comment: string;
   discount: number;
-  salePersonCode: null | string;
+  salePersonCode: string | null;
 }>({
   comment: '',
   discount: 0,
-  salePersonCode: null,
+  salePersonCode: selectedUser.value.user?.fullName ?? null,
 });
 onMounted(async () => {
   window.addEventListener('keydown', handleKeyDown);
@@ -428,6 +441,7 @@ onMounted(async () => {
     code: '',
   };
   getShopList();
+  getShopOfficers();
 });
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
@@ -529,6 +543,15 @@ const handleUpdateShopSaleDiscount = (newValue: string | null | number) => {
 const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShop = newVal;
   filterSearch.value.ShopId = newVal.shopId;
+  getShopOfficers();
+  shopSale.value.salePersonCode = '';
+  shopSale.value.comment = '';
+  selectedInventoryData.value = [];
+  selectedShopDetailRecords.value = [];
+};
+const handleUpdateSalePersonCode = (newVal: IUserResponse) => {
+  selectedUser.value.user = newVal;
+  shopSale.value.salePersonCode = newVal.fullName;
 };
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
@@ -619,34 +642,6 @@ const dialogClose = (e: KeyboardEvent) => {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
-// const handleUpdatedispatchQuantity = (
-//   newVal: string | number | null,
-//   selectedRecord: ISaleShopSelectedInventory
-// ) => {
-//   if (typeof newVal === 'string') {
-//     const val = parseInt(newVal);
-//     if (!val || val < 0) {
-//       selectedRecord.dispatchQuantity = 0;
-//       selectedRecord.errorMessage = '';
-//     } else if (
-//       val >
-//       selectedRecord.quantity + (selectedRecord.alreadyDispatchedQuantity ?? 0)
-//     ) {
-//       selectedRecord.dispatchQuantity =
-//         0 + (selectedRecord.alreadyDispatchedQuantity ?? 0);
-//       selectedRecord.errorMessage = 'Invalid Quantity !';
-//       $q.notify({
-//         message: `Product ${selectedRecord.productName} ${selectedRecord.productCode} quantity is more than the available quantity. Please add the quantity again!`,
-//         color: 'red',
-//         icon: 'warning',
-//       });
-//     } else {
-//       selectedRecord.dispatchQuantity = val;
-//       selectedRecord.errorMessage = '';
-//     }
-//   }
-// };
-
 const handleUpdatedispatchQuantity = (
   newVal: string | number | null,
   selectedRecord: ISaleShopSelectedInventory
@@ -929,6 +924,40 @@ const handleHoldBill = async () => {
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       selectedShopDetailRecords.value = [];
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+const getShopOfficers = async () => {
+  isLoading.value = true;
+  const requestFilter = {
+    RoleName: 'ShopOfficer',
+    ShopId: selectedShop.value.fromShop?.shopId ?? null,
+    Status: 'Active',
+    pageNumber: 1,
+    pageSize: 1000,
+  };
+  try {
+    if (isLoading.value && apiController.value) {
+      apiController.value.abort();
+      apiController.value = null;
+    }
+    apiController.value = new AbortController();
+
+    const res = await getShopOfficersApi(requestFilter, apiController.value);
+
+    if (res?.data) {
+      roleDropdownOptions.value = res.data.items;
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
