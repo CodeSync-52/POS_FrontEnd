@@ -325,7 +325,6 @@ onMounted(async () => {
   if (routerPath.includes('editHoldBill')) {
     titleAction.value = 'Edit Hold Bill';
   }
- 
 });
 const handleSelectedData = (payload: ISaleInfo[]) => {
   const oldIdList = SaleSummary.value.saleDetailInfos.map(
