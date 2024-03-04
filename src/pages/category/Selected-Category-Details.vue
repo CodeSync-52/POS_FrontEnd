@@ -163,8 +163,8 @@
 import { useRouter } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 import { useQuasar } from 'quasar';
-import CategoryDetailsModal from 'src/components/category-management/CategoryDetailsModal.vue';
-import CategoryStatusModal from 'src/components/category-management/CategoryStatusModal.vue';
+import CategoryDetailsModal from 'src/components/category-management/Category-Details-Modal.vue';
+import CategoryStatusModal from 'src/components/category-management/Category-Status-Modal.vue';
 import {
   EActionPermissions,
   EUserModules,

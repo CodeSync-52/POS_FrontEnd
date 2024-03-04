@@ -133,8 +133,8 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { IShopSaleExpenses, SaleSummaryResponse } from 'src/interfaces';
-import AddNewExpenseModal from 'components/today-sale-summary/AddNewExpenseModal.vue';
-import CloseShopModal from 'components/today-sale-summary/CloseShop.vue';
+import AddNewExpenseModal from 'components/today-sale-summary/Add-New-Expense-Modal.vue';
+import CloseShopModal from 'components/today-sale-summary/Close-Shop.vue';
 import { saleSummaryApi } from 'src/services';
 import { shopSaleExpenseTableColumn } from './utils';
 import { isPosError } from 'src/utils';

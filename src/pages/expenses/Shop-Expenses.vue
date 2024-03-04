@@ -77,7 +77,7 @@ import {
   getExpenseList,
   updateExpenseType,
 } from 'src/services';
-import AddExpenseModal from 'components/expenses/AddUpdateExpenseModal.vue';
+import AddExpenseModal from 'components/expenses/Add-Update-Expense-Modal.vue';
 import { isPosError } from 'src/utils';
 import { expenseColumns } from 'src/utils/expense';
 const $q = useQuasar();

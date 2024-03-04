@@ -194,8 +194,8 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import CategoryManagementModal from 'src/components/category-management/CategoryManagementModal.vue';
-import CategoryStatusModal from 'src/components/category-management/CategoryStatusModal.vue';
+import CategoryManagementModal from 'src/components/category-management/Category-Management-Modal.vue';
+import CategoryStatusModal from 'src/components/category-management/Category-Status-Modal.vue';
 import { categoryColumn } from 'src/pages/category/utils';
 import {
   EActionPermissions,

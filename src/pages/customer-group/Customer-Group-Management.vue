@@ -141,8 +141,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
-import CustomerStatusModal from 'components/customer-group-management/CustomerStatusModal.vue';
-import AddCustomerModal from 'components/customer-group-management/AddCustomerModal.vue';
+import CustomerStatusModal from 'components/customer-group-management/Customer-Status-Modal.vue';
+import AddCustomerModal from 'components/customer-group-management/Add-Customer-Modal.vue';
 import {
   EActionPermissions,
   ICustomerListResponse,

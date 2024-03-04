@@ -339,8 +339,8 @@ import { useQuasar } from 'quasar';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import JsBarcode from 'jsbarcode';
-import ArticleListModal from 'src/components/common/ArticleListModal.vue';
-import SelectVariantModal from 'src/components/inventory/SelectVariantModal.vue';
+import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
+import SelectVariantModal from 'src/components/inventory/Select-Variant-Modal.vue';
 import CustomLabel from 'src/components/inventory/Custom-Label.vue';
 import { useAuthStore } from 'src/stores';
 import {

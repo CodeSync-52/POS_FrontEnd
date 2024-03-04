@@ -222,7 +222,7 @@ import {
   IShopResponse,
   EUserRoles,
 } from 'src/interfaces';
-import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
+import AcceptOrRejectStrModal from 'src/components/str/Accept-Or-Reject-Str-Modal.vue';
 import {
   grnListApi,
   rejectStrApi,

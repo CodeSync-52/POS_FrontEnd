@@ -271,7 +271,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ISaleInfo, IPreviewSaleResponse, ISaleDetail } from 'src/interfaces';
-import InventoryListModal from 'src/components/inventory/NewInventoryListModal.vue';
+import InventoryListModal from 'src/components/inventory/New-Inventory-List-Modal.vue';
 import {
   previewSaleApi,
   changeSaleStatusApi,

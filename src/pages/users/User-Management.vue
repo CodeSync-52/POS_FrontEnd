@@ -308,9 +308,9 @@ import { useQuasar } from 'quasar';
 import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
 import { UserColumn } from './utils';
-import AddUserModal from 'components/user-management/AddUserModal.vue';
-import ChangeStatusModal from 'src/components/user-management/ChangeStatusModal.vue';
-import ResetPasswordModal from 'src/components/user-management/ResetPasswordModal.vue';
+import AddUserModal from 'components/user-management/Add-User-Modal.vue';
+import ChangeStatusModal from 'src/components/user-management/Change-Status-Modal.vue';
+import ResetPasswordModal from 'src/components/user-management/Reset-Password-Modal.vue';
 import { roleOptions, statusOptions } from 'src/constants/utils';
 import {
   EActionPermissions,

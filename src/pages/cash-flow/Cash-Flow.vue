@@ -202,7 +202,7 @@ import { date } from 'quasar';
 import { cashFlowListApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
-import PreviewCashFlow from 'src/components/cash-flow/PreviewCashFlow.vue';
+import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement

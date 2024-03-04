@@ -201,8 +201,8 @@ import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { variantColumn } from 'src/pages/variant/utils';
-import VariantManagementModal from 'src/components/variant-management/VariantManagementModal.vue';
-import VariantStatusModal from 'src/components/variant-management/VariantStatusModal.vue';
+import VariantManagementModal from 'src/components/variant-management/Variant-Management-Modal.vue';
+import VariantStatusModal from 'src/components/variant-management/Variant-Status-Modal.vue';
 import {
   EActionPermissions,
   EUserModules,

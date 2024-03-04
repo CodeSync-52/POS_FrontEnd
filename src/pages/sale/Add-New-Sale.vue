@@ -461,8 +461,8 @@ import {
   updateWholeSaleDetailApi,
   wholeSaleDetailApi,
 } from 'src/services';
-import ArticleListModal from 'src/components/common/ArticleListModal.vue';
-import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
+import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
+import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   createdBy: '',
   createdById: 0,

@@ -284,7 +284,7 @@ import { useQuasar } from 'quasar';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { isPosError, billGenerationColumn, billStatusOptions } from 'src/utils';
-import GenerateOrCancelBillModal from 'src/components/bill-generation/GenerateOrCancelBillModal.vue';
+import GenerateOrCancelBillModal from 'src/components/bill-generation/Generate-Or-Cancel-Bill-Modal.vue';
 import {
   getRoleModuleDisplayName,
   EActionPermissions,

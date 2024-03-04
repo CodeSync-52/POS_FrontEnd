@@ -258,7 +258,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import ArticleListModal from 'src/components/common/ArticleListModal.vue';
+import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
 import {
   getUserListApi,
   createNewReceipt,
@@ -281,7 +281,7 @@ import { ITableHeaders, ITableItems, downloadPdf, isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
 import { selectedArticleColumn } from 'src/utils';
-import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
+import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import { useAuthStore } from 'src/stores';
 import moment from 'moment';
 const authStore = useAuthStore();

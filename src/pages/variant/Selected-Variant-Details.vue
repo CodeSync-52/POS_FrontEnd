@@ -168,8 +168,8 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { onMounted, ref, watch } from 'vue';
-import VariantDetailsModal from 'src/components/variant-management/VariantDetailsModal.vue';
-import VariantStatusModal from 'src/components/variant-management/VariantStatusModal.vue';
+import VariantDetailsModal from 'src/components/variant-management/Variant-Details-Modal.vue';
+import VariantStatusModal from 'src/components/variant-management/Variant-Status-Modal.vue';
 import {
   EActionPermissions,
   EUserModules,

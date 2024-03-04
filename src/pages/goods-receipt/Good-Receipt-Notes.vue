@@ -235,7 +235,7 @@ import {
   IShopResponse,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import AcceptOrRejectStrModal from 'src/components/str/AcceptOrRejectStrModal.vue';
+import AcceptOrRejectStrModal from 'src/components/str/Accept-Or-Reject-Str-Modal.vue';
 import { grnListApi, shopListApi, rejectStrApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';

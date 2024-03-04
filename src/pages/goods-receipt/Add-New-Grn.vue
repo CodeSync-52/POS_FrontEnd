@@ -211,8 +211,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from 'vue';
-import InventoryListModal from 'src/components/inventory/InventoryListModal.vue';
-import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
+import InventoryListModal from 'src/components/inventory/Inventory-List-Modal.vue';
+import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import {
   IArticleData,
   IInventoryFilterSearch,
