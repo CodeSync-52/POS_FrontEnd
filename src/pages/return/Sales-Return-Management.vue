@@ -34,13 +34,20 @@
             color="btn-primary"
             option-label="name"
             option-value="shopId"
-          />
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-italic text-grey">
+                  No Options Available
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
           <q-select
             :loading="isLoading"
             dense
             class="max-w-[200px] min-w-[200px]"
             outlined
-            use-input
             map-options
             clearable
             v-model="shopSale.salePersonCode"
@@ -52,7 +59,15 @@
             option-value="userId"
             label="Sale Person"
             color="btn-primary"
-          />
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-italic text-grey">
+                  No Options Available
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
         </div>
         <div
           class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-3 md:gap-16 md:ml-2"
@@ -421,11 +436,11 @@ const pagination = ref({
 const shopSale = ref<{
   comment: string;
   discount: number;
-  salePersonCode: string | null;
+  salePersonCode: IUserResponse | null;
 }>({
   comment: '',
   discount: 0,
-  salePersonCode: selectedUser.value.user?.fullName ?? null,
+  salePersonCode: selectedUser.value.user,
 });
 onMounted(async () => {
   window.addEventListener('keydown', handleKeyDown);
@@ -544,14 +559,13 @@ const handleUpdateFromShop = (newVal: IShopResponse) => {
   selectedShop.value.fromShop = newVal;
   filterSearch.value.ShopId = newVal.shopId;
   getShopOfficers();
-  shopSale.value.salePersonCode = '';
+  shopSale.value.salePersonCode = null;
   shopSale.value.comment = '';
   selectedInventoryData.value = [];
   selectedShopDetailRecords.value = [];
 };
 const handleUpdateSalePersonCode = (newVal: IUserResponse) => {
   selectedUser.value.user = newVal;
-  shopSale.value.salePersonCode = newVal.fullName;
 };
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
@@ -846,7 +860,7 @@ const handleAddShopSale = async () => {
   try {
     isLoading.value = true;
     const payload = {
-      salePersonCode: shopSale.value.salePersonCode,
+      salePersonCode: shopSale.value?.salePersonCode?.userId?.toString() ?? '',
       shopId: selectedShop.value.fromShop?.shopId,
       comments: shopSale.value.comment,
       saleDetails: selectedInventoryData.value.map((record) => ({
@@ -862,7 +876,7 @@ const handleAddShopSale = async () => {
         message: response.message,
         type: 'positive',
       });
-      shopSale.value.salePersonCode = '';
+      shopSale.value.salePersonCode = null;
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       selectedShopDetailRecords.value = [];
@@ -882,7 +896,7 @@ const handleAddShopSale = async () => {
 };
 const isPersonCodeEmpty = () => {
   const personCode = shopSale.value.salePersonCode;
-  if (!personCode || personCode.trim() === '') {
+  if (!personCode || null) {
     $q.notify({
       message: 'Sale Person Code is required.',
       type: 'negative',
@@ -905,7 +919,7 @@ const handleHoldBill = async () => {
   try {
     isLoading.value = true;
     const payload = {
-      salePersonCode: shopSale.value.salePersonCode,
+      salePersonCode: shopSale.value?.salePersonCode?.userId?.toString() ?? '',
       shopId: selectedShop.value.fromShop?.shopId,
       comments: shopSale.value.comment,
       saleDetails: selectedInventoryData.value.map((record) => ({
@@ -920,7 +934,7 @@ const handleHoldBill = async () => {
         message: response.message,
         type: 'positive',
       });
-      shopSale.value.salePersonCode = '';
+      shopSale.value.salePersonCode = null;
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       selectedShopDetailRecords.value = [];
