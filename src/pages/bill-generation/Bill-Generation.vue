@@ -497,7 +497,7 @@ const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     options.value = UserList.value.filter((v) =>
-      v.fullName.toLowerCase().includes(needle)
+      v.fullName?.toLowerCase().includes(needle)
     );
   });
 };
@@ -505,14 +505,9 @@ async function getCustomerListOption() {
   if (isCustomerGroupListLoading.value) return;
   isCustomerGroupListLoading.value = true;
   try {
-    const res = await getCustomerGroupList({
-      pageNumber: 1,
-      pageSize: 200,
-    });
-    if (res?.data) {
-      customerGroupList.value = res?.data.items.filter(
-        (customerGroup) => customerGroup.status === 'Active'
-      );
+    const res = await getCustomerGroupList({ status: 'Active' });
+    if (res?.data && Array.isArray(res.data)) {
+      customerGroupList.value = res?.data;
     }
     isCustomerGroupListLoading.value = false;
   } catch (e) {

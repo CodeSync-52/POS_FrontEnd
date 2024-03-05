@@ -1,21 +1,13 @@
 import { ICustomerListResponse, IGenericResponse } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
-
-export const getCustomerGroupList = async ({
-  pageNumber = 1,
-  pageSize = 50,
-}: {
-  pageNumber?: number;
-  pageSize?: number;
-}) => {
+export const getCustomerGroupList = async ({ status }: { status: string }) => {
   const res = await makeApiCall<
     IGenericResponse<{
-      totalItemCount: number;
       items: ICustomerListResponse[];
     }>
   >({
     method: 'GET',
-    url: `api/CustomerGroup/list?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    url: `api/CustomerGroup/list?status=${status}`,
   });
   return res;
 };
