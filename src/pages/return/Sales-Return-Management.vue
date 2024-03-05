@@ -588,7 +588,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
       scannedLabelLoading.value = true;
       try {
         const res = await inventoryDetailApi({
-          ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+          ShopId: selectedShop.value.fromShop?.shopId ?? null,
           PageNumber: pagination.value.page,
           PageSize: pagination.value.rowsPerPage,
           filterSearch: filterSearch.value,
@@ -823,7 +823,7 @@ const inventoryDetailList = async (data?: {
     apiController.value = new AbortController();
     const res = await inventoryDetailApi(
       {
-        ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+        ShopId: selectedShop.value.fromShop?.shopId ?? null,
         PageNumber: pagination.value.page,
         PageSize: pagination.value.rowsPerPage,
         filterSearch: filterSearch.value,

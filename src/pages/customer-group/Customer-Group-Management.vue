@@ -13,14 +13,14 @@
         @click="showAddNewCustomerGroupPopup"
       />
     </div>
-    <div class="">
+    <div>
       <q-table
         :rows="filteredRows"
-        v-model:pagination="pagination"
         :columns="customerGroupColumns"
         row-key="shopId"
         :filter="filter"
         @request="fetchingCustomerGroupList"
+        :rows-per-page-options="[0]"
       >
         <template v-slot:top>
           <div
@@ -97,7 +97,8 @@
                 icon="edit"
                 class="hover:text-btn-primary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
-                ><q-tooltip class="bg-black" :offset="[10, 10]">
+              >
+                <q-tooltip class="bg-black" :offset="[10, 10]">
                   Edit Customer Group
                 </q-tooltip>
               </q-btn>
@@ -119,7 +120,6 @@
         </template>
       </q-table>
     </div>
-
     <q-dialog v-model="editStatusPopup">
       <customer-status-modal
         :selected-status="selectedStatus"
@@ -162,13 +162,6 @@ const pageTitle = getRoleModuleDisplayName(
 );
 const $q = useQuasar();
 const authStore = useAuthStore();
-const pagination = ref({
-  sortBy: 'desc',
-  descending: false,
-  page: 1,
-  rowsPerPage: 25,
-  rowsNumber: 0,
-});
 const filter = ref('');
 const customerGroupRows = ref<ICustomerListResponse[]>([]);
 const selectedRowData = ref<ICustomerListResponse | null>(null);
@@ -293,25 +286,14 @@ const handleEditCustomerGroupNamePopup = (
 onMounted(() => {
   fetchingCustomerGroupList();
 });
-async function fetchingCustomerGroupList(data?: {
-  pagination: Omit<typeof pagination.value, 'rowsNumber'>;
-}) {
+async function fetchingCustomerGroupList() {
   if (filterChanged.value) return;
   if (isLoading.value) return;
   isLoading.value = true;
-  if (data) {
-    pagination.value = { ...pagination.value, ...data.pagination };
-  }
   try {
-    const pageSize =
-      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
-    const res = await getCustomerGroupList({
-      pageNumber: pagination.value.page,
-      pageSize: pageSize,
-    });
-    if (res?.data) {
-      customerGroupRows.value = res?.data.items;
-      pagination.value.rowsNumber = res.data.totalItemCount;
+    const res = await getCustomerGroupList({ status: 'ALL' });
+    if (res?.data && Array.isArray(res.data)) {
+      customerGroupRows.value = res.data;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
