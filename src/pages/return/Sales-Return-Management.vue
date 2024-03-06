@@ -512,7 +512,11 @@ onUnmounted(() => {
 });
 const shopSalesTotalAmount = computed(() => {
   return selectedInventoryData.value.reduce((amount: number, row) => {
-    return amount + row.dispatchQuantity * row.retailPrice;
+    if (row.isReturn) {
+      return amount;
+    } else {
+      return amount + row.dispatchQuantity * row.retailPrice;
+    }
   }, 0);
 });
 const shopSalesTotalDiscount = computed(() => {
@@ -532,15 +536,10 @@ const shopSalesReturnItems = computed(() => {
   }
 });
 const shopSalesNetAmount = computed(() => {
-  const totalAmount = selectedInventoryData.value.reduce(
-    (amount: number, row) => {
-      return amount + row.dispatchQuantity * row.retailPrice;
-    },
-    0
-  );
-  const netAmountBeforeReturns = totalAmount - shopSalesTotalDiscount.value;
-  const returnItemsAmount = shopSalesReturnItems.value;
-  const netAmount = netAmountBeforeReturns - returnItemsAmount;
+  const netAmount =
+    shopSalesTotalAmount.value -
+    shopSalesTotalDiscount.value -
+    shopSalesReturnItems.value;
   return netAmount;
 });
 const handleUpdateShopSaleDiscount = (newValue: string | null | number) => {
