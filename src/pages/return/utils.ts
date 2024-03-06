@@ -174,6 +174,12 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
     align: 'left',
     field: (row) => row.comment || '-',
   },
+  {
+    name: 'action',
+    label: 'Action',
+    field: () => '',
+    align: 'left',
+  },
 ];
 export const shopAllBillsTableColumn: QTableColumn[] = [
   {
