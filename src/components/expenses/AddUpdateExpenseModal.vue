@@ -29,6 +29,7 @@
         flat
         :loading="isLoading"
         unelevated
+        :disable="!expenseName || expenseName.trim() === ''"
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
         @click="isEditExpense ? saveNewExpense('edit') : saveNewExpense('add')"
