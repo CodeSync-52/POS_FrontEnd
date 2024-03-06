@@ -104,6 +104,7 @@
               </div>
             </q-td>
           </template>
+
           <template v-slot:body-cell-action="props" v-if="!isReceiptPreview">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
@@ -144,9 +145,11 @@
               </div>
             </q-td>
           </template>
+
           <template v-slot:header-cell-action v-if="isReceiptPreview">
             <q-th> </q-th>
           </template>
+
           <template v-slot:body-cell-quantity="props">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
@@ -173,6 +176,7 @@
               </div>
             </q-td>
           </template>
+
           <template v-slot:body-cell-name="props">
             <q-td
               :props="props"
@@ -181,12 +185,14 @@
               {{ props.row.productName }}
             </q-td>
           </template>
+
           <template v-slot:no-data>
             <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
               <q-icon name="warning" size="xs" />
               <span class="text-md font-medium"> No data available. </span>
             </div>
           </template>
+
           <template v-slot:bottom-row="props">
             <q-tr :props="props">
               <q-td colspan="3" />
@@ -255,6 +261,7 @@
     </q-dialog>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -284,6 +291,7 @@ import { selectedArticleColumn } from 'src/utils';
 import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
 import { useAuthStore } from 'src/stores';
 import moment from 'moment';
+import { processTableItems } from 'src/utils/process-table-items';
 const authStore = useAuthStore();
 const route = useRoute();
 const options = ref<IUserResponse[]>([]);
@@ -709,7 +717,7 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
 
   return tableStuff;
 }
-function downloadPdfData() {
+async function downloadPdfData() {
   const headers: ITableHeaders[] = [
     {
       heading: 'Receipt Id',
@@ -736,15 +744,20 @@ function downloadPdfData() {
       content: addNewReceipt.value.createdBy,
     },
   ];
+
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
   downloadPdf({
     filename: myFileName,
-    tableData: JSON.parse(JSON.stringify(tableItems.value)),
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     tableHeaders: headers,
     title: fileTitle,
   });
 }
+
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();

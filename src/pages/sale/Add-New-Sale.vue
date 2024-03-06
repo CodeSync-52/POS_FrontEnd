@@ -463,6 +463,7 @@ import {
 } from 'src/services';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
+import { processTableItems } from 'src/utils/process-table-items';
 const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   createdBy: '',
   createdById: 0,
@@ -1051,7 +1052,7 @@ async function convertArrayToPdfData(
   tableStuff.push(netTotalRow);
   return tableStuff;
 }
-function downloadPdfData() {
+async function downloadPdfData() {
   const headers: ITableHeaders[] = [
     {
       heading: 'Sale Id',
@@ -1082,9 +1083,12 @@ function downloadPdfData() {
   ];
   const fileTitle = 'Sale';
   const myFileName = 'Sale.pdf';
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
   downloadPdf({
     filename: myFileName,
-    tableData: JSON.parse(JSON.stringify(tableItems.value)),
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     tableHeaders: headers,
     title: fileTitle,
   });
@@ -1093,7 +1097,7 @@ const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     options.value = UserList.value.filter((v) =>
-      v.fullName.toLowerCase().includes(needle)
+      v.fullName?.toLowerCase().includes(needle)
     );
   });
 };
