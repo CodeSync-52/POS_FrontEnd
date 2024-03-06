@@ -95,10 +95,7 @@
             >
               <img
                 class="w-full h-full object-cover"
-                :src="
-                  getImageUrl(props.row.productImage) ||
-                  'assets/default-image.png'
-                "
+                :src="props.row.productImage || 'assets/default-image.png'"
                 alt="img"
               />
             </div>
@@ -328,7 +325,6 @@ onMounted(async () => {
   if (routerPath.includes('editHoldBill')) {
     titleAction.value = 'Edit Hold Bill';
   }
-  console.log(SaleSummary.value.saleDetailInfos);
 });
 const handleSelectedData = (payload: ISaleInfo[]) => {
   const oldIdList = SaleSummary.value.saleDetailInfos.map(
@@ -349,15 +345,9 @@ const handleSelectedData = (payload: ISaleInfo[]) => {
 
   isInventoryListModalVisible.value = false;
 };
-const getImageUrl = (base64Image: string | null) => {
-  if (base64Image) {
-    return `data:image/png;base64,${base64Image}`;
-  }
-  return '';
-};
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
-    selectedPreviewImage.value = `data:image/png;base64,${selectedImage}`;
+    selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
 };

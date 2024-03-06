@@ -389,12 +389,9 @@ async function getCustomerAndShopListOption() {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await getCustomerGroupList({
-      pageNumber: 1,
-      pageSize: 200,
-    });
-    if (res?.data) {
-      customerGroupList.value = res?.data.items;
+    const res = await getCustomerGroupList({ status: 'Active' });
+    if (res?.data && Array.isArray(res.data)) {
+      customerGroupList.value = res?.data;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

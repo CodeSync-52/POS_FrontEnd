@@ -37,7 +37,7 @@ export interface IUserResponse {
   customerGroup?: null | string;
   customerGroupId?: null | number;
   discount?: number;
-  fullName: string;
+  fullName: string | null;
   flatDiscount?: number;
   outStandingBalance?: number;
   phoneNumber: string;
