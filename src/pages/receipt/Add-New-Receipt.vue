@@ -709,7 +709,7 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
 
   return tableStuff;
 }
-function downloadPdfData() {
+async function downloadPdfData() {
   const headers: ITableHeaders[] = [
     {
       heading: 'Receipt Id',
@@ -736,15 +736,80 @@ function downloadPdfData() {
       content: addNewReceipt.value.createdBy,
     },
   ];
+
+  // Assuming tableItems.value is an array of ITableItems
+  const tableDataWithImage: ITableItems[] = await Promise.all(
+    tableItems.value.map(async (item) => {
+      if (Array.isArray(item)) {
+        // Handle array elements
+        const updatedArray = await Promise.all(item.map(processArrayElement));
+        return updatedArray;
+      } else if (typeof item === 'string') {
+        // Handle string elements
+        return item;
+      } else if (item && 'image' in item && typeof item.image === 'string') {
+        // Using a type guard to explicitly check for the presence of 'image' property
+        return processObjectWithImage(item);
+      } else {
+        // Handle other object elements
+        return item;
+      }
+    })
+  );
+
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
   downloadPdf({
     filename: myFileName,
-    tableData: JSON.parse(JSON.stringify(tableItems.value)),
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     tableHeaders: headers,
     title: fileTitle,
   });
 }
+
+async function processArrayElement(
+  arrayElement: string | { image: string; [key: string]: any }
+): Promise<ITableItems> {
+  if (typeof arrayElement === 'string') {
+    return arrayElement;
+  } else if (
+    'image' in arrayElement &&
+    typeof arrayElement.image === 'string'
+  ) {
+    return processObjectWithImage(arrayElement);
+  } else {
+    return arrayElement;
+  }
+}
+
+async function processObjectWithImage(objectWithImage: {
+  image: string;
+  [key: string]: any;
+}): Promise<ITableItems> {
+  const { image, ...rest } = objectWithImage;
+  const imageDataUrl = await getImageDataUrl(image);
+  return {
+    ...rest,
+    image: imageDataUrl,
+  };
+}
+
+// Assuming this is a helper function to fetch and convert an image URL to data URL
+async function getImageDataUrl(imageUrl: string): Promise<string> {
+  try {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    return new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    return ''; // Return an empty string or handle the error as needed
+  }
+}
+
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
