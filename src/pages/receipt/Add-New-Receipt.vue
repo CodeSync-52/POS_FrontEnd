@@ -104,6 +104,7 @@
               </div>
             </q-td>
           </template>
+
           <template v-slot:body-cell-action="props" v-if="!isReceiptPreview">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
@@ -144,9 +145,11 @@
               </div>
             </q-td>
           </template>
+
           <template v-slot:header-cell-action v-if="isReceiptPreview">
             <q-th> </q-th>
           </template>
+
           <template v-slot:body-cell-quantity="props">
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
@@ -173,6 +176,7 @@
               </div>
             </q-td>
           </template>
+
           <template v-slot:body-cell-name="props">
             <q-td
               :props="props"
@@ -181,12 +185,14 @@
               {{ props.row.productName }}
             </q-td>
           </template>
+
           <template v-slot:no-data>
             <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
               <q-icon name="warning" size="xs" />
               <span class="text-md font-medium"> No data available. </span>
             </div>
           </template>
+
           <template v-slot:bottom-row="props">
             <q-tr :props="props">
               <q-td colspan="3" />
@@ -255,6 +261,7 @@
     </q-dialog>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -284,6 +291,7 @@ import { selectedArticleColumn } from 'src/utils';
 import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
 import { useAuthStore } from 'src/stores';
 import moment from 'moment';
+import { processTableItems } from 'src/utils/process-table-items';
 const authStore = useAuthStore();
 const route = useRoute();
 const options = ref<IUserResponse[]>([]);
@@ -737,26 +745,9 @@ async function downloadPdfData() {
     },
   ];
 
-  // Assuming tableItems.value is an array of ITableItems
-  const tableDataWithImage: ITableItems[] = await Promise.all(
-    tableItems.value.map(async (item) => {
-      if (Array.isArray(item)) {
-        // Handle array elements
-        const updatedArray = await Promise.all(item.map(processArrayElement));
-        return updatedArray;
-      } else if (typeof item === 'string') {
-        // Handle string elements
-        return item;
-      } else if (item && 'image' in item && typeof item.image === 'string') {
-        // Using a type guard to explicitly check for the presence of 'image' property
-        return processObjectWithImage(item);
-      } else {
-        // Handle other object elements
-        return item;
-      }
-    })
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
   );
-
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
   downloadPdf({
@@ -767,54 +758,11 @@ async function downloadPdfData() {
   });
 }
 
-async function processArrayElement(
-  arrayElement: string | { image: string; [key: string]: any }
-): Promise<ITableItems> {
-  if (typeof arrayElement === 'string') {
-    return arrayElement;
-  } else if (
-    'image' in arrayElement &&
-    typeof arrayElement.image === 'string'
-  ) {
-    return processObjectWithImage(arrayElement);
-  } else {
-    return arrayElement;
-  }
-}
-
-async function processObjectWithImage(objectWithImage: {
-  image: string;
-  [key: string]: any;
-}): Promise<ITableItems> {
-  const { image, ...rest } = objectWithImage;
-  const imageDataUrl = await getImageDataUrl(image);
-  return {
-    ...rest,
-    image: imageDataUrl,
-  };
-}
-
-// Assuming this is a helper function to fetch and convert an image URL to data URL
-async function getImageDataUrl(imageUrl: string): Promise<string> {
-  try {
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    return new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    console.error('Error fetching image:', error);
-    return ''; // Return an empty string or handle the error as needed
-  }
-}
-
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
     options.value = UserList.value.filter((v) =>
-      v.fullName.toLowerCase().includes(needle)
+      v.fullName?.toLowerCase().includes(needle)
     );
   });
 };
