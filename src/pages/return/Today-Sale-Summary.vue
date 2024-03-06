@@ -78,6 +78,25 @@
             @click="handleAddNewExpense()"
           />
         </template>
+        <template v-slot:body-cell-action="props">
+          <q-td :props="props">
+            <div class="flex min-w-[72px]">
+              <q-btn
+                dense
+                size="sm"
+                icon="delete"
+                flat
+                unelevated
+                color="red"
+                @click="handleCancelBill(props.row.shopAccountDetailId)"
+              >
+                <q-tooltip class="bg-red" :offset="[10, 10]">
+                  Delete Expense
+                </q-tooltip>
+              </q-btn>
+            </div>
+          </q-td>
+        </template>
         <template v-slot:no-data>
           <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
             <q-icon name="warning" size="xs" />
@@ -128,14 +147,22 @@
     <q-dialog v-model="showCloseShopModal">
       <close-shop-modal @confirm="updateSaleSummary()" />
     </q-dialog>
+    <q-dialog v-model="showCancelBillModal">
+      <complete-cancel-bill-modal
+        title="Delete Expense"
+        message="Are you sure you want to delete expense?"
+        @confirm="handleDeleteExpense(selectedRowId)"
+      />
+    </q-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { IShopSaleExpenses, SaleSummaryResponse } from 'src/interfaces';
 import AddNewExpenseModal from 'components/today-sale-summary/AddNewExpenseModal.vue';
+import CompleteCancelBillModal from 'components/return/CompleteOrCancelModal.vue';
 import CloseShopModal from 'components/today-sale-summary/CloseShop.vue';
-import { saleSummaryApi } from 'src/services';
+import { saleSummaryApi, deleteExpenseApi } from 'src/services';
 import { shopSaleExpenseTableColumn } from './utils';
 import { isPosError } from 'src/utils';
 import moment from 'moment';
@@ -146,6 +173,8 @@ const authStore = useAuthStore();
 const todayDate = Date.now();
 const showAddNewExpenseModal = ref(false);
 const showCloseShopModal = ref(false);
+const showCancelBillModal = ref(false);
+const selectedRowId = ref<number>(-1);
 const ShopId = authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
 const SaleSummary = ref<{
   openingBalance: number;
@@ -183,6 +212,10 @@ const SaleSummary = ref<{
 onMounted(async () => {
   await updateSaleSummary();
 });
+const handleCancelBill = async (selectedRow: number) => {
+  selectedRowId.value = selectedRow;
+  showCancelBillModal.value = true;
+};
 const handleAddNewExpense = async () => {
   showAddNewExpenseModal.value = true;
 };
@@ -225,5 +258,27 @@ const updateSaleSummary = async () => {
     });
   }
   showAddNewExpenseModal.value = false;
+};
+const handleDeleteExpense = async (shopAccountDetailId: number) => {
+  try {
+    const response = await deleteExpenseApi({ shopAccountDetailId });
+    if (response.type === 'Success') {
+      $q.notify({
+        message: response.message,
+        type: 'positive',
+      });
+      updateSaleSummary();
+      showCancelBillModal.value = false;
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
 };
 </script>
