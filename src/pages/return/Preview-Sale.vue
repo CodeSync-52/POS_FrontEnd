@@ -499,6 +499,12 @@ const handleEditBill = async (id: number) => {
         icon: 'error',
         color: 'orange',
       });
+    } else if (selectedRow.retailPrice === 0) {
+      $q.notify({
+        message:
+          'Cannot ADD this Sale Item. One or more items have a retailPrice of 0.',
+        type: 'warning',
+      });
     } else if (selectedRow.saleDetailId) {
       await handleUpdateSaleItem(selectedRow.saleDetailId, {
         quantity: selectedRow.dispatchQuantity,
