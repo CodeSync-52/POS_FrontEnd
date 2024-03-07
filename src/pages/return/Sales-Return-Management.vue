@@ -603,6 +603,8 @@ const handleActionKeys = (e: KeyboardEvent) => {
       router.push('/shop-sale/hold-bills');
     } else if (e.key === 'F7') {
       router.push('/shop-sale/today-sale-summary');
+    } else if (e.key === 'F8') {
+      router.push('/shop-account');
     } else if (
       e.key === 'Enter' &&
       selectedInventoryData.value.length &&
@@ -630,6 +632,9 @@ const handleButtonClick = (button: { name: string }): void => {
   if (button.name === 'holdBill') {
     handleHoldBill();
   }
+  if (button.name === 'shopAccount') {
+    router.push('/shop-account');
+  }
 };
 onUnmounted(() => {
   if (apiController.value) {
@@ -638,7 +643,11 @@ onUnmounted(() => {
 });
 const shopSalesTotalAmount = computed(() => {
   return selectedInventoryData.value.reduce((amount: number, row) => {
-    return amount + row.dispatchQuantity * row.retailPrice;
+    if (row.isReturn) {
+      return amount;
+    } else {
+      return amount + row.dispatchQuantity * row.retailPrice;
+    }
   }, 0);
 });
 const shopSalesTotalDiscount = computed(() => {
@@ -658,15 +667,10 @@ const shopSalesReturnItems = computed(() => {
   }
 });
 const shopSalesNetAmount = computed(() => {
-  const totalAmount = selectedInventoryData.value.reduce(
-    (amount: number, row) => {
-      return amount + row.dispatchQuantity * row.retailPrice;
-    },
-    0
-  );
-  const netAmountBeforeReturns = totalAmount - shopSalesTotalDiscount.value;
-  const returnItemsAmount = shopSalesReturnItems.value;
-  const netAmount = netAmountBeforeReturns - returnItemsAmount;
+  const netAmount =
+    shopSalesTotalAmount.value -
+    shopSalesTotalDiscount.value -
+    shopSalesReturnItems.value;
   return netAmount;
 });
 const handleUpdateShopSaleDiscount = (newValue: string | null | number) => {
@@ -704,7 +708,7 @@ const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
 const handleKeyPress = async (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     isInventoryListModalVisible.value = true;
   } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
     const target = e.target as HTMLInputElement;
@@ -778,7 +782,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 };
 const dialogClose = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
@@ -1003,6 +1007,14 @@ const handleAddShopSale = async () => {
     });
     return;
   }
+  if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
+    $q.notify({
+      message:
+        'Cannot Complete this sale. One or more items have a retailPrice of 0.',
+      type: 'warning',
+    });
+    return;
+  }
   try {
     isLoading.value = true;
     const payload = {
@@ -1060,6 +1072,14 @@ const handleHoldBill = async () => {
   if (selectedInventoryData.value.some((record) => record.isReturn)) {
     $q.notify({
       message: 'You cannot HOLD this bill, as it contains a Return Item.',
+      type: 'warning',
+    });
+    return;
+  }
+  if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
+    $q.notify({
+      message:
+        'Cannot HOLD this sale. One or more items have a retailPrice of 0.',
       type: 'warning',
     });
     return;

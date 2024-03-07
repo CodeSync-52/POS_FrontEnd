@@ -307,7 +307,7 @@ onUnmounted(() => {
   }
 });
 const handleKeyPress = async (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     isInventoryListModalVisible.value = true;
   } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
     const target = e.target as HTMLInputElement;
@@ -378,7 +378,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 };
 const dialoagClose = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };

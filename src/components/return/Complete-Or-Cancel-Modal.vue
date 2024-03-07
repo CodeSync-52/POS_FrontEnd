@@ -12,7 +12,7 @@
           v-close-popup
         />
       </div>
-      <div class="text-center">
+      <div>
         <span>{{ modalMessage }}</span>
       </div>
     </q-card-section>

@@ -470,7 +470,8 @@ import {
   IBillGenerationDetailsInfoProductList,
   IUpdatedBillProductList,
 } from 'src/interfaces';
-import { downloadPdf } from 'src/utils/pdf-make/pdf-make';
+import { ITableItems, downloadPdf } from 'src/utils/pdf-make/pdf-make';
+import { processTableItems } from 'src/utils/process-table-items';
 const billAction = ref('');
 const router = useRouter();
 const isLoading = ref(false);
@@ -824,7 +825,7 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
   tableStuff.push(footerRow);
   return tableStuff;
 }
-function downloadPdfData() {
+async function downloadPdfData() {
   const headers: ITableHeaders[] = [
     {
       heading: 'Bill Id',
@@ -851,11 +852,14 @@ function downloadPdfData() {
       content: billGenerationDetailsInfoData.value.freight,
     },
   ];
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
   const fileTitle = 'Bill';
   const myFileName = 'Bill.pdf';
   downloadPdf({
     filename: myFileName,
-    tableData: JSON.parse(JSON.stringify(tableItems.value)),
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     tableHeaders: headers,
     title: fileTitle,
   });

@@ -246,3 +246,17 @@ export const getShopOfficersApi = async (
   });
   return res;
 };
+export const deleteExpenseApi = async ({
+  shopAccountDetailId,
+}: {
+  shopAccountDetailId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/shopaccount/delete/expense',
+    method: 'PUT',
+    params: {
+      shopAccountDetailId,
+    },
+  });
+  return res;
+};

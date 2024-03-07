@@ -37,6 +37,12 @@ export const buttons = [
     shortcut: 'F7',
     name: 'todaySaleSummary',
   },
+  {
+    label: 'Shop Account (Ctrl + F8)',
+    icon: 'account_balance_wallet',
+    shortcut: 'F8',
+    name: 'shopAccount',
+  },
 ];
 export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithdiscount>[] =
   [
@@ -173,6 +179,12 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
     label: 'Comments',
     align: 'left',
     field: (row) => row.comment || '-',
+  },
+  {
+    name: 'action',
+    label: 'Action',
+    field: () => '',
+    align: 'left',
   },
 ];
 export const shopAllBillsTableColumn: QTableColumn[] = [

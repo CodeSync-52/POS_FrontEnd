@@ -51,12 +51,6 @@
     <q-input
       v-model="filterSearch.startDate"
       :max="filterSearch.endDate"
-      :min="
-        date.formatDate(
-          date.subtractFromDate(timeStamp, { date: 7 }),
-          'YYYY-MM-DD'
-        )
-      "
       label="From"
       type="date"
       style="min-width: 200px"
@@ -261,8 +255,8 @@ const authStore = useAuthStore();
 const showCancelBillModal = ref(false);
 const showCompleteBillModal = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past1Date = date.subtractFromDate(timeStamp, { date: 1 });
-const formattedFromDate = date.formatDate(past1Date, 'YYYY-MM-DD');
+const past7Date = date.subtractFromDate(timeStamp, { date: 7 });
+const formattedFromDate = date.formatDate(past7Date, 'YYYY-MM-DD');
 const saleList = ref<ISaleListResponse[]>([]);
 const selectedRowId = ref<number>(-1);
 const apiController = ref<AbortController | null>(null);

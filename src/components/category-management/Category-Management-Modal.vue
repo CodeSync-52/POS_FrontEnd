@@ -29,7 +29,7 @@
           :label="categoryAction === 'Edit' ? 'Save' : 'Add'"
           flat
           :loading="isLoading"
-          :disable="!categoryName"
+          :disable="!categoryName || categoryName.trim() === ''"
           unelevated
           color="signature"
           class="bg-btn-primary"
