@@ -71,6 +71,7 @@
           </div>
           <div class="col-12 col-md-4">
             <q-input
+              v-if="!isReceiptPreview"
               dense
               outlined
               label="Outstanding Balance"
@@ -320,7 +321,7 @@ const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
 const handleKeyPress = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     isArticleListModalVisible.value = true;
   }
 };
@@ -332,7 +333,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 };
 const dialoagClose = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };

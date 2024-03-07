@@ -582,7 +582,7 @@ const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
 const handleKeyPress = async (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     isInventoryListModalVisible.value = true;
   } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
     const target = e.target as HTMLInputElement;
@@ -656,7 +656,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 };
 const dialogClose = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
@@ -861,6 +861,14 @@ const handleAddShopSale = async () => {
     });
     return;
   }
+  if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
+    $q.notify({
+      message:
+        'Cannot Complete this sale. One or more items have a retailPrice of 0.',
+      type: 'warning',
+    });
+    return;
+  }
   try {
     isLoading.value = true;
     const payload = {
@@ -916,6 +924,14 @@ const handleHoldBill = async () => {
   if (selectedInventoryData.value.some((record) => record.isReturn)) {
     $q.notify({
       message: 'You cannot HOLD this bill, as it contains a Return Item.',
+      type: 'warning',
+    });
+    return;
+  }
+  if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
+    $q.notify({
+      message:
+        'Cannot HOLD this sale. One or more items have a retailPrice of 0.',
       type: 'warning',
     });
     return;
