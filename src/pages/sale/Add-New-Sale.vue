@@ -526,7 +526,7 @@ watch(addNewSale.value, (newVal: IAddNewSale) => {
   }
 });
 const handleKeyPress = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     isArticleListModalVisible.value = true;
   }
 };
@@ -541,7 +541,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 };
 const dialoagClose = (e: KeyboardEvent) => {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };

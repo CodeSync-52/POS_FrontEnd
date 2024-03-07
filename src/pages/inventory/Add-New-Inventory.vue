@@ -415,7 +415,7 @@ const selectedShop = ref<{
 const InValidStock = ref(false);
 const selectedProductBarcodes = ref<{ productCode: string }[]>([]);
 window.addEventListener('keypress', function (e) {
-  if (e.key === 'n' || e.key === 'N') {
+  if (e.key === '+') {
     isArticleListModalVisible.value = true;
   }
 });
