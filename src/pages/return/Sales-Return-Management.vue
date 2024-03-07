@@ -477,6 +477,8 @@ const handleActionKeys = (e: KeyboardEvent) => {
       router.push('/shop-sale/hold-bills');
     } else if (e.key === 'F7') {
       router.push('/shop-sale/today-sale-summary');
+    } else if (e.key === 'F8') {
+      router.push('/shop-account');
     } else if (
       e.key === 'Enter' &&
       selectedInventoryData.value.length &&
@@ -503,6 +505,9 @@ const handleButtonClick = (button: { name: string }): void => {
   }
   if (button.name === 'holdBill') {
     handleHoldBill();
+  }
+  if (button.name === 'shopAccount') {
+    router.push('/shop-account');
   }
 };
 onUnmounted(() => {
