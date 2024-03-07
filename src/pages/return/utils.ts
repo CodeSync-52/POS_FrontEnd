@@ -37,6 +37,12 @@ export const buttons = [
     shortcut: 'F7',
     name: 'todaySaleSummary',
   },
+  {
+    label: 'Shop Account (Ctrl + F8)',
+    icon: 'account_balance_wallet',
+    shortcut: 'F8',
+    name: 'shopAccount',
+  },
 ];
 export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithdiscount>[] =
   [

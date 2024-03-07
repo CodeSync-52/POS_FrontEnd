@@ -83,7 +83,7 @@
             <div class="flex min-w-[72px]">
               <q-btn
                 dense
-                size="sm"
+                size="md"
                 icon="delete"
                 flat
                 unelevated
@@ -147,10 +147,10 @@
     <q-dialog v-model="showCloseShopModal">
       <close-shop-modal @confirm="updateSaleSummary()" />
     </q-dialog>
-    <q-dialog v-model="showCancelBillModal">
+    <q-dialog v-model="showDeleteExpenseModal">
       <complete-cancel-bill-modal
         title="Delete Expense"
-        message="Are you sure you want to delete expense?"
+        message="Are you sure you want to Delete the Expense?"
         @confirm="handleDeleteExpense(selectedRowId)"
       />
     </q-dialog>
@@ -173,7 +173,7 @@ const authStore = useAuthStore();
 const todayDate = Date.now();
 const showAddNewExpenseModal = ref(false);
 const showCloseShopModal = ref(false);
-const showCancelBillModal = ref(false);
+const showDeleteExpenseModal = ref(false);
 const selectedRowId = ref<number>(-1);
 const ShopId = authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
 const SaleSummary = ref<{
@@ -214,7 +214,7 @@ onMounted(async () => {
 });
 const handleCancelBill = async (selectedRow: number) => {
   selectedRowId.value = selectedRow;
-  showCancelBillModal.value = true;
+  showDeleteExpenseModal.value = true;
 };
 const handleAddNewExpense = async () => {
   showAddNewExpenseModal.value = true;
@@ -268,7 +268,7 @@ const handleDeleteExpense = async (shopAccountDetailId: number) => {
         type: 'positive',
       });
       updateSaleSummary();
-      showCancelBillModal.value = false;
+      showDeleteExpenseModal.value = false;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
