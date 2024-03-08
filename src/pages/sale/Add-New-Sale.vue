@@ -153,6 +153,59 @@
             />
           </div>
         </div>
+        <div v-if="selectedArticleData.length > 0">
+          <q-separator
+            v-if="action !== 'Preview'"
+            class="mb-2"
+            color="orange"
+            inset
+          />
+          <div class="row q-mb-md q-col-gutter-md">
+            <div v-if="action === 'Add New'" class="col-12 text-bold text-base">
+              Enter Claim or Freight:
+            </div>
+            <div v-if="action === 'Edit'" class="col-12 text-bold text-base">
+              Enter to Edit Claim or Freight:
+            </div>
+            <div :class="action === 'Edit' ? 'col-4' : 'col-6'">
+              <q-input
+                :min="0"
+                type="number"
+                v-model="claim"
+                :disable="action === 'Preview'"
+                @update:model-value="handleClaim($event)"
+                dense
+                color="btn-primary"
+                label="Claim Amount"
+                outlined
+              />
+            </div>
+            <div :class="action === 'Edit' ? 'col-4' : 'col-6'">
+              <q-input
+                type="number"
+                maxlength="250"
+                v-model="freight"
+                :disable="action === 'Preview'"
+                @update:model-value="handleFreight($event)"
+                dense
+                :min="0"
+                color="btn-primary"
+                label="Freight User"
+                outlined
+              />
+            </div>
+            <div class="col-4">
+              <q-btn
+                v-if="action === 'Edit'"
+                label="Update Claim Freight"
+                :loading="isLoading"
+                unelevated
+                color="btn-primary"
+                @click="handleClaimFreight(selectedId, claim, freight)"
+              />
+            </div>
+          </div>
+        </div>
         <div class="updateSaleTable">
           <q-table
             v-if="selectedArticleData.length > 0"
@@ -299,14 +352,32 @@
                 <q-td colspan="6" />
                 <q-td>
                   <div>
+                    Claim:
+                    {{ claim }}
+                  </div>
+                </q-td>
+                <q-td />
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="6" />
+                <q-td>
+                  <div>
+                    Freight:
+                    {{ freight }}
+                  </div>
+                </q-td>
+                <q-td />
+              </q-tr>
+              <q-tr :props="props">
+                <q-td colspan="6" />
+                <q-td>
+                  <div>
                     Net Total:
                     {{
                       action === 'Add New'
                         ? saleGenerationNetAmount(selectedArticleData)
                         : action === 'Edit'
-                        ? saleGenerationTotalAmount -
-                          (selectedUserDiscount ?? 0) *
-                            saleGenerationTotalQuantity
+                        ? computedEditedAmount
                         : selectedSaleRecord.netAmount
                     }}
                   </div>
@@ -460,6 +531,7 @@ import {
   getUserListApi,
   updateWholeSaleDetailApi,
   wholeSaleDetailApi,
+  ClaimFreightApi,
 } from 'src/services';
 import ArticleListModal from 'src/components/common/ArticleListModal.vue';
 import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
@@ -493,6 +565,8 @@ const isFilterChanged = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticleData = ref<ISelectedWholeSaleArticleData[]>([]);
 const selectedId = ref<number>(-1);
+const claim = ref<number | undefined>(0);
+const freight = ref<number | undefined>(0);
 const isAddingSale = ref(false);
 const firstRow = ref<HTMLElement | null>(null);
 const selectedPreviewImage = ref('');
@@ -575,6 +649,26 @@ function handleUpdateAmount(newVal: unknown, scope: { value: string }) {
     }
   }
 }
+function handleFreight(newVal: unknown) {
+  if (typeof newVal === 'string') {
+    const val = parseFloat(newVal);
+    if (!isNaN(val) && val >= 0) {
+      freight.value = val;
+    } else {
+      freight.value = undefined;
+    }
+  }
+}
+function handleClaim(newVal: unknown) {
+  if (typeof newVal === 'string') {
+    const val = parseFloat(newVal);
+    if (!isNaN(val) && val >= 0) {
+      claim.value = val;
+    } else {
+      claim.value = undefined;
+    }
+  }
+}
 const handleUpdateQuantity = (
   newVal: string | number | null,
   row: ISelectedWholeSaleArticleData
@@ -640,6 +734,8 @@ const saveNewSale = async () => {
   try {
     const res = await addWholeSaleApi({
       userId: addNewSale.value.userId,
+      claim: claim.value,
+      freight: freight.value,
       productList: addNewSale.value.productList,
     });
     if (res.type === 'Success') {
@@ -850,15 +946,33 @@ const saleGenerationTotalAmount = computed(() => {
   }
 });
 const saleGenerationNetAmount = (table: ISelectedWholeSaleArticleData[]) => {
-  return table.reduce((total: number, row: ISelectedWholeSaleArticleData) => {
-    if (row.quantity && row.unitWholeSalePrice) {
-      const ItemDiscount =
-        Number(row.quantity) * selectedSaleRecord.value.discount;
-      return total - ItemDiscount + row.quantity * row.unitWholeSalePrice;
-    }
-    return total;
-  }, 0);
+  const totalAmountWithoutFreight = table.reduce(
+    (total: number, row: ISelectedWholeSaleArticleData) => {
+      if (row.quantity && row.unitWholeSalePrice) {
+        const itemDiscount =
+          Number(row.quantity) * selectedSaleRecord.value.discount;
+        return total + row.quantity * row.unitWholeSalePrice - itemDiscount;
+      }
+      return total;
+    },
+    0
+  );
+  const freightValue = Number(freight.value) || 0;
+  const claimtValue = Number(claim.value) || 0;
+  return totalAmountWithoutFreight + freightValue - claimtValue;
 };
+
+const computedEditedAmount = computed(() => {
+  const discountedTotalAmount =
+    saleGenerationTotalAmount.value -
+    (selectedUserDiscount.value ?? 0) * saleGenerationTotalQuantity.value;
+
+  const freightAmount = Number(freight.value) || 0;
+  const claimAmount = Number(claim.value) || 0;
+
+  return discountedTotalAmount - claimAmount + freightAmount;
+});
+
 const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
   if (isLoading.value) return;
   isLoading.value = true;
@@ -867,6 +981,8 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
     if (res.type === 'Success') {
       if (res.data) {
         selectedSaleRecord.value = res.data;
+        claim.value = res.data.claim;
+        freight.value = res.data.freight;
         selectedSaleRecord.value.createdDate = moment(
           res.data.createdDate
         ).format('YYYY-MM-DD');
@@ -1012,6 +1128,34 @@ async function convertArrayToPdfData(
       width: 10,
     },
   ];
+  const freightRow = [
+    '',
+    '',
+    '',
+    '',
+    {
+      text: 'Freight:',
+      margin: 5,
+    },
+    {
+      text: `${freight.value}`,
+      margin: 5,
+    },
+  ];
+  const claimRow = [
+    '',
+    '',
+    '',
+    '',
+    {
+      text: 'Claim:',
+      margin: 5,
+    },
+    {
+      text: `${claim.value}`,
+      margin: 5,
+    },
+  ];
   const netTotalRow = [
     '',
     '',
@@ -1049,6 +1193,8 @@ async function convertArrayToPdfData(
   );
   tableStuff.push(footerRow);
   tableStuff.push(discountRow);
+  tableStuff.push(claimRow);
+  tableStuff.push(freightRow);
   tableStuff.push(netTotalRow);
   return tableStuff;
 }
@@ -1100,5 +1246,32 @@ const filterFn = (val: string, update: CallableFunction) => {
       v.fullName?.toLowerCase().includes(needle)
     );
   });
+};
+const handleClaimFreight = async (
+  wholeSaleId: number,
+  claim: number | undefined,
+  freight: number | undefined
+) => {
+  isLoading.value = true;
+  try {
+    const response = await ClaimFreightApi({ wholeSaleId, claim, freight });
+    if (response.type === 'Success') {
+      $q.notify({
+        message: response.message,
+        type: 'positive',
+      });
+      getSelectedWholesaleDetail(selectedId.value);
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+  isLoading.value = false;
 };
 </script>

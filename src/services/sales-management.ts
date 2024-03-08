@@ -9,9 +9,13 @@ import { makeApiCall } from 'src/utils';
 
 export const addWholeSaleApi = async ({
   userId,
+  claim,
+  freight,
   productList,
 }: {
   userId: number | null;
+  claim: number | undefined;
+  freight: number | undefined;
   productList: ISelectedArticleList[] | null;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
@@ -19,6 +23,8 @@ export const addWholeSaleApi = async ({
     method: 'POST',
     data: {
       userId,
+      claim,
+      freight,
       productList,
     },
   });
@@ -139,6 +145,26 @@ export const cancelWholeSaleApi = async (wholeSaleId: number) => {
     method: 'PUT',
     params: {
       wholeSaleId,
+    },
+  });
+  return res;
+};
+export const ClaimFreightApi = async ({
+  wholeSaleId,
+  claim,
+  freight,
+}: {
+  wholeSaleId: number;
+  claim: number | undefined;
+  freight: number | undefined;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: 'api/wholesale/claimfreight',
+    params: {
+      wholeSaleId,
+      claim,
+      freight,
     },
   });
   return res;
