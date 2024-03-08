@@ -24,6 +24,8 @@ export interface ISelectedSalesDetailData {
   discount: number;
   fullName: string;
   netAmount: number;
+  claim?: number;
+  freight?: number;
   outStandingBalance: number;
   totalAmount: number;
   totalQuantity: number;
