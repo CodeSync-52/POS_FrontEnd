@@ -1,5 +1,5 @@
 <template>
-  <div :ref="divToPrint" class="mx-auto max-w-[400px]">
+  <div class="mx-auto max-w-[400px]">
     <div class="flex flex-col">
       <div style="margin-bottom: 0.5rem; text-align: center">
         <div style="margin-bottom: 1.3rem">
@@ -39,7 +39,7 @@
         "
       >
         <span>Receipt #: </span>
-        <span>260889</span>
+        <span>{{ receiptId }}</span>
       </div>
       <div
         style="
@@ -50,16 +50,22 @@
         "
       >
         <span>Date: </span>
-        <span>{{ moment(timeStamp).format('MMMM Do YYYY h:mm:ss a') }}</span>
+        <span>{{
+          moment(receiptTime ?? Date.now()).format('MMMM Do YYYY h:mm:ss a')
+        }}</span>
       </div>
       <div
         style="
           display: grid !important;
           gap: 0.5rem;
-          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
           border-style: dotted;
           border-color: rgba(0, 0, 0, 0.7);
           border-width: 0.5px 0;
+        "
+        :style="
+          isFirstSample
+            ? 'grid-template-columns: 1fr 1fr 1fr 1fr 1fr'
+            : 'grid-template-columns: 1fr 1fr'
         "
       >
         <span
@@ -74,17 +80,23 @@
       <div
         v-for="product in receiptItems"
         :key="product.inventoryId"
-        style="
-          display: grid !important;
-          gap: 0.5rem;
-          padding: 0.3rem 0;
-          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        style="display: grid !important; gap: 0.5rem; padding: 0.3rem 0"
+        :style="
+          isFirstSample
+            ? 'grid-template-columns: 1fr 1fr 1fr 1fr 1fr'
+            : 'grid-template-columns: 1fr 1fr'
         "
       >
         <span class="text-base">{{ product.productName }}</span>
-        <span class="text-base">{{ product.dispatchQuantity }}</span>
-        <span class="text-base">{{ product.retailPrice }}</span>
-        <span class="text-base">{{ product.discount }}</span>
+        <span v-if="isFirstSample" class="text-base">{{
+          product.dispatchQuantity
+        }}</span>
+        <span v-if="isFirstSample" class="text-base">{{
+          product.retailPrice
+        }}</span>
+        <span v-if="isFirstSample" class="text-base">{{
+          product.discount
+        }}</span>
         <span class="text-base" style="text-align: right">{{
           product.retailPrice * product.dispatchQuantity -
           product.dispatchQuantity * product.discount
@@ -95,20 +107,24 @@
           display: grid !important;
           gap: 0.5rem;
           padding: 0.3rem 0;
-          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
           border-style: dotted;
           border-color: rgba(0, 0, 0, 0.7);
           border-width: 0.5px 0;
         "
+        :style="
+          isFirstSample
+            ? 'grid-template-columns: 1fr 1fr 1fr 1fr 1fr'
+            : 'grid-template-columns: 1fr 1fr'
+        "
       >
         <span>Total</span>
-        <span>{{
+        <span v-if="isFirstSample">{{
           !isNaN(totalReceiptAmount(receiptItems, 'dispatchQuantity'))
             ? totalReceiptAmount(receiptItems, 'dispatchQuantity')
             : 0
         }}</span>
-        <span></span>
-        <span>{{
+        <span v-if="isFirstSample"></span>
+        <span v-if="isFirstSample">{{
           !isNaN(totalReceiptAmount(receiptItems, 'discount'))
             ? totalReceiptAmount(receiptItems, 'discount')
             : 0
@@ -124,13 +140,18 @@
           display: grid !important;
           gap: 0.5rem;
           padding: 0.3rem 0;
-          grid-template-columns: 1fr 1fr 1fr 1fr;
           border-style: dotted;
           border-color: rgba(0, 0, 0, 0.7);
-          border-width: 0.5px 0;
+          border-width: 0 0 0.5px;
+        "
+        :style="
+          isFirstSample
+            ? 'grid-template-columns: 1fr 1fr 1fr 1fr 1fr'
+            : 'grid-template-columns:1fr 1fr 1fr 1fr'
         "
       >
         <span></span>
+        <span v-if="isFirstSample"></span>
         <span></span>
         <span style="font-weight: bold">Net Total</span>
         <span style="text-align: right; font-weight: bold">{{
@@ -164,27 +185,35 @@ import receiptDescriptionNote from 'src/utils/receipt-description.json';
 import { ISaleShopSelectedInventory } from 'src/interfaces';
 import { computed } from 'vue';
 interface IProps {
-  divToPrint?: string;
   receiptItems: ISaleShopSelectedInventory[];
-  isfirstSample: boolean;
+  isFirstSample: boolean;
+  receiptId: null | number;
+  receiptTime: null | string;
 }
 const props = withDefaults(defineProps<IProps>(), {
-  divToPrint: '',
   receiptItems: () => [],
-  isfirstSample: false,
+  receiptId: null,
+  receiptTime: null,
+  isFirstSample: false,
 });
 const receiptTableColumn = ['Product', 'Qty', 'Price', 'Disc', 'Amt'];
-const timeStamp = Date.now();
 const totalReceiptAmount = (
   table: ISaleShopSelectedInventory[],
   type: 'retailPrice' | 'dispatchQuantity' | 'discount'
 ) => {
   return table.reduce((acc: number, row: ISaleShopSelectedInventory) => {
+    if (type === 'retailPrice') {
+      return (
+        acc +
+        row[type] * row.dispatchQuantity -
+        row.dispatchQuantity * row.discount
+      );
+    }
     return acc + row[type];
   }, 0);
 };
 const filteredTableColumn = computed(() => {
-  if (props.isfirstSample) {
+  if (!props.isFirstSample) {
     return receiptTableColumn.filter(
       (header) => header === 'Product' || header === 'Amt'
     );

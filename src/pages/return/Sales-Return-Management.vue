@@ -1,89 +1,15 @@
 <template>
+  <q-btn label="print" color="btn-primary" @click="printReceipt" />
   <div>
-    <!-- <div ref="ReceiptToPrint" class="mx-auto max-w-[400px]">
-      <div class="flex flex-col">
-        <div style="margin-bottom:0.5rem;text-align:center">
-          <div style="margin-bottom:1.3rem">
-            <span style="font-size:0.8rem;">
-              Purchase Receipt
-            </span>
-          </div>
-          <div class="font-bold" style="margin-bottom:1rem;font-size: 1.3rem;">
-            <span>
-              KITSHOES SKP
-            </span>
-          </div>
-          <div style="margin-bottom:1rem">
-            <span>Address</span>
-          </div>
-        </div>
-        <div style="margin-bottom:0.5rem;width:100%;display: flex;align-items:center;justify-content:space-between">
-          <div style="display: flex;align-items:center;gap:0.5rem">
-            <span>Pos: </span>
-            <span>006</span>
-          </div>
-          <div style="display: flex;align-items:center;gap:0.5rem">
-            <span>Mop: </span>
-            <span>Cash Sales</span>
-          </div>
-        </div>
-        <div style="margin-bottom:0.5rem;display: flex;align-items:center;gap:0.5rem">
-          <span>Receipt #: </span>
-          <span>260889</span>
-        </div>
-        <div style="margin-bottom:0.5rem;display: flex;align-items:center;gap:0.5rem">
-          <span>Date: </span>
-          <span>{{ moment(timeStamp).format('MMMM Do YYYY h:mm:ss a') }}</span>
-        </div>
-        <div
-          style="display: grid !important;gap:0.5rem; grid-template-columns: 1fr 1fr 1fr 1fr 1fr;border-style:dotted;border-color:rgba(0,0,0,0.7);border-width:0.5px 0">
-          <span v-for="header in ReceiptTableColumn" :key="header" style="font-weight: bold;"
-            :style="header === 'Amt' ? 'text-align:right' : 'text-align:left'">{{ header }}</span>
-        </div>
-        <div v-for="product in receiptItems" :key="product.inventoryId"
-          style="display: grid !important;gap:0.5rem;padding:0.3rem 0; grid-template-columns: 1fr 1fr 1fr 1fr 1fr;">
-          <span class="text-base">{{ product.productName }}</span>
-          <span class="text-base">{{ product.dispatchQuantity }}</span>
-          <span class="text-base">{{ product.retailPrice }}</span>
-          <span class="text-base">{{ product.discount }}</span>
-          <span class="text-base" style="text-align: right">{{ (product.retailPrice * product.dispatchQuantity) -
-            (product.dispatchQuantity * product.discount) }}</span>
-        </div>
-        <div
-          style="display: grid !important;gap:0.5rem;padding:0.3rem 0; grid-template-columns: 1fr 1fr 1fr 1fr 1fr;border-style:dotted;border-color:rgba(0,0,0,0.7);border-width:0.5px 0">
-          <span>Total</span>
-          <span>{{ !isNaN(totalReceiptAmount(receiptItems, 'dispatchQuantity')) ? totalReceiptAmount(receiptItems,
-            'dispatchQuantity') : 0 }}</span>
-          <span></span>
-          <span>{{ !isNaN(totalReceiptAmount(receiptItems, 'discount')) ? totalReceiptAmount(receiptItems,
-            'discount') : 0 }}</span>
-          <span style="text-align: right;">{{ !isNaN(totalReceiptAmount(receiptItems, 'retailPrice')) ?
-            totalReceiptAmount(receiptItems, 'retailPrice') : 0 }}</span>
-        </div>
-        <div
-          style="display: grid !important;gap:0.5rem;padding:0.3rem 0; grid-template-columns:1fr 1fr 1fr 1fr;border-style:dotted;border-color:rgba(0,0,0,0.7);border-width:0.5px 0">
-          <span></span>
-          <span></span>
-          <span style="font-weight: bold;">Net Total</span>
-          <span style="text-align: right;font-weight: bold;">{{ !isNaN(totalReceiptAmount(receiptItems, 'retailPrice'))
-            ?
-            totalReceiptAmount(receiptItems, 'retailPrice') : 0 }}</span>
-        </div>
-        <p style="white-space: pre;text-transform: uppercase;">
-          {{ receiptDescriptionNote.description }}
-        </p>
-        <div
-          style="display: flex;gap:0.5rem;padding:0.3rem 0;border-style:dotted;border-color:rgba(0,0,0,0.7);border-width:0.5px 0">
-          <span>Powered by <span style="font-weight:bold;"> CodeSync</span></span>
-          <span>&lt; www.codesyncs.com &gt;</span>
-        </div>
-      </div>
-    </div> -->
-    <sale-receipt
-      :isfirst-sample="false"
-      :receipt-items="receiptItems"
-      :receipt-table-column="ReceiptTableColumn"
-    />
+    <!-- hidden  -->
+    <div ref="ReceiptToPrint" class="receipt">
+      <sale-receipt
+        :receipt-time="receipt.receiptTime"
+        :receipt-id="receipt.receiptId"
+        :is-first-sample="receipt.isFirstSample"
+        :receipt-items="receiptItems"
+      />
+    </div>
   </div>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
@@ -96,6 +22,35 @@
             <span class="text-[18px] font-semibold">
               {{ moment(timeStamp).format('LL') }}
             </span>
+          </div>
+        </div>
+        <div
+          v-if="selectedInventoryData.length"
+          class="mb-2 row items-center justify-between"
+        >
+          <div>
+            <span class="font-semibold text-lg">Select Printing Sample</span>
+            <q-checkbox
+              v-model="receipt.isprintingDisable"
+              color="btn-primary"
+              label="Disable print"
+            />
+          </div>
+          <div class="q-gutter-sm">
+            <q-radio
+              v-model="receipt.isFirstSample"
+              :disable="receipt.isprintingDisable"
+              color="btn-primary"
+              :val="true"
+              label="First Sample"
+            />
+            <q-radio
+              v-model="receipt.isFirstSample"
+              :disable="receipt.isprintingDisable"
+              color="btn-primary"
+              :val="false"
+              label="Second Sample"
+            />
           </div>
         </div>
         <div
@@ -491,39 +446,50 @@ const isInventoryListModalVisible = ref(false);
 const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const roleDropdownOptions = ref<IUserResponse[]>([]);
 const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
+const receipt = ref<{
+  receiptId: null | number;
+  receiptTime: null | string;
+  isFirstSample: boolean;
+  isprintingDisable: boolean;
+}>({
+  receiptId: null,
+  receipTime: null,
+  isFirstSample: true,
+  isprintingDisable: false,
+});
 const receiptItems = ref<ISaleShopSelectedInventory[]>([
-  {
-    inventoryId: 591,
-    addedDate: '',
-    retailPrice: 20,
-    productId: 20041,
-    productName: 'haha',
-    productImage: 'http://kitpos.s3.amazonaws.com/t.png',
-    variantId_1: 20006,
-    variantId_2: 20010,
-    quantity: 3,
-    productCode: 'haha-36-rd,haha-rd-36',
-    dispatchQuantity: 2,
-    discount: 2,
-    isReturn: false,
-    errorMessage: '',
-  },
-  {
-    inventoryId: 593,
-    addedDate: '',
-    retailPrice: 20,
-    productId: 20041,
-    productName: 'haha',
-    productImage: 'http://kitpos.s3.amazonaws.com/t.png',
-    variantId_1: 20006,
-    variantId_2: 20002,
-    quantity: 3,
-    productCode: 'haha-36-yl,haha-yl-36',
-    dispatchQuantity: 2,
-    discount: 2,
-    isReturn: false,
-    errorMessage: '',
-  },
+  // {
+  //   inventoryId: 591,
+  //   addedDate: '',
+  //   retailPrice: 20,
+  //   productId: 20041,
+  //   productName: 'haha',
+  //   productImage: 'http://kitpos.s3.amazonaws.com/t.png',
+  //   variantId_1: 20006,
+  //   variantId_2: 20010,
+  //   quantity: 3,
+  //   productCode: 'haha-36-rd,haha-rd-36',
+  //   dispatchQuantity: 2,
+  //   discount: 2,
+  //   isReturn: false,
+  //   errorMessage: '',
+  // },
+  // {
+  //   inventoryId: 593,
+  //   addedDate: '',
+  //   retailPrice: 20,
+  //   productId: 20041,
+  //   productName: 'haha',
+  //   productImage: 'http://kitpos.s3.amazonaws.com/t.png',
+  //   variantId_1: 20006,
+  //   variantId_2: 20002,
+  //   quantity: 3,
+  //   productCode: 'haha-36-yl,haha-yl-36',
+  //   dispatchQuantity: 2,
+  //   discount: 2,
+  //   isReturn: false,
+  //   errorMessage: '',
+  // },
 ]);
 const isSelectedShopDetailTableVisible = ref(false);
 const isFetchingArticleList = ref(false);
@@ -534,6 +500,7 @@ const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
 const salePersonCodeInput = ref<null | HTMLDivElement>(null);
+const ReceiptToPrint = ref<null | HTMLDivElement>(null);
 const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
@@ -977,16 +944,16 @@ const inventoryDetailList = async (data?: {
   }
   isFetchingRecords.value = false;
 };
-const ReceiptToPrint = ref<null | HTMLDivElement>(null);
+
 const printReceipt = () => {
   let header_string =
     '<html><head><title>' + document.title + '</title></head><body>';
   let footer_string = '</body></html>';
   let new_string = ReceiptToPrint.value?.innerHTML;
-  console.log(new_string);
   let printWindow = window.open('', '_blank');
   if (printWindow) {
-    let stylesheets = '<style>' + '</style>';
+    let stylesheets =
+      '<style>' + '.receipt {page-break-after:always}' + '</style>';
     printWindow.document.write(
       header_string + stylesheets + new_string + footer_string
     );
@@ -998,6 +965,9 @@ const printReceipt = () => {
 };
 
 const handleAddShopSale = async () => {
+  receipt.value.receiptId = response.data.saleId;
+  receipt.value.receipTime = Date.now();
+  receiptItems.value = selectedInventoryData.value;
   const res = isPersonCodeEmpty();
   if (!res) return;
   if (selectedInventoryData.value.every((record) => record.isReturn)) {
@@ -1030,8 +1000,9 @@ const handleAddShopSale = async () => {
     };
     const response = await addShopSaleManagementApi(payload);
     if (response.type === 'Success') {
-      receiptItems.value = selectedInventoryData.value;
-      printReceipt();
+      if (!receipt.value.isprintingDisable) {
+        printReceipt();
+      }
       $q.notify({
         message: response.message,
         type: 'positive',
@@ -1154,14 +1125,6 @@ const getShopOfficers = async () => {
     isLoading.value = false;
   }
 };
-// import receiptDescriptionNote from 'src/utils/receipt-description.json'
-// const receiptDescriptionNote = 'No Refunds \n you must have your receipt to exchange within 15 days \n we can not change used shoes \n sale stock no exchange no return \n thank you for your visit.'
-const ReceiptTableColumn = ['Product', 'Qty', 'Price', 'Disc', 'Amt'];
-// const totalReceiptAmount = (table: ISaleShopSelectedInventory[], type: 'retailPrice' | 'dispatchQuantity' | 'discount') => {
-//   return table.reduce((acc: number, row: ISaleShopSelectedInventory) => {
-//     return acc + (row[type])
-//   }, 0)
-// }
 </script>
 
 <style scoped lang="scss">
@@ -1169,6 +1132,15 @@ const ReceiptTableColumn = ['Product', 'Qty', 'Price', 'Disc', 'Amt'];
   justify-content: flex-start;
   flex-wrap: nowrap;
   text-align: start;
+
+  @media print {
+    @page {
+      size: 80mm calc(150mm - 2rem);
+      /* Adjust margin as needed */
+      margin: 1rem;
+      /* Set margins to match the rest of your design */
+    }
+  }
 
   @media (min-width: 992px) {
     margin-left: 1rem;
