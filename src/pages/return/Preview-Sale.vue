@@ -502,7 +502,7 @@ const handleEditBill = async (id: number) => {
     } else if (selectedRow.retailPrice === 0) {
       $q.notify({
         message:
-          'Cannot ADD this Sale Item. One or more items have a retailPrice of 0.',
+          'Cannot ADD this Sale Item. Selected item has a retailPrice of 0.',
         type: 'warning',
       });
     } else if (selectedRow.saleDetailId) {
