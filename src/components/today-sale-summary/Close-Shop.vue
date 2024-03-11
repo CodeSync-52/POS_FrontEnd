@@ -62,12 +62,7 @@
         flat
         label="Close Shop"
         color="white"
-        :disable="
-          !returnAmount.user ||
-          returnAmount.amount <= 0 ||
-          !returnAmount.amount ||
-          returnAmount.amount > 9999999
-        "
+        :disable="!returnAmount.user"
         :loading="isLoading"
         class="bg-btn-primary hover:bg-btn-primary-hover"
         @click="confirmAction"
@@ -145,7 +140,7 @@ const handleAddNewAccount = async () => {
         message: res.message,
         color: 'green',
       });
-      router.push('/return');
+      router.go(-1);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Cash Flow';
