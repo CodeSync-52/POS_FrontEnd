@@ -1,15 +1,14 @@
 <template>
   <q-btn label="print" color="btn-primary" @click="printReceipt" />
-  <div>
-    <!-- hidden  -->
-    <div ref="ReceiptToPrint" class="receipt">
-      <sale-receipt
-        :receipt-time="receipt.receiptTime"
-        :receipt-id="receipt.receiptId"
-        :is-first-sample="receipt.isFirstSample"
-        :receipt-items="receiptItems"
-      />
-    </div>
+  {{ receiptDetail }}
+  <div ref="ReceiptToPrint" class="receipt zhidden">
+    <sale-receipt
+      :receipt-detail="receiptDetail"
+      :receipt-time="receipt.receiptTime"
+      :receipt-id="receipt.receiptId"
+      :is-first-sample="receipt.sampleType"
+      :receipt-items="receiptItems"
+    />
   </div>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
@@ -38,17 +37,17 @@
           </div>
           <div class="q-gutter-sm">
             <q-radio
-              v-model="receipt.isFirstSample"
+              v-model="receipt.sampleType"
               :disable="receipt.isprintingDisable"
               color="btn-primary"
-              :val="true"
+              val="first"
               label="First Sample"
             />
             <q-radio
-              v-model="receipt.isFirstSample"
+              v-model="receipt.sampleType"
               :disable="receipt.isprintingDisable"
               color="btn-primary"
-              :val="false"
+              val="second"
               label="Second Sample"
             />
           </div>
@@ -412,6 +411,7 @@ import {
   IShopResponse,
   EUserRoles,
   IUserResponse,
+  IPreviewSaleResponse,
 } from 'src/interfaces';
 import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
 import moment from 'moment';
@@ -424,6 +424,7 @@ import {
   addShopSaleManagementApi,
   holdBillApi,
   getShopOfficersApi,
+  previewSaleApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -448,15 +449,16 @@ const roleDropdownOptions = ref<IUserResponse[]>([]);
 const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
 const receipt = ref<{
   receiptId: null | number;
-  receiptTime: null | string;
-  isFirstSample: boolean;
+  receiptTime: null | number;
+  sampleType: 'first' | 'second';
   isprintingDisable: boolean;
 }>({
   receiptId: null,
-  receipTime: null,
-  isFirstSample: true,
+  receiptTime: null,
+  sampleType: 'first',
   isprintingDisable: false,
 });
+const receiptDetail = ref<null | IPreviewSaleResponse>(null);
 const receiptItems = ref<ISaleShopSelectedInventory[]>([
   // {
   //   inventoryId: 591,
@@ -965,8 +967,7 @@ const printReceipt = () => {
 };
 
 const handleAddShopSale = async () => {
-  receipt.value.receiptId = response.data.saleId;
-  receipt.value.receipTime = Date.now();
+  receipt.value.receiptTime = Date.now();
   receiptItems.value = selectedInventoryData.value;
   const res = isPersonCodeEmpty();
   if (!res) return;
@@ -998,19 +999,26 @@ const handleAddShopSale = async () => {
         isReturn: record.isReturn,
       })),
     };
-    const response = await addShopSaleManagementApi(payload);
-    if (response.type === 'Success') {
+    const addingSaleResponse = await addShopSaleManagementApi(payload);
+    if (addingSaleResponse.type === 'Success') {
+      const previewSaleResponse = await previewSaleApi(
+        addingSaleResponse.data.saleId
+      );
+      receiptDetail.value = previewSaleResponse.data;
       if (!receipt.value.isprintingDisable) {
+        receipt.value.receiptId = addingSaleResponse.data?.saleId;
         printReceipt();
       }
       $q.notify({
-        message: response.message,
+        message: addingSaleResponse.message,
         type: 'positive',
       });
       shopSale.value.salePersonCode = null;
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       selectedShopDetailRecords.value = [];
+      receiptItems.value = [];
+      receipt.value.sampleType = 'first';
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
@@ -1132,16 +1140,6 @@ const getShopOfficers = async () => {
   justify-content: flex-start;
   flex-wrap: nowrap;
   text-align: start;
-
-  @media print {
-    @page {
-      size: 80mm calc(150mm - 2rem);
-      /* Adjust margin as needed */
-      margin: 1rem;
-      /* Set margins to match the rest of your design */
-    }
-  }
-
   @media (min-width: 992px) {
     margin-left: 1rem;
   }

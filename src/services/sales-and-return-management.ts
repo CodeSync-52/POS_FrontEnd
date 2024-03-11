@@ -15,7 +15,7 @@ export const addShopSaleManagementApi = async ({
   comments,
   saleDetails,
 }: Partial<IAddShopSaleManagement>) => {
-  const res = await makeApiCall<IGenericResponse<null>>({
+  const res = await makeApiCall<IGenericResponse<{ saleId: number }>>({
     url: 'api/sale/add',
     method: 'POST',
     data: {
