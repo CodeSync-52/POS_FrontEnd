@@ -141,7 +141,7 @@
                     "
                     dense
                     outlined
-                    class="w-[150px]"
+                    class="w-[80px]"
                     color="btn-primary"
                   />
                   <span
@@ -163,7 +163,7 @@
                     dense
                     outlined
                     color="btn-primary"
-                    class="w-[150px]"
+                    class="w-[80px]"
                   />
                 </q-td>
               </template>
