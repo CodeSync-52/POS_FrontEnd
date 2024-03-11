@@ -201,8 +201,16 @@
       </q-table>
     </div>
     <div
-      class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-end q-pa-md"
+      class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-between q-pa-md"
     >
+      <div
+        class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start"
+      >
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">Comment :</span>
+          <span class="md:text-lg"> {{ SaleSummary.comments }} </span>
+        </div>
+      </div>
       <div
         class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start md:pr-2"
       >
