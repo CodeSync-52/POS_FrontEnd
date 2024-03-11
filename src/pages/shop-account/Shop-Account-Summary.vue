@@ -42,6 +42,18 @@
             {{ shopAccountSummary.totalItemsSale }}
           </span>
         </div>
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">Discounts :</span>
+          <span class="md:text-lg">
+            {{ shopAccountSummary.totalDiscount }}
+          </span>
+        </div>
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">Refunds :</span>
+          <span class="md:text-lg">
+            {{ shopAccountSummary.totalReturnSaleAmount }}
+          </span>
+        </div>
       </div>
       <div
         class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start md:pr-2"
@@ -53,25 +65,37 @@
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Gross Sales :</span>
-          <span class="md:text-lg"> {{ shopAccountSummary.totalSale }} </span>
-        </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Overall Discounts :</span>
+          <span class="font-medium md:text-lg">Net Sale :</span>
           <span class="md:text-lg">
-            {{ shopAccountSummary.totalDiscount }}
+            {{
+              shopAccountSummary.totalSale -
+              shopAccountSummary.totalDiscount -
+              shopAccountSummary.totalReturnSaleAmount
+            }}
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">HO Incoming :</span>
+          <span class="font-medium md:text-lg">- Expenses:</span>
+          <span class="md:text-lg">
+            {{ shopAccountSummary.totalExpense }}
+          </span>
+        </div>
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">- HO Outgoing:</span>
+          <span class="md:text-lg">
+            {{ shopAccountSummary.totalOutgoingToHO }}
+          </span>
+        </div>
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">+ HO Incoming :</span>
           <span class="md:text-lg">
             {{ shopAccountSummary.totalIncomingFromHO }}
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Overall Refunds :</span>
+          <span class="font-medium md:text-lg">Remaining Balance :</span>
           <span class="md:text-lg">
-            {{ shopAccountSummary.totalReturnSaleAmount }}
+            {{ shopAccountSummary.remainingBalance }}
           </span>
         </div>
       </div>
@@ -128,33 +152,7 @@
         </q-table>
       </div>
     </q-card>
-    <div
-      class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-end q-pa-md"
-    >
-      <div
-        class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start md:pr-2"
-      >
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Overall Expense:</span>
-          <span class="md:text-lg">
-            {{ shopAccountSummary.totalExpense }}
-          </span>
-        </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">HO Outgoing:</span>
-          <span class="md:text-lg">
-            {{ shopAccountSummary.totalOutgoingToHO }}
-          </span>
-        </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Remaining Balance :</span>
-          <span class="md:text-lg">
-            {{ shopAccountSummary.remainingBalance }}
-          </span>
-        </div>
-      </div>
-    </div>
-    <div class="row justify-center md:justify-end">
+    <div class="row justify-center md:justify-end mt-5">
       <q-btn
         class="mr-5"
         label="Back"
