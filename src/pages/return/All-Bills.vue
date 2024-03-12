@@ -305,7 +305,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 100000,
   rowsNumber: 0,
 });
 const searchBills = async (paginationData?: {

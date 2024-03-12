@@ -202,6 +202,7 @@
         @selected-data="handleSelectedData"
         @handle-pagination="handlePagination"
         :inventory-list="selectedShopDetailRecords"
+        @clear-filter="handleClearFilters"
         @selected-inventory-filters="handleSelectedInventoryFilters"
         @removed-inventory-filters="handleRemoveInventoryFilter"
       />
@@ -288,7 +289,6 @@ const handleOutsideClick = () => {
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   getShopList();
-  getArticleList();
   selectedShop.value.fromShop = {
     shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     closingBalance: 0,
@@ -299,7 +299,6 @@ onMounted(() => {
     address: '',
     code: '',
   };
-  inventoryDetailList();
 });
 onUnmounted(() => {
   if (apiController.value) {
@@ -408,6 +407,9 @@ const handleUpdatedispatchQuantity = (
 
 const handleFilterArticle = (searchedArticle: string) => {
   getArticleList(searchedArticle);
+};
+const handleClearFilters = () => {
+  selectedShopDetailRecords.value = [];
 };
 const handleSelectedInventoryFilters = (
   selectedInventoryFilters: IInventoryFilterSearch,
