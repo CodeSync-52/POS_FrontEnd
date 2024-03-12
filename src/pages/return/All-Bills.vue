@@ -200,6 +200,23 @@
           <span class="text-md font-medium"> No data available. </span>
         </div>
       </template>
+      <template v-slot:bottom>
+        <q-tr class="grid md:grid-cols-10 w-full lg:mr-20 xl:mr-[7.5rem]">
+          <q-td><strong>Total:</strong></q-td>
+          <q-td></q-td>
+          <q-td></q-td>
+          <q-td></q-td>
+          <q-td>
+            <strong>Discount: {{ calculateTotal('totalDiscount') }}</strong>
+          </q-td>
+          <q-td>
+            <strong>Quantity: {{ calculateTotal('totalQuantity') }}</strong>
+          </q-td>
+          <q-td>
+            <strong>Amount: {{ calculateTotal('netAmount') }}</strong>
+          </q-td>
+        </q-tr>
+      </template>
     </q-table>
   </div>
   <q-dialog v-model="showCancelBillModal">
@@ -305,7 +322,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 100000,
   rowsNumber: 0,
 });
 const searchBills = async (paginationData?: {
@@ -469,5 +486,11 @@ const handleCancelSale = async (id: number) => {
     });
   }
   showCancelBillModal.value = false;
+};
+const calculateTotal = (columnName: keyof (typeof saleList.value)[0]) => {
+  return saleList.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>

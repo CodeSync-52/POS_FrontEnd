@@ -185,6 +185,14 @@ const selectedShopRecords = ref<IInventoryListResponse[]>([
   ...props.currentData,
 ]);
 onMounted(() => {
+  filterSearch.value.ProductId = null;
+  filterSearch.value.ProductCode = null;
+  selectedShopDetailList.value = [];
+  selectedShopRecords.value = [];
+  isLoading.value = false;
+  emit('clear-filter');
+});
+onMounted(() => {
   articleList.value = props.articleRecords;
   isFetchingArticleList.value = props.isFetchingArticle;
   InventoryPagination.value = props.pagination;
