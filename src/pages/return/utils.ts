@@ -6,6 +6,7 @@ import {
   IBillStatusOptionList,
   ISaleInfo,
 } from 'src/interfaces';
+import { Ref } from 'vue';
 export const buttons = [
   {
     label: 'Show Return Sales (Ctrl + F1)',
@@ -157,7 +158,6 @@ export const shopSalePreviewTableColumn: QTableColumn<ISaleInfo>[] = [
     align: 'left',
   },
 ];
-
 export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
   {
     name: 'expenseName',
@@ -265,3 +265,22 @@ export const billStatusOptionList: IBillStatusOptionList[] = [
   { name: 'Hold', statusId: 2 },
   { name: 'Canceled', statusId: 3 },
 ];
+
+export const printReceipt = (ReceiptToPrint: Ref) => {
+  const header_string =
+    '<html><head><title>' + document.title + '</title></head><body>';
+  const footer_string = '</body></html>';
+  const new_string = ReceiptToPrint.value?.innerHTML;
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    const stylesheets =
+      '<style>' + '.receipt {page-break-after:always}' + '</style>';
+    printWindow.document.write(
+      header_string + stylesheets + new_string + footer_string
+    );
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+  }
+  return false;
+};

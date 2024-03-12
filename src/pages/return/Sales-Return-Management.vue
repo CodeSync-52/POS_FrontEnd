@@ -1,15 +1,4 @@
 <template>
-  <q-btn label="print" color="btn-primary" @click="printReceipt" />
-  {{ receiptDetail }}
-  <div ref="ReceiptToPrint" class="receipt zhidden">
-    <sale-receipt
-      :receipt-detail="receiptDetail"
-      :receipt-time="receipt.receiptTime"
-      :receipt-id="receipt.receiptId"
-      :is-first-sample="receipt.sampleType"
-      :receipt-items="receiptItems"
-    />
-  </div>
   <div>
     <div class="row justify-between q-col-gutter-x-lg">
       <div class="col-xs-12 col-md-10">
@@ -25,9 +14,9 @@
         </div>
         <div
           v-if="selectedInventoryData.length"
-          class="mb-2 row items-center justify-between"
+          class="mb-2 flex flex-col md:flex-row items-center justify-between"
         >
-          <div>
+          <div class="flex flex-col md:flex-row items-center">
             <span class="font-semibold text-lg">Select Printing Sample</span>
             <q-checkbox
               v-model="receipt.isprintingDisable"
@@ -395,6 +384,12 @@
       />
     </q-dialog>
   </div>
+  <div ref="ReceiptToPrint" class="receipt hidden">
+    <sale-receipt
+      :receipt-detail="receiptDetail"
+      :is-first-sample="receipt.sampleType"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -413,7 +408,11 @@ import {
   IUserResponse,
   IPreviewSaleResponse,
 } from 'src/interfaces';
-import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
+import {
+  saleShopSelectedGrnInventoryTableColumn,
+  buttons,
+  printReceipt,
+} from './utils';
 import moment from 'moment';
 import SaleReceipt from 'src/components/today-sale-summary/Sale-Receipt.vue';
 import { useQuasar } from 'quasar';
@@ -448,51 +447,14 @@ const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const roleDropdownOptions = ref<IUserResponse[]>([]);
 const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
 const receipt = ref<{
-  receiptId: null | number;
-  receiptTime: null | number;
   sampleType: 'first' | 'second';
   isprintingDisable: boolean;
 }>({
-  receiptId: null,
-  receiptTime: null,
   sampleType: 'first',
   isprintingDisable: false,
 });
 const receiptDetail = ref<null | IPreviewSaleResponse>(null);
-const receiptItems = ref<ISaleShopSelectedInventory[]>([
-  // {
-  //   inventoryId: 591,
-  //   addedDate: '',
-  //   retailPrice: 20,
-  //   productId: 20041,
-  //   productName: 'haha',
-  //   productImage: 'http://kitpos.s3.amazonaws.com/t.png',
-  //   variantId_1: 20006,
-  //   variantId_2: 20010,
-  //   quantity: 3,
-  //   productCode: 'haha-36-rd,haha-rd-36',
-  //   dispatchQuantity: 2,
-  //   discount: 2,
-  //   isReturn: false,
-  //   errorMessage: '',
-  // },
-  // {
-  //   inventoryId: 593,
-  //   addedDate: '',
-  //   retailPrice: 20,
-  //   productId: 20041,
-  //   productName: 'haha',
-  //   productImage: 'http://kitpos.s3.amazonaws.com/t.png',
-  //   variantId_1: 20006,
-  //   variantId_2: 20002,
-  //   quantity: 3,
-  //   productCode: 'haha-36-yl,haha-yl-36',
-  //   dispatchQuantity: 2,
-  //   discount: 2,
-  //   isReturn: false,
-  //   errorMessage: '',
-  // },
-]);
+const receiptItems = ref<ISaleShopSelectedInventory[]>([]);
 const isSelectedShopDetailTableVisible = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
@@ -947,27 +909,7 @@ const inventoryDetailList = async (data?: {
   isFetchingRecords.value = false;
 };
 
-const printReceipt = () => {
-  let header_string =
-    '<html><head><title>' + document.title + '</title></head><body>';
-  let footer_string = '</body></html>';
-  let new_string = ReceiptToPrint.value?.innerHTML;
-  let printWindow = window.open('', '_blank');
-  if (printWindow) {
-    let stylesheets =
-      '<style>' + '.receipt {page-break-after:always}' + '</style>';
-    printWindow.document.write(
-      header_string + stylesheets + new_string + footer_string
-    );
-    printWindow.document.close();
-    printWindow.print();
-    printWindow.close();
-  }
-  return false;
-};
-
 const handleAddShopSale = async () => {
-  receipt.value.receiptTime = Date.now();
   receiptItems.value = selectedInventoryData.value;
   const res = isPersonCodeEmpty();
   if (!res) return;
@@ -1004,10 +946,9 @@ const handleAddShopSale = async () => {
       const previewSaleResponse = await previewSaleApi(
         addingSaleResponse.data.saleId
       );
-      receiptDetail.value = previewSaleResponse.data;
+      await (receiptDetail.value = previewSaleResponse.data);
       if (!receipt.value.isprintingDisable) {
-        receipt.value.receiptId = addingSaleResponse.data?.saleId;
-        printReceipt();
+        printReceipt(ReceiptToPrint);
       }
       $q.notify({
         message: addingSaleResponse.message,
@@ -1140,6 +1081,7 @@ const getShopOfficers = async () => {
   justify-content: flex-start;
   flex-wrap: nowrap;
   text-align: start;
+
   @media (min-width: 992px) {
     margin-left: 1rem;
   }
