@@ -53,14 +53,6 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
 ];
 export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
   {
-    name: 'productId',
-    required: true,
-    label: 'Id',
-    align: 'left',
-    sortable: true,
-    field: (row) => row.productId,
-  },
-  {
     name: 'image',
     required: true,
     label: 'Article Image',

@@ -95,6 +95,7 @@
       align="left"
       :columns="shopAllBillsTableColumn"
       row-key="id"
+      hide-bottom
       v-model:pagination="pagination"
       :rows-per-page-options="[0]"
       @request="searchBills"
@@ -200,21 +201,24 @@
           <span class="text-md font-medium"> No data available. </span>
         </div>
       </template>
-      <template v-slot:bottom>
-        <q-tr class="grid md:grid-cols-10 w-full lg:mr-20 xl:mr-[7.5rem]">
-          <q-td><strong>Total:</strong></q-td>
-          <q-td></q-td>
-          <q-td></q-td>
-          <q-td></q-td>
+      <template v-slot:bottom-row>
+        <q-tr class="sticky bottom-0 bg-white">
           <q-td>
-            <strong>Discount: {{ calculateTotal('totalDiscount') }}</strong>
+            <strong>Total</strong>
+          </q-td>
+          <q-td> </q-td>
+          <q-td> </q-td>
+          <q-td>
+            <strong>{{ calculateTotal('totalDiscount') }}</strong>
           </q-td>
           <q-td>
-            <strong>Quantity: {{ calculateTotal('totalQuantity') }}</strong>
+            <strong>{{ calculateTotal('totalQuantity') }}</strong>
           </q-td>
           <q-td>
-            <strong>Amount: {{ calculateTotal('netAmount') }}</strong>
+            <strong>{{ calculateTotal('netAmount') }}</strong>
           </q-td>
+          <q-td> </q-td>
+          <q-td> </q-td>
         </q-tr>
       </template>
     </q-table>
