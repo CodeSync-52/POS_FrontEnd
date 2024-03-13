@@ -419,14 +419,19 @@ window.addEventListener('keypress', function (e) {
   }
 });
 const isButtonDisable = computed(() => {
-  const response = rowColumnData.value.some((product) => {
-    return getStockMessage(
-      selectedInventoryPayload.value,
-      product.productId,
-      product.masterStock
-    );
-  });
-  return response;
+  const validations = [
+    rowColumnData.value.some((product) => {
+      return getStockMessage(
+        selectedInventoryPayload.value,
+        product.productId,
+        product.masterStock
+      );
+    }),
+    Object.values(selectedInventoryPayload.value).every(
+      (data) => data.stockQuantity === 0
+    ),
+  ];
+  return validations.some((validation) => validation === true);
 });
 window.addEventListener('keydown', function (event) {
   if (
