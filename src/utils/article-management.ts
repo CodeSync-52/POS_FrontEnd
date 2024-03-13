@@ -8,7 +8,6 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     required: true,
     label: 'Name',
     align: 'left',
-    sortable: true,
     field: (row) => row.name,
   },
   {

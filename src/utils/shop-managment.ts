@@ -10,7 +10,6 @@ export const shopColumn: QTableColumn<IShopResponse>[] = [
     required: true,
     label: 'Shop Id',
     align: 'left',
-    sortable: true,
     field: (row) => row.shopId,
   },
   {
@@ -18,7 +17,6 @@ export const shopColumn: QTableColumn<IShopResponse>[] = [
     required: true,
     label: 'Shop Name',
     align: 'left',
-    sortable: true,
     field: (row) => row.name,
   },
   {

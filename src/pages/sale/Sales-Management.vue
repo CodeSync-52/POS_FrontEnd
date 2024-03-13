@@ -121,11 +121,14 @@
     </div>
     <div class="py-4">
       <q-table
+        class="max-h-[39.5vh] lg:max-h-[55vh] 3xl:max-h-[65vh]"
         :columns="salesManagementColumn"
         :rows="salesManagementRecords"
         v-model:pagination="pagination"
         align="left"
         :loading="isLoading"
+        :rows-per-page-options="[0]"
+        hide-bottom
         @request="getSalesManagementList"
       >
         <template
@@ -265,6 +268,23 @@
             <span class="text-md font-medium"> No data available. </span>
           </div>
         </template>
+        <template v-slot:bottom-row>
+          <q-tr class="sticky bottom-0 bg-white">
+            <q-td colspan="3" class="text-bold"> Total </q-td>
+            <q-td class="text-bold">
+              {{ calculateTotal('totalQuantity') }}
+            </q-td>
+            <q-td class="text-bold">
+              {{ calculateTotal('totalAmount') }}
+            </q-td>
+            <q-td class="text-bold">
+              {{ calculateTotal('discount') }}
+            </q-td>
+            <q-td colspan="3" class="text-bold">
+              {{ calculateTotal('netAmount') }}
+            </q-td>
+          </q-tr>
+        </template>
       </q-table>
     </div>
     <q-dialog v-model="isGenerateOrCancelSaleModalVisible">
@@ -316,7 +336,7 @@ const defaultPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 100000,
   rowsNumber: 0,
 };
 const timeStamp = Date.now();
@@ -524,4 +544,12 @@ async function getCustomerListOption() {
     isCustomerGroupListLoading.value = false;
   }
 }
+const calculateTotal = (
+  columnName: keyof (typeof salesManagementRecords.value)[0]
+) => {
+  return salesManagementRecords.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
+};
 </script>
