@@ -12,32 +12,40 @@
             </span>
           </div>
         </div>
-        <div
-          v-if="selectedInventoryData.length"
-          class="mb-2 flex flex-col md:flex-row items-center justify-between"
-        >
-          <div class="flex flex-col md:flex-row items-center">
-            <span class="font-semibold text-lg">Select Printing Sample</span>
-            <q-checkbox
-              v-model="receipt.isprintingDisable"
-              color="btn-primary"
-              label="Disable print"
-            />
+        <div v-if="selectedInventoryData.length" class="mb-2">
+          <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="flex flex-col md:flex-row items-center">
+              <span class="font-semibold text-lg">Select Printing Sample</span>
+              <q-checkbox
+                v-model="receipt.isprintingDisable"
+                color="btn-primary"
+                label="Disable print"
+              />
+            </div>
+            <div class="q-gutter-sm">
+              <q-radio
+                v-model="receipt.sampleType"
+                :disable="receipt.isprintingDisable"
+                color="btn-primary"
+                val="first"
+                label="First Sample"
+              />
+              <q-radio
+                v-model="receipt.sampleType"
+                :disable="receipt.isprintingDisable"
+                color="btn-primary"
+                val="second"
+                label="Second Sample"
+              />
+            </div>
           </div>
-          <div class="q-gutter-sm">
-            <q-radio
-              v-model="receipt.sampleType"
-              :disable="receipt.isprintingDisable"
+          <div class="text-center md:text-left">
+            <q-btn
+              label="change receipt description"
+              size="sm"
+              unelevated
               color="btn-primary"
-              val="first"
-              label="First Sample"
-            />
-            <q-radio
-              v-model="receipt.sampleType"
-              :disable="receipt.isprintingDisable"
-              color="btn-primary"
-              val="second"
-              label="Second Sample"
+              @click="isReceiptDescriptionModalVisible = true"
             />
           </div>
         </div>
@@ -384,6 +392,11 @@
       />
     </q-dialog>
   </div>
+  <q-dialog v-model="isReceiptDescriptionModalVisible">
+    <receipt-description-modal
+      @close-description-modal="handleCloseDescriptionModal"
+    />
+  </q-dialog>
   <div ref="ReceiptToPrint" class="receipt hidden">
     <sale-receipt
       :receipt-detail="receiptDetail"
@@ -393,8 +406,14 @@
 </template>
 
 <script setup lang="ts">
+import moment from 'moment';
+import { useQuasar } from 'quasar';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import InventoryListModal from 'src/components/inventory/Inventory-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
+import SaleReceipt from 'src/components/today-sale-summary/Sale-Receipt.vue';
+import ReceiptDescriptionModal from 'src/components/today-sale-summary/Receipt-Description-Modal.vue';
 import {
   IArticleData,
   IInventoryFilterSearch,
@@ -413,9 +432,6 @@ import {
   buttons,
   printReceipt,
 } from './utils';
-import moment from 'moment';
-import SaleReceipt from 'src/components/today-sale-summary/Sale-Receipt.vue';
-import { useQuasar } from 'quasar';
 import {
   articleListApi,
   inventoryDetailApi,
@@ -427,8 +443,6 @@ import {
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
 const pageTitle = getRoleModuleDisplayName(
@@ -463,6 +477,7 @@ const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
+const isReceiptDescriptionModalVisible = ref(false);
 const salePersonCodeInput = ref<null | HTMLDivElement>(null);
 const ReceiptToPrint = ref<null | HTMLDivElement>(null);
 const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
@@ -816,6 +831,10 @@ const isButtonDisable = computed(() => {
   ];
   return validations.some((validation) => validation);
 });
+const handleCloseDescriptionModal = (callback: () => void) => {
+  callback();
+  isReceiptDescriptionModalVisible.value = false;
+};
 //------------------------------------------------------------ Api---------------------------------------------------------
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
