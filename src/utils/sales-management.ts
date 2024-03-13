@@ -62,12 +62,6 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
 export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
   [
     {
-      name: 'productId',
-      label: 'Product Id',
-      field: (row) => row.productId,
-      align: 'left',
-    },
-    {
       name: 'productImage',
       label: 'Product Image',
       field: (row) => row.productImage,

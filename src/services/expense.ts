@@ -1,11 +1,11 @@
 import { IGenericResponse, Iexpenses } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const getExpenseList = async ({
-  pageNumber = 1,
-  pageSize = 50,
+  pageNumber,
+  pageSize,
 }: {
-  pageNumber?: number;
-  pageSize?: number;
+  pageNumber: number;
+  pageSize: number;
 }) => {
   const res = await makeApiCall<
     IGenericResponse<{
