@@ -202,7 +202,7 @@
           :loading="isPrintingBarcode"
           label="Save"
           unelevated
-          :disable="InValidStock"
+          :disable="isButtonDisable"
           color="btn-primary"
         />
       </div>
@@ -412,12 +412,26 @@ const selectedShop = ref<{
   FromShop: null,
   ToShop: null,
 });
-const InValidStock = ref(false);
 const selectedProductBarcodes = ref<{ productCode: string }[]>([]);
 window.addEventListener('keypress', function (e) {
   if (e.key === '+') {
     isArticleListModalVisible.value = true;
   }
+});
+const isButtonDisable = computed(() => {
+  const validations = [
+    rowColumnData.value.some((product) => {
+      return getStockMessage(
+        selectedInventoryPayload.value,
+        product.productId,
+        product.masterStock
+      );
+    }),
+    Object.values(selectedInventoryPayload.value).every(
+      (data) => data.stockQuantity === 0
+    ),
+  ];
+  return validations.some((validation) => validation === true);
 });
 window.addEventListener('keydown', function (event) {
   if (
@@ -617,7 +631,6 @@ function getStockMessage(
       (total, key) => total + selectedInventoryPayload[key].stockQuantity,
       0
     );
-  InValidStock.value = totalStock > masterStock;
   return totalStock > masterStock
     ? 'Selected Quantity cannot be greater than Available Stock'
     : '';
