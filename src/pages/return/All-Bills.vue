@@ -203,22 +203,18 @@
       </template>
       <template v-slot:bottom-row>
         <q-tr class="sticky bottom-0 bg-white">
-          <q-td>
+          <q-td colspan="3">
             <strong>Total</strong>
           </q-td>
-          <q-td> </q-td>
-          <q-td> </q-td>
           <q-td>
             <strong>{{ calculateTotal('totalDiscount') }}</strong>
           </q-td>
           <q-td>
             <strong>{{ calculateTotal('totalQuantity') }}</strong>
           </q-td>
-          <q-td>
+          <q-td colspan="3">
             <strong>{{ calculateTotal('netAmount') }}</strong>
           </q-td>
-          <q-td> </q-td>
-          <q-td> </q-td>
         </q-tr>
       </template>
     </q-table>
