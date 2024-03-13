@@ -210,7 +210,7 @@
             <q-input
               maxlength="250"
               v-model="billGenerationDetailsInfoData.fullName"
-              disable
+              readonly
               dense
               label="Name"
               class="btn-primary"
@@ -221,7 +221,7 @@
             <q-input
               maxlength="250"
               v-model="billGenerationDetailsInfoData.billStatus"
-              disable
+              readonly
               dense
               type="text"
               label="Bill Status"
@@ -231,19 +231,8 @@
           </div>
           <div class="col-6">
             <q-input
-              v-model="billGenerationDetailsInfoData.totalAmount"
-              disable
-              dense
-              type="number"
-              label="Total Amount"
-              class="btn-primary"
-              outlined
-            />
-          </div>
-          <div class="col-6">
-            <q-input
               v-model="billGenerationDetailsInfoData.createdDate"
-              disable
+              readonly
               dense
               type="date"
               label="Created Date"
@@ -265,7 +254,10 @@
           >
             Enter to Edit Claim or Freight:
           </div>
-          <div class="col-4">
+          <div
+            v-if="!router.currentRoute.value.fullPath.includes('preview')"
+            class="col-4"
+          >
             <q-input
               :min="0"
               :disable="router.currentRoute.value.fullPath.includes('preview')"
@@ -278,7 +270,10 @@
               @update:model-value="handleUpdateClaimOrFreight($event, 'claim')"
             />
           </div>
-          <div class="col-4">
+          <div
+            v-if="!router.currentRoute.value.fullPath.includes('preview')"
+            class="col-4"
+          >
             <q-input
               type="number"
               maxlength="250"
