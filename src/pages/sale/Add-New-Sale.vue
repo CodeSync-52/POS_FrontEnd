@@ -17,86 +17,6 @@
       <q-card-section class="q-gutter-y-md">
         <div v-if="action !== 'Add New'" class="row q-col-gutter-md q-mb-md">
           <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              maxlength="250"
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              outlined
-              type="date"
-              disable
-              label="Created Date"
-              dense
-              v-model="selectedSaleRecord.createdDate"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              type="number"
-              dense
-              label="Discount"
-              v-model="selectedUserDiscount"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              type="number"
-              dense
-              label="Net Amount"
-              v-model="selectedSaleRecord.netAmount"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              type="number"
-              label="Outstanding Balance"
-              v-model="selectedSaleRecord.outStandingBalance"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              type="number"
-              label="Total Amount"
-              v-model="selectedSaleRecord.totalAmount"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              label="Total Quantity"
-              v-model="selectedSaleRecord.totalQuantity"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              label="Updated Date"
-              v-model="selectedSaleRecord.updatedDate"
-            />
-          </div>
-        </div>
-        <div class="row q-col-gutter-md">
-          <div class="col-md-4 w-full col-sm-12">
             <outside-click-container @outside-click="handleOutsideClick">
               <div>
                 <q-select
@@ -116,7 +36,7 @@
                   autofocus
                   option-label="fullName"
                   option-value="userId"
-                  :disable="action === 'Preview' || action === 'Edit'"
+                  :readonly="action === 'Preview' || action === 'Edit'"
                   ><template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -127,6 +47,28 @@
                 >
               </div>
             </outside-click-container>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              readonly
+              outlined
+              dense
+              type="number"
+              label="Outstanding Balance"
+              v-model="selectedSaleRecord.outStandingBalance"
+            />
+          </div>
+        </div>
+        <div class="row q-col-gutter-md">
+          <div class="col-md-4 w-full col-sm-12">
+            <q-input
+              outlined
+              type="date"
+              readonly
+              label="Created Date"
+              dense
+              v-model="selectedSaleRecord.createdDate"
+            />
           </div>
           <div v-if="action !== 'Preview'" class="col-12 col-md-4">
             <div class="q-gutter-y-xs">
@@ -160,7 +102,7 @@
             color="orange"
             inset
           />
-          <div class="row q-mb-md q-col-gutter-md">
+          <div v-if="action !== 'Preview'" class="row q-mb-md q-col-gutter-md">
             <div v-if="action === 'Add New'" class="col-12 text-bold text-base">
               Enter Claim or Freight:
             </div>
@@ -315,7 +257,7 @@
               <q-tr :props="props">
                 <q-td colspan="3" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Total Quantity:
                     {{ saleGenerationTotalQuantity }}
                   </div>
@@ -323,7 +265,7 @@
 
                 <q-td colspan="2" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Total Amount:
                     {{ saleGenerationTotalAmount }}
                   </div>
@@ -333,7 +275,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Discount:
                     {{
                       action === 'Add New'
@@ -351,7 +293,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Claim:
                     {{ claim }}
                   </div>
@@ -361,7 +303,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Freight:
                     {{ freight }}
                   </div>
@@ -371,7 +313,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Net Total:
                     {{
                       action === 'Add New'
