@@ -20,7 +20,7 @@
             <q-input
               type="number"
               min="0"
-              disable
+              readonly
               v-model="billGenerationData.outStandingBalance"
               dense
               label="Outstanding Balance"
@@ -30,7 +30,7 @@
           <div class="col-6">
             <q-input
               type="date"
-              disable
+              readonly
               v-model="formattedPurchaseDate"
               dense
               label="Date"
@@ -40,7 +40,7 @@
           <div class="col-6">
             <q-input
               maxlength="250"
-              disable
+              readonly
               v-model="billGenerationData.fullName"
               dense
               label="Select User"

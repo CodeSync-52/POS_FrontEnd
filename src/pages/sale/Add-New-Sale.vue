@@ -117,7 +117,7 @@
               dense
               outlined
               label="Outstanding Balance"
-              disable
+              readonly
               v-model="addNewSale.userOutstandingBalance"
             />
           </div>
