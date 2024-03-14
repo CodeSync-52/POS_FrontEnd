@@ -13,7 +13,7 @@
             outlined
             maxlength="250"
             dense
-            disable
+            readonly
           />
         </div>
         <div class="col-12 col-md-6">
@@ -23,7 +23,7 @@
             outlined
             maxlength="250"
             dense
-            disable
+            readonly
           />
         </div>
         <div class="col-12 col-md-6">
@@ -33,7 +33,7 @@
             outlined
             maxlength="250"
             dense
-            disable
+            readonly
           />
         </div>
         <div class="col-12 col-md-6">
@@ -43,7 +43,7 @@
             v-model="previewCashFlow.amount"
             outlined
             dense
-            disable
+            readonly
           />
         </div>
         <div class="col-12 col-md-6">
@@ -54,7 +54,7 @@
             label="Transaction Date"
             maxlength="250"
             dense
-            disable
+            readonly
           />
         </div>
         <div class="col-12">
@@ -66,7 +66,7 @@
             outlined
             maxlength="250"
             dense
-            disable
+            readonly
           />
         </div>
       </div>

@@ -34,6 +34,7 @@
         flat
         :loading="isLoading"
         unelevated
+        :disable="!customerName || customerName.trim() === ''"
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
         @click="saveNewCustomer('edit')"
@@ -43,7 +44,7 @@
         label="Add"
         flat
         unelevated
-        :disable="!customerName"
+        :disable="!customerName || customerName.trim() === ''"
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"
         :loading="isLoading"

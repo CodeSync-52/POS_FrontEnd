@@ -32,7 +32,7 @@
               </div>
               <q-input
                 v-model="addNewAccount.UserOutstandingBalance"
-                disable
+                readonly
                 label="User Outstanding Balance"
                 dense
                 outlined
@@ -67,7 +67,6 @@
               <q-input
                 :min="0"
                 type="number"
-                label="Amount"
                 dense
                 color="btn-primary"
                 outlined
@@ -214,7 +213,7 @@ const handleShowOutstandingBalance = (value: IUserResponse) => {
 const filterUser = (val: string, update: CallableFunction) => {
   update(() => {
     userListOptions.value = userList.value.filter((user) =>
-      user.fullName.toLowerCase().includes(val.toLowerCase())
+      user.fullName?.toLowerCase().includes(val.toLowerCase())
     );
     if (addNewAccount.value.cash?.userId) {
       userListOptions.value = userListOptions.value.filter(
