@@ -116,10 +116,10 @@ onMounted(() => {
 const isButtonDisabled = computed(() => {
   const { name, phone, address, code } = shopData.value;
   const validations = ref<boolean[]>([]);
-  validations.value.push(!name);
+  validations.value.push(!name || name.trim() === '');
   validations.value.push(!(phone.length >= 14 && phone.length <= 15));
-  validations.value.push(!address);
-  validations.value.push(!code);
+  validations.value.push(!address || address.trim() === '');
+  validations.value.push(!code || code.trim() === '');
   return validations.value.some((validation) => validation);
 });
 

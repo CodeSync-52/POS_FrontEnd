@@ -36,7 +36,7 @@
                   autofocus
                   option-label="fullName"
                   option-value="userId"
-                  :readonly="action === 'Preview' || action === 'Edit'"
+                  readonly
                   ><template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -60,7 +60,7 @@
           </div>
         </div>
         <div class="row q-col-gutter-md">
-          <div class="col-md-4 w-full col-sm-12">
+          <div v-if="action !== 'Add New'" class="col-md-4 w-full col-sm-12">
             <q-input
               outlined
               type="date"
@@ -69,6 +69,33 @@
               dense
               v-model="selectedSaleRecord.createdDate"
             />
+          </div>
+          <div v-if="action === 'Add New'" class="col-md-4 w-full col-sm-12">
+            <q-select
+              :options="options"
+              :loading="isLoading"
+              use-input
+              dense
+              popup-content-class="!max-h-[200px]"
+              map-options
+              outlined
+              @filter="filterFn"
+              v-model="selectedSaleRecord.userId"
+              @update:model-value="addNewSale.userId = $event.userId"
+              label="Select User"
+              color="btn-primary"
+              @keydown="dialoagClose"
+              autofocus
+              option-label="fullName"
+              option-value="userId"
+              ><template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template></q-select
+            >
           </div>
           <div v-if="action !== 'Preview'" class="col-12 col-md-4">
             <div class="q-gutter-y-xs">
@@ -771,6 +798,8 @@ const onDeleteButtonClick = async (row: ISelectedWholeSaleArticleData) => {
   );
   if (tempIndex != -1 && row.productId !== null) {
     selectedArticleData.value.splice(tempIndex, 1);
+    claim.value = 0;
+    freight.value = 0;
     if (action.value === 'Edit' && row.wholeSaleDetailId !== undefined) {
       try {
         await deleteWholeSaleDetailApi(row.wholeSaleDetailId);
