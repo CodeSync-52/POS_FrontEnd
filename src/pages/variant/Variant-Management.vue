@@ -332,7 +332,15 @@ const AddNewVariant = () => {
   isVariantModalVisible.value = true;
 };
 const handleManageClick = (id: number, name: string, status: string) => {
-  router.push(`/variant/${name}/${id}/${status}`);
+  if (status === 'InActive') {
+    $q.notify({
+      message: 'InActive Variant (Please change status to Active)',
+      type: 'warning',
+    });
+  }
+  if (status === 'Active') {
+    router.push(`/variant/${name}/${id}/${status}`);
+  }
 };
 const updateOrAddVariant = async (
   name: string,

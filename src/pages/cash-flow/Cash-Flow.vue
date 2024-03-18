@@ -217,8 +217,8 @@ import { date } from 'quasar';
 import { cashFlowListApi, addCashFlowApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
-import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
-import UndoCashFlowModal from 'src/components/return/Complete-Or-Cancel-Modal.vue';
+import PreviewCashFlow from 'src/components/cash-flow/PreviewCashFlow.vue';
+import UndoCashFlowModal from 'src/components/return/CompleteOrCancelModal.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement
@@ -306,6 +306,7 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
         message: res.message,
         color: 'green',
       });
+      isLoading.value = false;
       await getCashFlowRecords();
     }
   } catch (e) {
@@ -319,6 +320,7 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
       icon: 'error',
     });
   }
+  isLoading.value = false;
   showUndoCashFlowModal.value = false;
 };
 const getCashFlowRecords = async (data?: {

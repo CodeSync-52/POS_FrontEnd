@@ -268,7 +268,6 @@ const handleDeleteExpense = async (shopAccountDetailId: number) => {
         type: 'positive',
       });
       updateSaleSummary();
-      showDeleteExpenseModal.value = false;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -280,5 +279,6 @@ const handleDeleteExpense = async (shopAccountDetailId: number) => {
       type: 'negative',
     });
   }
+  showDeleteExpenseModal.value = false;
 };
 </script>
