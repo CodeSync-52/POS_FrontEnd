@@ -218,7 +218,7 @@ import { cashFlowListApi, addCashFlowApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
 import PreviewCashFlow from 'src/components/cash-flow/PreviewCashFlow.vue';
-import UndoCashFlowModal from 'components/return/CompleteOrCancelModal.vue';
+import UndoCashFlowModal from 'src/components/return/CompleteOrCancelModal.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement
@@ -294,6 +294,8 @@ const handleUndoCashFlow = async (selectedRow: ICashFlowRecords) => {
   showUndoCashFlowModal.value = true;
 };
 const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
+  if (isLoading.value) return;
+  isLoading.value = true;
   try {
     const res = await addCashFlowApi({
       sourceUserId: selectedRow.targetUserId ?? -1,
@@ -306,6 +308,7 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
         message: res.message,
         color: 'green',
       });
+      isLoading.value = false;
       await getCashFlowRecords();
     }
   } catch (e) {
@@ -319,6 +322,7 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
       icon: 'error',
     });
   }
+  isLoading.value = false;
   showUndoCashFlowModal.value = false;
 };
 const getCashFlowRecords = async (data?: {
