@@ -28,7 +28,7 @@
         :label="variantAction === 'Edit' ? 'Save' : 'Add'"
         flat
         :loading="isLoading"
-        :disable="!variantName"
+        :disable="!variantName || variantName.trim() === ''"
         unelevated
         color="signature"
         class="bg-btn-primary"

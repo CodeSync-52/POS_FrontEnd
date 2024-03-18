@@ -20,7 +20,6 @@
               <div>
                 <span class="text-base font-medium">Receiver</span>
                 <q-select
-                  label="Receiver"
                   autofocus
                   dense
                   color="btn-primary"
@@ -39,21 +38,23 @@
                   v-model="addNewFlow.cashIn"
                 />
               </div>
-
-              <q-input
-                v-model="addNewFlow.cashInOutstandingBalance"
-                disable
-                color="btn-primary"
-                label="Receiver Outstanding Balance"
-                dense
-                outlined
-              />
+              <div>
+                <span class="text-base font-medium"
+                  >Receiver Outstanding Balance</span
+                >
+                <q-input
+                  v-model="addNewFlow.cashInOutstandingBalance"
+                  readonly
+                  color="btn-primary"
+                  dense
+                  outlined
+                />
+              </div>
             </div>
             <div class="col-md-4 col-12 q-gutter-y-md">
               <div>
                 <span class="text-base font-medium">Sender</span>
                 <q-select
-                  label="Sender"
                   color="btn-primary"
                   dense
                   outlined
@@ -71,22 +72,24 @@
                   v-model="addNewFlow.cashOut"
                 />
               </div>
-
-              <q-input
-                v-model="addNewFlow.cashOutOutstandingBalance"
-                disable
-                label="Sender Outstanding Balance"
-                dense
-                outlined
-                color="btn-primary"
-              />
+              <div>
+                <span class="text-base font-medium"
+                  >Sender Outstanding Balance</span
+                >
+                <q-input
+                  v-model="addNewFlow.cashOutOutstandingBalance"
+                  readonly
+                  dense
+                  outlined
+                  color="btn-primary"
+                />
+              </div>
             </div>
             <div class="col-md-4 col-12">
               <span class="text-base font-medium">Amount</span>
               <q-input
                 :min="0"
                 type="number"
-                label="Amount"
                 dense
                 color="btn-primary"
                 outlined
@@ -245,7 +248,7 @@ const getUserList = async () => {
 const filterUser = (val: string, update: CallableFunction) => {
   update(() => {
     userListOptions.value = userList.value.filter((user) =>
-      user.fullName.toLowerCase().includes(val.toLowerCase())
+      user.fullName?.toLowerCase().includes(val.toLowerCase())
     );
     if (addNewFlow.value.cashIn?.userId) {
       userListOptions.value = userListOptions.value.filter(

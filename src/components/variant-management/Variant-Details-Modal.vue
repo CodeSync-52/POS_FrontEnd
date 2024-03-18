@@ -48,7 +48,12 @@
         :label="variantAction === 'Edit' ? 'Save' : 'Add'"
         flat
         :loading="isLoading"
-        :disable="!variantData.name || !variantData.displayName"
+        :disable="
+          !variantData.name ||
+          !variantData.displayName ||
+          variantData.name.trim() === '' ||
+          variantData.displayName.trim() === ''
+        "
         unelevated
         color="signature"
         class="bg-btn-primary hover:bg-btn-primary-hover"

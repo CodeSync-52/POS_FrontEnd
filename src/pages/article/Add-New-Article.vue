@@ -29,7 +29,6 @@
               <q-input
                 maxlength="250"
                 v-model="newArticle.name"
-                label="Name"
                 autofocus
                 dense
                 outlined
@@ -51,7 +50,6 @@
               <q-input
                 maxlength="250"
                 v-model="newArticle.categoryName"
-                label="category"
                 dense
                 readonly
                 outlined
@@ -65,7 +63,6 @@
                 dense
                 type="number"
                 :min="0"
-                label="Wholesale Price"
                 outlined
                 color="btn-primary"
                 @update:model-value="
@@ -80,7 +77,6 @@
                 dense
                 type="number"
                 :min="0"
-                label="Retail Price"
                 outlined
                 color="btn-primary"
                 @update:model-value="handleUpdateAmount($event, 'retailPrice')"
@@ -93,7 +89,6 @@
                 dense
                 type="number"
                 :min="0"
-                label="Cost Price"
                 outlined
                 color="btn-primary"
                 @update:model-value="handleUpdateAmount($event, 'costPrice')"
@@ -106,20 +101,22 @@
                 dense
                 type="number"
                 :min="0"
-                label="Commission"
                 outlined
                 color="btn-primary"
                 @update:model-value="handleUpdateAmount($event, 'commission')"
               />
             </div>
             <div class="col-12 col-md-6">
-              <span class="text-base">Image</span>
+              <span v-if="isUpdate" class="text-base">Change Image</span>
+              <span v-else class="text-base">Select Image</span>
               <q-file
                 @update:model-value="handleImageUpload"
                 type="file"
                 accept=".jpeg, .jpg , .png"
                 dense
-                :label="isUpdate ? 'Change Image' : 'Select Image'"
+                :label="
+                  isUpdate ? 'Click To Change Image' : 'Click To Select Image'
+                "
                 outlined
                 v-model="newArticle.productImage"
                 :rules="[checkFile]"
@@ -154,7 +151,6 @@
                 maxlength="250"
                 v-model="newArticle.description"
                 dense
-                label="Description"
                 outlined
                 color="btn-primary"
               />

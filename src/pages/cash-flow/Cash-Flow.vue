@@ -151,7 +151,14 @@
                   Preview Cashflow
                 </q-tooltip></q-btn
               >
-              <q-btn icon="undo" dense flat unelevated color="blue" size="sm"
+              <q-btn
+                icon="undo"
+                dense
+                flat
+                unelevated
+                color="blue"
+                size="sm"
+                @click="handleUndoCashFlow(props.row)"
                 ><q-tooltip class="bg-blue" :offset="[10, 10]">
                   Undo Cashflow
                 </q-tooltip></q-btn
@@ -186,6 +193,13 @@
     <q-dialog v-model="isPreviewCashFlowModalVisible">
       <preview-cash-flow :selected-data="selectedRowData" />
     </q-dialog>
+    <q-dialog v-model="showUndoCashFlowModal">
+      <UndoCashFlowModal
+        title="Undo Cashflow"
+        message="Are you sure you want to Undo Cashflow?"
+        @confirm="handleAddNewFlow(selectedRecord.selectedData)"
+      />
+    </q-dialog>
   </div>
 </template>
 
@@ -199,16 +213,18 @@ import {
   ICashFlowRecords,
 } from 'src/interfaces';
 import { date } from 'quasar';
-import { cashFlowListApi } from 'src/services';
+import { cashFlowListApi, addCashFlowApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
 import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
+import UndoCashFlowModal from 'components/return/CompleteOrCancelModal.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement
 );
 const isPreviewCashFlowModalVisible = ref(false);
 const isLoading = ref(false);
+const showUndoCashFlowModal = ref(false);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
@@ -224,6 +240,9 @@ const filterSearch = ref({
 });
 const filterChanged = ref(false);
 const cashFlowRecords = ref<ICashFlowRecords[]>([]);
+const selectedRecord = ref<{ selectedData: ICashFlowRecords }>({
+  selectedData: {} as ICashFlowRecords,
+});
 const filteredRows = ref<ICashFlowRecords[]>([]);
 function setFilteredData() {
   filterChanged.value = true;
@@ -267,6 +286,41 @@ const apiController = ref<AbortController | null>(null);
 onMounted(() => {
   getCashFlowRecords();
 });
+const handleUndoCashFlow = async (selectedRow: ICashFlowRecords) => {
+  selectedRecord.value.selectedData = selectedRow;
+  showUndoCashFlowModal.value = true;
+};
+const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  try {
+    const res = await addCashFlowApi({
+      sourceUserId: selectedRow.targetUserId ?? -1,
+      amount: selectedRow.amount,
+      targetUserId: selectedRow.sourceUserId ?? -1,
+      comments: 'Amount Reverted',
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      getCashFlowRecords();
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred Add Cash Flow';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+  showUndoCashFlowModal.value = false;
+  isLoading.value = false;
+};
 const getCashFlowRecords = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {

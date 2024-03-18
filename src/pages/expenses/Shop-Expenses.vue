@@ -20,6 +20,7 @@
           v-model:pagination="pagination"
           :columns="expenseColumns"
           row-key="expenseTypeId"
+          :rows-per-page-options="[0]"
           @request="fetchingExpenseList"
         >
           <template v-slot:top>
@@ -91,7 +92,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50,
+  rowsPerPage: 100000,
   rowsNumber: 0,
 });
 onMounted(() => {

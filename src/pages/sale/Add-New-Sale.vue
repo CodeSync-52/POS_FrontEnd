@@ -17,86 +17,6 @@
       <q-card-section class="q-gutter-y-md">
         <div v-if="action !== 'Add New'" class="row q-col-gutter-md q-mb-md">
           <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              maxlength="250"
-              label="Created By"
-              v-model="selectedSaleRecord.createdBy"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              outlined
-              type="date"
-              disable
-              label="Created Date"
-              dense
-              v-model="selectedSaleRecord.createdDate"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              type="number"
-              dense
-              label="Discount"
-              v-model="selectedUserDiscount"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              type="number"
-              dense
-              label="Net Amount"
-              v-model="selectedSaleRecord.netAmount"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              type="number"
-              label="Outstanding Balance"
-              v-model="selectedSaleRecord.outStandingBalance"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              type="number"
-              label="Total Amount"
-              v-model="selectedSaleRecord.totalAmount"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              label="Total Quantity"
-              v-model="selectedSaleRecord.totalQuantity"
-            />
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <q-input
-              disable
-              outlined
-              dense
-              label="Updated Date"
-              v-model="selectedSaleRecord.updatedDate"
-            />
-          </div>
-        </div>
-        <div class="row q-col-gutter-md">
-          <div class="col-md-4 w-full col-sm-12">
             <outside-click-container @outside-click="handleOutsideClick">
               <div>
                 <q-select
@@ -116,7 +36,7 @@
                   autofocus
                   option-label="fullName"
                   option-value="userId"
-                  :disable="action === 'Preview' || action === 'Edit'"
+                  readonly
                   ><template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -127,6 +47,55 @@
                 >
               </div>
             </outside-click-container>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <q-input
+              readonly
+              outlined
+              dense
+              type="number"
+              label="Outstanding Balance"
+              v-model="selectedSaleRecord.outStandingBalance"
+            />
+          </div>
+        </div>
+        <div class="row q-col-gutter-md">
+          <div v-if="action !== 'Add New'" class="col-md-4 w-full col-sm-12">
+            <q-input
+              outlined
+              type="date"
+              readonly
+              label="Created Date"
+              dense
+              v-model="selectedSaleRecord.createdDate"
+            />
+          </div>
+          <div v-if="action === 'Add New'" class="col-md-4 w-full col-sm-12">
+            <q-select
+              :options="options"
+              :loading="isLoading"
+              use-input
+              dense
+              popup-content-class="!max-h-[200px]"
+              map-options
+              outlined
+              @filter="filterFn"
+              v-model="selectedSaleRecord.userId"
+              @update:model-value="addNewSale.userId = $event.userId"
+              label="Select User"
+              color="btn-primary"
+              @keydown="dialoagClose"
+              autofocus
+              option-label="fullName"
+              option-value="userId"
+              ><template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template></q-select
+            >
           </div>
           <div v-if="action !== 'Preview'" class="col-12 col-md-4">
             <div class="q-gutter-y-xs">
@@ -148,7 +117,7 @@
               dense
               outlined
               label="Outstanding Balance"
-              disable
+              readonly
               v-model="addNewSale.userOutstandingBalance"
             />
           </div>
@@ -160,7 +129,7 @@
             color="orange"
             inset
           />
-          <div class="row q-mb-md q-col-gutter-md">
+          <div v-if="action !== 'Preview'" class="row q-mb-md q-col-gutter-md">
             <div v-if="action === 'Add New'" class="col-12 text-bold text-base">
               Enter Claim or Freight:
             </div>
@@ -315,7 +284,7 @@
               <q-tr :props="props">
                 <q-td colspan="3" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Total Quantity:
                     {{ saleGenerationTotalQuantity }}
                   </div>
@@ -323,7 +292,7 @@
 
                 <q-td colspan="2" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Total Amount:
                     {{ saleGenerationTotalAmount }}
                   </div>
@@ -333,7 +302,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Discount:
                     {{
                       action === 'Add New'
@@ -351,7 +320,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Claim:
                     {{ claim }}
                   </div>
@@ -361,7 +330,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Freight:
                     {{ freight }}
                   </div>
@@ -371,7 +340,7 @@
               <q-tr :props="props">
                 <q-td colspan="6" />
                 <q-td>
-                  <div>
+                  <div class="text-bold">
                     Net Total:
                     {{
                       action === 'Add New'
@@ -829,6 +798,8 @@ const onDeleteButtonClick = async (row: ISelectedWholeSaleArticleData) => {
   );
   if (tempIndex != -1 && row.productId !== null) {
     selectedArticleData.value.splice(tempIndex, 1);
+    claim.value = 0;
+    freight.value = 0;
     if (action.value === 'Edit' && row.wholeSaleDetailId !== undefined) {
       try {
         await deleteWholeSaleDetailApi(row.wholeSaleDetailId);
@@ -1085,7 +1056,7 @@ async function convertArrayToPdfData(
   }
 
   const tableStuff = [];
-  const headerRow = ['Id', 'Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
+  const headerRow = ['Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
   tableStuff.push(headerRow);
   const totalAmount = array.reduce(
     (total, row: IWholeSaleDetailsData | ISelectedWholeSaleArticleData) => {
@@ -1102,7 +1073,6 @@ async function convertArrayToPdfData(
       margin: 5,
     },
     '',
-    '',
     {
       text: `${saleGenerationTotalQuantity.value}`,
       margin: [0, 5],
@@ -1111,7 +1081,6 @@ async function convertArrayToPdfData(
     { text: `${totalAmount}`, margin: 5 },
   ];
   const discountRow = [
-    '',
     '',
     '',
     '',
@@ -1132,7 +1101,6 @@ async function convertArrayToPdfData(
     '',
     '',
     '',
-    '',
     {
       text: 'Freight:',
       margin: 5,
@@ -1143,7 +1111,6 @@ async function convertArrayToPdfData(
     },
   ];
   const claimRow = [
-    '',
     '',
     '',
     '',
@@ -1160,7 +1127,6 @@ async function convertArrayToPdfData(
     '',
     '',
     '',
-    '',
     {
       text: 'Net Total:',
       margin: 5,
@@ -1173,7 +1139,6 @@ async function convertArrayToPdfData(
   array.forEach(
     (item: IWholeSaleDetailsData | ISelectedWholeSaleArticleData) => {
       const row = [
-        { text: item.productId, margin: [0, 20] },
         {
           image: item.productImage || defaultImage.value,
           width: 50,

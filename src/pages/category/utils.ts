@@ -7,7 +7,6 @@ export const categoryColumn: QTableColumn<ICategoryData>[] = [
     required: true,
     label: 'Group',
     align: 'left',
-    sortable: true,
     field: (row) => row.name,
   },
   {
@@ -21,7 +20,6 @@ export const categoryColumn: QTableColumn<ICategoryData>[] = [
     name: 'status',
     align: 'left',
     label: 'Status',
-    sortable: true,
     field: (row) => row.status,
   },
   { name: 'action', label: 'Action', field: () => '', align: 'left' },
