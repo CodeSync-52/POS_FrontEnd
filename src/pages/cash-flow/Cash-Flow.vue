@@ -152,6 +152,7 @@
                 </q-tooltip></q-btn
               >
               <q-btn
+                v-if="props.row.transactionDate > formattedUndoDate"
                 icon="undo"
                 dense
                 flat
@@ -217,7 +218,7 @@ import { cashFlowListApi, addCashFlowApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
 import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
-import UndoCashFlowModal from 'components/return/CompleteOrCancelModal.vue';
+import UndoCashFlowModal from 'components/return/Complete-Or-Cancel-Modal.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement
@@ -228,6 +229,8 @@ const showUndoCashFlowModal = ref(false);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const past2Date = date.subtractFromDate(timeStamp, { date: 2 });
+const formattedUndoDate = date.formatDate(past2Date, 'YYYY-MM-DD');
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filter = ref({
   sender: '',
@@ -291,8 +294,6 @@ const handleUndoCashFlow = async (selectedRow: ICashFlowRecords) => {
   showUndoCashFlowModal.value = true;
 };
 const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
-  if (isLoading.value) return;
-  isLoading.value = true;
   try {
     const res = await addCashFlowApi({
       sourceUserId: selectedRow.targetUserId ?? -1,
@@ -305,7 +306,7 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
         message: res.message,
         color: 'green',
       });
-      getCashFlowRecords();
+      await getCashFlowRecords();
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Cash Flow';
@@ -319,7 +320,6 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
     });
   }
   showUndoCashFlowModal.value = false;
-  isLoading.value = false;
 };
 const getCashFlowRecords = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
