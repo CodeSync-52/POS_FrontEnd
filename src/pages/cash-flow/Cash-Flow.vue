@@ -152,6 +152,7 @@
                 </q-tooltip></q-btn
               >
               <q-btn
+                v-if="props.row.transactionDate > formattedUndoDate"
                 icon="undo"
                 dense
                 flat
@@ -217,7 +218,7 @@ import { cashFlowListApi, addCashFlowApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
 import PreviewCashFlow from 'src/components/cash-flow/PreviewCashFlow.vue';
-import UndoCashFlowModal from 'components/return/CompleteOrCancelModal.vue';
+import UndoCashFlowModal from 'src/components/return/CompleteOrCancelModal.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement
@@ -228,6 +229,8 @@ const showUndoCashFlowModal = ref(false);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
+const past2Date = date.subtractFromDate(timeStamp, { date: 2 });
+const formattedUndoDate = date.formatDate(past2Date, 'YYYY-MM-DD');
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filter = ref({
   sender: '',
@@ -305,7 +308,8 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
         message: res.message,
         color: 'green',
       });
-      getCashFlowRecords();
+      isLoading.value = false;
+      await getCashFlowRecords();
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Cash Flow';
@@ -318,8 +322,8 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
       icon: 'error',
     });
   }
-  showUndoCashFlowModal.value = false;
   isLoading.value = false;
+  showUndoCashFlowModal.value = false;
 };
 const getCashFlowRecords = async (data?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
