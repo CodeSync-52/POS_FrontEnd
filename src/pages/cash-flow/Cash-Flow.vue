@@ -218,7 +218,7 @@ import { cashFlowListApi, addCashFlowApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
 import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
-import UndoCashFlowModal from 'components/return/Complete-Or-Cancel-Modal.vue';
+import UndoCashFlowModal from 'src/components/return/Complete-Or-Cancel-Modal.vue';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.CashInCashOutManagement

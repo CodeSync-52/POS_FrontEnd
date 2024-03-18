@@ -12,128 +12,142 @@
             </span>
           </div>
         </div>
-        <div v-if="selectedInventoryData.length" class="mb-2">
-          <div class="flex flex-col md:flex-row items-center justify-between">
-            <div class="flex flex-col md:flex-row items-center">
-              <span class="font-semibold text-lg">Select Printing Sample</span>
-              <q-checkbox
-                v-model="receipt.isprintingDisable"
+        <div class="md:flex justify-between">
+          <div
+            class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
+          >
+            <q-select
+              :loading="isFetchingShopList"
+              popup-content-class="!max-h-[200px]"
+              :options="shopData"
+              class="max-w-[200px] min-w-[200px]"
+              use-input
+              dense
+              map-options
+              outlined
+              :disable="
+                authStore.loggedInUser?.rolePermissions.roleName !==
+                EUserRoles.SuperAdmin.toLowerCase()
+              "
+              v-model="selectedShop.fromShop"
+              @update:model-value="handleUpdateFromShop($event)"
+              label="Select Shop"
+              color="btn-primary"
+              option-label="name"
+              option-value="shopId"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-italic text-grey">
+                    No Options Available
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+            <q-select
+              :loading="isLoading"
+              dense
+              class="max-w-[200px] min-w-[200px]"
+              outlined
+              map-options
+              clearable
+              v-model="shopSale.salePersonCode"
+              ref="salePersonCodeInput"
+              popup-content-class="!max-h-[200px]"
+              :options="roleDropdownOptions"
+              @update:model-value="handleUpdateSalePersonCode($event)"
+              option-label="fullName"
+              option-value="userId"
+              label="Sale Person"
+              color="btn-primary"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-italic text-grey">
+                    No Options Available
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div
+            class="flex flex-col md:flex-row gap-2 md:gap-4 items-center justify-end"
+          >
+            <div
+              v-if="selectedInventoryData.length"
+              class="flex flex-col md:flex-row items-center"
+            >
+              <span class="text-lg font-medium">Select Printing Template</span>
+            </div>
+            <div
+              v-if="selectedInventoryData.length"
+              class="text-center md:text-left"
+            >
+              <q-btn
+                label="change receipt description"
+                size="sm"
+                unelevated
                 color="btn-primary"
-                label="Disable print"
+                @click="isReceiptDescriptionModalVisible = true"
               />
             </div>
-            <div class="q-gutter-sm">
+          </div>
+        </div>
+        <div class="md:flex justify-between">
+          <div
+            class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-3 mt-2 md:mt-0 md:gap-16 md:ml-2"
+          >
+            <div class="row gap-6 items-center">
+              <span class="text-base">Add Articles</span>
+              <q-btn
+                icon="add"
+                rounded
+                dense
+                unelevated
+                color="btn-primary"
+                @click="isInventoryListModalVisible = true"
+              />
+            </div>
+            <outside-click-container @outside-click="handleOutsideClick">
+              <q-input
+                autofocus
+                ref="scannedLabelInput"
+                class="min-w-[200px] max-w-[200px]"
+                v-model="scannedLabel"
+                :loading="scannedLabelLoading"
+                outlined
+                dense
+                @keydown="dialogClose"
+                label="Scan label"
+                color="btn-primary"
+              />
+            </outside-click-container>
+          </div>
+          <div v-if="selectedInventoryData.length" class="mb-2">
+            <div
+              class="q-gutter-sm flex flex-col items-center md:flex-row justify-end"
+            >
               <q-radio
                 v-model="receipt.sampleType"
                 :disable="receipt.isprintingDisable"
                 color="btn-primary"
                 val="first"
-                label="First Sample"
+                label="Template 1"
               />
               <q-radio
                 v-model="receipt.sampleType"
                 :disable="receipt.isprintingDisable"
                 color="btn-primary"
                 val="second"
-                label="Second Sample"
+                label="Template 2"
+              />
+              <q-checkbox
+                v-model="receipt.isprintingDisable"
+                color="btn-primary"
+                label="Disable Print"
               />
             </div>
           </div>
-          <div class="text-center md:text-left">
-            <q-btn
-              label="change receipt description"
-              size="sm"
-              unelevated
-              color="btn-primary"
-              @click="isReceiptDescriptionModalVisible = true"
-            />
-          </div>
-        </div>
-        <div
-          class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
-        >
-          <q-select
-            :loading="isFetchingShopList"
-            popup-content-class="!max-h-[200px]"
-            :options="shopData"
-            class="max-w-[200px] min-w-[200px]"
-            use-input
-            dense
-            map-options
-            outlined
-            :disable="
-              authStore.loggedInUser?.rolePermissions.roleName !==
-              EUserRoles.SuperAdmin.toLowerCase()
-            "
-            v-model="selectedShop.fromShop"
-            @update:model-value="handleUpdateFromShop($event)"
-            label="Select Shop"
-            color="btn-primary"
-            option-label="name"
-            option-value="shopId"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-italic text-grey">
-                  No Options Available
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-          <q-select
-            :loading="isLoading"
-            dense
-            class="max-w-[200px] min-w-[200px]"
-            outlined
-            map-options
-            clearable
-            v-model="shopSale.salePersonCode"
-            ref="salePersonCodeInput"
-            popup-content-class="!max-h-[200px]"
-            :options="roleDropdownOptions"
-            @update:model-value="handleUpdateSalePersonCode($event)"
-            option-label="fullName"
-            option-value="userId"
-            label="Sale Person"
-            color="btn-primary"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-italic text-grey">
-                  No Options Available
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-        </div>
-        <div
-          class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-3 md:gap-16 md:ml-2"
-        >
-          <div class="row gap-6 items-center">
-            <span class="text-base">Add Articles</span>
-            <q-btn
-              icon="add"
-              rounded
-              dense
-              unelevated
-              color="btn-primary"
-              @click="isInventoryListModalVisible = true"
-            />
-          </div>
-          <outside-click-container @outside-click="handleOutsideClick">
-            <q-input
-              autofocus
-              ref="scannedLabelInput"
-              class="min-w-[200px] max-w-[200px]"
-              v-model="scannedLabel"
-              :loading="scannedLabelLoading"
-              outlined
-              dense
-              @keydown="dialogClose"
-              label="Scan label"
-              color="btn-primary"
-            />
-          </outside-click-container>
         </div>
         <div
           v-if="selectedInventoryData.length"

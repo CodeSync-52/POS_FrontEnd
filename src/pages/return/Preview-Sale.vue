@@ -298,7 +298,7 @@
       @selected-data="handleSelectedData"
     />
   </q-dialog>
-  <div ref="ReceiptToPrint" class="receipt zhidden">
+  <div ref="ReceiptToPrint" class="receipt hidden">
     <sale-receipt
       :receipt-detail="receiptDetail"
       :is-first-sample="receipt.sampleType"
