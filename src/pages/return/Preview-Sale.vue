@@ -9,13 +9,13 @@
           v-model="receipt.sampleType"
           color="btn-primary"
           val="first"
-          label="First Sample"
+          label="Template 1"
         />
         <q-radio
           v-model="receipt.sampleType"
           color="btn-primary"
           val="second"
-          label="Second Sample"
+          label="Template 2"
         />
       </div>
       <q-btn
