@@ -795,13 +795,27 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
   const tableStuff = [];
   const headerRow = ['Image', 'Article Name', 'Quantity', 'Amount', 'Total'];
   tableStuff.push(headerRow);
-  const netTotalAmount = array.reduce(
-    (total, row: IBillGenerationDetailsInfoProductList) => {
-      return total + row.amount * row.quantity;
-    },
-    0
-  );
-  const footerRow = ['', '', '', '', `Net Total: ${netTotalAmount}`];
+  const claimAmount = [
+    '',
+    '',
+    '',
+    'Claim:',
+    `${billGenerationDetailsInfoData.value.claim}`,
+  ];
+  const freightAmount = [
+    '',
+    '',
+    '',
+    'Freight:',
+    `${billGenerationDetailsInfoData.value.freight}`,
+  ];
+  const footerRow = [
+    '',
+    '',
+    '',
+    'Net Total:',
+    `${billGenerationDetailsInfoData.value.totalAmount}`,
+  ];
   array.forEach((item: IBillGenerationDetailsInfoProductList) => {
     const row = [
       {
@@ -817,7 +831,7 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
     ];
     tableStuff.push(row);
   });
-  tableStuff.push(footerRow);
+  tableStuff.push(claimAmount, freightAmount, footerRow);
   return tableStuff;
 }
 async function downloadPdfData() {
@@ -837,14 +851,6 @@ async function downloadPdfData() {
     {
       heading: 'Date',
       content: billGenerationDetailsInfoData.value.createdDate,
-    },
-    {
-      heading: 'Claim Amount',
-      content: billGenerationDetailsInfoData.value.claim,
-    },
-    {
-      heading: 'Freight Amount',
-      content: billGenerationDetailsInfoData.value.freight,
     },
   ];
   const tableDataWithImage: ITableItems[][] = await processTableItems(

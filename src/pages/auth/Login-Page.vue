@@ -75,7 +75,7 @@
   </div>
   <div class="text-subtitle2 w-full absolute bottom-0">
     <div class="text-center md:flex justify-center md:justify-between px-2">
-      <p>App Version: 1.0.2</p>
+      <p>App Version: 1.0.3</p>
       <p>&copy; 2024 CodeSync. All rights reserved.</p>
     </div>
   </div>
