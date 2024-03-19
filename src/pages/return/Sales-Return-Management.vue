@@ -580,8 +580,8 @@ const handleButtonClick = (button: { name: string }): void => {
   if (button.name === 'showReturnSales') {
     router.push('/shop-sale/return-sales');
   }
-  if (button.name === 'todaySaleSummary') {
-    router.push('/shop-sale/today-sale-summary');
+  if (button.name === 'shopSummary') {
+    router.push('/shop-sale/shop-summary');
   }
   if (button.name === 'showAllBill') {
     router.push('/shop-sale/all-bills');
