@@ -159,9 +159,9 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { IShopSaleExpenses, SaleSummaryResponse } from 'src/interfaces';
-import AddNewExpenseModal from 'components/today-sale-summary/Add-New-Expense-Modal.vue';
-import CompleteCancelBillModal from 'components/return/CompleteOrCancelModal.vue';
-import CloseShopModal from 'components/today-sale-summary/Close-Shop.vue';
+import AddNewExpenseModal from 'src/components/today-sale-summary/Add-New-Expense-Modal.vue';
+import CompleteCancelBillModal from 'src/components/return/Complete-Or-Cancel-Modal.vue';
+import CloseShopModal from 'src/components/today-sale-summary/Close-Shop.vue';
 import { saleSummaryApi, deleteExpenseApi } from 'src/services';
 import { shopSaleExpenseTableColumn } from './utils';
 import { isPosError } from 'src/utils';

@@ -152,8 +152,8 @@ import {
   getRoleModuleDisplayName,
   IShopResponse,
 } from 'src/interfaces';
-import AddShopModal from 'components/shop-managment/Add-Shop-Modal.vue';
-import ShopStatusModal from 'components/shop-managment/Shop-Status-Modal.vue';
+import AddShopModal from 'src/components/shop-managment/Add-Shop-Modal.vue';
+import ShopStatusModal from 'src/components/shop-managment/Shop-Status-Modal.vue';
 import { OrderBy, shopStatusOptions, shopColumn, isPosError } from 'src/utils';
 import {
   shopListApi,
