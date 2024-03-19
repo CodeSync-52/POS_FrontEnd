@@ -232,7 +232,7 @@ import {
   EUserModules,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import ArticleStatusModal from 'src/components/article-management/ArticleStatusModal.vue';
+import ArticleStatusModal from 'src/components/article-management/Article-Status-Modal.vue';
 import { useAuthStore } from 'src/stores';
 import { IArticleData } from 'src/interfaces';
 import { ArticleColumn, isPosError } from 'src/utils';

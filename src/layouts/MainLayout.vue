@@ -16,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import MainLayoutSidebar from 'src/components/main-layout/MainLayoutSidebar.vue';
-import MainLayoutHeader from 'src/components/main-layout/MainLayoutHeader.vue';
+import MainLayoutSidebar from 'src/components/main-layout/Main-Layout-Sidebar.vue';
+import MainLayoutHeader from 'src/components/main-layout/Main-Layout-Header.vue';
 import { ref } from 'vue';
 const handleToggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;

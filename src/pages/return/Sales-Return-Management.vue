@@ -12,91 +12,142 @@
             </span>
           </div>
         </div>
-        <div
-          class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
-        >
-          <q-select
-            :loading="isFetchingShopList"
-            popup-content-class="!max-h-[200px]"
-            :options="shopData"
-            class="max-w-[200px] min-w-[200px]"
-            use-input
-            dense
-            map-options
-            outlined
-            :disable="
-              authStore.loggedInUser?.rolePermissions.roleName !==
-              EUserRoles.SuperAdmin.toLowerCase()
-            "
-            v-model="selectedShop.fromShop"
-            @update:model-value="handleUpdateFromShop($event)"
-            label="Select Shop"
-            color="btn-primary"
-            option-label="name"
-            option-value="shopId"
+        <div class="md:flex justify-between">
+          <div
+            class="flex flex-col md:flex-row gap-2 md:gap-4 items-center q-mb-md"
           >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-italic text-grey">
-                  No Options Available
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-          <q-select
-            :loading="isLoading"
-            dense
-            class="max-w-[200px] min-w-[200px]"
-            outlined
-            map-options
-            clearable
-            v-model="shopSale.salePersonCode"
-            ref="salePersonCodeInput"
-            popup-content-class="!max-h-[200px]"
-            :options="roleDropdownOptions"
-            @update:model-value="handleUpdateSalePersonCode($event)"
-            option-label="fullName"
-            option-value="userId"
-            label="Sale Person"
-            color="btn-primary"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-italic text-grey">
-                  No Options Available
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-        </div>
-        <div
-          class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-3 md:gap-16 md:ml-2"
-        >
-          <div class="row gap-6 items-center">
-            <span class="text-base">Add Articles</span>
-            <q-btn
-              icon="add"
-              rounded
+            <q-select
+              :loading="isFetchingShopList"
+              popup-content-class="!max-h-[200px]"
+              :options="shopData"
+              class="max-w-[200px] min-w-[200px]"
+              use-input
               dense
-              unelevated
-              color="btn-primary"
-              @click="isInventoryListModalVisible = true"
-            />
-          </div>
-          <outside-click-container @outside-click="handleOutsideClick">
-            <q-input
-              autofocus
-              ref="scannedLabelInput"
-              class="min-w-[200px] max-w-[200px]"
-              v-model="scannedLabel"
-              :loading="scannedLabelLoading"
+              map-options
               outlined
-              dense
-              @keydown="dialogClose"
-              label="Scan label"
+              :disable="
+                authStore.loggedInUser?.rolePermissions.roleName !==
+                EUserRoles.SuperAdmin.toLowerCase()
+              "
+              v-model="selectedShop.fromShop"
+              @update:model-value="handleUpdateFromShop($event)"
+              label="Select Shop"
               color="btn-primary"
-            />
-          </outside-click-container>
+              option-label="name"
+              option-value="shopId"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-italic text-grey">
+                    No Options Available
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+            <q-select
+              :loading="isLoading"
+              dense
+              class="max-w-[200px] min-w-[200px]"
+              outlined
+              map-options
+              clearable
+              v-model="shopSale.salePersonCode"
+              ref="salePersonCodeInput"
+              popup-content-class="!max-h-[200px]"
+              :options="roleDropdownOptions"
+              @update:model-value="handleUpdateSalePersonCode($event)"
+              option-label="fullName"
+              option-value="userId"
+              label="Sale Person"
+              color="btn-primary"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-italic text-grey">
+                    No Options Available
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div
+            class="flex flex-col md:flex-row gap-2 md:gap-4 items-center justify-end"
+          >
+            <div
+              v-if="selectedInventoryData.length"
+              class="flex flex-col md:flex-row items-center"
+            >
+              <span class="text-lg font-medium">Select Printing Template</span>
+            </div>
+            <div
+              v-if="selectedInventoryData.length"
+              class="text-center md:text-left"
+            >
+              <q-btn
+                label="change receipt description"
+                size="sm"
+                unelevated
+                color="btn-primary"
+                @click="isReceiptDescriptionModalVisible = true"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="md:flex justify-between">
+          <div
+            class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-3 mt-2 md:mt-0 md:gap-16 md:ml-2"
+          >
+            <div class="row gap-6 items-center">
+              <span class="text-base">Add Articles</span>
+              <q-btn
+                icon="add"
+                rounded
+                dense
+                unelevated
+                color="btn-primary"
+                @click="isInventoryListModalVisible = true"
+              />
+            </div>
+            <outside-click-container @outside-click="handleOutsideClick">
+              <q-input
+                autofocus
+                ref="scannedLabelInput"
+                class="min-w-[200px] max-w-[200px]"
+                v-model="scannedLabel"
+                :loading="scannedLabelLoading"
+                outlined
+                dense
+                @keydown="dialogClose"
+                label="Scan label"
+                color="btn-primary"
+              />
+            </outside-click-container>
+          </div>
+          <div v-if="selectedInventoryData.length" class="mb-2">
+            <div
+              class="q-gutter-sm flex flex-col items-center md:flex-row justify-end"
+            >
+              <q-radio
+                v-model="receipt.sampleType"
+                :disable="receipt.isprintingDisable"
+                color="btn-primary"
+                val="first"
+                label="Template 1"
+              />
+              <q-radio
+                v-model="receipt.sampleType"
+                :disable="receipt.isprintingDisable"
+                color="btn-primary"
+                val="second"
+                label="Template 2"
+              />
+              <q-checkbox
+                v-model="receipt.isprintingDisable"
+                color="btn-primary"
+                label="Disable Print"
+              />
+            </div>
+          </div>
         </div>
         <div
           v-if="selectedInventoryData.length"
@@ -128,6 +179,7 @@
                   </div>
                 </q-td>
               </template>
+
               <template v-slot:body-cell-dispatchQuantity="props">
                 <q-td :props="props">
                   <q-input
@@ -151,6 +203,7 @@
                   >
                 </q-td>
               </template>
+
               <template v-slot:body-cell-discount="props">
                 <q-td :props="props">
                   <q-input
@@ -167,6 +220,7 @@
                   />
                 </q-td>
               </template>
+
               <template v-slot:body-cell-action="props">
                 <q-td :props="props">
                   <div class="flex min-w-[72px]">
@@ -199,6 +253,7 @@
                   </div>
                 </q-td>
               </template>
+
               <template v-slot:no-data>
                 <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
                   <q-icon name="warning" size="xs" />
@@ -351,10 +406,28 @@
       />
     </q-dialog>
   </div>
+  <q-dialog v-model="isReceiptDescriptionModalVisible">
+    <receipt-description-modal
+      @close-description-modal="handleCloseDescriptionModal"
+    />
+  </q-dialog>
+  <div ref="ReceiptToPrint" class="receipt hidden">
+    <sale-receipt
+      :receipt-detail="receiptDetail"
+      :is-first-sample="receipt.sampleType"
+    />
+  </div>
 </template>
+
 <script setup lang="ts">
-import InventoryListModal from 'src/components/inventory/InventoryListModal.vue';
-import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
+import moment from 'moment';
+import { useQuasar } from 'quasar';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import InventoryListModal from 'src/components/inventory/Inventory-List-Modal.vue';
+import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
+import SaleReceipt from 'src/components/today-sale-summary/Sale-Receipt.vue';
+import ReceiptDescriptionModal from 'src/components/today-sale-summary/Receipt-Description-Modal.vue';
 import {
   IArticleData,
   IInventoryFilterSearch,
@@ -366,10 +439,13 @@ import {
   IShopResponse,
   EUserRoles,
   IUserResponse,
+  IPreviewSaleResponse,
 } from 'src/interfaces';
-import { saleShopSelectedGrnInventoryTableColumn, buttons } from './utils';
-import moment from 'moment';
-import { useQuasar } from 'quasar';
+import {
+  saleShopSelectedGrnInventoryTableColumn,
+  buttons,
+  printReceipt,
+} from './utils';
 import {
   articleListApi,
   inventoryDetailApi,
@@ -377,11 +453,10 @@ import {
   addShopSaleManagementApi,
   holdBillApi,
   getShopOfficersApi,
+  previewSaleApi,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const timeStamp = Date.now();
 const pageTitle = getRoleModuleDisplayName(
@@ -399,6 +474,15 @@ const isInventoryListModalVisible = ref(false);
 const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const roleDropdownOptions = ref<IUserResponse[]>([]);
 const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
+const receipt = ref<{
+  sampleType: 'first' | 'second';
+  isprintingDisable: boolean;
+}>({
+  sampleType: 'first',
+  isprintingDisable: false,
+});
+const receiptDetail = ref<null | IPreviewSaleResponse>(null);
+const receiptItems = ref<ISaleShopSelectedInventory[]>([]);
 const isSelectedShopDetailTableVisible = ref(false);
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
@@ -407,7 +491,9 @@ const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
+const isReceiptDescriptionModalVisible = ref(false);
 const salePersonCodeInput = ref<null | HTMLDivElement>(null);
+const ReceiptToPrint = ref<null | HTMLDivElement>(null);
 const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
   fromShop: null,
@@ -759,6 +845,10 @@ const isButtonDisable = computed(() => {
   ];
   return validations.some((validation) => validation);
 });
+const handleCloseDescriptionModal = (callback: () => void) => {
+  callback();
+  isReceiptDescriptionModalVisible.value = false;
+};
 //------------------------------------------------------------ Api---------------------------------------------------------
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
@@ -851,7 +941,9 @@ const inventoryDetailList = async (data?: {
   }
   isFetchingRecords.value = false;
 };
+
 const handleAddShopSale = async () => {
+  receiptItems.value = selectedInventoryData.value;
   const res = isPersonCodeEmpty();
   if (!res) return;
   if (selectedInventoryData.value.every((record) => record.isReturn)) {
@@ -882,16 +974,25 @@ const handleAddShopSale = async () => {
         isReturn: record.isReturn,
       })),
     };
-    const response = await addShopSaleManagementApi(payload);
-    if (response.type === 'Success') {
+    const addingSaleResponse = await addShopSaleManagementApi(payload);
+    if (addingSaleResponse.type === 'Success') {
+      const previewSaleResponse = await previewSaleApi(
+        addingSaleResponse.data.saleId
+      );
+      await (receiptDetail.value = previewSaleResponse.data);
+      if (!receipt.value.isprintingDisable) {
+        printReceipt(ReceiptToPrint);
+      }
       $q.notify({
-        message: response.message,
+        message: addingSaleResponse.message,
         type: 'positive',
       });
       shopSale.value.salePersonCode = null;
       shopSale.value.comment = '';
       selectedInventoryData.value = [];
       selectedShopDetailRecords.value = [];
+      receiptItems.value = [];
+      receipt.value.sampleType = 'first';
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
@@ -1007,6 +1108,7 @@ const getShopOfficers = async () => {
   }
 };
 </script>
+
 <style scoped lang="scss">
 .icon_left > :nth-child(2) {
   justify-content: flex-start;

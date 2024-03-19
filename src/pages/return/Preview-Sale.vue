@@ -1,5 +1,32 @@
 <template>
   <div>
+    <div
+      v-if="!routerPath.includes('editHoldBill')"
+      class="row justify-between"
+    >
+      <div class="q-gutter-sm">
+        <q-radio
+          v-model="receipt.sampleType"
+          color="btn-primary"
+          val="first"
+          label="First Sample"
+        />
+        <q-radio
+          v-model="receipt.sampleType"
+          color="btn-primary"
+          val="second"
+          label="Second Sample"
+        />
+      </div>
+      <q-btn
+        label="Print invoice"
+        unelevated
+        color="btn-primary"
+        :loading="isLoading"
+        :disable="!ReceiptToPrint"
+        @click="handlePrintReceipt"
+      />
+    </div>
     <div class="font-semibold text-lg text-center">
       <div>Invoice Number : {{ SaleSummary.invoiceNumber }}</div>
       <div>
@@ -271,12 +298,19 @@
       @selected-data="handleSelectedData"
     />
   </q-dialog>
+  <div ref="ReceiptToPrint" class="receipt hidden">
+    <sale-receipt
+      :receipt-detail="receiptDetail"
+      :is-first-sample="receipt.sampleType"
+    />
+  </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
+import SaleReceipt from 'src/components/today-sale-summary/Sale-Receipt.vue';
 import { useRouter } from 'vue-router';
 import { ISaleInfo, IPreviewSaleResponse, ISaleDetail } from 'src/interfaces';
-import InventoryListModal from 'src/components/inventory/NewInventoryListModal.vue';
+import InventoryListModal from 'src/components/inventory/New-Inventory-List-Modal.vue';
 import {
   previewSaleApi,
   changeSaleStatusApi,
@@ -284,17 +318,28 @@ import {
   addSaleItemApi,
   updateSaleItemApi,
 } from 'src/services';
-import { shopSalePreviewTableColumn } from './utils';
+import { printReceipt, shopSalePreviewTableColumn } from './utils';
 import { isPosError } from 'src/utils';
 import moment from 'moment';
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
 const router = useRouter();
 const isLoading = ref(false);
+const receipt = ref<{
+  receiptId: null | number;
+  receiptTime: null | number;
+  sampleType: 'first' | 'second';
+}>({
+  receiptId: null,
+  receiptTime: null,
+  sampleType: 'first',
+});
 const isPreviewImageModalVisible = ref(false);
 const isInventoryListModalVisible = ref(false);
 const titleAction = ref('Preview Sale Bill');
 const selectedPreviewImage = ref('');
+const ReceiptToPrint = ref<null | HTMLDivElement>(null);
+const receiptDetail = ref<null | IPreviewSaleResponse>(null);
 const routerPath = router.currentRoute.value.fullPath;
 const selectedId: string | string[] = router.currentRoute.value.params.id;
 const SaleSummary = ref<{
@@ -397,11 +442,15 @@ const handleUpdateDiscount = (
     }
   }
 };
+const handlePrintReceipt = () => {
+  printReceipt(ReceiptToPrint);
+};
 const previewBill = async (saleId: number) => {
   try {
     isLoading.value = true;
     const res = await previewSaleApi(saleId);
     if (res.type === 'Success') {
+      receiptDetail.value = res.data;
       const responseData = res.data as IPreviewSaleResponse | null;
       if (responseData) {
         SaleSummary.value = {

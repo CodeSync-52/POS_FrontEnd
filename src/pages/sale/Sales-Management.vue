@@ -324,7 +324,7 @@ import {
   salesManagementColumn,
   wholeSaleStatusOptions,
 } from 'src/utils';
-import GenerateOrCancelSaleModal from 'src/components/sales-management/GenerateOrCancelSaleModal.vue';
+import GenerateOrCancelSaleModal from 'src/components/sales-management/Generate-Or-Cancel-Sale-Modal.vue';
 import { CanceledError } from 'axios';
 import { date } from 'quasar';
 import moment from 'moment';

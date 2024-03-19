@@ -502,8 +502,8 @@ import {
   wholeSaleDetailApi,
   ClaimFreightApi,
 } from 'src/services';
-import ArticleListModal from 'src/components/common/ArticleListModal.vue';
-import OutsideClickContainer from 'src/components/common/OutsideClickContainer.vue';
+import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
+import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   createdBy: '',

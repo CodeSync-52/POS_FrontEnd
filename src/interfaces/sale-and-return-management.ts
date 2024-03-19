@@ -68,6 +68,7 @@ export interface IShopSaleExpenses {
 export interface IPreviewSaleResponse {
   totalReturnAmount: number;
   saleId: number;
+  address: string;
   invoiceNumber: string;
   salePersonCode: string;
   shopId: number;

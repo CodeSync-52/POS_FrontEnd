@@ -220,7 +220,7 @@ import {
   newArticleApi,
   articleDetailApi,
 } from 'src/services/article-management';
-import ArticleCategoryModal from 'src/components/article-management/ArticleCategoryModal.vue';
+import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import { INewArticleData } from 'src/interfaces/article-management';
 import { isPosError, billingHistoryColumn } from 'src/utils';
 import { useQuasar } from 'quasar';

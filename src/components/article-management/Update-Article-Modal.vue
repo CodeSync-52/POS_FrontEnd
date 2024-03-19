@@ -126,7 +126,7 @@
   </q-card>
 </template>
 <script lang="ts" setup>
-import ArticleCategoryModal from './ArticleCategoryModal.vue';
+import ArticleCategoryModal from './Article-Category-Modal.vue';
 import { IArticleData, IArticleInfo } from 'src/interfaces';
 import { ref, onMounted } from 'vue';
 interface IProps {
