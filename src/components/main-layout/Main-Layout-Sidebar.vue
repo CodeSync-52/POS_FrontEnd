@@ -20,9 +20,9 @@
             class="lg:hidden"
           />
         </q-item-label>
-        <div class="w-[140px] h-[42px] mx-auto">
+        <div class="w-[140px] mx-auto">
           <img
-            src="/assets/Pos-icon.png"
+            src="/assets/shoeStore.png"
             alt="POS Icon"
             class="text-signature"
           />

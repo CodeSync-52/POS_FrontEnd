@@ -11,8 +11,10 @@
       class="flex flex-col min-w-[320px] w-full max-w-[550px] mx-auto justify-center q-pa-md"
     >
       <div class="bg-signature px-6 py-8 rounded-md q-gutter-y-sm">
-        <div class="w-[150px] h-[48px] text-[24px]">
-          <img src="/assets/Pos-icon.png" alt="logo" />
+        <div class="w-full flex justify-center">
+          <div class="w-[200px] text-[24px]">
+            <img src="/assets/shoeStore.png" alt="logo" />
+          </div>
         </div>
         <h3 class="text-[24px] font-semibold">Sign In</h3>
         <h4 class="text-[14px] font-normal text-text_primary">
