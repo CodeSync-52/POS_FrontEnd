@@ -13,7 +13,7 @@
             justify-content: center;
           "
         >
-          <pos-icon />
+          <shoe-store-icon />
         </div>
         <div>
           <span>{{ receiptDetail?.shopName }}</span>
@@ -160,7 +160,7 @@
 <script setup lang="ts">
 import moment from 'moment';
 import receiptDescriptionNote from 'src/utils/receipt-description.json';
-import PosIcon from 'src/components/pos-icon/Pos-Icon-Svg.vue';
+import ShoeStoreIcon from 'src/components/pos-icon/Shoe-Store-Svg.vue';
 import { IPreviewSaleResponse } from 'src/interfaces';
 import { computed } from 'vue';
 interface IProps {
