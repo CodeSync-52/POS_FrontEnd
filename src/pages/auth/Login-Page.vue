@@ -12,7 +12,7 @@
     >
       <div class="bg-signature px-6 py-8 rounded-md q-gutter-y-sm">
         <div class="w-full flex justify-center">
-          <div class="w-[200px] text-[24px]">
+          <div class="w-[220px] text-[24px]">
             <img src="/assets/shoeStore.png" alt="logo" />
           </div>
         </div>
