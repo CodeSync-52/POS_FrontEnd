@@ -62,7 +62,7 @@
           <q-btn
             type="submit"
             color=" "
-            class="bg-btn-primary full-width hover:bg-signature hover:!text-btn-primary"
+            class="bg-btn-primary full-width hover:bg-btn-primary-hover"
             :loading="isFetching"
             :disabled="
               loginCredentials.userName === '' ||

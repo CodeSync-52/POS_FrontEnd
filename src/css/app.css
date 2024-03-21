@@ -4,12 +4,12 @@
   height: 5px;
 }
 *::-webkit-scrollbar-thumb {
-  background-color: #ff9f43;
+  background-color: #a93c40;
   border-radius: 10px;
   scroll-behavior: smooth;
 }
 * {
-  scrollbar-color: #ff9f43;
+  scrollbar-color: #a93c40;
   scrollbar-width: 5px;
   scroll-behavior: smooth;
 }
