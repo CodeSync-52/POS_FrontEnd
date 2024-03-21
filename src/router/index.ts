@@ -34,6 +34,10 @@ export default route(function () {
       return;
     }
     const meta = to.meta.module;
+    if (isAuthorized && to.fullPath === '/permission-not-allowed') {
+      next();
+      return;
+    }
     if (isAuthorized && to.name === 'Login') {
       const index = routeList.findIndex((route) => {
         const meta = route.meta?.module as EUserModules;
@@ -65,7 +69,7 @@ export default route(function () {
         next('/login');
         return;
       }
-      next(routeList[index].path);
+      next('/permission-not-allowed');
       return;
     }
     next();

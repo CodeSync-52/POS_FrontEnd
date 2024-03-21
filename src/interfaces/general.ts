@@ -41,7 +41,7 @@ export enum EUserModules {
   GoodsReceiptNotes = 13,
   StockTransferRequests = 14,
   SaleAndReturnManagement = 15,
-  ShopDiscountsModule = 16,
+  ShopAccountModule = 16,
   Report = 17,
 }
 
@@ -80,7 +80,7 @@ const roleModuleList: Record<EUserModules, string> = {
   [EUserModules.GoodsReceiptNotes]: 'Stock Transfer (STR)',
   [EUserModules.StockTransferRequests]: 'STR Receiving',
   [EUserModules.SaleAndReturnManagement]: 'Shop Sale Management',
-  [EUserModules.ShopDiscountsModule]: 'Shop Discounts',
+  [EUserModules.ShopAccountModule]: 'Shop Accounts',
   [EUserModules.Report]: 'Report',
 };
 

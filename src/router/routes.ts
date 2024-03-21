@@ -3,6 +3,10 @@ import { RouteRecordRaw } from 'vue-router';
 
 export const routeList = [
   {
+    path: '/permission-not-allowed',
+    component: () => import('pages/PermissionNotAllowed.vue'),
+  },
+  {
     path: '/role',
     component: () => import('src/pages/role/Role-Management.vue'),
     meta: {
@@ -310,7 +314,7 @@ export const routeList = [
     path: '/shop-account',
     component: () => import('src/pages/shop-account/Shop-Account.vue'),
     meta: {
-      module: EUserModules.CashInCashOutManagement,
+      module: EUserModules.ShopAccountModule,
     },
   },
   {
@@ -318,14 +322,14 @@ export const routeList = [
     component: () =>
       import('src/pages/shop-account/Transfer-To-Shop-Account.vue'),
     meta: {
-      module: EUserModules.CashInCashOutManagement,
+      module: EUserModules.ShopAccountModule,
     },
   },
   {
     path: '/shop-account/:id',
     component: () => import('src/pages/shop-account/Shop-Account-Summary.vue'),
     meta: {
-      module: EUserModules.CashInCashOutManagement,
+      module: EUserModules.ShopAccountModule,
     },
   },
 ];

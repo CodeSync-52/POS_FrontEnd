@@ -146,7 +146,7 @@ const essentialLinks = [
         path: '/shop-sale',
       },
       {
-        title: EUserModules.ShopDiscountsModule,
+        title: EUserModules.SaleAndReturnManagement,
         path: 'expenses',
       },
     ],

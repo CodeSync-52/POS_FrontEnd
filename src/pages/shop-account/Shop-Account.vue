@@ -205,7 +205,14 @@ const searchShopAccountReport = async () => {
   }
 };
 const handleResetFilter = () => {
-  selectedShop.value = [];
-  reporttList.value = [];
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName ===
+    EUserRoles.SuperAdmin.toLowerCase()
+  ) {
+    selectedShop.value = [];
+    reporttList.value = [];
+  } else {
+    reporttList.value = [];
+  }
 };
 </script>
