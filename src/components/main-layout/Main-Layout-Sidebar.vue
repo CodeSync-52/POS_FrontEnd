@@ -20,7 +20,7 @@
             class="lg:hidden"
           />
         </q-item-label>
-        <div class="w-[160px] mx-auto">
+        <div class="max-w-[160px] mx-auto">
           <img
             src="/assets/shoeStore.png"
             alt="POS Icon"
