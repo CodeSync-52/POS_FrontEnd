@@ -281,7 +281,7 @@
                 v-model="shopSalesTotalAmount"
                 type="number"
                 maxlength="250"
-                disable
+                readonly
                 outlined
                 dense
                 color="btn-primary"
@@ -292,7 +292,7 @@
                 @update:model-value="handleUpdateShopSaleDiscount($event)"
                 type="number"
                 maxlength="250"
-                disable
+                readonly
                 outlined
                 dense
                 color="btn-primary"
@@ -302,7 +302,7 @@
                 v-model="shopSalesReturnItems"
                 type="number"
                 maxlength="250"
-                disable
+                readonly
                 outlined
                 dense
                 color="btn-primary"
@@ -312,7 +312,7 @@
                 v-model="shopSalesNetAmount"
                 type="number"
                 maxlength="250"
-                disable
+                readonly
                 outlined
                 dense
                 color="btn-primary"
