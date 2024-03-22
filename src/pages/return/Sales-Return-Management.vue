@@ -263,7 +263,7 @@
             </q-table>
           </div>
           <div
-            class="w-full flex flex-col gap-1 md:flex-row items-center md:items-start justify-center md:justify-between mb-3"
+            class="w-full flex flex-col gap-4 md:flex-row items-center md:items-start justify-center md:justify-between mb-3"
           >
             <div class="max-w-[300px] min-w-[200px] md:w-1/3">
               <q-input
@@ -276,48 +276,60 @@
                 @keydown="dialogClose"
               />
             </div>
-            <div class="max-w-[300px] min-w-[200px] flex flex-col gap-2">
-              <q-input
-                v-model="shopSalesTotalAmount"
-                type="number"
-                maxlength="250"
-                readonly
-                outlined
-                dense
-                color="btn-primary"
-                label="Total"
-              />
-              <q-input
-                v-model="shopSalesTotalDiscount"
-                @update:model-value="handleUpdateShopSaleDiscount($event)"
-                type="number"
-                maxlength="250"
-                readonly
-                outlined
-                dense
-                color="btn-primary"
-                label="Discount"
-              />
-              <q-input
-                v-model="shopSalesReturnItems"
-                type="number"
-                maxlength="250"
-                readonly
-                outlined
-                dense
-                color="btn-primary"
-                label="Return"
-              />
-              <q-input
-                v-model="shopSalesNetAmount"
-                type="number"
-                maxlength="250"
-                readonly
-                outlined
-                dense
-                color="btn-primary"
-                label="Net Total"
-              />
+            <div class="max-w-[200px] min-w-[200px] flex flex-col gap-4">
+              <div>
+                <span class="font-medium text-base">Total</span>
+                <q-input
+                  v-model="shopSalesTotalAmount"
+                  type="number"
+                  maxlength="250"
+                  readonly
+                  :input-style="{ fontSize: '16px', fontWeight: '500' }"
+                  outlined
+                  dense
+                  color="btn-primary"
+                />
+              </div>
+              <div>
+                <span class="font-medium text-base">Discount</span>
+                <q-input
+                  v-model="shopSalesTotalDiscount"
+                  @update:model-value="handleUpdateShopSaleDiscount($event)"
+                  type="number"
+                  maxlength="250"
+                  readonly
+                  :input-style="{ fontSize: '16px', fontWeight: '500' }"
+                  outlined
+                  dense
+                  color="btn-primary"
+                />
+              </div>
+              <div>
+                <span class="font-medium text-base">Return</span>
+                <q-input
+                  v-model="shopSalesReturnItems"
+                  type="number"
+                  maxlength="250"
+                  readonly
+                  :input-style="{ fontSize: '16px', fontWeight: '500' }"
+                  outlined
+                  dense
+                  color="btn-primary"
+                />
+              </div>
+              <div>
+                <span class="font-medium text-base">Net Total</span>
+                <q-input
+                  v-model="shopSalesNetAmount"
+                  type="number"
+                  maxlength="250"
+                  readonly
+                  :input-style="{ fontSize: '16px', fontWeight: '500' }"
+                  outlined
+                  dense
+                  color="btn-primary"
+                />
+              </div>
             </div>
           </div>
         </div>
