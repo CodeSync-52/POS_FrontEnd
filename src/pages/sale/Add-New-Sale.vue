@@ -272,6 +272,18 @@
                 </div>
               </q-td>
             </template>
+            <template
+              v-if="action === 'Preview'"
+              v-slot:body-cell-masterStock="props"
+            >
+              <q-td :props="props"> </q-td>
+            </template>
+            <template
+              v-slot:header-cell-masterStock
+              v-if="action === 'Preview'"
+            >
+              <q-th> </q-th>
+            </template>
             <template v-slot:header-cell-action v-if="action === 'Preview'">
               <q-th> </q-th>
             </template>
@@ -282,7 +294,7 @@
             </template>
             <template v-slot:bottom-row="props">
               <q-tr :props="props">
-                <q-td colspan="3" />
+                <q-td colspan="2" />
                 <q-td>
                   <div class="text-bold">
                     Total Quantity:
@@ -300,7 +312,7 @@
                 <q-td />
               </q-tr>
               <q-tr :props="props">
-                <q-td colspan="6" />
+                <q-td colspan="5" />
                 <q-td>
                   <div class="text-bold">
                     Discount:
@@ -318,7 +330,7 @@
                 <q-td />
               </q-tr>
               <q-tr :props="props">
-                <q-td colspan="6" />
+                <q-td colspan="5" />
                 <q-td>
                   <div class="text-bold">
                     Claim:
@@ -328,7 +340,7 @@
                 <q-td />
               </q-tr>
               <q-tr :props="props">
-                <q-td colspan="6" />
+                <q-td colspan="5" />
                 <q-td>
                   <div class="text-bold">
                     Freight:
@@ -338,7 +350,7 @@
                 <q-td />
               </q-tr>
               <q-tr :props="props">
-                <q-td colspan="6" />
+                <q-td colspan="5" />
                 <q-td>
                   <div class="text-bold">
                     Net Total:

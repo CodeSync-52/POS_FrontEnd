@@ -76,13 +76,13 @@
       class="flex flex-col md:flex-row gap-2 md:gap-0 items-center"
     >
       <q-btn
-        label="download Receiver Pdf"
+        label="Receiver Pdf"
         unelevated
         color="btn-primary"
         @click="downloadPdfData('receiver')"
       />
       <q-btn
-        label="download Sender Pdf"
+        label="Sender Pdf"
         unelevated
         color="btn-primary"
         @click="downloadPdfData('sender')"
@@ -178,14 +178,14 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
   let userOutstandingBalance = 0;
   if (pdfType === 'sender') {
     const selectedUserData = userList.value.find(
-      (record) => record.userId === previewCashFlow.value.sourceUserId
+      (record) => record.userId === previewCashFlow.value.targetUserId
     );
     if (selectedUserData) {
       userOutstandingBalance = selectedUserData.outStandingBalance ?? 0;
     }
   } else {
     const selectedUserData = userList.value.find(
-      (record) => record.userId === previewCashFlow.value.targetUserId
+      (record) => record.userId === previewCashFlow.value.sourceUserId
     );
     if (selectedUserData) {
       userOutstandingBalance = selectedUserData.outStandingBalance ?? 0;
@@ -194,11 +194,11 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
   const headers: ITableHeaders[] = [
     {
       heading: 'Sender Username',
-      content: sourceUserName,
+      content: targetUserName,
     },
     {
       heading: 'Receiver Username',
-      content: targetUserName,
+      content: sourceUserName,
     },
     {
       heading: `Amount ${pdfType === 'sender' ? 'Sent' : 'Received'}`,
