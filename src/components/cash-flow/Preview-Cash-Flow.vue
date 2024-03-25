@@ -76,16 +76,16 @@
       class="flex flex-col md:flex-row gap-2 md:gap-0 items-center"
     >
       <q-btn
-        label="Receiver Pdf"
-        unelevated
-        color="btn-primary"
-        @click="downloadPdfData('receiver')"
-      />
-      <q-btn
         label="Sender Pdf"
         unelevated
         color="btn-primary"
         @click="downloadPdfData('sender')"
+      />
+      <q-btn
+        label="Receiver Pdf"
+        unelevated
+        color="btn-primary"
+        @click="downloadPdfData('receiver')"
       />
       <q-btn
         label="close"
@@ -220,7 +220,7 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
   if (pdfType === 'sender') {
     headers.push({
       heading: 'Sender Outstanding Balance',
-      content: '0',
+      content: userOutstandingBalance,
     });
   } else {
     headers.push({

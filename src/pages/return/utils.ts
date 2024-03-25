@@ -9,37 +9,31 @@ import {
 import { Ref } from 'vue';
 export const buttons = [
   {
-    label: 'Sales Return (Ctrl + F1)',
-    icon: 'receipt',
-    shortcut: 'F1',
-    name: 'showReturnSales',
-  },
-  {
-    label: 'Hold Sale (Ctrl + F3)',
+    label: 'Hold Sale',
     icon: 'hourglass_empty',
     shortcut: 'F3',
     name: 'holdBill',
   },
   {
-    label: 'All Bills (Ctrl + F5)',
+    label: 'All Bills',
     icon: 'receipt',
     shortcut: 'F5',
     name: 'showAllBill',
   },
   {
-    label: 'Hold Bills (Ctrl + F6)',
+    label: 'Hold Bills',
     icon: 'visibility',
     shortcut: 'F6',
     name: 'showHoldBill',
   },
   {
-    label: 'Shop Summary (Ctrl + F7)',
+    label: 'Shop Summary',
     icon: 'trending_up',
     shortcut: 'F7',
     name: 'shopSummary',
   },
   {
-    label: 'Shop Account (Ctrl + F8)',
+    label: 'Shop Account',
     icon: 'account_balance_wallet',
     shortcut: 'F8',
     name: 'shopAccount',
