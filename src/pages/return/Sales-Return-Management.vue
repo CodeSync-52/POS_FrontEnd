@@ -10,6 +10,21 @@
             <span class="text-[18px] font-semibold">
               {{ moment(timeStamp).format('LL') }}
             </span>
+            <div>
+              <q-btn icon="info" color="btn-primary" flat unelevated dense
+                ><q-tooltip class="bg-btn-primary text-sm" :offset="[10, 10]">
+                  <div>
+                    <p><strong>Shortcut Keys For Buttons</strong></p>
+                    <p>Save (Ctrl + Enter)</p>
+                    <p>Hold Sale (Ctrl + F3)</p>
+                    <p>All Bills (Ctrl + F5)</p>
+                    <p>Hold Bills (Ctrl + F6)</p>
+                    <p>Shop Summary (Ctrl + F7)</p>
+                    <p>Shop Account (Ctrl + F8)</p>
+                  </div>
+                </q-tooltip></q-btn
+              >
+            </div>
           </div>
         </div>
         <div class="md:flex justify-between">
@@ -341,6 +356,15 @@
         class="lg:!hidden sm:fixed bottom-1 end-1"
       >
         <q-fab-action
+          padding="3px 10px"
+          color="btn-primary"
+          label-position="left"
+          icon="shopping_cart"
+          label="Save"
+          @click="handleAddShopSale()"
+          :disable="isButtonDisable"
+        />
+        <q-fab-action
           v-for="(button, index) in buttons"
           :key="index"
           @click="handleButtonClick(button)"
@@ -351,20 +375,20 @@
           :icon="button.icon"
           :label="button.label"
         />
-        <q-fab-action
-          padding="3px 10px"
-          color="btn-primary"
-          label-position="left"
-          icon="shopping_cart"
-          label="Save (Ctrl + Enter)"
-          @click="handleAddShopSale()"
-          :disable="isButtonDisable"
-        />
       </q-fab>
       <div
         class="col-2 sm:w-[200px] px-2 !h-[calc(100vh-112px)] overflow-auto hidden lg:!block"
       >
         <div class="flex flex-nowrap flex-col h-full gap-3 lg:gap-4">
+          <q-btn
+            unelevated
+            :disable="isButtonDisable"
+            color=""
+            @click="handleAddShopSale"
+            class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
+            label="Save"
+            icon="shopping_cart"
+          />
           <q-btn
             v-for="(button, index) in buttons"
             @click="handleButtonClick(button)"
@@ -375,15 +399,6 @@
             :label="button.label"
             :icon="button.icon"
             class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
-          />
-          <q-btn
-            unelevated
-            :disable="isButtonDisable"
-            color=""
-            @click="handleAddShopSale"
-            class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
-            label="Save (Ctrl + Enter)"
-            icon="shopping_cart"
           />
         </div>
       </div>
@@ -559,9 +574,7 @@ onMounted(async () => {
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();
-    if (e.key === 'F1') {
-      router.push('/shop-sale/return-sales');
-    } else if (
+    if (
       e.key === 'F3' &&
       selectedInventoryData.value.length &&
       selectedInventoryData.value.every(
@@ -589,9 +602,6 @@ const handleActionKeys = (e: KeyboardEvent) => {
   }
 };
 const handleButtonClick = (button: { name: string }): void => {
-  if (button.name === 'showReturnSales') {
-    router.push('/shop-sale/return-sales');
-  }
   if (button.name === 'shopSummary') {
     router.push('/shop-sale/shop-summary');
   }
@@ -952,13 +962,6 @@ const handleAddShopSale = async () => {
   receiptItems.value = selectedInventoryData.value;
   const res = isPersonCodeEmpty();
   if (!res) return;
-  if (selectedInventoryData.value.every((record) => record.isReturn)) {
-    $q.notify({
-      message: 'You cannot Save this Bill, as it contains only Return Item.',
-      type: 'warning',
-    });
-    return;
-  }
   if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
     $q.notify({
       message:

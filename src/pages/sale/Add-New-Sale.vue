@@ -315,7 +315,7 @@
                 <q-td colspan="5" />
                 <q-td>
                   <div class="text-bold">
-                    Discount:
+                    Adjustment:
                     {{
                       action === 'Add New'
                         ? selectedSaleRecord.discount *
@@ -712,6 +712,17 @@ const saveNewSale = async () => {
     };
   });
   addNewSale.value.productList = productList;
+  if (productList.some((record) => record.unitWholeSalePrice === 0)) {
+    $q.notify({
+      message:
+        'Cannot Save this sale. One or more items have a unitWholeSalePrice of 0.',
+      type: 'warning',
+    });
+    setTimeout(() => {
+      isAddingSale.value = false;
+    }, 1000);
+    return;
+  }
   try {
     const res = await addWholeSaleApi({
       userId: addNewSale.value.userId,
@@ -1097,7 +1108,7 @@ async function convertArrayToPdfData(
     '',
     '',
     {
-      text: 'Discount:',
+      text: 'Adjustment',
       margin: [5, 0],
       width: 10,
     },
