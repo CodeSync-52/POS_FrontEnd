@@ -45,6 +45,7 @@ export interface IUserResponse {
   status?: string;
   shopName?: string;
   userId?: number;
+  isRetailDiscountAllowed?: boolean;
   userName: string;
   address: string;
   shopId?: null | number;

@@ -99,6 +99,7 @@ export interface IUser {
   loginTokenResponseDTO: LoginTokenResponseDTO;
   rolePermissions: RolePermissions;
   userShopInfoDTO: IUserShopInfo;
+  isRetailDiscountAllowed: boolean;
 }
 export interface IUserShopInfo {
   shopId: number;
