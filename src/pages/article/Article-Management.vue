@@ -159,10 +159,7 @@
           "
           v-slot:body-cell-action="props"
         >
-          <q-td
-            class="flex items-center !h-[65px] justify-center"
-            :props="props"
-          >
+          <q-td class="flex items-center !h-[65px]" :props="props">
             <router-link
               :to="`/article/${props.row.productId}/update`"
               class="flex gap-2 flex-nowrap"

@@ -114,6 +114,8 @@
         row-key="billId"
         :loading="isLoading"
         v-model:pagination="pagination"
+        :rows-per-page-options="[0]"
+        hide-bottom
         @request="getBillList"
       >
         <template
@@ -265,6 +267,14 @@
             <span class="text-md font-medium"> No data available. </span>
           </div>
         </template>
+        <template v-slot:bottom-row>
+          <q-tr class="sticky bottom-0 bg-white">
+            <q-td colspan="2" class="text-bold"> Total </q-td>
+            <q-td colspan="3" class="text-bold">
+              {{ calculateTotal('totalAmount') }}
+            </q-td>
+          </q-tr>
+        </template>
       </q-table>
     </div>
     <q-dialog v-model="isCancelOrGenerateBillModalVisible">
@@ -315,7 +325,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 1000000,
   rowsNumber: 0,
 });
 const isCancel = ref(false);
@@ -523,4 +533,12 @@ async function getCustomerListOption() {
     isCustomerGroupListLoading.value = false;
   }
 }
+const calculateTotal = (
+  columnName: keyof (typeof billGenerationData.value)[0]
+) => {
+  return billGenerationData.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
+};
 </script>

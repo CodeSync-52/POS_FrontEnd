@@ -5,27 +5,15 @@ import { ISalesManagementData, IWholeSaleDetailsData } from 'src/interfaces';
 export const wholeSaleStatusOptions = ['Open', 'Cancelled', 'Completed'];
 export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
   {
-    name: 'wholesale',
-    label: 'Wholesale Id',
-    field: (row) => row.wholeSaleId,
+    name: 'createdDate',
+    label: 'Date',
+    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
     align: 'left',
   },
   {
     name: 'fullName',
     label: 'Full Name',
     field: (row) => row.fullName,
-    align: 'left',
-  },
-  {
-    name: 'wholesaleStatus',
-    label: 'Wholesale Status',
-    field: (row) => row.wholeSaleStatus,
-    align: 'left',
-  },
-  {
-    name: 'totalQuantity',
-    label: 'Total Quantity',
-    field: (row) => row.totalQuantity,
     align: 'left',
   },
   {
@@ -47,9 +35,15 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
     align: 'left',
   },
   {
-    name: 'createdDate',
-    label: 'Created Date',
-    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
+    name: 'totalQuantity',
+    label: 'Total Quantity',
+    field: (row) => row.totalQuantity,
+    align: 'left',
+  },
+  {
+    name: 'wholesaleStatus',
+    label: 'Wholesale Status',
+    field: (row) => row.wholeSaleStatus,
     align: 'left',
   },
   {
