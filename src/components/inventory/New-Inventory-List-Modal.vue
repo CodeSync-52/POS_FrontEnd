@@ -34,6 +34,7 @@
             color="btn-primary"
             option-label="name"
             option-value="productId"
+            @keydown.enter="handleEnterKey"
           >
             <template v-slot:no-option>
               <q-item>
@@ -42,7 +43,7 @@
             </template>
           </q-select>
         </div>
-        <div class="col-12 col-sm-6">
+        <!-- <div class="col-12 col-sm-6">
           <div class="text-base mb-1">
             <span>Filter by Product Code</span>
           </div>
@@ -55,9 +56,25 @@
             color="btn-primary"
             label="Product Code"
           />
+        </div> -->
+
+        <div class="col-12 col-sm-6">
+          <div
+            class="flex justify-center md:justify-end w-full items-end h-full gap-2"
+          >
+            <q-btn
+              unelevated
+              :loading="isLoading"
+              color=""
+              class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
+              icon="search"
+              label="Search"
+              @click="handleSearchArticles"
+            />
+          </div>
         </div>
       </div>
-      <div class="row items-center q-col-gutter-md mb-2">
+      <!-- <div class="row items-center q-col-gutter-md mb-2">
         <div class="col-12">
           <div
             class="flex justify-center md:justify-end w-full items-end h-full gap-2"
@@ -79,7 +96,7 @@
             />
           </div>
         </div>
-      </div>
+      </div> -->
       <q-table
         :columns="InventoryListColumn"
         :rows="selectedShopDetailRecords"
@@ -261,5 +278,8 @@ const inventoryDetailList = async (data?: {
     });
   }
   isFetchingRecords.value = false;
+};
+const handleEnterKey = () => {
+  handleSearchArticles();
 };
 </script>

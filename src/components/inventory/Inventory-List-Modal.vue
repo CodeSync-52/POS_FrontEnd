@@ -22,7 +22,7 @@
           <q-select
             popup-content-class="!max-h-[200px]"
             class="min-w-[220px]"
-            use-input
+            ref="productSelectInput"
             dense
             map-options
             clearable
@@ -36,6 +36,7 @@
             color="btn-primary"
             option-label="name"
             option-value="productId"
+            @keydown.enter="handleEnterKey"
             ><template v-slot:no-option>
               <q-item>
                 <q-item-section class="text-grey"> No results </q-item-section>
@@ -43,7 +44,7 @@
             </template></q-select
           >
         </div>
-        <div class="col-12 col-sm-6">
+        <!-- <div class="col-12 col-sm-6">
           <div class="text-base mb-1">
             <span>Filter by Product Code</span>
           </div>
@@ -56,10 +57,8 @@
             color="btn-primary"
             label="Product Code"
           />
-        </div>
-      </div>
-      <div class="row items-center q-col-gutter-md mb-2">
-        <div class="col-12">
+        </div> -->
+        <div class="col-12 col-sm-6">
           <div
             class="flex justify-center md:justify-end w-full items-end h-full gap-2"
           >
@@ -83,6 +82,31 @@
           </div>
         </div>
       </div>
+      <!-- <div class="row items-center q-col-gutter-md mb-2">
+        <div class="col-12">
+          <div
+            class="flex justify-center md:justify-end w-full items-end h-full gap-2"
+          >
+            <q-btn
+              unelevated
+              :loading="isLoading"
+              color=""
+              class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
+              icon="search"
+              label="Search"
+              :disable="isBothInputsEmpty"
+              @click="handleSelectedFilters"
+            />
+            <q-btn
+              unelevated
+              color=""
+              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+              label="Clear"
+              @click="handleRemoveInventoryFilter"
+            />
+          </div>
+        </div>
+      </div> -->
       <q-table
         :columns="InventoryListColumn"
         @request="handlePagination($event.pagination)"
@@ -149,6 +173,7 @@ import { InventoryListColumn } from 'src/utils/inventory';
 import { onMounted, onUpdated, ref, computed } from 'vue';
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
+const productSelectInput = ref<HTMLElement | null>(null);
 const selectedShopDetailList = ref<IInventoryListResponse[]>([]);
 const articleList = ref<IArticleData[]>([]);
 const InventoryPagination = ref({
@@ -184,21 +209,21 @@ const props = withDefaults(defineProps<IProps>(), {
 const selectedShopRecords = ref<IInventoryListResponse[]>([
   ...props.currentData,
 ]);
-onMounted(() => {
+onMounted(async () => {
+  await productSelectInput.value?.focus();
   filterSearch.value.ProductId = null;
   filterSearch.value.ProductCode = null;
   selectedShopDetailList.value = [];
   selectedShopRecords.value = [];
   isLoading.value = false;
   emit('clear-filter');
-});
-onMounted(() => {
   articleList.value = props.articleRecords;
   isFetchingArticleList.value = props.isFetchingArticle;
   InventoryPagination.value = props.pagination;
   isLoading.value = props.isFetchingRecords;
 });
-onUpdated(() => {
+onUpdated(async () => {
+  await productSelectInput.value?.focus();
   articleList.value = props.articleRecords;
   selectedShopDetailList.value = props.inventoryList;
   isLoading.value = props.isFetchingRecords;
@@ -221,6 +246,9 @@ const handleSelectedFilters = () => {
     filterSearch.value,
     () => (isLoading.value = false)
   );
+};
+const handleEnterKey = () => {
+  handleSelectedFilters();
 };
 const handleRemoveInventoryFilter = () => {
   isLoading.value = true;
