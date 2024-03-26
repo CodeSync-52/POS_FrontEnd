@@ -176,6 +176,22 @@
                   Edit User
                 </q-tooltip>
               </q-btn>
+              <q-btn
+                v-if="
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                  EUserRoles.SuperAdmin.toLowerCase()
+                "
+                size="sm"
+                flat
+                dense
+                unelevated
+                icon="vpn_key"
+                class="hover:text-btn-primary"
+                @click="handleResetPasswordPopup(props.row)"
+                ><q-tooltip class="bg-black" :offset="[10, 10]">
+                  Reset Password
+                </q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>
@@ -209,37 +225,6 @@
           </q-td>
         </template>
 
-        <template
-          v-if="
-            authStore.checkUserHasPermission(
-              EUserModules.UserManagment,
-              EActionPermissions.Update
-            ) ||
-            authStore.checkUserHasPermission(
-              EUserModules.UserManagment,
-              EActionPermissions.Delete
-            )
-          "
-          v-slot:body-cell-reset="props"
-        >
-          <q-td
-            v-if="
-              authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.SuperAdmin.toLowerCase()
-            "
-            :props="props"
-          >
-            <q-btn
-              flat
-              unelevated
-              dense
-              color="red"
-              no-caps
-              label="Reset"
-              @click="handleResetPasswordPopup(props.row)"
-            />
-          </q-td>
-        </template>
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
             <q-btn
@@ -266,6 +251,44 @@
             </q-btn>
           </q-td>
         </template>
+        <template v-slot:body-cell-isRetailDiscountAllowed="props">
+          <q-td :props="props">
+            <template
+              v-if="
+                props.row.roleName === 'ShopManager' ||
+                props.row.roleName === 'SuperAdmin'
+              "
+            >
+              <q-btn
+                class="hover:text-btn-primary"
+                flat
+                size="sm"
+                unelevated
+                dense
+                :disable="
+                  !authStore.checkUserHasPermission(
+                    EUserModules.UserManagment,
+                    EActionPermissions.Update
+                  ) ||
+                  !authStore.checkUserHasPermission(
+                    EUserModules.UserManagment,
+                    EActionPermissions.Delete
+                  )
+                "
+                :label="props.row.isRetailDiscountAllowed ? 'Yes' : 'No'"
+                @click="handleRetailDiscountPopup(props.row)"
+              >
+                <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                  Edit Discount Permission
+                </q-tooltip>
+              </q-btn>
+            </template>
+            <template v-else>
+              <span>-</span>
+            </template>
+          </q-td>
+        </template>
+
         <template v-slot:no-data>
           <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
             <q-icon name="warning" size="xs" />
@@ -299,6 +322,12 @@
         @reset-password="handleResetPassword"
       />
     </q-dialog>
+    <q-dialog v-model="isRetailDiscModalVisible">
+      <change-retail-disc-modal
+        :selected-data="selectedRowData"
+        @retail-disc="handleChangeRetailDisc"
+      />
+    </q-dialog>
   </div>
 </template>
 
@@ -311,6 +340,7 @@ import { UserColumn } from './utils';
 import AddUserModal from 'src/components/user-management/Add-User-Modal.vue';
 import ChangeStatusModal from 'src/components/user-management/Change-Status-Modal.vue';
 import ResetPasswordModal from 'src/components/user-management/Reset-Password-Modal.vue';
+import ChangeRetailDiscModal from 'src/components/user-management/Change-Retail-Disc-Modal.vue';
 import { roleOptions, statusOptions } from 'src/constants/utils';
 import {
   EActionPermissions,
@@ -330,6 +360,7 @@ import {
   changeUserStatus,
   updateUser,
   getCustomerGroupList,
+  changeUserRetailDisc,
 } from 'src/services';
 const $q = useQuasar();
 const authStore = useAuthStore();
@@ -339,7 +370,12 @@ const showAddNewAdminRolePopup = ref(false);
 const isChangeStatusModalVisible = ref(false);
 const isLoading = ref(false);
 const isResetPasswordModalVisible = ref(false);
-const selectedRowData = ref<{ customerId: number; status: string }>({
+const isRetailDiscModalVisible = ref(false);
+const selectedRowData = ref<{
+  customerId: number;
+  status: string;
+  isRetailDiscountAllowed?: boolean;
+}>({
   customerId: -1,
   status: '',
 });
@@ -390,6 +426,7 @@ const handleChangeStatusPopup = (selectedRow: IUserResponse) => {
   action.value = 'Change Status';
   isChangeStatusModalVisible.value = true;
 };
+
 const onEditButtonClick = (row: IUserResponse) => {
   action.value = 'Edit User';
   selectedUser.value = {
@@ -416,6 +453,11 @@ const handleResetPassword = (customerGroupId: number) => {
 const showAddUserModal = (isVisible: boolean) => {
   showAddNewAdminRolePopup.value = isVisible;
 };
+const handleChangeRetailDisc = (customerGroupId: number) => {
+  handleChangeRetailDiscApi(customerGroupId);
+  isRetailDiscModalVisible.value = false;
+};
+
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((item) => item === null)) {
     return;
@@ -432,6 +474,13 @@ const handleResetPasswordPopup = (selectedRow: IUserResponse) => {
     selectedRowData.value.customerId = selectedRow.userId;
   }
   isResetPasswordModalVisible.value = true;
+};
+
+const handleRetailDiscountPopup = (selectedRow: IUserResponse) => {
+  if (selectedRow.userId) {
+    selectedRowData.value.customerId = selectedRow.userId;
+  }
+  isRetailDiscModalVisible.value = true;
 };
 const editUserInfo = async (userData: IUserPayload) => {
   const { userId, fullName, phoneNumber, address } = userData;
@@ -589,6 +638,41 @@ async function handleResetPasswordApi(customerId: number) {
         message: res.message,
         color: 'green',
       });
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      color: 'red',
+      icon: 'error',
+    });
+  }
+}
+
+async function handleChangeRetailDiscApi(customerId: number) {
+  try {
+    const res = await changeUserRetailDisc(customerId);
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        color: 'green',
+      });
+      const selectedUserIndex = UserRows.value.findIndex(
+        (x) => x.userId === selectedRowData.value.customerId
+      );
+
+      if (selectedUserIndex !== -1) {
+        const selectedUser = UserRows.value[selectedUserIndex];
+
+        if (selectedUser.isRetailDiscountAllowed !== undefined) {
+          selectedUser.isRetailDiscountAllowed =
+            !selectedUser.isRetailDiscountAllowed;
+          UserRows.value[selectedUserIndex] = { ...selectedUser };
+        }
+      }
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

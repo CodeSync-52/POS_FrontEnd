@@ -38,6 +38,14 @@ export const resetUserPassword = async (customerId: number) => {
   });
   return res;
 };
+
+export const changeUserRetailDisc = async (customerId: number) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'PUT',
+    url: `api/user/change/retaildiscount/eligibility?userId=${customerId}`,
+  });
+  return res;
+};
 export const changeUserStatus = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',

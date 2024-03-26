@@ -175,6 +175,28 @@
               :rows="selectedInventoryData"
               :columns="saleShopSelectedGrnInventoryTableColumn"
               :rows-per-page-options="[0]"
+              :visible-columns="
+                authStore.loggedInUser?.isRetailDiscountAllowed
+                  ? [
+                      'productImage',
+                      'productName',
+                      'productCode',
+                      'availableQuantity',
+                      'retailPrice',
+                      'dispatchQuantity',
+                      'action',
+                      'discount',
+                    ]
+                  : [
+                      'productImage',
+                      'productName',
+                      'productCode',
+                      'availableQuantity',
+                      'retailPrice',
+                      'dispatchQuantity',
+                      'action',
+                    ]
+              "
               row-key="id"
             >
               <template v-slot:body-cell-productImage="props">
@@ -219,7 +241,10 @@
                 </q-td>
               </template>
 
-              <template v-slot:body-cell-discount="props">
+              <template
+                v-if="authStore.loggedInUser?.isRetailDiscountAllowed"
+                v-slot:body-cell-discount="props"
+              >
                 <q-td :props="props">
                   <q-input
                     v-model="props.row.discount"

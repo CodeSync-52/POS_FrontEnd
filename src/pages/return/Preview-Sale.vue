@@ -97,18 +97,18 @@
                 'productName',
                 'dispatchQuantity',
                 'amount',
-                'discount',
+                authStore.loggedInUser?.isRetailDiscountAllowed && 'discount',
                 'isReturn',
-              ]
+              ].filter(Boolean)
             : [
                 'productImage',
                 'productName',
                 'availableQuantity',
                 'retailPrice',
                 'dispatchQuantity',
-                'discount',
+                authStore.loggedInUser?.isRetailDiscountAllowed && 'discount',
                 'action',
-              ]
+              ].filter(Boolean)
         "
         :rows-per-page-options="[0]"
         row-key="id"
@@ -322,8 +322,10 @@ import { printReceipt, shopSalePreviewTableColumn } from './utils';
 import { isPosError } from 'src/utils';
 import moment from 'moment';
 import { useQuasar } from 'quasar';
+import { useAuthStore } from 'src/stores';
 const $q = useQuasar();
 const router = useRouter();
+const authStore = useAuthStore();
 const isLoading = ref(false);
 const receipt = ref<{
   receiptId: null | number;
