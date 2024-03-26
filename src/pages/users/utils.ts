@@ -45,7 +45,7 @@ export const UserColumn: QTableColumn<IUserResponse>[] = [
     field: (row) => row.status,
     align: 'left',
   },
-   {
+  {
     name: 'isRetailDiscountAllowed',
     label: 'Retail Disc.',
     field: (row) => row.isRetailDiscountAllowed,
