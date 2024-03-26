@@ -69,6 +69,8 @@
         v-model:pagination="pagination"
         align="left"
         :loading="isLoading"
+        :rows-per-page-options="[0]"
+        hide-bottom
         @request="getCashFlowRecords"
       >
         <template v-slot:top>
@@ -189,6 +191,14 @@
             <span class="text-md font-medium"> No data available. </span>
           </div>
         </template>
+        <template v-slot:bottom-row>
+          <q-tr class="sticky bottom-0 bg-white">
+            <q-td colspan="2" class="text-bold"> Total </q-td>
+            <q-td colspan="5" class="text-bold">
+              {{ calculateTotal('amount') }}
+            </q-td>
+          </q-tr>
+        </template>
       </q-table>
     </div>
     <q-dialog v-model="isPreviewCashFlowModalVisible">
@@ -278,7 +288,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 1000000,
   rowsNumber: 0,
 });
 const handleShowCashFlow = (selectedRow: ICashFlowRecords) => {
@@ -364,5 +374,11 @@ const getCashFlowRecords = async (data?: {
     });
   }
   isLoading.value = false;
+};
+const calculateTotal = (columnName: keyof (typeof filteredRows.value)[0]) => {
+  return filteredRows.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>

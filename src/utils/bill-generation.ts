@@ -8,11 +8,10 @@ import {
 
 export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
   {
-    name: 'billid',
-    required: true,
-    label: 'Bill Id',
+    name: 'date',
+    label: 'Date',
     align: 'left',
-    field: (row) => row.billId,
+    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
   },
   {
     name: 'name',
@@ -26,12 +25,6 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     label: 'Total Amount',
     align: 'left',
     field: (row) => row.totalAmount,
-  },
-  {
-    name: 'date',
-    label: 'Date',
-    align: 'left',
-    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
   },
   {
     name: 'recordStatus',

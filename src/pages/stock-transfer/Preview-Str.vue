@@ -141,6 +141,7 @@
                     <q-input
                       type="number"
                       dense
+                      class="quantity_input min-w-[92px]"
                       color="btn-primary"
                       outlined
                       :disable="!isEdit"
@@ -404,3 +405,10 @@ const updateSelectedProductVariant = async (
   previewGrn(selectedGrnId.value);
 };
 </script>
+<style scoped lang="scss">
+.quantity_input {
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+}
+</style>

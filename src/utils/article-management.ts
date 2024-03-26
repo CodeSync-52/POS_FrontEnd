@@ -18,44 +18,31 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     field: (row) => row.productImage,
   },
   {
-    name: 'category',
-    required: true,
-    label: 'Category',
+    name: 'mstock',
+    label: 'Stock',
     align: 'left',
-    field: (row) => row.categoryName,
+    field: (row) => row.masterStock,
   },
   {
     name: 'wholeSalePrice',
     required: true,
-    label: 'Wholesale Price',
+    label: 'W.P',
     align: 'left',
     field: (row) => row.wholeSalePrice,
   },
   {
     name: 'retailrate',
     required: true,
-    label: 'Retail Rate',
+    label: 'R.P',
     align: 'left',
     field: (row) => row.retailPrice,
   },
   {
     name: 'costprice',
     required: true,
-    label: 'Cost Price',
+    label: 'C.P',
     align: 'left',
     field: (row) => row.costPrice,
-  },
-  {
-    name: 'mstock',
-    label: 'Available Stock',
-    align: 'left',
-    field: (row) => row.masterStock,
-  },
-  {
-    name: 'commission',
-    label: 'Commission',
-    align: 'left',
-    field: (row) => row.commission,
   },
   {
     name: 'status',
@@ -63,7 +50,6 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     align: 'left',
     field: (row) => row.status,
   },
-
   {
     name: 'action',
     label: 'Action',
