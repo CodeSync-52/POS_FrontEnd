@@ -15,3 +15,4 @@ export * from './shop-managment';
 export * from './grn';
 export * from './sale-and-return-management';
 export * from './shop-account';
+export * from './reports';
