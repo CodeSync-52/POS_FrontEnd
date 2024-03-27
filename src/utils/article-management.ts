@@ -1,6 +1,10 @@
 import moment from 'moment';
 import { QTableColumn } from 'quasar';
-import { IArticleData, IBillingHistoryResponse } from 'src/interfaces';
+import {
+  IArticleData,
+  IBillingHistoryResponse,
+  IWholeSalePriceOption,
+} from 'src/interfaces';
 
 export const ArticleColumn: QTableColumn<IArticleData>[] = [
   {
@@ -102,4 +106,9 @@ export const articleListColumn: QTableColumn<IArticleData>[] = [
     align: 'left',
     field: (row) => row.masterStock,
   },
+];
+export const WholeSalePriceOptionList: IWholeSalePriceOption[] = [
+  { name: 'All Articles', statusId: null },
+  { name: 'Zero W.P', statusId: 0 },
+  { name: 'None Zero W.P', statusId: 1 },
 ];

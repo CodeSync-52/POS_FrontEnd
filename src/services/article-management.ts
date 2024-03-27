@@ -34,9 +34,11 @@ export const articleListApi = async (
     PageSize = 10000,
     Name,
     Status,
+    ShowZeroWholePrice,
   }: {
     Name?: string | null;
     Status?: string | null;
+    ShowZeroWholePrice?: number | null;
     PageNumber: number;
     PageSize: number;
   },
@@ -55,6 +57,7 @@ export const articleListApi = async (
       PageSize,
       Name,
       Status,
+      ShowZeroWholePrice,
     },
     signal: controller?.signal,
   });

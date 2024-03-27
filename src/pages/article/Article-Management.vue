@@ -25,6 +25,20 @@
         dense
         style="min-width: 200px"
         outlined
+        v-model="filterSearch.selectWholeSalePriceCategory"
+        :options="WholeSalePriceOptionList"
+        map-options
+        popup-content-class="!max-h-[200px]"
+        label="Article W.P"
+        option-label="name"
+        option-value="statusId"
+        color="btn-primary"
+      >
+      </q-select>
+      <q-select
+        dense
+        style="min-width: 200px"
+        outlined
         v-model="filterSearch.status"
         @update:model-value="filterSearch.status = $event.value"
         :options="statusOptions"
@@ -228,11 +242,12 @@ import {
   EActionPermissions,
   EUserModules,
   getRoleModuleDisplayName,
+  IWholeSalePriceOption,
 } from 'src/interfaces';
 import ArticleStatusModal from 'src/components/article-management/Article-Status-Modal.vue';
 import { useAuthStore } from 'src/stores';
 import { IArticleData } from 'src/interfaces';
-import { ArticleColumn, isPosError } from 'src/utils';
+import { ArticleColumn, isPosError, WholeSalePriceOptionList } from 'src/utils';
 import { articleListApi, changeArticleStatus } from 'src/services';
 import { statusOptions } from 'src/constants';
 import { CanceledError } from 'axios';
@@ -271,15 +286,18 @@ const resetFilter = () => {
     return;
   }
   filterSearch.value = {
+    selectWholeSalePriceCategory: null,
     articleName: null,
     status: null,
   };
   getArticleList();
 };
 const filterSearch = ref<{
+  selectWholeSalePriceCategory: IWholeSalePriceOption | null;
   articleName: null | string;
   status: string | null;
 }>({
+  selectWholeSalePriceCategory: null,
   articleName: null,
   status: null,
 });
@@ -358,6 +376,8 @@ const getArticleList = async (data?: {
         PageSize: rowsPerPage,
         Name: filterSearch.value.articleName?.trim(),
         Status: filterSearch.value.status,
+        ShowZeroWholePrice:
+          filterSearch.value.selectWholeSalePriceCategory?.statusId,
       },
       apiController.value
     );

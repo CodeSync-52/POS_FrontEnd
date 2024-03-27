@@ -24,6 +24,7 @@
             class="min-w-[220px]"
             ref="productSelectInput"
             dense
+            use-input
             map-options
             clearable
             outlined
@@ -44,20 +45,6 @@
             </template></q-select
           >
         </div>
-        <!-- <div class="col-12 col-sm-6">
-          <div class="text-base mb-1">
-            <span>Filter by Product Code</span>
-          </div>
-          <q-input
-            v-model="filterSearch.ProductCode"
-            maxlength="250"
-            outlined
-            clearable
-            dense
-            color="btn-primary"
-            label="Product Code"
-          />
-        </div> -->
         <div class="col-12 col-sm-6">
           <div
             class="flex justify-center md:justify-end w-full items-end h-full gap-2"
@@ -82,31 +69,6 @@
           </div>
         </div>
       </div>
-      <!-- <div class="row items-center q-col-gutter-md mb-2">
-        <div class="col-12">
-          <div
-            class="flex justify-center md:justify-end w-full items-end h-full gap-2"
-          >
-            <q-btn
-              unelevated
-              :loading="isLoading"
-              color=""
-              class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
-              icon="search"
-              label="Search"
-              :disable="isBothInputsEmpty"
-              @click="handleSelectedFilters"
-            />
-            <q-btn
-              unelevated
-              color=""
-              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-              label="Clear"
-              @click="handleRemoveInventoryFilter"
-            />
-          </div>
-        </div>
-      </div> -->
       <q-table
         :columns="InventoryListColumn"
         @request="handlePagination($event.pagination)"
@@ -247,8 +209,11 @@ const handleSelectedFilters = () => {
     () => (isLoading.value = false)
   );
 };
-const handleEnterKey = () => {
-  handleSelectedFilters();
+const handleEnterKey = async () => {
+  if (filterSearch.value.ProductId !== null) {
+    handleSelectedFilters();
+    await productSelectInput.value?.blur();
+  }
 };
 const handleRemoveInventoryFilter = () => {
   isLoading.value = true;
