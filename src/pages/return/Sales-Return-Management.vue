@@ -897,7 +897,7 @@ const getArticleList = async (productName?: string) => {
   try {
     const res = await articleListApi({
       PageNumber: 1,
-      PageSize: 10000,
+      PageSize: 1000000,
       Status: 'Active',
       Name: productName,
     });

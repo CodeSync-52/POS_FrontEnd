@@ -34,6 +34,7 @@
             color="btn-primary"
             option-label="name"
             option-value="productId"
+            @keydown.enter="handleEnterKey"
           >
             <template v-slot:no-option>
               <q-item>
@@ -43,22 +44,6 @@
           </q-select>
         </div>
         <div class="col-12 col-sm-6">
-          <div class="text-base mb-1">
-            <span>Filter by Product Code</span>
-          </div>
-          <q-input
-            v-model="filterSearch.ProductCode"
-            maxlength="250"
-            outlined
-            clearable
-            dense
-            color="btn-primary"
-            label="Product Code"
-          />
-        </div>
-      </div>
-      <div class="row items-center q-col-gutter-md mb-2">
-        <div class="col-12">
           <div
             class="flex justify-center md:justify-end w-full items-end h-full gap-2"
           >
@@ -70,12 +55,6 @@
               icon="search"
               label="Search"
               @click="handleSearchArticles"
-            />
-            <q-btn
-              unelevated
-              color=""
-              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-              label="Clear"
             />
           </div>
         </div>
@@ -261,5 +240,10 @@ const inventoryDetailList = async (data?: {
     });
   }
   isFetchingRecords.value = false;
+};
+const handleEnterKey = () => {
+  if (filterSearch.value.ProductId !== null) {
+    handleSearchArticles();
+  }
 };
 </script>

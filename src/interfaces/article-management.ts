@@ -56,3 +56,8 @@ export interface IBillingHistoryResponse {
   name: string;
   productId: number;
 }
+
+export interface IWholeSalePriceOption {
+  name: string;
+  statusId: number | null;
+}

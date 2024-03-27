@@ -6,13 +6,6 @@ export const shopStatusOptions = ['Active', 'InActive'];
 
 export const shopColumn: QTableColumn<IShopResponse>[] = [
   {
-    name: 'shopId',
-    required: true,
-    label: 'Shop Id',
-    align: 'left',
-    field: (row) => row.shopId,
-  },
-  {
     name: 'name',
     required: true,
     label: 'Shop Name',
