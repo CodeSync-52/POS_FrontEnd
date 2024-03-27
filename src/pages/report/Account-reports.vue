@@ -131,9 +131,9 @@ const getUserList = async () => {
     });
     if (res?.data) {
       UserList.value = res.data.items.filter(
-        (user) => user.status === 'Active'
+        (user) => user.status === 'Active' && user.roleName === 'Customer'
       );
-      options.value = res.data.items;
+      options.value = res.data.items.filter((x) => x.roleName === 'Customer');
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -172,8 +172,12 @@ const handleResetFilter = () => {
 
 const getReceiptList = async () => {
   if (isLoading.value) return;
-  if (!filterSearch.value.userId) {
-    let message = 'Please Select User';
+  if (
+    !filterSearch.value.userId ||
+    !filterSearch.value.startDate ||
+    !filterSearch.value.endDate
+  ) {
+    let message = 'Please select user and date';
     $q.notify({
       message,
       icon: 'error',
@@ -181,6 +185,7 @@ const getReceiptList = async () => {
     });
     return;
   }
+
   isLoading.value = true;
   try {
     if (isLoading.value && apiController.value) {

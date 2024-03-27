@@ -17,3 +17,10 @@ export interface IHOStockReportData {
   productImage: string | null;
   masterStock: number | null;
 }
+
+export interface IHOArticleReportData {
+  product: string;
+  image: string | null;
+  quantity: number | null;
+  amount: number | null;
+}

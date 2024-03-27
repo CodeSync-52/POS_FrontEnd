@@ -2,6 +2,7 @@ import { QTableColumn } from 'quasar';
 import moment from 'moment';
 import {
   IAccountReportData,
+  IHOArticleReportData,
   IHOStockReportData,
   IOutStandingReportData,
 } from 'src/interfaces';
@@ -77,7 +78,6 @@ export const HOStockReportColumn: QTableColumn<IHOStockReportData>[] = [
     required: true,
     label: 'Product Name',
     align: 'left',
-    sortable: true,
     field: (row) => row.productName,
   },
   {
@@ -93,5 +93,36 @@ export const HOStockReportColumn: QTableColumn<IHOStockReportData>[] = [
     label: 'Master Stock',
     align: 'left',
     field: (row) => row.masterStock ?? '-',
+  },
+];
+
+export const HOArticleReportColumn: QTableColumn<IHOArticleReportData>[] = [
+  {
+    name: 'product',
+    required: true,
+    label: 'Product',
+    align: 'left',
+    field: (row) => row.product,
+  },
+  {
+    name: 'image',
+    required: true,
+    label: 'Product Image',
+    align: 'left',
+    field: (row) => row.image,
+  },
+  {
+    name: 'quantity',
+    required: true,
+    label: 'Quantity',
+    align: 'left',
+    field: (row) => row.quantity ?? '-',
+  },
+  {
+    name: 'amount',
+    required: true,
+    label: 'Amount',
+    align: 'left',
+    field: (row) => row.amount ?? '-',
   },
 ];

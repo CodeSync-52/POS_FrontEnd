@@ -184,6 +184,7 @@ export const routeList = [
       module: EUserModules.GoodsReceiptNotes,
     },
   },
+
   {
     path: '/shop-sale',
     component: () => import('src/pages/return/Sales-Return-Management.vue'),
@@ -250,6 +251,13 @@ export const routeList = [
   {
     path: '/ho-stock-report',
     component: () => import('src/pages/report/HO-Stock-reports.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
+    path: '/ho-article-sale-report',
+    component: () => import('src/pages/report/HO-Article-Sale-report.vue'),
     meta: {
       module: EUserModules.Report,
     },
