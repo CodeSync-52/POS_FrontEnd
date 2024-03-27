@@ -29,7 +29,7 @@
         :options="WholeSalePriceOptionList"
         map-options
         popup-content-class="!max-h-[200px]"
-        label="Article W.P"
+        label="Search By W.P"
         option-label="name"
         option-value="statusId"
         color="btn-primary"
@@ -101,6 +101,7 @@
           <q-td :props="props">
             <q-btn
               size="sm"
+              style="text-decoration: underline"
               color="hover:text-btn-primary"
               class="hover:text-btn-primary"
               dense

@@ -87,6 +87,7 @@
               size="sm"
               unelevated
               dense
+              style="text-decoration: underline"
               @click="handleEditStatusPopup(props.row)"
             >
               <q-tooltip class="bg-btn-primary" :offset="[10, 10]">

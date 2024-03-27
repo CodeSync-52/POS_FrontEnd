@@ -4,7 +4,7 @@
       <div class="text-lg font-medium mb-2 row justify-between items-center">
         <span>
           {{
-            isEditCustomerGroup ? 'Edit Customer Group' : 'Add Customer Group'
+            isEditCustomerGroup ? 'Edit User Category' : 'Add User Category'
           }}</span
         >
         <q-btn icon="close" flat unelevated dense v-close-popup />

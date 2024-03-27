@@ -89,6 +89,7 @@
               dense
               flat
               unelevated
+              style="text-decoration: underline"
               class="hover:text-btn-primary"
               :label="props.row.status"
               @click="handleShowEditStatusPopup(props.row)"

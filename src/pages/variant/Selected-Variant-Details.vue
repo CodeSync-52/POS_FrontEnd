@@ -102,6 +102,7 @@
               flat
               unelevated
               dense
+              style="text-decoration: underline"
               size="sm"
               :disable="
                 !authStore.checkUserHasPermission(

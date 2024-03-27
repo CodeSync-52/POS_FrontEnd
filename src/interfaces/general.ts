@@ -67,7 +67,7 @@ const roleDisplayList: Record<EUserRoles, string> = {
 const roleModuleList: Record<EUserModules, string> = {
   [EUserModules.UserManagment]: 'User Management',
   [EUserModules.RolePermission]: 'Role Permission',
-  [EUserModules.CustomerGroupManagement]: 'Customer Group Management',
+  [EUserModules.CustomerGroupManagement]: 'User Category Management',
   [EUserModules.VariantManagement]: 'Variant Group Management',
   [EUserModules.CategoryManagement]: 'Category Management',
   [EUserModules.ArticleManagement]: 'Article Management',

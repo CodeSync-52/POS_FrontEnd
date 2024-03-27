@@ -36,7 +36,7 @@
           filterSearch.customerGroupId = $event.customerGroupId
         "
         :loading="isCustomerGroupListLoading"
-        label="Customer Group"
+        label="User Category"
         option-label="name"
         option-value="customerGroupId"
         color="btn-primary"
@@ -233,6 +233,7 @@
               size="sm"
               unelevated
               dense
+              style="text-decoration: underline"
               :disable="
                 !authStore.checkUserHasPermission(
                   EUserModules.UserManagment,
@@ -263,6 +264,7 @@
                 class="hover:text-btn-primary"
                 flat
                 size="sm"
+                style="text-decoration: underline"
                 unelevated
                 dense
                 :disable="

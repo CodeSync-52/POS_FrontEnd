@@ -27,7 +27,7 @@
             class="flex flex-col sm:flex-row justify-center md:justify-between gap-4 item-center w-full"
           >
             <div class="font-medium text-lg flex items-center">
-              <span>Customer Group</span>
+              <span>User Category</span>
             </div>
             <q-input
               outlined
@@ -53,6 +53,7 @@
                 flat
                 unelevated
                 dense
+                style="text-decoration: underline"
                 :disable="
                   !authStore.checkUserHasPermission(
                     EUserModules.CustomerGroupManagement,
@@ -98,8 +99,8 @@
                 class="hover:text-btn-primary"
                 @click="handleEditCustomerGroupNamePopup(props.row)"
               >
-                <q-tooltip class="bg-black" :offset="[10, 10]">
-                  Edit Customer Group
+                <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                  Edit User Category
                 </q-tooltip>
               </q-btn>
             </div>
