@@ -1,6 +1,10 @@
 import { QTableColumn } from 'quasar';
 import moment from 'moment';
-import { IAccountReportData, IOutStandingReportData } from 'src/interfaces';
+import {
+  IAccountReportData,
+  IHOStockReportData,
+  IOutStandingReportData,
+} from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
   {
@@ -64,5 +68,30 @@ export const outStandingReportColumn: QTableColumn<IOutStandingReportData>[] = [
     label: 'Phone Number',
     align: 'left',
     field: (row) => row.phone ?? '-',
+  },
+];
+
+export const HOStockReportColumn: QTableColumn<IHOStockReportData>[] = [
+  {
+    name: 'productName',
+    required: true,
+    label: 'Product Name',
+    align: 'left',
+    sortable: true,
+    field: (row) => row.productName,
+  },
+  {
+    name: 'productImage',
+    required: true,
+    label: 'Product Image',
+    align: 'left',
+    field: (row) => row.productImage,
+  },
+  {
+    name: 'masterStock',
+    required: true,
+    label: 'Master Stock',
+    align: 'left',
+    field: (row) => row.masterStock ?? '-',
   },
 ];

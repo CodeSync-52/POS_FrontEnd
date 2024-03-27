@@ -50,3 +50,39 @@ export const userOutStandingReportListApi = async (
   });
   return res;
 };
+
+export const HOStockReportListApi = async (
+  {
+    userId,
+    categoryId,
+    productIds,
+    includeZeroStock,
+    showOnlyZeroStock,
+    sortByStock,
+  }: {
+    userId: number | null;
+    categoryId?: number | null;
+    productIds?: string | null;
+    includeZeroStock: string | boolean;
+    showOnlyZeroStock: string | boolean;
+    sortByStock: string | boolean;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IAccountReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/hostock',
+    data: {
+      userId,
+      categoryId,
+      productIds,
+      includeZeroStock,
+      showOnlyZeroStock,
+      sortByStock,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};

@@ -11,3 +11,9 @@ export interface IOutStandingReportData {
   balance: number | null;
   phone: string | number | null;
 }
+
+export interface IHOStockReportData {
+  productName: string;
+  productImage: string | null;
+  masterStock: number | null;
+}
