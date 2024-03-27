@@ -124,7 +124,7 @@
                   userData.customerGroupId = $event.customerGroupId
                 "
                 :disable="action !== 'Add New User'"
-                label="Customer Group"
+                label="User Category"
                 color="btn-primary"
                 option-label="name"
                 option-value="customerGroupId"

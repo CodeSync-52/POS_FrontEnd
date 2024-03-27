@@ -108,7 +108,7 @@ export const articleListColumn: QTableColumn<IArticleData>[] = [
   },
 ];
 export const WholeSalePriceOptionList: IWholeSalePriceOption[] = [
-  { name: 'All Articles', statusId: null },
+  { name: 'All W.P', statusId: null },
   { name: 'Zero W.P', statusId: 0 },
-  { name: 'None Zero W.P', statusId: 1 },
+  { name: 'Non-Zero W.P', statusId: 1 },
 ];

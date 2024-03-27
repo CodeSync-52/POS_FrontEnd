@@ -4,7 +4,7 @@ export const UserColumn: QTableColumn<IUserResponse>[] = [
   {
     name: 'fullname',
     required: true,
-    label: 'Full Name',
+    label: 'Fullname',
     align: 'left',
     field: (row) => row.fullName,
   },
@@ -12,7 +12,7 @@ export const UserColumn: QTableColumn<IUserResponse>[] = [
     name: 'userName',
     required: true,
     align: 'left',
-    label: 'User Name',
+    label: 'Username',
     field: (row) => row.userName,
   },
   {
@@ -29,34 +29,16 @@ export const UserColumn: QTableColumn<IUserResponse>[] = [
   },
   {
     name: 'customerGroup',
-    label: 'Customer Group',
+    label: 'User Category',
     field: (row) => row.customerGroup,
     align: 'left',
   },
   {
     name: 'shopName',
-    label: 'Shop Name',
+    label: 'Shop',
     field: (row) => row.shopName,
     align: 'left',
   },
-  {
-    name: 'status',
-    label: 'Status',
-    field: (row) => row.status,
-    align: 'left',
-  },
-  {
-    name: 'isRetailDiscountAllowed',
-    label: 'Retail Disc.',
-    field: (row) => row.isRetailDiscountAllowed,
-    align: 'left',
-  },
-  // {
-  //   name: 'address',
-  //   label: 'Address',
-  //   field: (row) => row.address,
-  //   align: 'left',
-  // },
   {
     name: 'discount',
     label: 'Disc.',
@@ -69,12 +51,18 @@ export const UserColumn: QTableColumn<IUserResponse>[] = [
     field: (row) => row.outStandingBalance,
     align: 'left',
   },
-  // {
-  //   name: 'reset',
-  //   label: 'Reset Password',
-  //   field: () => '',
-  //   align: 'left',
-  // },
+  {
+    name: 'isRetailDiscountAllowed',
+    label: 'Retail Disc ?',
+    field: (row) => row.isRetailDiscountAllowed,
+    align: 'left',
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    field: (row) => row.status,
+    align: 'left',
+  },
   {
     name: 'action',
     label: 'Action',

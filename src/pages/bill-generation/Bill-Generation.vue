@@ -20,7 +20,7 @@
           filterSearch.CustomerGroupId = $event.customerGroupId
         "
         :loading="isCustomerGroupListLoading"
-        label="Customer Group"
+        label="User Category"
         option-label="name"
         option-value="customerGroupId"
         color="btn-primary"

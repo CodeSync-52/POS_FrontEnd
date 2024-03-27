@@ -96,6 +96,7 @@
           <q-td :props="props">
             <q-btn
               unelevated
+              style="text-decoration: underline"
               flat
               :label="props.row.status"
               dense

@@ -94,6 +94,7 @@
               size="sm"
               dense
               flat
+              style="text-decoration: underline"
               :disable="
                 !authStore.checkUserHasPermission(
                   EUserModules.VariantManagement,
