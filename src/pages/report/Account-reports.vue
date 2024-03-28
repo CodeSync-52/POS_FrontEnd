@@ -4,7 +4,13 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">Account Reports</span>
-      <download-pdf-excel />
+      <q-btn
+        color="btn-primary"
+        class="mb-2"
+        unelevated
+        label="Download PDF"
+        @click="downloadPdfData"
+      />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -15,8 +21,8 @@
         style="min-width: 200px; max-width: 200px"
         use-input
         @filter="filterFn"
-        v-model="filterSearch.userId"
-        @update:model-value="filterSearch.userId = $event.userId"
+        v-model="filterSearch.user"
+        @update:model-value="filterSearch.user"
         :options="options"
         map-options
         popup-content-class="!max-h-[200px]"
@@ -54,7 +60,6 @@
           icon="search"
           label="Search"
           unelevated
-          :disable="filterSearch.userId !== null && filterSearch.userId < 0"
           @click="getReceiptList()"
         />
         <q-btn
@@ -90,13 +95,14 @@
 <script setup lang="ts">
 import { CanceledError } from 'axios';
 import { date, useQuasar } from 'quasar';
-import { IAccountReportData, IUserResponse } from 'src/interfaces';
-import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
+import { IAccountReportData, IUserData, IUserResponse } from 'src/interfaces';
 import { getUserListApi } from 'src/services';
 import { accountReportListApi } from 'src/services/reports';
-import { isPosError } from 'src/utils';
+import { downloadPdf, isPosError, ITableHeaders, ITableItems } from 'src/utils';
 import { accountReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
+import moment from 'moment';
+import { processTableItems } from 'src/utils/process-table-items';
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const UserList = ref<IUserResponse[]>([]);
@@ -106,12 +112,13 @@ const reportData = ref<IAccountReportData[]>([]);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const formattedFromDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const tableItems = ref<ITableItems[][]>([]);
 const filterSearch = ref<{
-  userId: null | number;
+  user: null | IUserData;
   startDate: null | string;
   endDate: null | string;
 }>({
-  userId: null,
+  user: null,
   startDate: formattedFromDate,
   endDate: formattedToDate,
 });
@@ -165,7 +172,7 @@ const handleResetFilter = () => {
     return;
   }
   filterSearch.value = {
-    userId: null,
+    user: null,
     startDate: null,
     endDate: null,
   };
@@ -175,7 +182,7 @@ const handleResetFilter = () => {
 const getReceiptList = async () => {
   if (isLoading.value) return;
   if (
-    !filterSearch.value.userId ||
+    !filterSearch.value.user?.userId ||
     !filterSearch.value.startDate ||
     !filterSearch.value.endDate
   ) {
@@ -199,12 +206,13 @@ const getReceiptList = async () => {
       {
         ToDate: filterSearch.value.endDate,
         FromDate: filterSearch.value.startDate,
-        UserId: filterSearch.value.userId,
+        UserId: filterSearch.value.user.userId,
       },
       apiController.value
     );
     if (res?.data) {
       reportData.value = res.data?.list;
+      tableItems.value = await convertArrayToPdfData(res.data?.list);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -219,4 +227,70 @@ const getReceiptList = async () => {
   }
   isLoading.value = false;
 };
+async function convertArrayToPdfData(array: IAccountReportData[]) {
+  const tableStuff = [];
+  const headerRow = [
+    'Date',
+    'Transaction Detail',
+    'Debit +',
+    'Credit -',
+    'Balance',
+  ];
+  tableStuff.push(headerRow);
+  const footerRow = [
+    '',
+    '',
+    '',
+    {
+      text: 'Closing',
+      margin: [0, 5],
+      bold: true,
+    },
+    { text: `${array[array.length - 1].balance}`, bold: true, margin: 5 },
+  ];
+
+  array.forEach((item: IAccountReportData) => {
+    const row = [
+      { text: moment(item.date).format('DD/MM/YYYY') },
+      { text: item.transactionDetail },
+      { text: item.debit },
+      { text: item.credit },
+      { text: item.balance },
+    ];
+    tableStuff.push(row);
+  });
+  tableStuff.push(footerRow);
+  return tableStuff;
+}
+async function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'User',
+      content: filterSearch.value.user?.fullName,
+    },
+    {
+      heading: 'From Date',
+      content: moment(filterSearch?.value?.startDate).format('DD/MM/YYYY'),
+    },
+    {
+      heading: 'End Date',
+      content: moment(filterSearch?.value?.endDate).format('DD/MM/YYYY'),
+    },
+  ];
+  const fileTitle = 'Account Reports';
+  const myFileName = `Account-Reports-${moment(
+    filterSearch?.value?.startDate
+  ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.endDate).format(
+    'DD/MM/YYYY'
+  )}.pdf`;
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    tableHeaders: headers,
+    title: fileTitle,
+  });
+}
 </script>
