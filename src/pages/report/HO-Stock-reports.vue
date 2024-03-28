@@ -144,7 +144,6 @@ import ArticleCategoryModal from 'src/components/article-management/Article-Cate
 import { articleListApi, getUserListApi } from 'src/services';
 import { HOStockReportListApi } from 'src/services/reports';
 import { isPosError } from 'src/utils';
-const selectedPreviewImage = ref('');
 import { HOStockReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
 const isLoading = ref(false);
@@ -191,9 +190,9 @@ const getUserList = async () => {
     });
     if (res?.data) {
       UserList.value = res.data.items.filter(
-        (user) => user.status === 'Active'
+        (user) => user.status === 'Active' && user.roleName === 'Customer'
       );
-      options.value = res.data.items;
+      options.value = res.data.items.filter((x) => x.roleName === 'Customer');
     }
   } catch (e) {
     if (e instanceof CanceledError) return;

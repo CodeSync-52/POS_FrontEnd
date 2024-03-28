@@ -86,3 +86,45 @@ export const HOStockReportListApi = async (
   });
   return res;
 };
+
+export const HOArticleSaleReportListApi = async (
+  {
+    purchaseFromCustomerGroup,
+    purchaseFromCustomer,
+    productIds,
+    saleToCustomerGroup,
+    endDate,
+    startDate,
+    sortByQty,
+    saleToCustomer,
+  }: {
+    purchaseFromCustomerGroup: null | number;
+    purchaseFromCustomer: null | number;
+    saleToCustomerGroup: null | number;
+    saleToCustomer: null | number;
+    startDate: null | string;
+    endDate: null | string;
+    sortByQty: boolean;
+    productIds: string;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IAccountReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/hoarticlesale',
+    data: {
+      purchaseFromCustomerGroup,
+      purchaseFromCustomer,
+      productIds,
+      saleToCustomerGroup,
+      toDate: endDate,
+      saleToCustomer,
+      fromDate: startDate,
+      sortByQty,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};

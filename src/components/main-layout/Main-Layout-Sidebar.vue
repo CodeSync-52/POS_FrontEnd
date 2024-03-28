@@ -59,6 +59,8 @@
                         ? 'User Outstanding Report'
                         : subLinks.path === '/ho-stock-report'
                         ? 'HO Stock Report'
+                        : subLinks.path === '/ho-article-sale-report'
+                        ? 'HO Article Sale Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -208,6 +210,10 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/ho-stock-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/ho-article-sale-report',
       },
     ],
   },
