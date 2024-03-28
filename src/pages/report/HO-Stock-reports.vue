@@ -4,6 +4,7 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">HO Stock Reports</span>
+      <download-pdf-excel />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -141,6 +142,7 @@ import {
   IUserResponse,
 } from 'src/interfaces';
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
+import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { articleListApi, getUserListApi } from 'src/services';
 import { HOStockReportListApi } from 'src/services/reports';
 import { isPosError } from 'src/utils';
