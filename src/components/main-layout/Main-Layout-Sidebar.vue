@@ -53,6 +53,14 @@
                         ? 'Expense'
                         : subLinks.path === '/shop-account'
                         ? 'Shop Account'
+                        : subLinks.path === '/account-report'
+                        ? 'Account Report'
+                        : subLinks.path === '/user-outstanding-report'
+                        ? 'User Outstanding Report'
+                        : subLinks.path === '/ho-stock-report'
+                        ? 'HO Stock Report'
+                        : subLinks.path === '/ho-article-sale-report'
+                        ? 'HO Article Sale Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -193,8 +201,19 @@ const essentialLinks = [
     children: [
       {
         title: EUserModules.Report,
-        caption: 'quasar.dev',
-        path: '/report',
+        path: '/account-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/user-outstanding-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/ho-stock-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/ho-article-sale-report',
       },
     ],
   },
