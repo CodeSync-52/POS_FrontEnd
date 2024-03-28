@@ -210,9 +210,7 @@ import {
   getCustomerGroupList,
   getUserListApi,
 } from 'src/services';
-import {
-  HOArticleSaleReportListApi, 
-} from 'src/services/reports';
+import { HOArticleSaleReportListApi } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { HOArticleReportColumn } from 'src/utils/reports';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
