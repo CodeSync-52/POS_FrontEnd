@@ -144,7 +144,7 @@
               v-model="props.row.dispatchQuantity"
               ref="dispatchQuantityInput"
               :min="0"
-              :max="props.row.availableQuantity"
+              :max="props.row.maxDispatchQuantityAllowed"
               dense
               outlined
               class="w-[150px]"
@@ -169,6 +169,7 @@
               :disable="props.row.isReturn"
               type="number"
               dense
+              min="0"
               outlined
               color="btn-primary"
               class="w-[150px]"
@@ -341,6 +342,7 @@ const isInventoryListModalVisible = ref(false);
 const titleAction = ref('Preview Sale Bill');
 const selectedPreviewImage = ref('');
 const ReceiptToPrint = ref<null | HTMLDivElement>(null);
+const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
 const receiptDetail = ref<null | IPreviewSaleResponse>(null);
 const routerPath = router.currentRoute.value.fullPath;
 const selectedId: string | string[] = router.currentRoute.value.params.id;
@@ -415,7 +417,7 @@ const handleUpdatedispatchQuantity = (
     if (!val || val < 0) {
       selectedRecord.dispatchQuantity = 0;
       selectedRecord.errorMessage = '';
-    } else if (val > selectedRecord.quantity) {
+    } else if (val > selectedRecord.maxDispatchQuantityAllowed) {
       selectedRecord.dispatchQuantity = 0;
       selectedRecord.errorMessage = 'Invalid Quantity !';
       $q.notify({
@@ -558,6 +560,7 @@ const handleEditBill = async (id: number) => {
         icon: 'error',
         color: 'orange',
       });
+      dispatchQuantityInput.value?.focus();
     } else if (selectedRow.retailPrice === 0) {
       $q.notify({
         message:
