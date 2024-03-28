@@ -211,8 +211,7 @@ import {
   getUserListApi,
 } from 'src/services';
 import {
-  HOArticleSaleReportListApi,
-  userOutStandingReportListApi,
+  HOArticleSaleReportListApi, 
 } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { HOArticleReportColumn } from 'src/utils/reports';
