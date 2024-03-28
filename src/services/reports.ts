@@ -1,4 +1,10 @@
-import { IGenericResponse, IAccountReportData } from 'src/interfaces';
+import {
+  IGenericResponse,
+  IAccountReportData,
+  IHOSaleDetailReportData,
+  IHOArticleReportData,
+  IHOStockReportData,
+} from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const accountReportListApi = async (
   {
@@ -70,7 +76,7 @@ export const HOStockReportListApi = async (
   controller?: AbortController
 ) => {
   const res = await makeApiCall<
-    IGenericResponse<{ list: IAccountReportData[] }>
+    IGenericResponse<{ list: IHOStockReportData[] }>
   >({
     method: 'POST',
     url: 'api/report/hostock',
@@ -110,7 +116,7 @@ export const HOArticleSaleReportListApi = async (
   controller?: AbortController
 ) => {
   const res = await makeApiCall<
-    IGenericResponse<{ list: IAccountReportData[] }>
+    IGenericResponse<{ list: IHOArticleReportData[] }>
   >({
     method: 'POST',
     url: 'api/report/hoarticlesale',
@@ -123,6 +129,60 @@ export const HOArticleSaleReportListApi = async (
       saleToCustomer,
       fromDate: startDate,
       sortByQty,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
+
+export const HOSaleDetailReportListApi = async (
+  {
+    ToDate,
+    FromDate,
+    ProductId,
+  }: {
+    ToDate: string | null;
+    FromDate: string | null;
+    ProductId: number | null;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IHOSaleDetailReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/hoarticlesaledetail',
+    data: {
+      productId: ProductId,
+      toDate: ToDate,
+      fromDate: FromDate,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
+
+export const HOPurchaseDetailReportListApi = async (
+  {
+    ToDate,
+    FromDate,
+    ProductId,
+  }: {
+    ToDate: string | null;
+    FromDate: string | null;
+    ProductId: number | null;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IHOSaleDetailReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/hoarticlepurchaseedetail',
+    data: {
+      productId: ProductId,
+      toDate: ToDate,
+      fromDate: FromDate,
     },
     signal: controller?.signal,
   });

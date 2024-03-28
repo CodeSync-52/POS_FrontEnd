@@ -22,8 +22,10 @@
           <q-select
             popup-content-class="!max-h-[200px]"
             class="min-w-[220px]"
-            ref="productSelectInput"
+            ref="productSelectInputRef"
+            @popup-hide="handlePopupShow"
             dense
+            autofocus
             use-input
             map-options
             clearable
@@ -125,6 +127,7 @@
   </q-card>
 </template>
 <script lang="ts" setup>
+import { QSelect } from 'quasar';
 import {
   IArticleData,
   IInventoryFilterSearch,
@@ -135,7 +138,6 @@ import { InventoryListColumn } from 'src/utils/inventory';
 import { onMounted, onUpdated, ref, computed } from 'vue';
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
-const productSelectInput = ref<HTMLElement | null>(null);
 const selectedShopDetailList = ref<IInventoryListResponse[]>([]);
 const articleList = ref<IArticleData[]>([]);
 const InventoryPagination = ref({
@@ -145,6 +147,7 @@ const InventoryPagination = ref({
   rowsPerPage: 25,
   rowsNumber: 0,
 });
+const productSelectInputRef = ref<QSelect | null>(null);
 const isLoading = ref(false);
 const isFetchingArticleList = ref(false);
 const filterSearch = ref<IInventoryFilterSearch>({
@@ -172,7 +175,6 @@ const selectedShopRecords = ref<IInventoryListResponse[]>([
   ...props.currentData,
 ]);
 onMounted(async () => {
-  await productSelectInput.value?.focus();
   filterSearch.value.ProductId = null;
   filterSearch.value.ProductCode = null;
   selectedShopDetailList.value = [];
@@ -185,11 +187,17 @@ onMounted(async () => {
   isLoading.value = props.isFetchingRecords;
 });
 onUpdated(async () => {
-  await productSelectInput.value?.focus();
   articleList.value = props.articleRecords;
   selectedShopDetailList.value = props.inventoryList;
   isLoading.value = props.isFetchingRecords;
 });
+
+const handlePopupShow = () => {
+  // When the popup opens, blur the input
+  if (productSelectInputRef.value) {
+    productSelectInputRef.value.blur();
+  }
+};
 const emit = defineEmits<{
   (event: 'handle-pagination', pagination: IPagination): void;
   (event: 'filter-article-list', val: string): void;
@@ -212,7 +220,6 @@ const handleSelectedFilters = () => {
 const handleEnterKey = async () => {
   if (filterSearch.value.ProductId !== null) {
     handleSelectedFilters();
-    await productSelectInput.value?.blur();
   }
 };
 const handleRemoveInventoryFilter = () => {

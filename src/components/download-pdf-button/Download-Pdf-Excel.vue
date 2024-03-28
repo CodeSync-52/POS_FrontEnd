@@ -12,11 +12,11 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-close-popup>
+        <!-- <q-item clickable v-close-popup>
           <q-item-section>
             <q-item-label>Download in Excel</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
       </q-list>
     </q-btn-dropdown>
   </div>

@@ -137,8 +137,8 @@
 import { CanceledError } from 'axios';
 import { useQuasar } from 'quasar';
 import {
-  IAccountReportData,
   IArticleData,
+  IHOStockReportData,
   IUserResponse,
 } from 'src/interfaces';
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
@@ -153,7 +153,7 @@ const apiController = ref<AbortController | null>(null);
 const UserList = ref<IUserResponse[]>([]);
 const $q = useQuasar();
 const options = ref<IUserResponse[]>([]);
-const reportData = ref<IAccountReportData[]>([]);
+const reportData = ref<IHOStockReportData[]>([]);
 const isFetchingArticleList = ref(false);
 const isCategoryModalVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);

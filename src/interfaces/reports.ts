@@ -24,3 +24,10 @@ export interface IHOArticleReportData {
   quantity: number | null;
   amount: number | null;
 }
+
+export interface IHOSaleDetailReportData {
+  date: string;
+  user: string;
+  quantity: number | null;
+  amount: number | null;
+}

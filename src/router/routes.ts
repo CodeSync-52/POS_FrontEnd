@@ -263,6 +263,22 @@ export const routeList = [
     },
   },
   {
+    path: '/ho-article-sale-detail-report',
+    component: () =>
+      import('src/pages/report/HO-Article-Sale-Detail-reports.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
+    path: '/ho-article-purchase-detail-report',
+    component: () =>
+      import('src/pages/report/HO-Article-Purchase-Detail-reports.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {

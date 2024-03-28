@@ -154,10 +154,6 @@
           icon="search"
           label="Search"
           unelevated
-          :disable="
-            filterSearch.customerGroupId !== null &&
-            filterSearch.customerGroupId < 0
-          "
           @click="getUserOutStandingBalanceReportList()"
         />
         <q-btn
@@ -200,9 +196,9 @@
 import { CanceledError } from 'axios';
 import { date, useQuasar } from 'quasar';
 import {
-  IAccountReportData,
   IArticleData,
   ICustomerListResponse,
+  IHOArticleReportData,
   IUserResponse,
 } from 'src/interfaces';
 import {
@@ -219,7 +215,7 @@ const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const $q = useQuasar();
 const articleList = ref<IArticleData[]>([]);
-const reportData = ref<IAccountReportData[]>([]);
+const reportData = ref<IHOArticleReportData[]>([]);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const options = ref<IUserResponse[]>([]);

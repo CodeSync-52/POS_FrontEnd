@@ -3,6 +3,7 @@ import moment from 'moment';
 import {
   IAccountReportData,
   IHOArticleReportData,
+  IHOSaleDetailReportData,
   IHOStockReportData,
   IOutStandingReportData,
 } from 'src/interfaces';
@@ -51,7 +52,7 @@ export const outStandingReportColumn: QTableColumn<IOutStandingReportData>[] = [
   {
     name: 'user',
     required: true,
-    label: 'User Name',
+    label: 'User',
     align: 'left',
     sortable: true,
     field: (row) => row.user,
@@ -83,7 +84,7 @@ export const HOStockReportColumn: QTableColumn<IHOStockReportData>[] = [
   {
     name: 'productImage',
     required: true,
-    label: 'Product Image',
+    label: 'Image',
     align: 'left',
     field: (row) => row.productImage,
   },
@@ -107,7 +108,7 @@ export const HOArticleReportColumn: QTableColumn<IHOArticleReportData>[] = [
   {
     name: 'image',
     required: true,
-    label: 'Product Image',
+    label: 'Image',
     align: 'left',
     field: (row) => row.image,
   },
@@ -126,3 +127,35 @@ export const HOArticleReportColumn: QTableColumn<IHOArticleReportData>[] = [
     field: (row) => row.amount ?? '-',
   },
 ];
+
+export const HOArticleSaleDetailReportColumn: QTableColumn<IHOSaleDetailReportData>[] =
+  [
+    {
+      name: 'user',
+      required: true,
+      label: 'User',
+      align: 'left',
+      field: (row) => row.user,
+    },
+    {
+      name: 'amount',
+      required: true,
+      label: 'Amount',
+      align: 'left',
+      field: (row) => row.amount ?? '-',
+    },
+    {
+      name: 'quantity',
+      required: true,
+      label: 'Quantity',
+      align: 'left',
+      field: (row) => row.quantity ?? '-',
+    },
+    {
+      name: 'date',
+      required: true,
+      label: 'Date',
+      align: 'left',
+      field: (row) => moment(row.date).format('DD-MM-YYYY'),
+    },
+  ];
