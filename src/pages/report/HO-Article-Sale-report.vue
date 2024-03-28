@@ -4,6 +4,7 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">HO Article Sale Report</span>
+      <download-pdf-excel />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -209,12 +210,10 @@ import {
   getCustomerGroupList,
   getUserListApi,
 } from 'src/services';
-import {
-  HOArticleSaleReportListApi,
-  userOutStandingReportListApi,
-} from 'src/services/reports';
+import { HOArticleSaleReportListApi } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { HOArticleReportColumn } from 'src/utils/reports';
+import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);

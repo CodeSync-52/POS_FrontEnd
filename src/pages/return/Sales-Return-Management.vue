@@ -254,6 +254,7 @@
                     :disable="props.row.isReturn"
                     type="number"
                     dense
+                    min="0"
                     outlined
                     color="btn-primary"
                     class="w-[80px]"

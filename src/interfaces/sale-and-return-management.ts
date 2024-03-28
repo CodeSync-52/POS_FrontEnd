@@ -89,6 +89,7 @@ export interface ISaleInfo {
   productCode: string;
   availableQuantity: number;
   dispatchQuantity: number;
+  maxDispatchQuantityAllowed: number;
   discount: number;
   quantity: number;
   amount: number;
