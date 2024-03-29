@@ -14,7 +14,6 @@ export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
     required: true,
     label: 'Date',
     align: 'left',
-    sortable: true,
     field: (row) => moment(row.date).format('DD-MM-YYYY'),
   },
   {
@@ -22,7 +21,6 @@ export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
     required: true,
     label: 'Transaction Detail',
     align: 'left',
-    sortable: true,
     field: (row) => row.transactionDetail,
   },
   {
@@ -54,7 +52,6 @@ export const outStandingReportColumn: QTableColumn<IOutStandingReportData>[] = [
     required: true,
     label: 'User',
     align: 'left',
-    sortable: true,
     field: (row) => row.user,
   },
   {

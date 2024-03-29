@@ -4,13 +4,7 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">Account Reports</span>
-      <q-btn
-        color="btn-primary"
-        class="mb-2"
-        unelevated
-        label="Download PDF"
-        @click="downloadPdfData"
-      />
+      <download-pdf-excel @downloadPdfData="downloadPdfData" />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -18,7 +12,7 @@
       <q-select
         dense
         outlined
-        style="min-width: 200px; max-width: 200px"
+        style="min-width: 200px; max-width: 210px"
         use-input
         @filter="filterFn"
         v-model="filterSearch.user"
@@ -79,7 +73,14 @@
         :rows="reportData"
         :columns="accountReportColumn"
         :pagination="{ rowsPerPage: 0 }"
+        :rows-per-page-options="[0]"
       >
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
       </q-table>
     </div>
     <div
@@ -99,6 +100,7 @@ import { IAccountReportData, IUserData, IUserResponse } from 'src/interfaces';
 import { getUserListApi } from 'src/services';
 import { accountReportListApi } from 'src/services/reports';
 import { downloadPdf, isPosError, ITableHeaders, ITableItems } from 'src/utils';
+import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { accountReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
 import moment from 'moment';
