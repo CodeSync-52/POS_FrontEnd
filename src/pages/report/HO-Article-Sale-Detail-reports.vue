@@ -4,13 +4,7 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">HO Article Sale Detail Reports</span>
-      <q-btn
-        color="btn-primary"
-        class="mb-2"
-        unelevated
-        label="Download PDF"
-        @click="downloadPdfData"
-      />
+      <download-pdf-excel @downloadPdfData="downloadPdfData" />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -70,7 +64,8 @@
           label="Search"
           unelevated
           :disable="
-            filterSearch.ProductId !== null && filterSearch.ProductId < 0
+            filterSearch.ProductId !== null &&
+            filterSearch.ProductId.productId < 0
           "
           @click="getReceiptList()"
         />
@@ -91,7 +86,14 @@
         :rows="reportData"
         :columns="HOArticleSaleDetailReportColumn"
         :pagination="{ rowsPerPage: 0 }"
+        :rows-per-page-options="[0]"
       >
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
       </q-table>
     </div>
   </div>
@@ -104,6 +106,7 @@ import { IArticleData, IHOSaleDetailReportData } from 'src/interfaces';
 import { articleListApi } from 'src/services';
 import { HOSaleDetailReportListApi } from 'src/services/reports';
 import { downloadPdf, isPosError, ITableHeaders, ITableItems } from 'src/utils';
+import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOArticleSaleDetailReportColumn } from 'src/utils/reports';
 import { onUnmounted, ref } from 'vue';
@@ -207,29 +210,6 @@ async function convertArrayToPdfData(array: IHOSaleDetailReportData[]) {
   const tableStuff = [];
   const headerRow = ['User', 'Amount', 'Quantity', 'Date'];
   tableStuff.push(headerRow);
-  // const totalAmount = array.reduce(
-  //   (total, row: IHOSaleDetailReportData ) => {
-  //     if (row.totalAmount) {
-  //       return total + row.totalAmount ?? 0;
-  //     }
-  //     return total;
-  //   },
-  //   0
-  // );
-  // const footerRow = [
-  //   {
-  //     text: 'Total',
-  //     margin: 5,
-  //   },
-  //   '',
-  //   {
-  //     text: `${saleGenerationTotalQuantity.value}`,
-  //     margin: [0, 5],
-  //   },
-  //   '',
-  //   { text: `${totalAmount}`, margin: 5 },
-  // ];
-
   array.forEach((item: IHOSaleDetailReportData) => {
     const row = [
       {

@@ -4,7 +4,7 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">HO Stock Reports</span>
-      <download-pdf-excel />
+      <download-pdf-excel @downloadPdfData="downloadPdfData" />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -15,8 +15,8 @@
         style="min-width: 200px; max-width: 200px"
         use-input
         @filter="filterFn"
-        v-model="filterSearch.userId"
-        @update:model-value="filterSearch.userId = $event.userId"
+        v-model="filterSearch.userData"
+        @update:model-value="filterSearch.userData"
         :options="options"
         map-options
         popup-content-class="!max-h-[200px]"
@@ -91,7 +91,7 @@
           icon="search"
           label="Search"
           unelevated
-          :disable="filterSearch.userId !== null && filterSearch.userId < 0"
+          :disable="filterSearch.userData !== null && filterSearch.userData?.userId! < 0"
           @click="getReceiptList()"
         />
         <q-btn
@@ -111,6 +111,7 @@
         :rows="reportData"
         :columns="HOStockReportColumn"
         :pagination="{ rowsPerPage: 0 }"
+        :rows-per-page-options="[0]"
       >
         <template v-slot:body-cell-productImage="props">
           <q-td :props="props">
@@ -124,8 +125,15 @@
                 alt="img"
               />
             </div>
-          </q-td> </template
-      ></q-table>
+          </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
+      </q-table>
     </div>
     <q-dialog v-model="isCategoryModalVisible">
       <article-category-modal @category-selected="handleSelectedCategory" />
@@ -145,11 +153,13 @@ import ArticleCategoryModal from 'src/components/article-management/Article-Cate
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { articleListApi, getUserListApi } from 'src/services';
 import { HOStockReportListApi } from 'src/services/reports';
-import { isPosError } from 'src/utils';
+import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
+import { processTableItems } from 'src/utils/process-table-items';
 import { HOStockReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
+const tableItems = ref<ITableItems[][]>([]);
 const UserList = ref<IUserResponse[]>([]);
 const $q = useQuasar();
 const options = ref<IUserResponse[]>([]);
@@ -158,7 +168,7 @@ const isFetchingArticleList = ref(false);
 const isCategoryModalVisible = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const filterSearch = ref<{
-  userId: null | number;
+  userData: null | IUserResponse;
   categoryId: number | null;
   categoryName: string;
   sortByStock: string;
@@ -166,7 +176,7 @@ const filterSearch = ref<{
   showOnlyZeroStock: boolean;
   ProductId: IArticleData[];
 }>({
-  userId: null,
+  userData: null,
   categoryId: null,
   categoryName: '',
   sortByStock: 'false',
@@ -226,7 +236,7 @@ const handleResetFilter = () => {
     return;
   }
   filterSearch.value = {
-    userId: null,
+    userData: null,
     categoryId: null,
     categoryName: '',
     sortByStock: 'false',
@@ -248,7 +258,7 @@ const getReceiptList = async () => {
     apiController.value = new AbortController();
     const res = await HOStockReportListApi(
       {
-        userId: filterSearch.value.userId,
+        userId: filterSearch.value.userData?.userId ?? null,
         categoryId: filterSearch.value.categoryId,
         productIds: filterSearch.value.ProductId.map(
           (product) => product.productId
@@ -261,6 +271,7 @@ const getReceiptList = async () => {
     );
     if (res?.data) {
       reportData.value = res.data?.list;
+      tableItems.value = await convertArrayToPdfData(res.data?.list);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -317,4 +328,84 @@ const handleSelectedCategory = (selectedCategory: {
   filterSearch.value.categoryId = selectedCategory.categoryId;
   isCategoryModalVisible.value = false;
 };
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+const defaultImage = ref<string | null>(null);
+async function convertArrayToPdfData(array: IHOStockReportData[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+  const tableStuff = [];
+  const headerRow = ['Product Name', 'Product Image', 'Master Stock'];
+  tableStuff.push(headerRow);
+
+  array.forEach((item: IHOStockReportData) => {
+    const row = [
+      { text: item.productName },
+      {
+        image: item.productImage || defaultImage.value,
+        width: 50,
+        height: 50,
+        margin: 2,
+      },
+      { text: item.masterStock },
+    ];
+    tableStuff.push(row);
+  });
+  return tableStuff;
+}
+async function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'User',
+      content: filterSearch.value.userData?.fullName,
+    },
+    {
+      heading: 'Category Name',
+      content: filterSearch.value.categoryName,
+    },
+    {
+      heading: 'Product Name',
+      content:
+        filterSearch.value.ProductId && filterSearch.value.ProductId.length > 0
+          ? filterSearch.value.ProductId[0].name
+          : '',
+    },
+  ];
+  const fileTitle = 'HO-Stock-Reports';
+  const myFileName = 'HO-Stock-reports.pdf';
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    tableHeaders: headers,
+    title: fileTitle,
+  });
+}
 </script>

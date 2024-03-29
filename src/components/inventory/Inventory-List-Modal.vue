@@ -39,7 +39,6 @@
             color="btn-primary"
             option-label="name"
             option-value="productId"
-            @keydown.enter="handleEnterKey"
             ><template v-slot:no-option>
               <q-item>
                 <q-item-section class="text-grey"> No results </q-item-section>
@@ -195,7 +194,9 @@ onUpdated(async () => {
 const handlePopupShow = () => {
   // When the popup opens, blur the input
   if (productSelectInputRef.value) {
-    productSelectInputRef.value.blur();
+    if (filterSearch.value.ProductId !== null) {
+      handleSelectedFilters();
+    }
   }
 };
 const emit = defineEmits<{
@@ -216,11 +217,6 @@ const handleSelectedFilters = () => {
     filterSearch.value,
     () => (isLoading.value = false)
   );
-};
-const handleEnterKey = async () => {
-  if (filterSearch.value.ProductId !== null) {
-    handleSelectedFilters();
-  }
 };
 const handleRemoveInventoryFilter = () => {
   isLoading.value = true;

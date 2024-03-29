@@ -6,7 +6,7 @@
       <span class="text-lg font-medium"
         >HO Article Purchase Detail Reports</span
       >
-      <download-pdf-excel />
+      <download-pdf-excel @downloadPdfData="downloadPdfData" />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -23,8 +23,8 @@
         @filter="handleFilterArticles"
         :options="articleList"
         :loading="isFetchingArticleList"
-        v-model="filterSearch.ProductId"
-        @update:model-value="filterSearch.ProductId = $event?.productId"
+        v-model="filterSearch.articleData"
+        @update:model-value="filterSearch.articleData"
         label="Select Product"
         color="btn-primary"
         option-label="name"
@@ -66,7 +66,8 @@
           label="Search"
           unelevated
           :disable="
-            filterSearch.ProductId !== null && filterSearch.ProductId < 0
+            filterSearch.articleData !== null &&
+            filterSearch.articleData.productId < 0
           "
           @click="getReceiptList()"
         />
@@ -87,7 +88,14 @@
         :rows="reportData"
         :columns="HOArticleSaleDetailReportColumn"
         :pagination="{ rowsPerPage: 0 }"
+        :rows-per-page-options="[0]"
       >
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
+        </template>
       </q-table>
     </div>
   </div>
@@ -95,13 +103,16 @@
 
 <script setup lang="ts">
 import { date, QSelect, useQuasar } from 'quasar';
+import moment from 'moment';
 import { IArticleData, IHOSaleDetailReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
+import { processTableItems } from 'src/utils/process-table-items';
 import { articleListApi } from 'src/services';
 import { HOPurchaseDetailReportListApi } from 'src/services/reports';
-import { isPosError } from 'src/utils';
+import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { HOArticleSaleDetailReportColumn } from 'src/utils/reports';
 import { onUnmounted, ref } from 'vue';
+const tableItems = ref<ITableItems[][]>([]);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const $q = useQuasar();
@@ -113,11 +124,11 @@ const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const productSelectInputRef = ref<QSelect | null>(null);
 const formattedFromDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const filterSearch = ref<{
-  ProductId: null | number;
+  articleData: null | IArticleData;
   startDate: null | string;
   endDate: null | string;
 }>({
-  ProductId: null,
+  articleData: null,
   startDate: formattedFromDate,
   endDate: formattedToDate,
 });
@@ -173,7 +184,7 @@ const handleResetFilter = () => {
     return;
   }
   filterSearch.value = {
-    ProductId: null,
+    articleData: null,
     startDate: null,
     endDate: null,
   };
@@ -183,7 +194,7 @@ const handleResetFilter = () => {
 const getReceiptList = async () => {
   if (isLoading.value) return;
   if (
-    !filterSearch.value.ProductId ||
+    !filterSearch.value.articleData ||
     !filterSearch.value.startDate ||
     !filterSearch.value.endDate
   ) {
@@ -207,12 +218,13 @@ const getReceiptList = async () => {
       {
         ToDate: filterSearch.value.endDate,
         FromDate: filterSearch.value.startDate,
-        ProductId: filterSearch.value.ProductId,
+        ProductId: filterSearch.value.articleData.productId,
       },
       apiController.value
     );
     if (res?.data) {
       reportData.value = res.data?.list;
+      tableItems.value = await convertArrayToPdfData(res.data?.list);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -227,4 +239,50 @@ const getReceiptList = async () => {
   }
   isLoading.value = false;
 };
+async function convertArrayToPdfData(array: IHOSaleDetailReportData[]) {
+  const tableStuff = [];
+  const headerRow = ['User', 'Amount', 'Quantity', 'Date'];
+  tableStuff.push(headerRow);
+  array.forEach((item: IHOSaleDetailReportData) => {
+    const row = [
+      { text: item.user },
+      { text: item.amount },
+      { text: item.quantity },
+      { text: moment(item.date).format('DD/MM/YYYY') },
+    ];
+    tableStuff.push(row);
+  });
+  return tableStuff;
+}
+async function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'Product Name',
+      content: filterSearch?.value.articleData?.name,
+    },
+    {
+      heading: 'From Date',
+      content: moment(filterSearch?.value?.startDate).format('DD/MM/YYYY'),
+    },
+    {
+      heading: 'End Date',
+      content: moment(filterSearch?.value?.endDate).format('DD/MM/YYYY'),
+    },
+  ];
+  const fileTitle = 'HO Article Purchase Detail Reports';
+  const myFileName = `HO-Article-Purchase-Detail-reports-${moment(
+    filterSearch?.value?.startDate
+  ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.endDate).format(
+    'DD/MM/YYYY'
+  )}.pdf`;
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    tableHeaders: headers,
+    title: fileTitle,
+  });
+}
 </script>

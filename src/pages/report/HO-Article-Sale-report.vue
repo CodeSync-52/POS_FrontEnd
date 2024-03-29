@@ -4,7 +4,7 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">HO Article Sale Report</span>
-      <download-pdf-excel />
+      <download-pdf-excel @downloadPdfData="downloadPdfData" />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -17,9 +17,7 @@
         :options="customerGroupList"
         map-options
         popup-content-class="!max-h-[200px]"
-        @update:model-value="
-          filterSearch.purchaseFromCustomerGroup = $event.customerGroupId
-        "
+        @update:model-value="filterSearch.purchaseFromCustomerGroup"
         :loading="isLoading"
         label="Sel. Purchase from user cat."
         option-label="name"
@@ -35,11 +33,11 @@
       <q-select
         dense
         outlined
-        style="min-width: 200px; max-width: 200px"
-        use-input
+        style="min-width: 200px; max-width: 210px"
+        clearable
         @filter="filterFn"
         v-model="filterSearch.purchaseFromCustomer"
-        @update:model-value="filterSearch.purchaseFromCustomer = $event.userId"
+        @update:model-value="filterSearch.purchaseFromCustomer"
         :options="options"
         map-options
         popup-content-class="!max-h-[200px]"
@@ -52,13 +50,12 @@
         dense
         style="min-width: 240px"
         outlined
+        clearable
         v-model="filterSearch.saleToCustomerGroup"
         :options="customerGroupList"
         map-options
         popup-content-class="!max-h-[200px]"
-        @update:model-value="
-          filterSearch.saleToCustomerGroup = $event.customerGroupId
-        "
+        @update:model-value="filterSearch.saleToCustomerGroup"
         :loading="isLoading"
         label="Sel. Sale to user Cat."
         option-label="name"
@@ -75,11 +72,11 @@
       <q-select
         dense
         outlined
-        style="min-width: 200px; max-width: 200px"
-        use-input
+        clearable
+        style="min-width: 200px; max-width: 210px"
         @filter="filterFn"
         v-model="filterSearch.saleToCustomer"
-        @update:model-value="filterSearch.saleToCustomer = $event.userId"
+        @update:model-value="filterSearch.saleToCustomer"
         :options="options"
         map-options
         popup-content-class="!max-h-[200px]"
@@ -173,6 +170,7 @@
         :rows="reportData"
         :columns="HOArticleReportColumn"
         :pagination="{ rowsPerPage: 0 }"
+        :rows-per-page-options="[0]"
         ><template v-slot:body-cell-image="props">
           <q-td :props="props">
             <div
@@ -186,6 +184,12 @@
               />
             </div>
           </q-td>
+        </template>
+        <template v-slot:no-data>
+          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+            <q-icon name="warning" size="xs" />
+            <span class="text-md font-medium"> No data available. </span>
+          </div>
         </template>
       </q-table>
     </div>
@@ -207,13 +211,16 @@ import {
   getUserListApi,
 } from 'src/services';
 import { HOArticleSaleReportListApi } from 'src/services/reports';
-import { isPosError } from 'src/utils';
+import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
+import { processTableItems } from 'src/utils/process-table-items';
 import { HOArticleReportColumn } from 'src/utils/reports';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
+import moment from 'moment';
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const $q = useQuasar();
+const tableItems = ref<ITableItems[][]>([]);
 const articleList = ref<IArticleData[]>([]);
 const reportData = ref<IHOArticleReportData[]>([]);
 const timeStamp = Date.now();
@@ -224,10 +231,10 @@ const customerGroupList = ref<ICustomerListResponse[]>([]);
 const isFetchingArticleList = ref(false);
 const UserList = ref<IUserResponse[]>([]);
 const filterSearch = ref<{
-  purchaseFromCustomerGroup: null | number;
-  purchaseFromCustomer: null | number;
-  saleToCustomerGroup: null | number;
-  saleToCustomer: null | number;
+  purchaseFromCustomerGroup: null | ICustomerListResponse;
+  purchaseFromCustomer: null | IUserResponse;
+  saleToCustomerGroup: null | ICustomerListResponse;
+  saleToCustomer: null | IUserResponse;
   includeZeroBalance: boolean;
   startDate: null | string;
   endDate: null | string;
@@ -325,11 +332,13 @@ const getUserOutStandingBalanceReportList = async () => {
     apiController.value = new AbortController();
     const res = await HOArticleSaleReportListApi(
       {
-        purchaseFromCustomer: filterSearch.value.purchaseFromCustomer ?? 0,
+        purchaseFromCustomer:
+          filterSearch.value.purchaseFromCustomer?.customerGroupId ?? 0,
         purchaseFromCustomerGroup:
-          filterSearch.value.purchaseFromCustomerGroup ?? 0,
-        saleToCustomer: filterSearch.value.saleToCustomer ?? 0,
-        saleToCustomerGroup: filterSearch.value.saleToCustomerGroup ?? 0,
+          filterSearch.value.purchaseFromCustomerGroup?.customerGroupId ?? 0,
+        saleToCustomer: filterSearch.value.saleToCustomer?.userId ?? 0,
+        saleToCustomerGroup:
+          filterSearch.value.saleToCustomerGroup?.customerGroupId ?? 0,
         sortByQty: filterSearch.value.sortByQty === 'true' ? true : false,
         startDate: filterSearch.value.startDate,
         endDate: filterSearch.value.endDate,
@@ -341,6 +350,7 @@ const getUserOutStandingBalanceReportList = async () => {
     );
     if (res?.data) {
       reportData.value = res.data?.list;
+      tableItems.value = await convertArrayToPdfData(res.data?.list);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -415,4 +425,105 @@ const getUserList = async () => {
   }
   isLoading.value = false;
 };
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+const defaultImage = ref<string | null>(null);
+async function convertArrayToPdfData(array: IHOArticleReportData[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+  const tableStuff = [];
+  const headerRow = ['Product', 'Image', 'Quantity', 'Amount'];
+  tableStuff.push(headerRow);
+
+  array.forEach((item: IHOArticleReportData) => {
+    const row = [
+      { text: item.product },
+      {
+        image: item.image || defaultImage.value,
+        width: 50,
+        height: 50,
+        margin: 2,
+      },
+      { text: item.quantity },
+      { text: item.amount },
+    ];
+    tableStuff.push(row);
+  });
+  return tableStuff;
+}
+async function downloadPdfData() {
+  const headers: ITableHeaders[] = [
+    {
+      heading: 'Purchase From User Category',
+      content: filterSearch.value.purchaseFromCustomerGroup?.name,
+    },
+    {
+      heading: 'Purchase From User',
+      content: filterSearch.value.purchaseFromCustomer?.fullName,
+    },
+    {
+      heading: 'Sale To User Category',
+      content: filterSearch.value.saleToCustomerGroup?.name,
+    },
+    {
+      heading: 'Sale To User',
+      content: filterSearch.value.saleToCustomer?.fullName,
+    },
+    {
+      heading: 'From Date',
+      content: moment(filterSearch?.value?.startDate).format('DD/MM/YYYY'),
+    },
+    {
+      heading: 'End Date',
+      content: moment(filterSearch?.value?.endDate).format('DD/MM/YYYY'),
+    },
+    {
+      heading: 'Product Name',
+      content:
+        filterSearch.value.ProductId && filterSearch.value.ProductId.length > 0
+          ? filterSearch.value.ProductId[0].name
+          : '',
+    },
+  ];
+  const fileTitle = 'HO Article Sale Report';
+  const myFileName = `HO-Article-Sale-report-${moment(
+    filterSearch?.value?.startDate
+  ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.endDate).format(
+    'DD/MM/YYYY'
+  )}.pdf`;
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    tableHeaders: headers,
+    title: fileTitle,
+  });
+}
 </script>

@@ -4,6 +4,7 @@ import {
   IHOSaleDetailReportData,
   IHOArticleReportData,
   IHOStockReportData,
+  IOutStandingReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const accountReportListApi = async (
@@ -44,7 +45,7 @@ export const userOutStandingReportListApi = async (
   controller?: AbortController
 ) => {
   const res = await makeApiCall<
-    IGenericResponse<{ list: IAccountReportData[] }>
+    IGenericResponse<{ list: IOutStandingReportData[] }>
   >({
     method: 'POST',
     url: 'api/report/useroutstanding',
