@@ -27,11 +27,10 @@
             class="text-signature"
           />
         </div>
-
         <div v-for="link in allowedLinks" :key="link.title">
           <q-expansion-item
             group="somegroup"
-            :default-opened="true"
+            :default-opened="false"
             expand-icon-class="text-text_primary hover:text-btn-primary"
             :icon="link.icon"
             :label="link.title"
@@ -202,7 +201,6 @@ const essentialLinks = [
   },
   {
     title: 'Reporting and Analytics',
-    caption: 'quasar.dev',
     icon: 'chat',
     children: [
       {
