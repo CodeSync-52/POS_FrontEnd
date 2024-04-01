@@ -475,7 +475,7 @@
 <script setup lang="ts">
 import moment from 'moment';
 import { useQuasar } from 'quasar';
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import InventoryListModal from 'src/components/inventory/Inventory-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
@@ -581,6 +581,12 @@ const shopSale = ref<{
   discount: 0,
   salePersonCode: selectedUser.value.user,
 });
+
+watch(selectedInventoryData, () => {
+  // Clear the scannedLabel whenever selectedInventoryData changes
+  scannedLabel.value = '';
+});
+
 onMounted(async () => {
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keydown', handleActionKeys);
