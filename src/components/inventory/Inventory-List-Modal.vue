@@ -70,10 +70,33 @@
           </div>
         </div>
       </div>
+      <div
+        v-if="selectedShopDetailList.length > 0"
+        class="row q-col-gutter-md mb-4"
+      >
+        <q-input
+          class="min-w-[200px] max-w-[200px]"
+          v-model="filteredData.size"
+          outlined
+          dense
+          label="Size"
+          color="btn-primary"
+          @change="filterSelectedShopDetailList"
+        />
+        <q-input
+          class="min-w-[200px] max-w-[200px]"
+          v-model="filteredData.color"
+          outlined
+          dense
+          label="Color"
+          color="btn-primary"
+          @change="filterSelectedShopDetailList"
+        />
+      </div>
       <q-table
         :columns="InventoryListColumn"
         @request="handlePagination($event.pagination)"
-        :rows="selectedShopDetailList"
+        :rows="filteredShopDetailList"
         :rows-per-page-options="[0]"
         v-model:pagination="InventoryPagination"
         row-key="inventoryId"
@@ -134,7 +157,7 @@ import {
   IPagination,
 } from 'src/interfaces';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { onMounted, onUpdated, ref, computed } from 'vue';
+import { onMounted, onUpdated, ref, computed, watch } from 'vue';
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const selectedShopDetailList = ref<IInventoryListResponse[]>([]);
@@ -154,6 +177,48 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductCode: null,
   ShopId: null,
   keyword: null,
+});
+const filteredShopDetailList = ref<IInventoryListResponse[]>([]);
+const filteredData = ref<{
+  size: string;
+  color: string;
+}>({
+  size: '',
+  color: '',
+});
+
+const filterSelectedShopDetailList = () => {
+  filteredShopDetailList.value = selectedShopDetailList.value.filter((item) => {
+    let sizeMatch = true;
+    let colorMatch = true;
+
+    if (filteredData.value.size) {
+      sizeMatch =
+        item.size
+          ?.toLowerCase()
+          ?.includes(filteredData.value.size.toLowerCase()) || false;
+    }
+
+    if (filteredData.value.color) {
+      colorMatch =
+        item.color
+          ?.toLowerCase()
+          .includes(filteredData.value.color.toLowerCase()) || false;
+    }
+
+    return sizeMatch && colorMatch;
+  });
+};
+
+// Watch for changes in filteredData and selectedShopDetailList and trigger filter function
+watch([filteredData, selectedShopDetailList], filterSelectedShopDetailList, {
+  deep: true,
+});
+
+watch(filteredData, (newValue) => {
+  if (!newValue) {
+    filteredShopDetailList.value = selectedShopDetailList.value;
+  }
 });
 interface IProps {
   title?: string;

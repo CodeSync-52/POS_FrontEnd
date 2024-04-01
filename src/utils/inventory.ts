@@ -13,11 +13,25 @@ export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
     align: 'left',
     field: (row) => row.productImage,
   },
+  // {
+  //   name: 'productCode',
+  //   label: 'Product Code',
+  //   align: 'left',
+  //   field: (row) => row.productCode.split(',')[0] || '-',
+  // },
   {
-    name: 'productCode',
-    label: 'Product Code',
+    name: 'size',
+    required: true,
+    label: 'Size',
     align: 'left',
-    field: (row) => row.productCode.split(',')[0] || '-',
+    field: (row) => row.size,
+  },
+  {
+    name: 'color',
+    required: true,
+    label: 'Color',
+    align: 'left',
+    field: (row) => row.color,
   },
   {
     name: 'retailPrice',
