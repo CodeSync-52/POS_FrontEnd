@@ -211,7 +211,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted, watch } from 'vue';
 import InventoryListModal from 'src/components/inventory/Inventory-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import {
@@ -286,6 +286,10 @@ const filterSearch = ref<IInventoryFilterSearch>({
 const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
+watch(selectedInventoryData, () => {
+  // Clear the scannedLabel whenever selectedInventoryData changes
+  scannedLabel.value = '';
+});
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   getShopList();
