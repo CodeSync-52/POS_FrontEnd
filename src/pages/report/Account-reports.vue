@@ -116,7 +116,8 @@ const options = ref<IUserResponse[]>([]);
 const reportData = ref<IAccountReportData[]>([]);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const formattedFromDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past30Date = date.subtractFromDate(timeStamp, { date: 30 });
+const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 const tableItems = ref<ITableItems[][]>([]);
 const filterSearch = ref<{
   user: null | IUserData;

@@ -12,7 +12,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable @click="excelPdfNotif()" v-close-popup>
+        <q-item clickable @click="downloadCsv" v-close-popup>
           <q-item-section>
             <q-item-label>Download in Excel</q-item-label>
           </q-item-section>
@@ -25,12 +25,12 @@
 import { ref } from 'vue';
 const isLoading = ref(false);
 const emit = defineEmits(['downloadPdfData', 'downloadCSVData']);
-const downloadPdf = async () => {
+const downloadPdf = () => {
   isLoading.value = true;
   emit('downloadPdfData');
   isLoading.value = false;
 };
-const excelPdfNotif = () => {
+const downloadCsv = () => {
   isLoading.value = true;
   emit('downloadCSVData');
   isLoading.value = false;
