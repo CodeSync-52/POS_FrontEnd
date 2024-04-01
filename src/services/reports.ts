@@ -189,3 +189,29 @@ export const HOPurchaseDetailReportListApi = async (
   });
   return res;
 };
+
+export function wrapCsvValue(
+  val: string | number | null,
+  formatFn?: any,
+  row?: any
+) {
+  let formatted: string = val === null ? '' : String(val);
+  // Convert phone numbers to string to prevent exponential notation
+  if (
+    typeof val === 'string' &&
+    String(val).length > 11 &&
+    /^[\+03-9]/.test(formatted)
+  ) {
+    formatted = `'${formatted}'`;
+  }
+  if (formatFn !== undefined) {
+    formatted = formatFn(val, row);
+  }
+
+  formatted = formatted.split('"').join('""');
+  // Uncomment the next two lines to escape new lines
+  // formatted = formatted.split('\n').join('\\n');
+  // formatted = formatted.split('\r').join('\\r');
+
+  return `"${formatted}"`;
+}

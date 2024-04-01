@@ -4,7 +4,10 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">HO Article Sale Report</span>
-      <download-pdf-excel @downloadPdfData="downloadPdfData" />
+      <download-pdf-excel
+        @downloadPdfData="downloadPdfData"
+        @downloadCSVData="downloadCSVData"
+      />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -198,7 +201,7 @@
 
 <script setup lang="ts">
 import { CanceledError } from 'axios';
-import { date, useQuasar } from 'quasar';
+import { date, exportFile, useQuasar } from 'quasar';
 import {
   IArticleData,
   ICustomerListResponse,
@@ -210,7 +213,7 @@ import {
   getCustomerGroupList,
   getUserListApi,
 } from 'src/services';
-import { HOArticleSaleReportListApi } from 'src/services/reports';
+import { HOArticleSaleReportListApi, wrapCsvValue } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOArticleReportColumn } from 'src/utils/reports';
@@ -526,4 +529,38 @@ async function downloadPdfData() {
     title: fileTitle,
   });
 }
+
+const downloadCSVData = () => {
+  const content = [HOArticleReportColumn.map((col) => wrapCsvValue(col.label))]
+    .concat(
+      reportData.value.map((row: any) =>
+        HOArticleReportColumn.map((col) =>
+          wrapCsvValue(
+            typeof col.field === 'function'
+              ? col.field(row)
+              : row[col.field === void 0 ? col.name : col.field],
+            col.format,
+            row
+          )
+        ).join(',')
+      )
+    )
+    .join('\r\n');
+
+  const status = exportFile(
+    `HO-Article-Sale-report-${moment(filterSearch?.value?.startDate).format(
+      'DD/MM/YYYY'
+    )}-${moment(filterSearch?.value?.endDate).format('DD/MM/YYYY')}.csv`,
+    content,
+    'text/csv'
+  );
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning',
+    });
+  }
+};
 </script>

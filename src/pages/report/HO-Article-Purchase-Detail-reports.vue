@@ -6,7 +6,10 @@
       <span class="text-lg font-medium"
         >HO Article Purchase Detail Reports</span
       >
-      <download-pdf-excel @downloadPdfData="downloadPdfData" />
+      <download-pdf-excel
+        @downloadPdfData="downloadPdfData"
+        @downloadCSVData="downloadCSVData"
+      />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -102,13 +105,16 @@
 </template>
 
 <script setup lang="ts">
-import { date, QSelect, useQuasar } from 'quasar';
+import { date, QSelect, useQuasar, exportFile } from 'quasar';
 import moment from 'moment';
 import { IArticleData, IHOSaleDetailReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { articleListApi } from 'src/services';
-import { HOPurchaseDetailReportListApi } from 'src/services/reports';
+import {
+  HOPurchaseDetailReportListApi,
+  wrapCsvValue,
+} from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { HOArticleSaleDetailReportColumn } from 'src/utils/reports';
 import { onUnmounted, ref } from 'vue';
@@ -285,4 +291,42 @@ async function downloadPdfData() {
     title: fileTitle,
   });
 }
+
+const downloadCSVData = () => {
+  const content = [
+    HOArticleSaleDetailReportColumn.map((col) => wrapCsvValue(col.label)),
+  ]
+    .concat(
+      reportData.value.map((row: any) =>
+        HOArticleSaleDetailReportColumn.map((col) =>
+          wrapCsvValue(
+            typeof col.field === 'function'
+              ? col.field(row)
+              : row[col.field === void 0 ? col.name : col.field],
+            col.format,
+            row
+          )
+        ).join(',')
+      )
+    )
+    .join('\r\n');
+
+  const status = exportFile(
+    `HO-Article-Purchase-Detail-reports-${moment(
+      filterSearch?.value?.startDate
+    ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.endDate).format(
+      'DD/MM/YYYY'
+    )}.csv`,
+    content,
+    'text/csv'
+  );
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning',
+    });
+  }
+};
 </script>
