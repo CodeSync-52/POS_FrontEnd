@@ -190,12 +190,23 @@ const updateOrAddCustomer = async (
   action: string,
   callback: () => void
 ) => {
-  if (action !== 'add' && selectedRowData.value?.name === newName) {
-    isAddCustomerModalVisible.value = false;
-    callback();
-    return;
-  }
   try {
+    const existingCustomer = filteredRows.value.find(
+      (customer) => customer.name.toLowerCase() === newName.toLowerCase()
+    );
+    if (existingCustomer) {
+      $q.notify({
+        message: 'User Category With The Same Name Already Exists.',
+        type: 'warning',
+      });
+      isAddCustomerModalVisible.value = false;
+      return;
+    }
+    if (action !== 'add' && selectedRowData.value?.name === newName) {
+      isAddCustomerModalVisible.value = false;
+      callback();
+      return;
+    }
     const customerId = selectedRowData.value?.customerGroupId ?? -1;
     const res = await (action === 'add'
       ? addNewCustomerGroup(newName)

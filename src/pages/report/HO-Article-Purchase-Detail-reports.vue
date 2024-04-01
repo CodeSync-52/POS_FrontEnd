@@ -127,8 +127,9 @@ const reportData = ref<IHOSaleDetailReportData[]>([]);
 const timeStamp = Date.now();
 const isFetchingArticleList = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past30Date = date.subtractFromDate(timeStamp, { date: 30 });
+const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 const productSelectInputRef = ref<QSelect | null>(null);
-const formattedFromDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const filterSearch = ref<{
   articleData: null | IArticleData;
   startDate: null | string;
