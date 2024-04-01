@@ -4,7 +4,10 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">User OutStanding Balance Reports</span>
-      <download-pdf-excel @downloadPdfData="downloadPdfData" />
+      <download-pdf-excel
+        @downloadPdfData="downloadPdfData"
+        @downloadCSVData="downloadCSVData"
+      />
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -80,11 +83,14 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { exportFile, useQuasar } from 'quasar';
 import { ICustomerListResponse, IOutStandingReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { getCustomerGroupList } from 'src/services';
-import { userOutStandingReportListApi } from 'src/services/reports';
+import {
+  userOutStandingReportListApi,
+  wrapCsvValue,
+} from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { outStandingReportColumn } from 'src/utils/reports';
@@ -221,4 +227,36 @@ async function downloadPdfData() {
     title: fileTitle,
   });
 }
+
+const downloadCSVData = () => {
+  const content = [
+    outStandingReportColumn.map((col) => wrapCsvValue(col.label)),
+  ]
+    .concat(
+      outStandingReportData.value.map((row: any) =>
+        outStandingReportColumn
+          .map((col) =>
+            wrapCsvValue(
+              typeof col.field === 'function'
+                ? col.field(row)
+                : row[col.field === void 0 ? col.name : col.field],
+              col.format,
+              row
+            )
+          )
+          .join(',')
+      )
+    )
+    .join('\r\n');
+
+  const status = exportFile('User-Outstanding-report.csv', content, 'text/csv');
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning',
+    });
+  }
+};
 </script>

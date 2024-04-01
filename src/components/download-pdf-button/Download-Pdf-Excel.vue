@@ -23,20 +23,16 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useQuasar } from 'quasar';
-const $q = useQuasar();
 const isLoading = ref(false);
-const emit = defineEmits<{ (event: 'downloadPdfData'): void }>();
+const emit = defineEmits(['downloadPdfData', 'downloadCSVData']);
 const downloadPdf = async () => {
   isLoading.value = true;
   emit('downloadPdfData');
   isLoading.value = false;
 };
 const excelPdfNotif = () => {
-  $q.notify({
-    message:
-      'Download in Excel is unavailable at the moment as work  is in progress',
-    type: 'warning',
-  });
+  isLoading.value = true;
+  emit('downloadCSVData');
+  isLoading.value = false;
 };
 </script>
