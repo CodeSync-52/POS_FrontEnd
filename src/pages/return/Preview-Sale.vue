@@ -382,6 +382,7 @@ onMounted(async () => {
   if (routerPath.includes('editHoldBill')) {
     titleAction.value = 'Edit Hold Bill';
   }
+  document.body.addEventListener('keydown', handleKeyPress);
 });
 const handleSelectedData = (payload: ISaleInfo[]) => {
   const oldIdList = SaleSummary.value.saleDetailInfos.map(
@@ -448,6 +449,11 @@ const handleUpdateDiscount = (
 };
 const handlePrintReceipt = () => {
   printReceipt(ReceiptToPrint);
+};
+const handleKeyPress = async (e: KeyboardEvent) => {
+  if (e.key === '+') {
+    isInventoryListModalVisible.value = true;
+  }
 };
 const previewBill = async (saleId: number) => {
   try {

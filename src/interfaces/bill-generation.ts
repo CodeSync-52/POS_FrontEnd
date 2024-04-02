@@ -52,6 +52,7 @@ export interface IBillGenerationDetailsInfoData {
   billId: number;
   billStatus: string;
   createdDate: string;
+  outStandingBalance: number;
   fullName: string;
   productList: IBillGenerationDetailsInfoProductList[];
   totalAmount: number;

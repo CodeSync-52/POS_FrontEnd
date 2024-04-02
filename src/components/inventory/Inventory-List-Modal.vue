@@ -50,16 +50,16 @@
           <div
             class="flex justify-center md:justify-end w-full items-end h-full gap-2"
           >
-            <q-btn
+            <!-- <q-btn
               unelevated
               :loading="isLoading"
               color=""
               class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
               icon="search"
               label="Search"
-              :disable="isBothInputsEmpty"
+              :disable="!filterSearch.ProductId"
               @click="handleSelectedFilters"
-            />
+            /> -->
             <q-btn
               unelevated
               color=""
@@ -157,7 +157,7 @@ import {
   IPagination,
 } from 'src/interfaces';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { onMounted, onUpdated, ref, computed, watch } from 'vue';
+import { onMounted, onUpdated, ref, watch } from 'vue';
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const selectedShopDetailList = ref<IInventoryListResponse[]>([]);
@@ -257,7 +257,6 @@ onUpdated(async () => {
 });
 
 const handlePopupShow = () => {
-  // When the popup opens, blur the input
   if (productSelectInputRef.value) {
     if (filterSearch.value.ProductId !== null) {
       handleSelectedFilters();
@@ -303,9 +302,6 @@ const handlePreviewImage = (selectedImage: string) => {
     isPreviewImageModalVisible.value = true;
   }
 };
-const isBothInputsEmpty = computed(() => {
-  return !filterSearch.value.ProductId && !filterSearch.value.ProductCode;
-});
 const handlePagination = (newVal: Omit<IPagination, 'rowsNumber'>) => {
   const selectedPagination = {
     ...newVal,

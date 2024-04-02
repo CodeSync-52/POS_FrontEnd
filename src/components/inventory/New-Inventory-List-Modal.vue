@@ -20,8 +20,11 @@
           <q-select
             popup-content-class="!max-h-[200px]"
             class="min-w-[220px]"
+            ref="productSelectInputRef"
+            @popup-hide="handlePopupShow"
             use-input
             dense
+            autofocus
             map-options
             clearable
             outlined
@@ -34,7 +37,6 @@
             color="btn-primary"
             option-label="name"
             option-value="productId"
-            @keydown.enter="handleEnterKey"
           >
             <template v-slot:no-option>
               <q-item>
@@ -47,21 +49,52 @@
           <div
             class="flex justify-center md:justify-end w-full items-end h-full gap-2"
           >
-            <q-btn
+            <!-- <q-btn
               unelevated
               :loading="isLoading"
               color=""
               class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
               icon="search"
               label="Search"
+              :disable="!filterSearch.ProductId"
               @click="handleSearchArticles"
+            /> -->
+            <q-btn
+              unelevated
+              color=""
+              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+              label="Clear"
+              @click="handleRemoveInventoryFilter"
             />
           </div>
         </div>
       </div>
+      <div
+        v-if="selectedShopDetailRecords.length > 0"
+        class="row q-col-gutter-md mb-4"
+      >
+        <q-input
+          class="min-w-[200px] max-w-[200px]"
+          v-model="filteredData.size"
+          outlined
+          dense
+          label="Size"
+          color="btn-primary"
+          @change="filterSelectedShopDetailList"
+        />
+        <q-input
+          class="min-w-[200px] max-w-[200px]"
+          v-model="filteredData.color"
+          outlined
+          dense
+          label="Color"
+          color="btn-primary"
+          @change="filterSelectedShopDetailList"
+        />
+      </div>
       <q-table
         :columns="InventoryListColumn"
-        :rows="selectedShopDetailRecords"
+        :rows="filteredShopDetailList"
         :rows-per-page-options="[0]"
         v-model:pagination="pagination"
         v-model:selected="selected"
@@ -129,8 +162,9 @@ import { articleListApi, inventoryDetailApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { ref } from 'vue';
-
+import { ref, watch } from 'vue';
+import { QSelect } from 'quasar';
+const productSelectInputRef = ref<QSelect | null>(null);
 const $q = useQuasar();
 const authStore = useAuthStore();
 const articleList = ref<IArticleData[]>([]);
@@ -147,6 +181,7 @@ const pagination = ref<IPagination>({
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
+const filteredShopDetailList = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
 const isFetchingArticleList = ref(false);
 const filterSearch = ref<IInventoryFilterSearch>({
@@ -174,6 +209,19 @@ const handleFilterArticles = (value: any, update: CallableFunction) => {
   update(() => {
     getArticleList(value);
   });
+};
+const handlePopupShow = () => {
+  if (productSelectInputRef.value) {
+    if (filterSearch.value.ProductId !== null) {
+      handleSearchArticles();
+    }
+  }
+};
+const handleRemoveInventoryFilter = () => {
+  isLoading.value = true;
+  filterSearch.value.ProductId = null;
+  selectedShopDetailRecords.value = [];
+  isLoading.value = false;
 };
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
@@ -241,9 +289,41 @@ const inventoryDetailList = async (data?: {
   }
   isFetchingRecords.value = false;
 };
-const handleEnterKey = () => {
-  if (filterSearch.value.ProductId !== null) {
-    handleSearchArticles();
-  }
+const filteredData = ref<{
+  size: string;
+  color: string;
+}>({
+  size: '',
+  color: '',
+});
+const filterSelectedShopDetailList = () => {
+  filteredShopDetailList.value = selectedShopDetailRecords.value.filter(
+    (item) => {
+      let sizeMatch = true;
+      let colorMatch = true;
+      if (filteredData.value.size) {
+        sizeMatch =
+          item.size
+            ?.toLowerCase()
+            ?.includes(filteredData.value.size.toLowerCase()) || false;
+      }
+      if (filteredData.value.color) {
+        colorMatch =
+          item.color
+            ?.toLowerCase()
+            .includes(filteredData.value.color.toLowerCase()) || false;
+      }
+      return sizeMatch && colorMatch;
+    }
+  );
 };
+watch([filteredData, selectedShopDetailRecords], filterSelectedShopDetailList, {
+  deep: true,
+});
+
+watch(filteredData, (newValue) => {
+  if (!newValue) {
+    filteredShopDetailList.value = selectedShopDetailRecords.value;
+  }
+});
 </script>

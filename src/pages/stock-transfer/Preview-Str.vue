@@ -391,18 +391,29 @@ const updateSelectedProductVariant = async (
   grnDetailId: number,
   quantity: number
 ) => {
-  const res = await updateGrnDetail({
-    grnId: grnDetailId,
-    quantity: quantity,
-  });
-  if (res.type === 'Success') {
+  try {
+    const res = await updateGrnDetail({
+      grnId: grnDetailId,
+      quantity: quantity,
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: res.message,
+        type: 'positive',
+      });
+    }
+    selectedGrnId.value = Number(router.currentRoute.value.params.id);
+    previewGrn(selectedGrnId.value);
+  } catch (error) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(error)) {
+      message = error.message;
+    }
     $q.notify({
-      message: res.message,
-      type: 'positive',
+      message,
+      type: 'negative',
     });
   }
-  selectedGrnId.value = Number(router.currentRoute.value.params.id);
-  previewGrn(selectedGrnId.value);
 };
 </script>
 <style scoped lang="scss">

@@ -13,12 +13,6 @@ export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
     align: 'left',
     field: (row) => row.productImage,
   },
-  // {
-  //   name: 'productCode',
-  //   label: 'Product Code',
-  //   align: 'left',
-  //   field: (row) => row.productCode.split(',')[0] || '-',
-  // },
   {
     name: 'size',
     required: true,
