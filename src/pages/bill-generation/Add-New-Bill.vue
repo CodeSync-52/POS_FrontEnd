@@ -220,11 +220,11 @@
           <div class="col-6">
             <q-input
               maxlength="250"
-              v-model="billGenerationDetailsInfoData.billStatus"
+              v-model="billGenerationDetailsInfoData.outStandingBalance"
               readonly
               dense
-              type="text"
-              label="Bill Status"
+              type="number"
+              label="OutStanding Balance"
               class="btn-primary"
               outlined
             />
@@ -481,6 +481,7 @@ const billGenerationDetailsInfoData = ref<IBillGenerationDetailsInfoData>({
   createdDate: '',
   fullName: '',
   productList: [],
+  outStandingBalance: 0,
   totalAmount: 0,
   claim: 0,
   freight: 0,

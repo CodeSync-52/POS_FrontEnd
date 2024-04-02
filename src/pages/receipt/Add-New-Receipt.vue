@@ -69,16 +69,6 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-md-4">
-            <q-input
-              v-if="!isReceiptPreview"
-              dense
-              outlined
-              label="Outstanding Balance"
-              readonly
-              v-model="addNewReceipt.userOutstandingBalance"
-            />
-          </div>
         </div>
         <q-table
           v-if="selectedArticleData.length > 0"
