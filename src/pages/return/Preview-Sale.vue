@@ -381,8 +381,8 @@ onMounted(async () => {
   await previewBill(Number(selectedId));
   if (routerPath.includes('editHoldBill')) {
     titleAction.value = 'Edit Hold Bill';
+    document.body.addEventListener('keydown', handleKeyPress);
   }
-  document.body.addEventListener('keydown', handleKeyPress);
 });
 const handleSelectedData = (payload: ISaleInfo[]) => {
   const oldIdList = SaleSummary.value.saleDetailInfos.map(
@@ -502,6 +502,8 @@ const handleCompleteSale = async (saleId: number, saleStatus: number) => {
         message: response.message,
         type: 'positive',
       });
+      // await previewBill(Number(selectedId))
+      // router.push(`/shop-sale/${Number(selectedId)}/preview`)
       router.go(-1);
     }
   } catch (e) {
