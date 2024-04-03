@@ -381,8 +381,8 @@ onMounted(async () => {
   await previewBill(Number(selectedId));
   if (routerPath.includes('editHoldBill')) {
     titleAction.value = 'Edit Hold Bill';
+    document.body.addEventListener('keydown', handleKeyPress);
   }
-  document.body.addEventListener('keydown', handleKeyPress);
 });
 const handleSelectedData = (payload: ISaleInfo[]) => {
   const oldIdList = SaleSummary.value.saleDetailInfos.map(
@@ -502,7 +502,10 @@ const handleCompleteSale = async (saleId: number, saleStatus: number) => {
         message: response.message,
         type: 'positive',
       });
-      router.go(-1);
+      router.push(`/shop-sale/${Number(selectedId)}/preview`);
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

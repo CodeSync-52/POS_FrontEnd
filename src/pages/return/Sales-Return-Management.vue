@@ -147,6 +147,7 @@
                 color="btn-primary"
                 val="first"
                 label="Template 1"
+                @click="presistValue('first')"
               />
               <q-radio
                 v-model="receipt.sampleType"
@@ -154,11 +155,13 @@
                 color="btn-primary"
                 val="second"
                 label="Template 2"
+                @click="presistValue('second')"
               />
               <q-checkbox
                 v-model="receipt.isprintingDisable"
                 color="btn-primary"
                 label="Disable Print"
+                @update:model-value="presistValue"
               />
             </div>
           </div>
@@ -527,11 +530,13 @@ const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const roleDropdownOptions = ref<IUserResponse[]>([]);
 const selectedInventoryData = ref<ISaleShopSelectedInventory[]>([]);
 const receipt = ref<{
-  sampleType: 'first' | 'second';
+  sampleType: string;
   isprintingDisable: boolean;
 }>({
-  sampleType: 'first',
-  isprintingDisable: false,
+  sampleType: localStorage.getItem('template_btn') || 'first',
+  isprintingDisable: JSON.parse(
+    localStorage.getItem('disable_template_btn') || 'false'
+  ),
 });
 const receiptDetail = ref<null | IPreviewSaleResponse>(null);
 const receiptItems = ref<ISaleShopSelectedInventory[]>([]);
@@ -601,6 +606,13 @@ onMounted(async () => {
   getShopList();
   getShopOfficers();
 });
+const presistValue = (value: string | boolean) => {
+  if (typeof value === 'string') {
+    localStorage.setItem('template_btn', value);
+  } else {
+    localStorage.setItem('disable_template_btn', String(value));
+  }
+};
 const handleActionKeys = (e: KeyboardEvent) => {
   if (e.ctrlKey) {
     e.preventDefault();

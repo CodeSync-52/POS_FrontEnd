@@ -165,7 +165,7 @@ import { IPreviewSaleResponse } from 'src/interfaces';
 import { computed } from 'vue';
 interface IProps {
   receiptDetail: IPreviewSaleResponse | null;
-  isFirstSample: 'first' | 'second';
+  isFirstSample: string;
 }
 const props = withDefaults(defineProps<IProps>(), {
   receiptDetail: null,
