@@ -128,18 +128,18 @@ export const HOArticleReportColumn: QTableColumn<IHOArticleReportData>[] = [
 export const HOArticleSaleDetailReportColumn: QTableColumn<IHOSaleDetailReportData>[] =
   [
     {
+      name: 'date',
+      required: true,
+      label: 'Date',
+      align: 'left',
+      field: (row) => moment(row.date).format('DD-MM-YYYY'),
+    },
+    {
       name: 'user',
       required: true,
       label: 'User',
       align: 'left',
       field: (row) => row.user,
-    },
-    {
-      name: 'amount',
-      required: true,
-      label: 'Amount',
-      align: 'left',
-      field: (row) => row.amount ?? '-',
     },
     {
       name: 'quantity',
@@ -149,10 +149,10 @@ export const HOArticleSaleDetailReportColumn: QTableColumn<IHOSaleDetailReportDa
       field: (row) => row.quantity ?? '-',
     },
     {
-      name: 'date',
+      name: 'amount',
       required: true,
-      label: 'Date',
+      label: 'Amount',
       align: 'left',
-      field: (row) => moment(row.date).format('DD-MM-YYYY'),
+      field: (row) => row.amount ?? '-',
     },
   ];

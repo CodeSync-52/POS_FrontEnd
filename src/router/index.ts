@@ -33,6 +33,10 @@ export default route(function () {
       next('/login');
       return;
     }
+    if (to.path === '/dashboard') {
+      next();
+      return;
+    }
     const meta = to.meta.module;
     if (isAuthorized && to.fullPath === '/permission-not-allowed') {
       next();

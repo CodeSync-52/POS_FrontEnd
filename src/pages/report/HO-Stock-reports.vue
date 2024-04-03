@@ -413,18 +413,23 @@ async function downloadPdfData() {
 }
 
 const downloadCSVData = () => {
-  const content = [HOStockReportColumn.map((col) => wrapCsvValue(col.label))]
+  const selectedColumnsData = HOStockReportColumn.filter(
+    (col) => col.name !== 'productImage'
+  );
+  const content = [selectedColumnsData.map((col) => wrapCsvValue(col.label))]
     .concat(
       reportData.value.map((row: any) =>
-        HOStockReportColumn.map((col) =>
-          wrapCsvValue(
-            typeof col.field === 'function'
-              ? col.field(row)
-              : row[col.field === void 0 ? col.name : col.field],
-            col.format,
-            row
+        selectedColumnsData
+          .map((col) =>
+            wrapCsvValue(
+              typeof col.field === 'function'
+                ? col.field(row)
+                : row[col.field === void 0 ? col.name : col.field],
+              col.format,
+              row
+            )
           )
-        ).join(',')
+          .join(',')
       )
     )
     .join('\r\n');
