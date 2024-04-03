@@ -47,6 +47,11 @@ export const useAuthStore = defineStore('login', () => {
       role === EUserRoles.ShopOfficer.toLowerCase()
     ) {
       router.push('/shop-sale');
+    } else if (
+      role === EUserRoles.SuperAdmin.toLowerCase() ||
+      role === EUserRoles.Admin.toLowerCase()
+    ) {
+      router.push('/dashboard');
     } else {
       router.push('/role');
     }

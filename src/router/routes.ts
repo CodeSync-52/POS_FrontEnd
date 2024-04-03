@@ -363,6 +363,10 @@ export const routeList = [
       module: EUserModules.ShopAccountModule,
     },
   },
+  {
+    path: '/dashboard',
+    component: () => import('src/pages/dashboard/PosDashboard.vue'),
+  },
 ];
 
 const routes: RouteRecordRaw[] = [
