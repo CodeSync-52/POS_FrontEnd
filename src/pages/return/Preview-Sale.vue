@@ -502,9 +502,10 @@ const handleCompleteSale = async (saleId: number, saleStatus: number) => {
         message: response.message,
         type: 'positive',
       });
-      // await previewBill(Number(selectedId))
-      // router.push(`/shop-sale/${Number(selectedId)}/preview`)
-      router.go(-1);
+      router.push(`/shop-sale/${Number(selectedId)}/preview`);
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
