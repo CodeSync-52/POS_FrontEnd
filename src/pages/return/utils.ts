@@ -190,11 +190,11 @@ export const shopAllBillsTableColumn: QTableColumn[] = [
     field: (row) => row.invoiceNumber,
   },
   {
-    name: 'shopName',
+    name: 'saleDate',
     required: true,
-    label: 'Shop',
+    label: 'Date',
     align: 'left',
-    field: (row) => row.shopName,
+    field: (row) => moment(row.saleDate).format('YYYY-MM-DD'),
   },
   {
     name: 'status',
@@ -204,13 +204,6 @@ export const shopAllBillsTableColumn: QTableColumn[] = [
     field: (row) => row.status,
   },
   {
-    name: 'totalDiscount',
-    required: true,
-    label: 'Discount',
-    align: 'left',
-    field: (row) => row.totalDiscount,
-  },
-  {
     name: 'totalQuantity',
     required: true,
     label: 'Quantity',
@@ -218,18 +211,18 @@ export const shopAllBillsTableColumn: QTableColumn[] = [
     field: (row) => row.totalQuantity,
   },
   {
+    name: 'totalDiscount',
+    required: true,
+    label: 'Discount',
+    align: 'left',
+    field: (row) => row.totalDiscount,
+  },
+  {
     name: 'netAmount',
     required: true,
     label: 'Amount',
     align: 'left',
     field: (row) => row.netAmount,
-  },
-  {
-    name: 'saleDate',
-    required: true,
-    label: 'Date',
-    align: 'left',
-    field: (row) => moment(row.saleDate).format('YYYY-MM-DD'),
   },
   {
     name: 'action',
