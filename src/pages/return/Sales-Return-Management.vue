@@ -67,7 +67,6 @@
               map-options
               clearable
               v-model="shopSale.salePersonCode"
-              ref="salePersonCodeInput"
               popup-content-class="!max-h-[200px]"
               :options="roleDropdownOptions"
               @update:model-value="handleUpdateSalePersonCode($event)"
@@ -545,7 +544,6 @@ const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
 const isReceiptDescriptionModalVisible = ref(false);
-const salePersonCodeInput = ref<null | HTMLDivElement>(null);
 const ReceiptToPrint = ref<null | HTMLDivElement>(null);
 const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
@@ -992,8 +990,6 @@ const inventoryDetailList = async (data?: {
 
 const handleAddShopSale = async () => {
   receiptItems.value = selectedInventoryData.value;
-  const res = isPersonCodeEmpty();
-  if (!res) return;
   if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
     $q.notify({
       message:
@@ -1048,21 +1044,7 @@ const handleAddShopSale = async () => {
     isLoading.value = false;
   }
 };
-const isPersonCodeEmpty = () => {
-  const personCode = shopSale.value.salePersonCode;
-  if (!personCode || null) {
-    $q.notify({
-      message: 'Sale Person Code is required.',
-      type: 'negative',
-    });
-    salePersonCodeInput.value?.focus();
-    return false;
-  }
-  return true;
-};
 const handleHoldBill = async () => {
-  const res = isPersonCodeEmpty();
-  if (!res) return;
   if (selectedInventoryData.value.some((record) => record.isReturn)) {
     $q.notify({
       message: 'You cannot HOLD this bill, as it contains a Return Item.',

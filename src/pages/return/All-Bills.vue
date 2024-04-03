@@ -207,10 +207,10 @@
             <strong>Total</strong>
           </q-td>
           <q-td>
-            <strong>{{ calculateTotal('totalDiscount') }}</strong>
+            <strong>{{ calculateTotal('totalQuantity') }}</strong>
           </q-td>
           <q-td>
-            <strong>{{ calculateTotal('totalQuantity') }}</strong>
+            <strong>{{ calculateTotal('totalDiscount') }}</strong>
           </q-td>
           <q-td colspan="3">
             <strong>{{ calculateTotal('netAmount') }}</strong>
