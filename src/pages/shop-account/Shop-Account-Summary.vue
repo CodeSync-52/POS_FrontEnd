@@ -81,13 +81,13 @@
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">- HO Outgoing:</span>
+          <span class="font-medium md:text-lg">- Submitted To HO:</span>
           <span class="md:text-lg">
             {{ shopAccountSummary.totalOutgoingToHO }}
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">+ HO Incoming :</span>
+          <span class="font-medium md:text-lg">+ Received From HO :</span>
           <span class="md:text-lg">
             {{ shopAccountSummary.totalIncomingFromHO }}
           </span>

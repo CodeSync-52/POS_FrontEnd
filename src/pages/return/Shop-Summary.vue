@@ -30,6 +30,16 @@
           <span class="font-medium md:text-lg">Item's Sold Today :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalItemsSale }} </span>
         </div>
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">Discounts :</span>
+          <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
+        </div>
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">Refunds :</span>
+          <span class="md:text-lg">
+            {{ SaleSummary.totalReturnSaleAmount }}
+          </span>
+        </div>
       </div>
       <div
         class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start md:pr-2"
@@ -39,24 +49,32 @@
           <span class="md:text-lg"> {{ SaleSummary.openingBalance }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Gross Sales :</span>
-          <span class="md:text-lg"> {{ SaleSummary.todaySale }} </span>
+          <span class="font-medium md:text-lg">Net Sale :</span>
+          <span class="md:text-lg">
+            {{
+              SaleSummary.todaySale -
+              SaleSummary.totalDiscount -
+              SaleSummary.totalReturnSaleAmount
+            }}
+          </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Overall Discounts :</span>
-          <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
+          <span class="font-medium md:text-lg">- Expenses:</span>
+          <span class="md:text-lg"> {{ SaleSummary.totalExpense }} </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">HO Incoming :</span>
+          <span class="font-medium md:text-lg">- Submitted To HO:</span>
+          <span class="md:text-lg"> {{ SaleSummary.totalOutgoingToHO }} </span>
+        </div>
+        <div class="md:flex md:justify-between md:w-full items-center">
+          <span class="font-medium md:text-lg">+ Received From HO :</span>
           <span class="md:text-lg">
             {{ SaleSummary.totalIncomingFromHO }}
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Overall Refunds :</span>
-          <span class="md:text-lg">
-            {{ SaleSummary.totalReturnSaleAmount }}
-          </span>
+          <span class="font-medium md:text-lg">Remaining Balance :</span>
+          <span class="md:text-lg"> {{ SaleSummary.remainingBalance }} </span>
         </div>
       </div>
     </div>
@@ -110,20 +128,7 @@
     >
       <div
         class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start md:pr-2"
-      >
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Overall Expense:</span>
-          <span class="md:text-lg"> {{ SaleSummary.totalExpense }} </span>
-        </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">HO Outgoing:</span>
-          <span class="md:text-lg"> {{ SaleSummary.totalOutgoingToHO }} </span>
-        </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Remaining Balance :</span>
-          <span class="md:text-lg"> {{ SaleSummary.remainingBalance }} </span>
-        </div>
-      </div>
+      ></div>
     </div>
     <div class="row justify-center md:justify-end">
       <q-btn

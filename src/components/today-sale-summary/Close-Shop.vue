@@ -86,6 +86,7 @@ const userList = ref<IUserResponse[]>([]);
 const confirmAction = async () => {
   isLoading.value = true;
   await handleAddNewAccount();
+  isLoading.value = false;
 };
 onMounted(() => {
   getUserList();
@@ -143,7 +144,7 @@ const handleAddNewAccount = async () => {
       router.go(-1);
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred Add Cash Flow';
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
       message = e.message;
     }
