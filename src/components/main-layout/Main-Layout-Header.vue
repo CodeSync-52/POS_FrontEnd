@@ -112,7 +112,7 @@ const showAccountInfoDropdown = ref<boolean>(false);
 const authStore = useAuthStore();
 const $q = useQuasar();
 const emit = defineEmits(['toggleLeftDrawer', 'showAccountInfoModal']);
-const isLeftDrawerVisible = ref<boolean>(true);
+const isLeftDrawerVisible = ref<boolean>(false);
 const isViewProfile = ref<boolean>(false);
 const handleCloseModal = (closeModal: boolean) => {
   isAccountInfoModalVisible.value = closeModal;
