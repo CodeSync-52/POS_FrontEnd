@@ -52,7 +52,7 @@ export const addCashFlowApi = async ({
   });
   return res;
 };
-export const addShopAccountApi = async ({
+export const cashReceiveFromHOApi = async ({
   shopId,
   amount,
   transactionUserId,
@@ -75,7 +75,7 @@ export const addShopAccountApi = async ({
   });
   return res;
 };
-export const returnShopAccountApi = async ({
+export const cashReturnToHOApi = async ({
   shopId,
   amount,
   transactionUserId,

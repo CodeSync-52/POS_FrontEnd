@@ -363,7 +363,7 @@ async function convertArrayToPdfData(array: IHOStockReportData[]) {
       });
   }
   const tableStuff = [];
-  const headerRow = ['Product Name', 'Product Image', 'Master Stock'];
+  const headerRow = ['Article', 'Image', 'Master Stock'];
   tableStuff.push(headerRow);
 
   array.forEach((item: IHOStockReportData) => {
@@ -388,11 +388,11 @@ async function downloadPdfData() {
       content: filterSearch.value.userData?.fullName,
     },
     {
-      heading: 'Category Name',
+      heading: 'Category',
       content: filterSearch.value.categoryName,
     },
     {
-      heading: 'Product Name',
+      heading: 'Article',
       content:
         filterSearch.value.ProductId && filterSearch.value.ProductId.length > 0
           ? filterSearch.value.ProductId[0].name

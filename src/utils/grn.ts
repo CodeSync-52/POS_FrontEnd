@@ -53,13 +53,13 @@ export const selectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] 
   [
     {
       name: 'productImage',
-      label: 'Product Image',
+      label: 'Image',
       field: (row) => row.productImage,
       align: 'left',
     },
     {
       name: 'productName',
-      label: 'Product Name',
+      label: 'Article',
       field: (row) => row.productName,
       align: 'left',
     },
@@ -97,13 +97,13 @@ export const selectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] 
 export const PreviewGrnTableColumn: QTableColumn<IPreviewGrnDetail>[] = [
   {
     name: 'productImage',
-    label: 'Product Image',
+    label: 'Image',
     field: (row) => row.productImage,
     align: 'left',
   },
   {
     name: 'productName',
-    label: 'Product Name',
+    label: 'Article',
     field: (row) => row.productName,
     align: 'left',
   },

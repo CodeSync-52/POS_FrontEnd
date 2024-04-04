@@ -194,7 +194,7 @@
                 :to="`/stock-transfer/${props.row.grnId}`"
               >
                 <q-tooltip class="bg-green" :offset="[10, 10]">
-                  Preview GRN
+                  Preview STR
                 </q-tooltip>
               </q-btn>
               <div class="flex gap-2 flex-nowrap">

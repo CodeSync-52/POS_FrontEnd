@@ -507,7 +507,7 @@ async function downloadPdfData() {
       content: moment(filterSearch?.value?.endDate).format('DD/MM/YYYY'),
     },
     {
-      heading: 'Product Name',
+      heading: 'Article',
       content:
         filterSearch.value.ProductId && filterSearch.value.ProductId.length > 0
           ? filterSearch.value.ProductId[0].name

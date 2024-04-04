@@ -247,7 +247,7 @@
               :label="props.row.status"
               @click="handleChangeStatusPopup(props.row)"
               ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
-                Edit Status
+                Change Status
               </q-tooltip>
             </q-btn>
           </q-td>

@@ -112,7 +112,7 @@
             class="q-gutter-y-xs flex flex-col items-center md:flex-row gap-3 mt-2 md:mt-0 md:gap-16 md:ml-2"
           >
             <div class="row gap-6 items-center">
-              <span class="text-base">Add Articles</span>
+              <span class="text-base">Select Articles</span>
               <q-btn
                 icon="add"
                 rounded

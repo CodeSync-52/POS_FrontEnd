@@ -678,7 +678,7 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
       });
   }
   const tableStuff = [];
-  const headerRow = ['Article Image', 'Article Name', 'Quantity'];
+  const headerRow = ['Image', 'Article', 'Quantity'];
   tableStuff.push(headerRow);
   const netQuantity = array.reduce(
     (total: number, row: ISelectedArticleData) => {

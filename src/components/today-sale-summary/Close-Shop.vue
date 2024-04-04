@@ -77,14 +77,14 @@ import { IUserResponse } from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { getUserListApi, returnShopAccountApi } from 'src/services';
+import { getUserListApi, cashReturnToHOApi } from 'src/services';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
 const userList = ref<IUserResponse[]>([]);
 const confirmAction = async () => {
   isLoading.value = true;
-  await handleAddNewAccount();
+  await handleCloseShop();
   isLoading.value = false;
 };
 onMounted(() => {
@@ -127,10 +127,10 @@ const getUserList = async () => {
     });
   }
 };
-const handleAddNewAccount = async () => {
+const handleCloseShop = async () => {
   const { user, amount } = returnAmount.value;
   try {
-    const res = await returnShopAccountApi({
+    const res = await cashReturnToHOApi({
       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
       amount: amount,
       transactionUserId: user?.userId ?? -1,

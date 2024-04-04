@@ -11,8 +11,8 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
     align: 'left',
   },
   {
-    name: 'fullName',
-    label: 'Full Name',
+    name: 'user',
+    label: 'User',
     field: (row) => row.fullName,
     align: 'left',
   },
@@ -57,13 +57,13 @@ export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
   [
     {
       name: 'productImage',
-      label: 'Product Image',
+      label: 'Image',
       field: (row) => row.productImage,
       align: 'left',
     },
     {
       name: 'productName',
-      label: 'Product Name',
+      label: 'Article',
       field: (row) => row.productName,
       align: 'left',
     },
@@ -81,7 +81,7 @@ export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
     },
     {
       name: 'unitWholeSalePrice',
-      label: 'Unit Wholesale Price',
+      label: 'Unit W.P',
       field: (row) => row.unitWholeSalePrice,
       align: 'left',
     },
