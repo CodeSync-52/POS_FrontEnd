@@ -48,7 +48,7 @@
                     class="text-[0.9rem] pl-12 py-2 hover:bg-text_hover hover:text-btn-primary transition-all rounded-md cursor-pointer"
                   >
                     {{
-                      subLinks.path === 'expenses'
+                      subLinks.path === '/expenses'
                         ? 'Expense'
                         : subLinks.path === '/shop-account'
                         ? 'Shop Account'
@@ -160,7 +160,7 @@ const essentialLinks = [
       },
       {
         title: EUserModules.SaleAndReturnManagement,
-        path: 'expenses',
+        path: '/expenses',
       },
     ],
   },
