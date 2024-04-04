@@ -77,6 +77,8 @@ import { IUserResponse } from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 import { getUserListApi, cashReturnToHOApi } from 'src/services';
 const authStore = useAuthStore();
 const $q = useQuasar();
@@ -140,6 +142,7 @@ const handleCloseShop = async () => {
         message: res.message,
         color: 'green',
       });
+      router.go(-1);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

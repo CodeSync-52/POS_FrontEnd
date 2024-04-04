@@ -123,11 +123,33 @@
     <div class="py-4">
       <q-table
         :columns="InventoryListColumn"
-        :rows="InventoryListRecords"
+        :rows="filteredShopDetailList"
         :loading="isLoading"
         v-model:pagination="pagination"
         @request="getInventoryList"
-        ><template v-slot:no-data>
+      >
+        <template v-slot:top-right>
+          <div class="flex gap-2" v-if="InventoryListRecords.length > 0">
+            <q-input
+              v-model="filteredData.size"
+              outlined
+              dense
+              label="Size"
+              color="btn-primary"
+              @change="filterSelectedShopDetailList"
+            />
+            <q-input
+              v-model="filteredData.color"
+              outlined
+              dense
+              label="Color"
+              color="btn-primary"
+              @change="filterSelectedShopDetailList"
+            />
+          </div>
+        </template>
+
+        <template v-slot:no-data>
           <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
             <q-icon name="warning" size="xs" />
             <span class="text-md font-medium"> No data available. </span>
@@ -163,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import {
   EActionPermissions,
@@ -182,6 +204,7 @@ import { InventoryListColumn } from 'src/utils/inventory';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const InventoryListRecords = ref<IInventoryListResponse[]>([]);
+const filteredShopDetailList = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const articleList = ref<IArticleData[]>([]);
@@ -199,6 +222,13 @@ const pagination = ref({
   page: 1,
   rowsPerPage: 25,
   rowsNumber: 0,
+});
+const filteredData = ref<{
+  size: string;
+  color: string;
+}>({
+  size: '',
+  color: '',
 });
 const $q = useQuasar();
 const filterSearch = ref<IInventoryFilterSearch>({
@@ -331,4 +361,35 @@ const handlePreviewImage = (selectedImage: string) => {
     isPreviewImageModalVisible.value = true;
   }
 };
+const filterSelectedShopDetailList = () => {
+  filteredShopDetailList.value = InventoryListRecords.value.filter((item) => {
+    let sizeMatch = true;
+    let colorMatch = true;
+
+    if (filteredData.value.size) {
+      sizeMatch =
+        item.size
+          ?.toLowerCase()
+          ?.includes(filteredData.value.size.toLowerCase()) || false;
+    }
+
+    if (filteredData.value.color) {
+      colorMatch =
+        item.color
+          ?.toLowerCase()
+          .includes(filteredData.value.color.toLowerCase()) || false;
+    }
+
+    return sizeMatch && colorMatch;
+  });
+};
+watch([filteredData, InventoryListRecords], filterSelectedShopDetailList, {
+  deep: true,
+});
+
+watch(filteredData, (newValue) => {
+  if (!newValue) {
+    filteredShopDetailList.value = InventoryListRecords.value;
+  }
+});
 </script>
