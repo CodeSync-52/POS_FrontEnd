@@ -62,6 +62,7 @@
         flat
         label="Close Shop"
         color="white"
+        v-close-popup
         :disable="!returnAmount.user"
         :loading="isLoading"
         class="bg-btn-primary hover:bg-btn-primary-hover"
@@ -76,10 +77,8 @@ import { IUserResponse } from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { useRouter } from 'vue-router';
 import { getUserListApi, cashReturnToHOApi } from 'src/services';
 const authStore = useAuthStore();
-const router = useRouter();
 const $q = useQuasar();
 const isLoading = ref(false);
 const userList = ref<IUserResponse[]>([]);
@@ -141,7 +140,6 @@ const handleCloseShop = async () => {
         message: res.message,
         color: 'green',
       });
-      router.go(-1);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

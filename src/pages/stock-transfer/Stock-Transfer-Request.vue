@@ -9,6 +9,20 @@
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
       <q-select
+        dense
+        style="min-width: 200px"
+        outlined
+        v-model="grnStatus"
+        :options="grnStatusOptionList"
+        map-options
+        popup-content-class="!max-h-[200px]"
+        label="Grn Status"
+        option-label="name"
+        option-value="statusId"
+        color="btn-primary"
+      >
+      </q-select>
+      <q-select
         popup-content-class="!max-h-[200px]"
         :options="shopData"
         :loading="isLoading"
@@ -220,9 +234,11 @@ import {
   IPagination,
   getRoleModuleDisplayName,
   IShopResponse,
+  IGrnStatusOptionList,
   EUserRoles,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/Accept-Or-Reject-Str-Modal.vue';
+import { grnStatusOptionList } from './utils';
 import {
   grnListApi,
   rejectStrApi,
@@ -244,6 +260,7 @@ const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
+const grnStatus = ref<IGrnStatusOptionList>(grnStatusOptionList[0]);
 const filterSearch = ref<IGrnListFilter>({
   FromDate: formattedFromDate,
   ToDate: formattedToDate,
@@ -297,6 +314,7 @@ const resetFilter = () => {
     },
     fromShopId: null,
   };
+  grnStatus.value = grnStatusOptionList[0];
   if (selectedShop.value.toShopId) {
     filterSearch.value.toShopId = selectedShop.value.toShopId?.shopId;
   }
@@ -325,7 +343,6 @@ onMounted(() => {
 const getGrnList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
-  if (isLoading.value) return;
   isLoading.value = true;
   if (data) {
     pagination.value = { ...pagination.value, ...data.pagination };
@@ -342,6 +359,7 @@ const getGrnList = async (data?: {
       {
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
+        status: grnStatus.value?.statusId,
         filterSearch: filterSearch.value,
       },
       apiController.value

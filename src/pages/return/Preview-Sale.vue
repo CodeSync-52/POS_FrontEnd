@@ -505,7 +505,7 @@ const handleCompleteSale = async (saleId: number, saleStatus: number) => {
       router.push(`/shop-sale/${Number(selectedId)}/preview`);
       setTimeout(() => {
         location.reload();
-      }, 1000);
+      }, 100);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';

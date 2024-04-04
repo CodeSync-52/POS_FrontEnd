@@ -23,6 +23,20 @@
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
       <q-select
+        dense
+        style="min-width: 200px"
+        outlined
+        v-model="grnStatus"
+        :options="grnStatusOptionList"
+        map-options
+        popup-content-class="!max-h-[200px]"
+        label="Grn Status"
+        option-label="name"
+        option-value="statusId"
+        color="btn-primary"
+      >
+      </q-select>
+      <q-select
         popup-content-class="!max-h-[200px]"
         :options="shopData"
         :loading="isLoading"
@@ -234,18 +248,21 @@ import {
   IPagination,
   IShopResponse,
   getRoleModuleDisplayName,
+  IGrnStatusOptionList,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/Accept-Or-Reject-Str-Modal.vue';
 import { grnListApi, shopListApi, rejectStrApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { GrnTableColumn } from 'src/utils';
+import { grnStatusOptionList } from 'src/pages/stock-transfer/utils';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.GoodsReceiptNotes);
 const $q = useQuasar();
 const GrnRecords = ref<IGrnRecords[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
+const grnStatus = ref<IGrnStatusOptionList>(grnStatusOptionList[0]);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
@@ -297,6 +314,7 @@ const resetFilter = () => {
       code: '',
     },
   };
+  grnStatus.value = grnStatusOptionList[0];
   getGrnList();
 };
 onMounted(() => {
@@ -335,7 +353,6 @@ const handleUpdateFromShop = (newVal: IShopResponse) => {
 const getGrnList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;
 }) => {
-  if (isLoading.value) return;
   isLoading.value = true;
   if (data) {
     pagination.value = { ...pagination.value, ...data.pagination };
@@ -352,6 +369,7 @@ const getGrnList = async (data?: {
       {
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
+        status: grnStatus.value?.statusId,
         filterSearch: filterSearch.value,
       },
       apiController.value
