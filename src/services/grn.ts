@@ -32,10 +32,12 @@ export const grnListApi = async (
   {
     PageNumber = 1,
     PageSize = 50,
+    status,
     filterSearch,
   }: {
     PageNumber: number;
     PageSize: number;
+    status: number;
     filterSearch: IGrnListFilter;
   },
   controller?: AbortController
@@ -48,6 +50,7 @@ export const grnListApi = async (
     params: {
       PageNumber,
       PageSize,
+      status,
       ...filterSearch,
     },
     signal: controller?.signal,

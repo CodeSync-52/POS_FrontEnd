@@ -199,4 +199,8 @@ interface ProductDetail {
   secondVariantSelection: SecondVariantSelection[];
 }
 
+export interface IGrnStatusOptionList {
+  name: string;
+  statusId: number;
+}
 export type OrderDetails = ProductDetail[][];
