@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="row justify-between items-center mb-2">
         <span class="text-lg font-medium"
-          >{{ isEdit ? 'Edit' : 'Preview' }} Str Receiving</span
+          >{{ isEdit ? 'Edit' : 'Preview' }} STR</span
         >
       </div>
       <div class="row q-col-gutter-md">
@@ -376,7 +376,7 @@ const previewGrn = async (selectedId: number) => {
       );
     }
   } catch (e) {
-    let message = 'Unexpected error occurred Preview Grn';
+    let message = 'Unexpected error occurred while Preview Grn';
     if (isPosError(e)) {
       message = e.message;
     }

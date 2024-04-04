@@ -93,13 +93,13 @@ export const saleShopSelectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWi
 export const shopSalePreviewTableColumn: QTableColumn<ISaleInfo>[] = [
   {
     name: 'productImage',
-    label: 'Product Image',
+    label: 'Image',
     field: (row) => row.productImage,
     align: 'left',
   },
   {
     name: 'productName',
-    label: 'Product Name',
+    label: 'Article',
     field: (row) => row.productName,
     align: 'left',
   },

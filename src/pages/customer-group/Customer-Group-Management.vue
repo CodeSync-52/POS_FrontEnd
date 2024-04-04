@@ -26,9 +26,7 @@
           <div
             class="flex flex-col sm:flex-row justify-center md:justify-between gap-4 item-center w-full"
           >
-            <div class="font-medium text-lg flex items-center">
-              <span>User Category</span>
-            </div>
+            <div class="font-medium text-lg flex items-center"></div>
             <q-input
               outlined
               dense
@@ -69,7 +67,7 @@
                 @click="handleEditStatusPopup(props.row)"
               >
                 <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
-                  Edit Status
+                  Change Status
                 </q-tooltip>
               </q-btn>
             </div>

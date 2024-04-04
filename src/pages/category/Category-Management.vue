@@ -33,7 +33,7 @@
           <div
             class="flex md:flex-row md:gap-0 md:justify-between sm:items-center sm:justify-center sm:flex-col sm:gap-4 md:items-center mb-4 w-full"
           >
-            <div class="font-medium text-lg"><span>Category</span></div>
+            <div class="font-medium text-lg"></div>
 
             <q-input
               outlined
@@ -94,7 +94,7 @@
               :label="props.row.status"
               @click="handleShowEditStatusPopup(props.row)"
               ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
-                Edit Status
+                Change Status
               </q-tooltip></q-btn
             >
           </q-td>

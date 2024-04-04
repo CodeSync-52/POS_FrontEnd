@@ -55,7 +55,7 @@
           class="md:flex md:justify-between md:w-full items-center"
         >
           <div class="row gap-6 items-center">
-            <span class="font-medium md:text-lg">Add Articles</span>
+            <span class="font-medium md:text-lg">Select Articles</span>
             <q-btn
               icon="add"
               rounded

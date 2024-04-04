@@ -34,7 +34,7 @@
           <div
             class="flex md:flex-row md:gap-0 md:justify-between sm:justify-center sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4 w-full"
           >
-            <div class="font-medium text-lg"><span>Variant</span></div>
+            <div class="font-medium text-lg"></div>
             <q-input
               maxlength="250"
               outlined
@@ -118,7 +118,7 @@
               @click="handleUpdateStatusPopup(props.row)"
               class="hover:text-btn-primary"
               ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
-                Edit Status
+                Change Status
               </q-tooltip></q-btn
             >
           </q-td>

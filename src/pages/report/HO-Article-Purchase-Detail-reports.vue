@@ -264,7 +264,7 @@ async function convertArrayToPdfData(array: IHOSaleDetailReportData[]) {
 async function downloadPdfData() {
   const headers: ITableHeaders[] = [
     {
-      heading: 'Product Name',
+      heading: 'Article',
       content: filterSearch?.value.articleData?.name,
     },
     {

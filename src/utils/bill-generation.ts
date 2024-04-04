@@ -14,9 +14,9 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
     field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
   },
   {
-    name: 'name',
+    name: 'user',
     required: true,
-    label: 'Name',
+    label: 'User',
     align: 'left',
     field: (row) => row.name,
   },
@@ -48,8 +48,8 @@ export const editBillGenerationRecordsColumn: QTableColumn<IProductInfoDetailLis
       field: (row) => row.image,
     },
     {
-      name: 'name',
-      label: 'Name',
+      name: 'article',
+      label: 'Article',
       align: 'left',
       field: (row) => row.productName,
     },
@@ -81,8 +81,8 @@ export const BillGenerationDetailsInfoColumn: QTableColumn<IBillGenerationDetail
       field: (row) => row.image,
     },
     {
-      name: 'name',
-      label: 'Name',
+      name: 'article',
+      label: 'Article',
       align: 'left',
       field: (row) => row.name,
     },

@@ -108,7 +108,7 @@
           "
           :loading="isAdding"
           color="btn-primary"
-          @click="handleAddNewAccount"
+          @click="handleCashReceiveFromHO"
         />
       </q-card-actions>
     </q-card>
@@ -120,7 +120,11 @@ import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 import { useRouter } from 'vue-router';
-import { shopListApi, getUserListApi, addShopAccountApi } from 'src/services';
+import {
+  shopListApi,
+  getUserListApi,
+  cashReceiveFromHOApi,
+} from 'src/services';
 import { IShopResponse, EUserRoles, IUserResponse } from 'src/interfaces';
 import { CanceledError } from 'axios';
 const $q = useQuasar();
@@ -222,12 +226,12 @@ const filterUser = (val: string, update: CallableFunction) => {
     }
   });
 };
-const handleAddNewAccount = async () => {
+const handleCashReceiveFromHO = async () => {
   if (isAdding.value) return;
   isAdding.value = true;
   const { cash, amount, comment } = addNewAccount.value;
   try {
-    const res = await addShopAccountApi({
+    const res = await cashReceiveFromHOApi({
       shopId: selectedShop.value?.fromShop?.shopId ?? -1,
       amount: amount,
       transactionUserId: cash?.userId ?? -1,
@@ -241,7 +245,7 @@ const handleAddNewAccount = async () => {
       router.push('/shop-account');
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred Add Cash Flow';
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
       message = e.message;
     }

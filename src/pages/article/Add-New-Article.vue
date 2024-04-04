@@ -7,7 +7,7 @@
       "
     >
       <div class="font-medium text-lg">
-        <span>{{ isUpdate ? 'Edit' : 'Add New' }} Article</span>
+        <span>{{ isUpdate ? 'Edit' : 'Add' }} Article</span>
       </div>
       <div v-if="isUpdate" class="font-medium text-lg">
         <span>Previous Billing History</span>
@@ -25,7 +25,7 @@
         <q-card-section>
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-6 mt-auto">
-              <span class="text-base">Article Name</span>
+              <span class="text-base">Name</span>
               <q-input
                 maxlength="250"
                 v-model="newArticle.name"

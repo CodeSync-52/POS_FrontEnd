@@ -3,13 +3,13 @@ import { IInventoryListResponse } from 'src/interfaces';
 export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
   {
     name: 'productName',
-    label: 'Product Name',
+    label: 'Article',
     align: 'left',
     field: (row) => row.productName,
   },
   {
     name: 'productImage',
-    label: 'Product Image',
+    label: 'Image',
     align: 'left',
     field: (row) => row.productImage,
   },

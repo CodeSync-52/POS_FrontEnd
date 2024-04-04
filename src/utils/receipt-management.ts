@@ -7,9 +7,9 @@ import moment from 'moment';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const receiptColumn: QTableColumn<IReceiptData>[] = [
   {
-    name: 'fullName',
+    name: 'user',
     required: true,
-    label: 'Full Name',
+    label: 'User',
     align: 'left',
     sortable: true,
     field: (row) => row.fullName,
@@ -47,14 +47,14 @@ export const selectedArticleColumn: QTableColumn<ISelectedArticleData>[] = [
   {
     name: 'image',
     required: true,
-    label: 'Article Image',
+    label: 'Image',
     align: 'left',
     field: (row) => row.productImage,
   },
   {
     name: 'name',
     required: true,
-    label: 'Article Name',
+    label: 'Article',
     align: 'left',
     field: (row) => row.productName,
   },

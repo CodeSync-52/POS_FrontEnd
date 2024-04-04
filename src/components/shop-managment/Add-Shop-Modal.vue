@@ -76,13 +76,11 @@
       />
       <q-btn
         flat
-        :label="action === 'Add New Shop' ? 'Add' : 'Save'"
+        :label="action === 'Add Shop' ? 'Add' : 'Save'"
         color="signature"
         :disable="isButtonDisabled"
         :loading="isLoading"
-        @click="
-          action === 'Add New Shop' ? handleAddNewShop() : handleEditShop()
-        "
+        @click="action === 'Add Shop' ? handleAddNewShop() : handleEditShop()"
         class="bg-btn-primary hover:bg-btn-primary-hover"
       />
     </q-card-actions>
