@@ -91,7 +91,7 @@
               @click="handleEditStatusPopup(props.row)"
             >
               <q-tooltip class="bg-btn-primary" :offset="[10, 10]">
-                Edit Status
+                Change Status
               </q-tooltip>
             </q-btn>
           </q-td>
@@ -202,7 +202,7 @@ const showAddNewShopPopup = ref(false);
 const $q = useQuasar();
 const selectedRowData = ref<IShopResponse | null>(null);
 const handleAddNewUser = () => {
-  action.value = 'Add New Shop';
+  action.value = 'Add Shop';
   selectedRowData.value = null;
   showAddNewShopPopup.value = true;
 };

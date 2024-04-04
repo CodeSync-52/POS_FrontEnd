@@ -50,9 +50,7 @@
         </div>
         <q-separator class="mb-2" color="orange" inset />
         <div class="row q-mb-md q-col-gutter-md">
-          <div class="col-12 text-bold text-base">
-            Enter to Claim or Freight:
-          </div>
+          <div class="col-12 text-bold text-base">Enter Claim or Freight:</div>
           <div class="col-6">
             <q-input
               :min="0"
@@ -252,7 +250,7 @@
             v-if="!router.currentRoute.value.fullPath.includes('preview')"
             class="col-12 text-bold text-base"
           >
-            Enter to Edit Claim or Freight:
+            Edit Claim or Freight:
           </div>
           <div
             v-if="!router.currentRoute.value.fullPath.includes('preview')"
@@ -794,7 +792,7 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
       });
   }
   const tableStuff = [];
-  const headerRow = ['Image', 'Article Name', 'Quantity', 'Amount', 'Total'];
+  const headerRow = ['Image', 'Article', 'Quantity', 'Amount', 'Total'];
   tableStuff.push(headerRow);
   const claimAmount = [
     '',

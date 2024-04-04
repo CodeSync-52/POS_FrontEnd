@@ -27,9 +27,7 @@
             <div
               class="flex flex-col sm:flex-row justify-center md:justify-between gap-4 item-center w-full"
             >
-              <div class="font-medium text-lg flex items-center">
-                <span>Expense Type List</span>
-              </div>
+              <div class="font-medium text-lg flex items-center"></div>
             </div>
           </template>
           <template v-slot:body-cell-action="props">

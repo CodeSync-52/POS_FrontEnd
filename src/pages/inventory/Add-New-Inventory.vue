@@ -20,7 +20,7 @@
           @click="handleCustomLabel"
         />
         <q-btn
-          label="Add New Article"
+          label="Select Article"
           icon="add"
           unelevated
           class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
@@ -885,7 +885,7 @@ const handlePreviewGrn = async () => {
       setBarcodeProps();
     }
   } catch (e) {
-    let message = 'Unexpected error occurred Preview Grn';
+    let message = 'Unexpected error occurred while handling Preview Grn';
     if (isPosError(e)) {
       message = e.message;
     }

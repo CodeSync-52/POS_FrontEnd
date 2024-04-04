@@ -134,7 +134,7 @@
               Enter Claim or Freight:
             </div>
             <div v-if="action === 'Edit'" class="col-12 text-bold text-base">
-              Enter to Edit Claim or Freight:
+              Edit Claim or Freight:
             </div>
             <div :class="action === 'Edit' ? 'col-4' : 'col-6'">
               <q-input

@@ -74,7 +74,7 @@ export const HOStockReportColumn: QTableColumn<IHOStockReportData>[] = [
   {
     name: 'productName',
     required: true,
-    label: 'Product Name',
+    label: 'Article',
     align: 'left',
     field: (row) => row.productName,
   },

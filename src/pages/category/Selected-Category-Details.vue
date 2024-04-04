@@ -30,7 +30,7 @@
         @request="getCategoryDetailsList"
       >
         <template v-slot:top>
-          <div class="font-medium text-lg"><span>Category Details</span></div>
+          <div class="font-medium text-lg"></div>
           <q-space />
           <q-input
             maxlength="250"
@@ -71,7 +71,7 @@
                 class="hover:text-btn-primary"
                 @click="editCategory(props.row)"
                 ><q-tooltip class="bg-black" :offset="[10, 10]">
-                  Edit Category Details
+                  Edit SubCategory
                 </q-tooltip>
               </q-btn>
             </div>
@@ -104,7 +104,7 @@
               class="hover:text-btn-primary"
               @click="handleStatusModalPopup(props.row)"
               ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
-                Edit Status
+                Change Status
               </q-tooltip></q-btn
             >
           </q-td>

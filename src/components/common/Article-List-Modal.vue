@@ -4,7 +4,7 @@
       <div>
         <div class="row items-center q-mb-md justify-between">
           <div class="text-h6">
-            <span>Add Article</span>
+            <span>Select Article</span>
           </div>
           <q-btn icon="close" flat unelevated dense v-close-popup />
         </div>
