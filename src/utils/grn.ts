@@ -8,6 +8,13 @@ import {
 
 export const GrnTableColumn: QTableColumn<IGrnRecords>[] = [
   {
+    name: 'addedDate',
+    required: true,
+    label: 'Added Date',
+    align: 'left',
+    field: (row) => moment(row.addedDate).format('DD-MM-YYYY'),
+  },
+  {
     name: 'fromShop',
     required: true,
     label: 'From Shop',
@@ -34,13 +41,6 @@ export const GrnTableColumn: QTableColumn<IGrnRecords>[] = [
     label: 'Grn Status',
     align: 'left',
     field: (row) => row.grnStatus,
-  },
-  {
-    name: 'addedDate',
-    required: true,
-    label: 'Added Date',
-    align: 'left',
-    field: (row) => moment(row.addedDate).format('DD-MM-YYYY'),
   },
   {
     name: 'action',
