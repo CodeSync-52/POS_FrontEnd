@@ -292,6 +292,18 @@ const updateOrAddVariant = async (
   action: string,
   callback: () => void
 ) => {
+  const existingVariant = filteredRows.value.find(
+    (variant) =>
+      variant.name.toLowerCase() === name.toLowerCase() &&
+      variant.displayName.toLowerCase() === displayName.toLowerCase()
+  );
+  if (existingVariant) {
+    $q.notify({
+      message: 'A variant with the same name and display name already exists.',
+      type: 'warning',
+    });
+    return;
+  }
   if (
     action === 'Edit' &&
     selectedRowData.value?.name === name &&

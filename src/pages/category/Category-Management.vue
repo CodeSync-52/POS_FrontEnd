@@ -272,6 +272,17 @@ const updateOrAddCategory = async (
   action: string,
   callback: () => void
 ) => {
+  const existingGroup = filteredRows.value.find(
+    (group) => group.name.toLowerCase() === newName.toLowerCase()
+  );
+  if (existingGroup) {
+    $q.notify({
+      message: 'A group with the same name already exists.',
+      type: 'warning',
+    });
+    isCategoryModalVisible.value = false;
+    return;
+  }
   if (action === 'Edit' && selectedRowData.value?.name === newName) {
     callback();
     isCategoryModalVisible.value = false;

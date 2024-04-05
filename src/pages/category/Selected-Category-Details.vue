@@ -326,6 +326,18 @@ const updateOrAddCategory = async (
   if (isLoading.value) return;
   isLoading.value = true;
   try {
+    const existingCategory = filteredRows.value.find(
+      (category) => category.name.toLowerCase() === name.toLowerCase()
+    );
+    if (existingCategory) {
+      $q.notify({
+        message: 'A category with the same name already exists.',
+        type: 'warning',
+      });
+      isCategoryDetailsModalVisible.value = false;
+      isLoading.value = false;
+      return;
+    }
     let res;
     if (categoryId != -1 && isCategoryDetailsModalVisible) {
       if (name === selectedRowData.value?.name) {
