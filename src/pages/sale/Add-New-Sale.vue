@@ -1164,9 +1164,8 @@ async function convertArrayToPdfData(
       const row = [
         {
           image: item.productImage || defaultImage.value,
-          width: 50,
-          height: 50,
-          margin: 2,
+          width: 100,
+          height: 100,
         },
         { text: item.productName, bold: true, margin: [0, 20] },
         { text: item.quantity, margin: [0, 20] },
