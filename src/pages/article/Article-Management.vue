@@ -166,10 +166,6 @@
             authStore.checkUserHasPermission(
               EUserModules.ArticleManagement,
               EActionPermissions.Update
-            ) &&
-            authStore.checkUserHasPermission(
-              EUserModules.ArticleManagement,
-              EActionPermissions.Delete
             )
           "
           v-slot:body-cell-action="props"

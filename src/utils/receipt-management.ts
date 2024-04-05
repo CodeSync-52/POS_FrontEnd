@@ -7,6 +7,13 @@ import moment from 'moment';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const receiptColumn: QTableColumn<IReceiptData>[] = [
   {
+    name: 'createdDate',
+    required: true,
+    label: 'Created Date',
+    align: 'left',
+    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
+  },
+  {
     name: 'user',
     required: true,
     label: 'User',
@@ -27,13 +34,6 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
     label: 'Purchase Status',
     align: 'left',
     field: (row) => row.purchaseStatus,
-  },
-  {
-    name: 'createdDate',
-    required: true,
-    label: 'Created Date',
-    align: 'left',
-    field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
   },
   {
     name: 'action',
