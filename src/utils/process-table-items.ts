@@ -44,7 +44,10 @@ export async function processObjectWithImage(objectWithImage: {
 
 export async function getImageDataUrl(imageUrl: string): Promise<string> {
   try {
-    const response = await fetch(imageUrl);
+    // Add a dummy GET parameter to the URL
+    const urlWithDummyParam = `${imageUrl}?dummy=${Date.now()}`;
+
+    const response = await fetch(urlWithDummyParam);
     const blob = await response.blob();
     return new Promise<string>((resolve) => {
       const reader = new FileReader();
