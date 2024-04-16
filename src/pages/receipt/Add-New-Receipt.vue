@@ -197,7 +197,19 @@
           </template>
         </q-table>
       </q-card-section>
-      <q-card-actions class="row items-center justify-end">
+      <q-card-actions class="row px-[16px] items-center justify-between w-full">
+      
+        <q-input
+            v-model="receiptComment"
+            label="Comments"
+            dense
+            outlined
+            color="btn-primary"
+            type="text"
+            class="w-[32%]"
+          />
+        
+        <div class="flex items-center gap-2">
         <q-btn
           unelevated
           :label="isReceiptPreview ? 'Close' : 'Go Back'"
@@ -219,7 +231,8 @@
           @click="saveNewReceipt"
           :loading="isAddingPurchase"
           color="btn-primary"
-        />
+          />
+        </div>
       </q-card-actions>
     </q-card>
     <q-dialog v-model="isArticleListModalVisible">
@@ -283,6 +296,7 @@ import OutsideClickContainer from 'src/components/common/Outside-Click-Container
 import { useAuthStore } from 'src/stores';
 import moment from 'moment';
 import { processTableItems } from 'src/utils/process-table-items';
+import { comment } from 'postcss';
 const authStore = useAuthStore();
 const route = useRoute();
 const options = ref<IUserResponse[]>([]);
@@ -354,6 +368,7 @@ const selectedData = (
     productImage: string | null;
     masterStock: number;
     retailPrice: number;
+    // comments?: string; 
   }[]
 ) => {
   if (!isEdit.value) {
@@ -492,6 +507,7 @@ const saveNewReceipt = async () => {
     return {
       productId: item.productId,
       quantity: item.quantity || 0,
+      comment: receiptComment.value,
     };
   });
   addNewReceipt.value.productList = productList;
@@ -519,6 +535,7 @@ const saveNewReceipt = async () => {
   isAddingPurchase.value = false;
 };
 const isEdit = ref(false);
+const receiptComment = ref('')
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const handleFilterRows = (filterChanged: boolean) => {

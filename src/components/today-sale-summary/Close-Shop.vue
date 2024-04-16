@@ -12,8 +12,8 @@
           v-close-popup
         />
       </div>
-      <div class="flex flex-col md:flex-row gap-2 mb-3">
-        <div>
+      <div class="row q-col-gutter-md">
+        <div class="col-6">
           <q-select
             :loading="isLoading"
             class="min-w-[250px]"
@@ -35,7 +35,7 @@
             </template></q-select
           >
         </div>
-        <div>
+        <div class="col-6">
           <q-input
             class="min-w-[250px]"
             :min="0"
@@ -46,6 +46,16 @@
             outlined
             v-model="returnAmount.amount"
             @update:model-value="handleUpdateAmount($event)"
+          />
+        </div>
+        <div class="col-12">
+          <q-input
+            v-model="returnAmount.comment"
+            label="Comments"
+            dense
+            outlined
+            color="btn-primary"
+            type="text"
           />
         </div>
       </div>
@@ -95,9 +105,11 @@ onMounted(() => {
 const returnAmount = ref<{
   user: IUserResponse | null;
   amount: number;
+  comment: string;
 }>({
   user: null,
   amount: 0,
+  comment: '',
 });
 const handleUpdateAmount = (newVal: string | number | null) => {
   if (typeof newVal === 'string') {
@@ -130,12 +142,13 @@ const getUserList = async () => {
   }
 };
 const handleCloseShop = async () => {
-  const { user, amount } = returnAmount.value;
+  const { user, amount, comment } = returnAmount.value;
   try {
     const res = await cashReturnToHOApi({
       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
       amount: amount,
       transactionUserId: user?.userId ?? -1,
+      comment,
     });
     if (res.type === 'Success') {
       $q.notify({
