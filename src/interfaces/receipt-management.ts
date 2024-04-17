@@ -9,6 +9,7 @@ export interface IReceiptData {
   outStandingBalance: number;
   updatedDate: string;
   createdById: number;
+  comments?: string;
   updatedBy: null;
   purchaseDetails: IPurchaseDetails[];
 }

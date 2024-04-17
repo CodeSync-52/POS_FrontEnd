@@ -206,6 +206,7 @@
           color="btn-primary"
           type="text"
           class="w-[32%]"
+          :readonly="isReceiptPreview"
         />
 
         <div class="flex items-center gap-2">
@@ -366,7 +367,6 @@ const selectedData = (
     productImage: string | null;
     masterStock: number;
     retailPrice: number;
-    // comments?: string;
   }[]
 ) => {
   if (!isEdit.value) {
@@ -505,13 +505,13 @@ const saveNewReceipt = async () => {
     return {
       productId: item.productId,
       quantity: item.quantity || 0,
-      comment: receiptComment.value,
     };
   });
   addNewReceipt.value.productList = productList;
   try {
     const res = await createNewReceipt({
       data: addNewReceipt.value,
+      comments: receiptComment.value,
     });
     if (res.type === 'Success') {
       $q.notify({
@@ -592,6 +592,7 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
     addNewReceipt.value.purchaseStatus = res.data.purchaseStatus;
     selectedArticleData.value = res.data.purchaseDetails;
     tableItems.value = await convertArrayToPdfData(res.data.purchaseDetails);
+    receiptComment.value = res.data.comments ?? '';
   });
 };
 onMounted(() => {

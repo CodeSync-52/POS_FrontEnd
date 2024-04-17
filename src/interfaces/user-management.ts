@@ -54,5 +54,6 @@ export interface IUserFilterList {
   customerGroupId: number | null;
   role: string | null;
   status: string | null;
+  name: string | null;
 }
 export type IUserPayload = Omit<IUserResponse, 'status'>;

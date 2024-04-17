@@ -413,40 +413,52 @@
           </q-table>
         </div>
       </q-card-section>
-      <q-card-actions align="right" class="q-gutter-x-sm">
-        <router-link to="/sale">
-          <q-btn
-            unelevated
-            :label="
-              action === 'Preview'
-                ? 'Close'
-                : action === 'Edit'
-                ? 'Go Back'
-                : 'Cancel'
-            "
-            color="btn-cancel hover:bg-btn-cancel-hover"
-          />
-        </router-link>
-        <q-btn
-          v-if="action === 'Add New'"
-          :disable="
-            addNewSale.userId === null ||
-            selectedArticleData.length === 0 ||
-            !selectedArticleData.every((item) => item.quantity) ||
-            selectedArticleData.some(
-              (item) => item.quantity && item.quantity < 0
-            ) ||
-            selectedArticleData.some(
-              (item) =>
-                item.unitWholeSalePrice && Number(item.unitWholeSalePrice) <= 0
-            )
-          "
-          unelevated
-          label="Save"
-          @click="saveNewSale"
-          :loading="isAddingSale"
+      <q-card-actions class="flex justify-between px-4">
+        <q-input
+          v-model="AddSaleComments"
+          label="Comments"
+          dense
+          outlined
           color="btn-primary"
+          type="text"
+          class="w-[32%]"
         />
+        <div class="flex gap-2">
+          <router-link to="/sale">
+            <q-btn
+              unelevated
+              :label="
+                action === 'Preview'
+                  ? 'Close'
+                  : action === 'Edit'
+                  ? 'Go Back'
+                  : 'Cancel'
+              "
+              color="btn-cancel hover:bg-btn-cancel-hover"
+            />
+          </router-link>
+          <q-btn
+            v-if="action === 'Add New'"
+            :disable="
+              addNewSale.userId === null ||
+              selectedArticleData.length === 0 ||
+              !selectedArticleData.every((item) => item.quantity) ||
+              selectedArticleData.some(
+                (item) => item.quantity && item.quantity < 0
+              ) ||
+              selectedArticleData.some(
+                (item) =>
+                  item.unitWholeSalePrice &&
+                  Number(item.unitWholeSalePrice) <= 0
+              )
+            "
+            unelevated
+            label="Save"
+            @click="saveNewSale"
+            :loading="isAddingSale"
+            color="btn-primary"
+          />
+        </div>
       </q-card-actions>
     </q-card>
     <q-dialog v-model="isArticleListModalVisible">
@@ -534,6 +546,7 @@ const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   wholeSaleStatus: '',
 });
 const isArticleListModalVisible = ref(false);
+const AddSaleComments = ref('');
 const action = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
@@ -709,6 +722,7 @@ const saveNewSale = async () => {
       productId: item.productId,
       quantity: item.quantity || 0,
       unitWholeSalePrice: item.unitWholeSalePrice,
+      comment: AddSaleComments.value,
     };
   });
   addNewSale.value.productList = productList;
