@@ -84,7 +84,7 @@ export const cashReturnToHOApi = async ({
   shopId: number;
   amount: number;
   transactionUserId: number;
-  comment:string,
+  comment: string;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
@@ -93,7 +93,7 @@ export const cashReturnToHOApi = async ({
       shopId,
       amount,
       transactionUserId,
-      comment
+      comment,
     },
   });
   return res;
