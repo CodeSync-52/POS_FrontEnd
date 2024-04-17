@@ -199,7 +199,7 @@
       </q-card-section>
       <q-card-actions class="row px-[16px] items-center justify-between w-full">
         <q-input
-          v-model="receiptComment"
+          v-model="addNewReceipt.comments"
           label="Comments"
           dense
           outlined
@@ -317,7 +317,7 @@ const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 100000,
   rowsNumber: 0,
 });
 const handleOutsideClick = () => {
@@ -455,6 +455,7 @@ const addNewReceipt = ref<IAddNewReceipt>({
   createdBy: '',
   userName: '',
   purchaseStatus: '',
+  comments: '',
 });
 watch(addNewReceipt.value, (newVal: IAddNewReceipt) => {
   const selectedUser = UserList.value.find(
@@ -473,11 +474,15 @@ const getUserList = async () => {
   try {
     const res = await getUserListApi({
       pageNumber: 1,
-      pageSize: 500,
+      pageSize: 5000,
     });
     if (res?.data) {
       UserList.value = res.data.items.filter(
-        (user) => user.status === 'Active'
+        (user) =>
+          user.status === 'Active' &&
+          user.roleName === 'Customer' &&
+          user.customerGroup !== 'Shop Account' &&
+          user.customerGroup !== 'Cash Account'
       );
       options.value = res.data.items;
     }
@@ -508,10 +513,10 @@ const saveNewReceipt = async () => {
     };
   });
   addNewReceipt.value.productList = productList;
+
   try {
     const res = await createNewReceipt({
       data: addNewReceipt.value,
-      comments: receiptComment.value,
     });
     if (res.type === 'Success') {
       $q.notify({
@@ -533,7 +538,7 @@ const saveNewReceipt = async () => {
   isAddingPurchase.value = false;
 };
 const isEdit = ref(false);
-const receiptComment = ref('');
+// const receiptComment = ref('');
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const handleFilterRows = (filterChanged: boolean) => {
@@ -555,7 +560,9 @@ const getArticleList = async (data?: {
   }
   try {
     const rowsPerPage =
-      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
+      pagination.value.rowsPerPage === 0
+        ? 100000
+        : pagination.value.rowsPerPage;
     const res = await articleListApi({
       PageNumber: pagination.value.page,
       PageSize: rowsPerPage,
@@ -592,7 +599,7 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
     addNewReceipt.value.purchaseStatus = res.data.purchaseStatus;
     selectedArticleData.value = res.data.purchaseDetails;
     tableItems.value = await convertArrayToPdfData(res.data.purchaseDetails);
-    receiptComment.value = res.data.comments ?? '';
+    addNewReceipt.value.comments = res.data.comments ?? '';
   });
 };
 onMounted(() => {

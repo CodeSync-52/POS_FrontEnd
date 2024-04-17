@@ -44,4 +44,5 @@ export interface IAddNewReceipt {
   createdBy: string;
   userName: string;
   purchaseStatus: string;
+  comments: string;
 }

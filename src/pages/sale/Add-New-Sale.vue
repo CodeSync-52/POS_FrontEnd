@@ -415,13 +415,14 @@
       </q-card-section>
       <q-card-actions class="flex justify-between px-4">
         <q-input
-          v-model="AddSaleComments"
+          v-model="addNewSale.comments"
           label="Comments"
           dense
           outlined
           color="btn-primary"
           type="text"
           class="w-[32%]"
+          :readonly="isSalePreview"
         />
         <div class="flex gap-2">
           <router-link to="/sale">
@@ -503,10 +504,10 @@ import {
   EUserModules,
   IArticleData,
   IPagination,
-  ISelectedSalesDetailData,
+  IWholeSalesDetailInfo,
   IAddNewSale,
   ISelectedWholeSaleArticleData,
-  IWholeSaleDetailsData,
+  IWholeSaleProductsInfo,
   IUserResponse,
 } from 'src/interfaces';
 import {
@@ -529,7 +530,7 @@ import {
 import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import { processTableItems } from 'src/utils/process-table-items';
-const selectedSaleRecord = ref<ISelectedSalesDetailData>({
+const selectedSaleRecord = ref<IWholeSalesDetailInfo>({
   createdBy: '',
   createdById: 0,
   createdDate: '',
@@ -544,10 +545,11 @@ const selectedSaleRecord = ref<ISelectedSalesDetailData>({
   userId: null,
   wholeSaleDetails: [],
   wholeSaleStatus: '',
+  comments: '',
 });
 const isArticleListModalVisible = ref(false);
-const AddSaleComments = ref('');
 const action = ref('');
+const isSalePreview = ref(false);
 const router = useRouter();
 const authStore = useAuthStore();
 const isLoading = ref(false);
@@ -569,7 +571,7 @@ const defaultPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 1000000,
   rowsNumber: 0,
 };
 const pagination = ref<IPagination>({ ...defaultPagination });
@@ -579,6 +581,7 @@ const addNewSale = ref<IAddNewSale>({
   userDiscount: 0,
   userOutstandingBalance: 0,
   productList: [],
+  comments: '',
 });
 const selectedUserDiscount = ref<number | undefined>(0);
 watch(addNewSale.value, (newVal: IAddNewSale) => {
@@ -619,14 +622,18 @@ onMounted(() => {
   if (route.params.id && typeof route.params.id === 'string') {
     if (route.fullPath.includes('preview')) {
       action.value = 'Preview';
+      isSalePreview.value = true;
     } else {
       action.value = 'Edit';
+      isSalePreview.value = true;
     }
     selectedId.value = Number(route.params.id);
     getSelectedWholesaleDetail(selectedId.value);
   } else {
     action.value = 'Add New';
+    isSalePreview.value = false;
   }
+
   getUserList();
   getArticleList();
 });
@@ -722,7 +729,6 @@ const saveNewSale = async () => {
       productId: item.productId,
       quantity: item.quantity || 0,
       unitWholeSalePrice: item.unitWholeSalePrice,
-      comment: AddSaleComments.value,
     };
   });
   addNewSale.value.productList = productList;
@@ -743,6 +749,7 @@ const saveNewSale = async () => {
       claim: claim.value,
       freight: freight.value,
       productList: addNewSale.value.productList,
+      comments: addNewSale.value.comments,
     });
     if (res.type === 'Success') {
       $q.notify({
@@ -894,10 +901,16 @@ const getUserList = async () => {
   try {
     const res = await getUserListApi({
       pageNumber: 1,
-      pageSize: 500,
+      pageSize: 5000,
     });
     if (res?.data) {
-      UserList.value = res.data.items;
+      UserList.value = res.data.items.filter(
+        (user) =>
+          user.status === 'Active' &&
+          user.roleName === 'Customer' &&
+          user.customerGroup !== 'Shop Account' &&
+          user.customerGroup !== 'Cash Account'
+      );
       options.value = res.data.items;
       selectedUserDiscount.value = UserList.value.find(
         (user) => selectedSaleRecord.value.userId === user.userId
@@ -919,7 +932,7 @@ const getUserList = async () => {
 const saleGenerationTotalQuantity = computed(() => {
   if (action.value === 'Edit') {
     return selectedSaleRecord.value.wholeSaleDetails.reduce(
-      (total: number, row: IWholeSaleDetailsData) => {
+      (total: number, row: IWholeSaleProductsInfo) => {
         return total + Number(row.quantity);
       },
       0
@@ -936,7 +949,7 @@ const saleGenerationTotalQuantity = computed(() => {
 const saleGenerationTotalAmount = computed(() => {
   if (action.value === 'Edit') {
     return selectedSaleRecord.value.wholeSaleDetails.reduce(
-      (total: number, row: IWholeSaleDetailsData) => {
+      (total: number, row: IWholeSaleProductsInfo) => {
         return total + row.quantity * row.unitWholeSalePrice;
       },
       0
@@ -989,6 +1002,7 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
     if (res.type === 'Success') {
       if (res.data) {
         selectedSaleRecord.value = res.data;
+        addNewSale.value.comments = selectedSaleRecord.value.comments;
         claim.value = res.data.claim;
         freight.value = res.data.freight;
         selectedSaleRecord.value.createdDate = moment(
@@ -1019,7 +1033,7 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
   }
   isLoading.value = false;
 };
-async function saveUpdatedData(row: IWholeSaleDetailsData) {
+async function saveUpdatedData(row: IWholeSaleProductsInfo) {
   try {
     if (
       !row.wholeSaleDetailId ||
@@ -1081,7 +1095,7 @@ const convertToBase64 = (file: File): Promise<string> => {
 };
 const defaultImage = ref<string | null>(null);
 async function convertArrayToPdfData(
-  array: IWholeSaleDetailsData[] | ISelectedWholeSaleArticleData[]
+  array: IWholeSaleProductsInfo[] | ISelectedWholeSaleArticleData[]
 ) {
   if (!defaultImage.value) {
     defaultImage.value = await fetch('/assets/default-image.png')
@@ -1096,7 +1110,7 @@ async function convertArrayToPdfData(
   const headerRow = ['Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
   tableStuff.push(headerRow);
   const totalAmount = array.reduce(
-    (total, row: IWholeSaleDetailsData | ISelectedWholeSaleArticleData) => {
+    (total, row: IWholeSaleProductsInfo | ISelectedWholeSaleArticleData) => {
       if (row.totalAmount) {
         return total + row.totalAmount ?? 0;
       }
@@ -1174,7 +1188,7 @@ async function convertArrayToPdfData(
     },
   ];
   array.forEach(
-    (item: IWholeSaleDetailsData | ISelectedWholeSaleArticleData) => {
+    (item: IWholeSaleProductsInfo | ISelectedWholeSaleArticleData) => {
       const row = [
         {
           image: item.productImage || defaultImage.value,

@@ -496,7 +496,7 @@ const getUserList = async () => {
     });
     if (res?.data) {
       UserList.value = res.data.items.filter(
-        (user) => user.status === 'Active'
+        (user) => user.status === 'Active' && user.roleName === 'Customer'
       );
       options.value = res.data.items;
     }

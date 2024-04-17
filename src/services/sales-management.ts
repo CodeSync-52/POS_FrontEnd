@@ -3,7 +3,7 @@ import {
   ISalesFilterSearch,
   ISalesManagementData,
   ISelectedArticleList,
-  ISelectedSalesDetailData,
+  IWholeSalesDetailInfo,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
@@ -12,11 +12,13 @@ export const addWholeSaleApi = async ({
   claim,
   freight,
   productList,
+  comments,
 }: {
   userId: number | null;
   claim: number | undefined;
   freight: number | undefined;
   productList: ISelectedArticleList[] | null;
+  comments: string | null;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/wholesale/add',
@@ -26,6 +28,7 @@ export const addWholeSaleApi = async ({
       claim,
       freight,
       productList,
+      comments,
     },
   });
   return res;
@@ -70,7 +73,7 @@ export const salesManagementListApi = async (
   return res;
 };
 export const wholeSaleDetailApi = async (wholeSaleId: number) => {
-  const res = await makeApiCall<IGenericResponse<ISelectedSalesDetailData>>({
+  const res = await makeApiCall<IGenericResponse<IWholeSalesDetailInfo>>({
     url: 'api/wholesale/detail',
     method: 'GET',
     params: {
