@@ -24,6 +24,20 @@
     <div
       class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
     >
+      <q-input
+        outlined
+        dense
+        debounce="300"
+        color="btn-primary"
+        maxlength="250"
+        label="Name"
+        autofocus
+        v-model="filterSearch.name"
+      >
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
       <q-select
         dense
         style="min-width: 200px"
@@ -385,6 +399,7 @@ const defaultFilterValues = {
   customerGroupId: null,
   role: null,
   status: null,
+  name: null,
 };
 const UserRows = ref<IUserResponse[]>([]);
 const action = ref<string>('');
@@ -468,6 +483,7 @@ const resetFilter = () => {
     customerGroupId: null,
     role: null,
     status: null,
+    name: null,
   };
   getUserList();
 };

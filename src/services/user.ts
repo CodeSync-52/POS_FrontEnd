@@ -72,7 +72,6 @@ export const getUserListApi = async (
     pageSize = 50,
   }: {
     filterSearch?: IUserFilterList;
-    name?: string | null;
     pageNumber?: number;
     pageSize?: number;
   },
@@ -91,7 +90,7 @@ export const getUserListApi = async (
       PageSize: pageSize,
       Status: filterSearch?.status,
       PageNumber: pageNumber,
-      Name: name,
+      Name: filterSearch?.name,
       CustomerGroupId: filterSearch?.customerGroupId,
     },
     signal: controller?.signal,

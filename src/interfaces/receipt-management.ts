@@ -9,6 +9,7 @@ export interface IReceiptData {
   outStandingBalance: number;
   updatedDate: string;
   createdById: number;
+  comments?: string;
   updatedBy: null;
   purchaseDetails: IPurchaseDetails[];
 }
@@ -27,6 +28,7 @@ export interface ISelectedArticleData {
   purchaseDetailId?: number;
   masterStock?: number;
   retailPrice?: number;
+  comments?: string;
 }
 
 export interface IProductList {

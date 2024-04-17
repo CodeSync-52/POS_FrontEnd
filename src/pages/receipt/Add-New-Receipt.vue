@@ -197,29 +197,42 @@
           </template>
         </q-table>
       </q-card-section>
-      <q-card-actions class="row items-center justify-end">
-        <q-btn
-          unelevated
-          :label="isReceiptPreview ? 'Close' : 'Go Back'"
-          color="btn-cancel hover:bg-btn-cancel-hover"
-          @click="cancelNewReceipt"
-        />
-        <q-btn
-          v-if="!isReceiptPreview && !isEdit"
-          :disable="
-            addNewReceipt.userId === null ||
-            selectedArticleData.length === 0 ||
-            !selectedArticleData.every((item) => item.quantity) ||
-            selectedArticleData.some(
-              (item) => item.quantity && item.quantity < 0
-            )
-          "
-          label="Save"
-          unelevated
-          @click="saveNewReceipt"
-          :loading="isAddingPurchase"
+      <q-card-actions class="row px-[16px] items-center justify-between w-full">
+        <q-input
+          v-model="receiptComment"
+          label="Comments"
+          dense
+          outlined
           color="btn-primary"
+          type="text"
+          class="w-[32%]"
+          :readonly="isReceiptPreview"
         />
+
+        <div class="flex items-center gap-2">
+          <q-btn
+            unelevated
+            :label="isReceiptPreview ? 'Close' : 'Go Back'"
+            color="btn-cancel hover:bg-btn-cancel-hover"
+            @click="cancelNewReceipt"
+          />
+          <q-btn
+            v-if="!isReceiptPreview && !isEdit"
+            :disable="
+              addNewReceipt.userId === null ||
+              selectedArticleData.length === 0 ||
+              !selectedArticleData.every((item) => item.quantity) ||
+              selectedArticleData.some(
+                (item) => item.quantity && item.quantity < 0
+              )
+            "
+            label="Save"
+            unelevated
+            @click="saveNewReceipt"
+            :loading="isAddingPurchase"
+            color="btn-primary"
+          />
+        </div>
       </q-card-actions>
     </q-card>
     <q-dialog v-model="isArticleListModalVisible">
@@ -498,6 +511,7 @@ const saveNewReceipt = async () => {
   try {
     const res = await createNewReceipt({
       data: addNewReceipt.value,
+      comments: receiptComment.value,
     });
     if (res.type === 'Success') {
       $q.notify({
@@ -519,6 +533,7 @@ const saveNewReceipt = async () => {
   isAddingPurchase.value = false;
 };
 const isEdit = ref(false);
+const receiptComment = ref('');
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const handleFilterRows = (filterChanged: boolean) => {
@@ -577,6 +592,7 @@ const getReceiptDataFromApi = async (selectedItemId: string | number) => {
     addNewReceipt.value.purchaseStatus = res.data.purchaseStatus;
     selectedArticleData.value = res.data.purchaseDetails;
     tableItems.value = await convertArrayToPdfData(res.data.purchaseDetails);
+    receiptComment.value = res.data.comments ?? '';
   });
 };
 onMounted(() => {
