@@ -22,11 +22,10 @@
                   map-options
                   use-input
                   popup-content-class="!max-h-[200px]"
-                  @filter="filterUser"
                   @update:model-value="handleShowOutstandingBalance"
                   option-label="fullName"
                   option-value="userId"
-                  :options="userListOptions"
+                  :options="shopAccountUserList"
                   v-model="addNewAccount.cash"
                 />
               </div>
@@ -133,8 +132,7 @@ const authStore = useAuthStore();
 const isFetchingShopList = ref(false);
 const isAdding = ref(false);
 const shopData = ref<IShopResponse[]>([]);
-const userList = ref<IUserResponse[]>([]);
-const userListOptions = ref<IUserResponse[]>([]);
+const shopAccountUserList = ref<IUserResponse[]>([]);
 const addNewAccount = ref<{
   cash: IUserResponse | null;
   amount: number;
@@ -181,11 +179,15 @@ const getUserList = async () => {
   try {
     const res = await getUserListApi({
       pageNumber: 1,
-      pageSize: 500,
+      pageSize: 5000,
     });
     if (res?.data) {
-      userList.value = res.data.items;
-      userListOptions.value = res.data.items;
+      shopAccountUserList.value = res.data.items.filter(
+        (user) =>
+          user.status === 'Active' &&
+          user.roleName === 'Customer' &&
+          user.customerGroup === 'Shop Account'
+      );
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -213,18 +215,6 @@ const handleUpdateAmount = (newVal: string | number | null) => {
 const handleShowOutstandingBalance = (value: IUserResponse) => {
   addNewAccount.value.UserOutstandingBalance =
     value?.outStandingBalance ?? null;
-};
-const filterUser = (val: string, update: CallableFunction) => {
-  update(() => {
-    userListOptions.value = userList.value.filter((user) =>
-      user.fullName?.toLowerCase().includes(val.toLowerCase())
-    );
-    if (addNewAccount.value.cash?.userId) {
-      userListOptions.value = userListOptions.value.filter(
-        (user) => user.userId !== addNewAccount.value.cash?.userId
-      );
-    }
-  });
 };
 const handleCashReceiveFromHO = async () => {
   if (isAdding.value) return;

@@ -395,7 +395,7 @@ const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 1000000,
   rowsNumber: 0,
 });
 const isArticleListModalVisible = ref(false);

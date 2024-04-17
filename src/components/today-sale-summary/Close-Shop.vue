@@ -125,10 +125,15 @@ const getUserList = async () => {
   try {
     const res = await getUserListApi({
       pageNumber: 1,
-      pageSize: 100,
+      pageSize: 5000,
     });
     if (res.data) {
-      userList.value = res.data.items;
+      userList.value = res.data.items.filter(
+        (user) =>
+          user.status === 'Active' &&
+          user.roleName === 'Customer' &&
+          user.customerGroup === 'Shop Account'
+      );
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';

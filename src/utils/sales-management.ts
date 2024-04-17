@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { QTableColumn } from 'quasar';
-import { ISalesManagementData, IWholeSaleDetailsData } from 'src/interfaces';
+import { ISalesManagementData, IWholeSaleProductsInfo } from 'src/interfaces';
 
 export const wholeSaleStatusOptions = ['Open', 'Cancelled', 'Completed'];
 export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
@@ -53,7 +53,7 @@ export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
     align: 'left',
   },
 ];
-export const selectedSalesArticleColumn: QTableColumn<IWholeSaleDetailsData>[] =
+export const selectedSalesArticleColumn: QTableColumn<IWholeSaleProductsInfo>[] =
   [
     {
       name: 'productImage',

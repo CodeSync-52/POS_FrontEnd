@@ -31,7 +31,7 @@
                   @filter="filterUser"
                   option-label="fullName"
                   option-value="userId"
-                  :options="userListOptions"
+                  :options="receiverUserList"
                   @update:model-value="
                     handleShowOutstandingBalance($event, false)
                   "
@@ -68,7 +68,7 @@
                   "
                   option-label="fullName"
                   option-value="userId"
-                  :options="userListOptions"
+                  :options="receiverUserList"
                   v-model="addNewFlow.cashOut"
                 />
               </div>
@@ -163,8 +163,8 @@ const addNewFlow = ref<{
   cashInOutstandingBalance: null,
   cashOutOutstandingBalance: null,
 });
-const userList = ref<IUserResponse[]>([]);
-const userListOptions = ref<IUserResponse[]>([]);
+const senderUserList = ref<IUserResponse[]>([]);
+const receiverUserList = ref<IUserResponse[]>([]);
 const handleUpdateAmount = (newVal: string | number | null) => {
   if (typeof newVal === 'string') {
     const val = parseInt(newVal);
@@ -229,8 +229,12 @@ const getUserList = async () => {
       pageSize: 500,
     });
     if (res?.data) {
-      userList.value = res.data.items;
-      userListOptions.value = res.data.items;
+      receiverUserList.value = res.data.items.filter(
+        (user) => user.status === 'Active' && user.roleName === 'Customer'
+      );
+      senderUserList.value = res.data.items.filter(
+        (user) => user.status === 'Active' && user.roleName === 'Customer'
+      );
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -247,16 +251,16 @@ const getUserList = async () => {
 };
 const filterUser = (val: string, update: CallableFunction) => {
   update(() => {
-    userListOptions.value = userList.value.filter((user) =>
+    receiverUserList.value = senderUserList.value.filter((user) =>
       user.fullName?.toLowerCase().includes(val.toLowerCase())
     );
     if (addNewFlow.value.cashIn?.userId) {
-      userListOptions.value = userListOptions.value.filter(
+      receiverUserList.value = receiverUserList.value.filter(
         (user) => user.userId !== addNewFlow.value.cashIn?.userId
       );
     }
     if (addNewFlow.value.cashOut?.userId) {
-      userListOptions.value = userListOptions.value.filter(
+      receiverUserList.value = receiverUserList.value.filter(
         (user) => user.userId !== addNewFlow.value.cashOut?.userId
       );
     }

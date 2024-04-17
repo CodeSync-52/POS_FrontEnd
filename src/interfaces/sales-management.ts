@@ -17,7 +17,7 @@ export interface ISalesFilterSearch {
   wholeSaleStatus: null | string;
   customerGroupId: null | number;
 }
-export interface ISelectedSalesDetailData {
+export interface IWholeSalesDetailInfo {
   createdBy: string;
   createdById: number;
   createdDate: string;
@@ -32,10 +32,11 @@ export interface ISelectedSalesDetailData {
   updatedBy: null | number;
   updatedDate: string;
   userId: number | null;
-  wholeSaleDetails: IWholeSaleDetailsData[];
+  wholeSaleDetails: IWholeSaleProductsInfo[];
   wholeSaleStatus: string;
+  comments: string | null;
 }
-export interface IWholeSaleDetailsData {
+export interface IWholeSaleProductsInfo {
   productId: number;
   quantity: number;
   totalAmount: number;
@@ -54,6 +55,7 @@ export interface IAddNewSale {
   userDiscount: number;
   userOutstandingBalance: number;
   productList: ISelectedArticleList[];
+  comments: string | null;
 }
 export interface ISelectedArticleList {
   productId: null | number;

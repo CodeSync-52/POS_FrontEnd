@@ -52,20 +52,14 @@ export const cancelReceiptApi = async (purchaseId: number) => {
   return res;
 };
 
-export const createNewReceipt = async ({
-  data,
-  comments,
-}: {
-  data: IAddNewReceipt;
-  comments: string;
-}) => {
+export const createNewReceipt = async ({ data }: { data: IAddNewReceipt }) => {
   return makeApiCall<IGenericResponse<null>>({
     url: 'api/Purchase/add',
     method: 'POST',
     data: {
       userId: data.userId,
       productList: [...data.productList],
-      comments,
+      comments: data.comments,
     },
   });
 };
