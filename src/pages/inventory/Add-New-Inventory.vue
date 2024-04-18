@@ -183,6 +183,7 @@
             </tr>
           </tbody>
         </q-markup-table>
+
         <span class="text-xm font-medium text-[#f60707fb]">
           {{
             getStockMessage(
@@ -192,6 +193,9 @@
             )
           }}</span
         >
+      </div>
+      <div class="text-end text-[16px] p-2">
+        Grand Total: <span class="font-bold">{{ grandTotal }}</span>
       </div>
       <div
         v-if="rowColumnData.length"
@@ -359,6 +363,15 @@ import {
   shopListApi,
 } from 'src/services';
 import { isPosError } from 'src/utils';
+const grandTotal = computed(() => {
+  let total = 0;
+  rowColumnData.value.forEach((product) => {
+    product.secondVariantSelection?.forEach((secondItem) => {
+      total += selectedInventoryTotalQuantity(product, secondItem);
+    });
+  });
+  return total;
+});
 const router = useRouter();
 const isSelectionSingle = ref(true);
 const isFilterChanged = ref(false);
