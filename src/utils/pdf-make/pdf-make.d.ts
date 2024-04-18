@@ -7,8 +7,9 @@ export type ITableItems =
   | { image: string; [key: string]: any };
 
 export interface ITableHeaders {
-  heading: string;
+  heading?: string;
   content: string | number | null | undefined;
+  styleContent?: boolean;
 }
 export interface IPdfPayload {
   tableHeaders?: ITableHeaders[];

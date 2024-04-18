@@ -1192,14 +1192,14 @@ async function convertArrayToPdfData(
       const row = [
         {
           image: item.productImage || defaultImage.value,
-          width: 100,
-          height: 100,
+          width: 70,
+          height: 70,
         },
         { text: item.productName, bold: true, margin: [0, 20] },
         { text: item.quantity, margin: [0, 20] },
         { text: item.unitWholeSalePrice, margin: [0, 20] },
         {
-          text: item.unitWholeSalePrice ?? 0 * (item.quantity ?? 0),
+          text: item.totalAmount,
           margin: [0, 20],
         },
       ];
@@ -1224,22 +1224,18 @@ async function downloadPdfData() {
       content: selectedSaleRecord.value.wholeSaleStatus,
     },
     {
-      heading: 'User Name',
       content: selectedSaleRecord.value.fullName,
     },
     {
       heading: 'Outstanding Balance',
       content: selectedSaleRecord.value.outStandingBalance,
+      styleContent: true,
     },
     {
       heading: 'Date',
       content: moment(selectedSaleRecord?.value?.createdDate).format(
         'DD/MM/YYYY'
       ),
-    },
-    {
-      heading: 'Created By',
-      content: selectedSaleRecord.value.createdBy,
     },
   ];
   const fileTitle = 'Sale';

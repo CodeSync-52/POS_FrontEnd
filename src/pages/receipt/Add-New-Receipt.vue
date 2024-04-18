@@ -717,8 +717,8 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
     const row = [
       {
         image: item.productImage || defaultImage.value,
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
       },
       { text: item.productName, margin: [0, 20] },
       { text: item.quantity, bold: true, margin: [0, 20] },
@@ -740,12 +740,12 @@ async function downloadPdfData() {
       content: addNewReceipt.value.purchaseStatus,
     },
     {
-      heading: 'User Name',
       content: addNewReceipt.value.userName,
     },
     {
       heading: 'Outstanding Balance',
       content: addNewReceipt.value.userOutstandingBalance,
+      styleContent: true,
     },
     {
       heading: 'Date',
