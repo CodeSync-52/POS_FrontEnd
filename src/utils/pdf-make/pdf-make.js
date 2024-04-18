@@ -23,14 +23,18 @@ export const downloadPdf = async ({
               {
                 columns: [
                   {
-                    text: header.heading + ': ',
+                    text: header.heading ? header.heading + ': ' : '',
                     bold: true,
                     width: 'auto',
+                    fontSize: header?.styleContent ? 18 : 12,
+                    bold: header?.styleContent ? true : false,
                   },
                   {
                     text: header.content,
                     width: 'auto',
                     marginLeft: 3,
+                    fontSize: header?.styleContent ? 18 : 12,
+                    bold: header?.styleContent ? true : false,
                   },
                 ],
               },
@@ -48,15 +52,18 @@ export const downloadPdf = async ({
               columns: [
                 {
                   alignment: 'right',
-                  text: item.heading + ': ',
-                  bold: true,
+                  text: item.heading ? item.heading + ': ' : '',
                   width: '*',
                   marginRight: 3,
+                  fontSize: item?.styleContent ? 18 : 12,
+                  bold: item?.styleContent ? true : false,
                 },
                 {
                   alignment: 'right',
                   text: item.content,
                   width: 'auto',
+                  fontSize: item?.styleContent ? 18 : 12,
+                  bold: item?.styleContent ? true : false,
                 },
               ],
             },

@@ -469,8 +469,8 @@ async function convertArrayToPdfData(array: IHOArticleReportData[]) {
       { text: item.product },
       {
         image: item.image || defaultImage.value,
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
       },
       { text: item.quantity },
       { text: item.amount },

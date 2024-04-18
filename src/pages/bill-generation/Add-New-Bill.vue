@@ -819,8 +819,8 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
     const row = [
       {
         image: item.image || defaultImage.value,
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
       },
       { text: item.name, margin: [0, 20] },
       { text: item.quantity, bold: true, margin: [0, 20] },
@@ -839,7 +839,6 @@ async function downloadPdfData() {
       content: Number(router.currentRoute.value.params.id),
     },
     {
-      heading: 'User Name',
       content: billGenerationDetailsInfoData.value.fullName,
     },
     {
