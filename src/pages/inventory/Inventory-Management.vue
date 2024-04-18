@@ -49,6 +49,16 @@
       class="row flex md:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
       <q-input
+        maxlength="250"
+        v-model="filterSearch.categoryName"
+        dense
+        readonly
+        label="Select Category"
+        outlined
+        @click="addCategory"
+        color="btn-primary"
+      />
+      <q-input
         v-model="filterSearch.ProductCode"
         maxlength="250"
         outlined
@@ -182,9 +192,13 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="isCategoryModalVisible">
+    <article-category-modal @category-selected="handleSelectedCategory" />
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
+import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import { onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import {
@@ -206,6 +220,7 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const InventoryListRecords = ref<IInventoryListResponse[]>([]);
 const filteredShopDetailList = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
+const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const articleList = ref<IArticleData[]>([]);
 const ShopData = ref<IShopResponse[]>([]);
@@ -236,7 +251,20 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductCode: null,
   ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
   keyword: null,
+  categoryName: '',
+  categoryId: null,
 });
+const addCategory = () => {
+  isCategoryModalVisible.value = true;
+};
+const handleSelectedCategory = (selectedCategory: {
+  categoryName: string;
+  categoryId: number;
+}) => {
+  filterSearch.value.categoryName = selectedCategory.categoryName;
+  filterSearch.value.categoryId = selectedCategory.categoryId;
+  isCategoryModalVisible.value = false;
+};
 const resetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
@@ -246,6 +274,8 @@ const resetFilter = () => {
     ProductCode: null,
     ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     keyword: '',
+    categoryId: null,
+    categoryName: '',
   };
   getInventoryList();
 };

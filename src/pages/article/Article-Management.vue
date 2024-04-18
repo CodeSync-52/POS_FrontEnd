@@ -21,6 +21,16 @@
     <div
       class="row flex lg:justify-end md:justify-center sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
+      <q-input
+        maxlength="250"
+        v-model="filterSearch.categoryName"
+        dense
+        readonly
+        label="Select Category"
+        outlined
+        @click="addCategory"
+        color="btn-primary"
+      />
       <q-select
         dense
         style="min-width: 200px"
@@ -230,6 +240,9 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="isCategoryModalVisible">
+    <article-category-modal @category-selected="handleSelectedCategory" />
+  </q-dialog>
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
@@ -241,6 +254,7 @@ import {
   getRoleModuleDisplayName,
   IWholeSalePriceOption,
 } from 'src/interfaces';
+import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import ArticleStatusModal from 'src/components/article-management/Article-Status-Modal.vue';
 import { useAuthStore } from 'src/stores';
 import { IArticleData } from 'src/interfaces';
@@ -253,6 +267,7 @@ const $q = useQuasar();
 const router = useRouter();
 const selectedStatus = ref('');
 const selectedRowData = ref<IArticleData | null>(null);
+const isCategoryModalVisible = ref(false);
 const isArticleStatusModalVisible = ref(false);
 const pageTitle = getRoleModuleDisplayName(EUserModules.ArticleManagement);
 const ArticleData = ref<IArticleData[]>([]);
@@ -286,6 +301,8 @@ const resetFilter = () => {
     selectWholeSalePriceCategory: null,
     articleName: null,
     status: null,
+    categoryName: '',
+    categoryId: null,
   };
   getArticleList();
 };
@@ -293,14 +310,21 @@ const filterSearch = ref<{
   selectWholeSalePriceCategory: IWholeSalePriceOption | null;
   articleName: null | string;
   status: string | null;
+  categoryName: string;
+  categoryId: number | null;
 }>({
   selectWholeSalePriceCategory: null,
   articleName: null,
   status: null,
+  categoryName: '',
+  categoryId: null,
 });
 onMounted(() => {
   getArticleList();
 });
+const addCategory = () => {
+  isCategoryModalVisible.value = true;
+};
 const handleFilterSearch = () => {
   getArticleList();
 };
@@ -350,6 +374,15 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   callback();
   isLoading.value = false;
   isArticleStatusModalVisible.value = false;
+};
+
+const handleSelectedCategory = (selectedCategory: {
+  categoryName: string;
+  categoryId: number;
+}) => {
+  filterSearch.value.categoryName = selectedCategory.categoryName;
+  filterSearch.value.categoryId = selectedCategory.categoryId;
+  isCategoryModalVisible.value = false;
 };
 const getArticleList = async (data?: {
   pagination: Omit<typeof pagination.value, 'rowsNumber'>;

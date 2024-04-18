@@ -16,6 +16,8 @@ export interface IInventoryFilterSearch {
   ShopId: number | null;
   ProductCode: string | null;
   keyword: string | null;
+  categoryName: string;
+  categoryId: number | null;
 }
 export interface IInventoryListResponse {
   addedDate: string;
