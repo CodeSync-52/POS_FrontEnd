@@ -146,6 +146,7 @@
           <q-td class="flex justify-start" :props="props">
             <div class="flex gap-2 flex-nowrap">
               <q-btn
+                v-if="props.row.name !== 'Color' && props.row.name !== 'Size'"
                 size="sm"
                 flat
                 unelevated
