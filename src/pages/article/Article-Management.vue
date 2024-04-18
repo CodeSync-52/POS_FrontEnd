@@ -193,7 +193,7 @@
         <template v-slot:body-cell-name="props">
           <q-td
             :props="props"
-            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+            class="whitespace-nowrap max-w-[200px] text-ellipsis overflow-hidden"
           >
             {{ props.row.name }}
           </q-td>

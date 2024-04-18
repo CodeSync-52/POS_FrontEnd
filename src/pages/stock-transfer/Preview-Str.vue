@@ -204,6 +204,10 @@
         </div>
       </div>
     </q-card-section>
+    <div class="text-end text-[16px] px-4 mb-4">
+      Grand Total: <span class="font-bold">{{ selectedGrnData.quantity }}</span>
+    </div>
+
     <q-card-actions align="right">
       <q-btn
         unelevated
