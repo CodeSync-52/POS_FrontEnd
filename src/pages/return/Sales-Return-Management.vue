@@ -562,11 +562,15 @@ const filterSearch = ref<{
   ProductId: null | number;
   ShopId: number | null;
   ProductCode: string | null;
+  categoryName: string;
+  CategoryId: null;
 }>({
   keyword: '',
   ProductId: null,
   ShopId: selectedShop.value.fromShop?.shopId ?? null,
   ProductCode: '',
+  categoryName: '',
+  CategoryId: null,
 });
 const pagination = ref({
   sortBy: 'desc',
@@ -742,7 +746,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
       scannedLabelLoading.value = true;
       try {
         const res = await inventoryDetailApi({
-          ShopId: selectedShop.value.fromShop?.shopId ?? null,
+          ShopId: selectedShop.value.fromShop?.shopId?.toString() ?? '-1',
           PageNumber: pagination.value.page,
           PageSize: pagination.value.rowsPerPage,
           filterSearch: filterSearch.value,
@@ -917,6 +921,7 @@ const getArticleList = async (productName?: string) => {
       PageSize: 1000000,
       Status: 'Active',
       Name: productName,
+      CategoryId: null,
     });
     if (res.type === 'Success') {
       if (res.data) {
@@ -975,7 +980,7 @@ const inventoryDetailList = async (data?: {
     apiController.value = new AbortController();
     const res = await inventoryDetailApi(
       {
-        ShopId: selectedShop.value.fromShop?.shopId ?? null,
+        ShopId: (selectedShop.value.fromShop?.shopId ?? -1).toString(),
         PageNumber: pagination.value.page,
         PageSize: pagination.value.rowsPerPage,
         filterSearch: filterSearch.value,

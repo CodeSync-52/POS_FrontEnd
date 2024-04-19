@@ -31,14 +31,16 @@ export const newArticleApi = async ({
 export const articleListApi = async (
   {
     PageNumber = 1,
-    PageSize = 10000,
+    PageSize = 1000000,
     Name,
     Status,
     ShowZeroWholePrice,
+    CategoryId,
   }: {
     Name?: string | null;
     Status?: string | null;
     ShowZeroWholePrice?: number | null;
+    CategoryId: number | null;
     PageNumber: number;
     PageSize: number;
   },
@@ -58,6 +60,7 @@ export const articleListApi = async (
       Name,
       Status,
       ShowZeroWholePrice,
+      CategoryId,
     },
     signal: controller?.signal,
   });

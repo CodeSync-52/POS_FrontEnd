@@ -29,11 +29,13 @@ export const inventoryDetailApi = async (
     ShopId,
     PageSize = 50,
     filterSearch,
+    CategoryId,
   }: {
     PageNumber: number;
     PageSize: number;
-    ShopId: number | null;
+    ShopId: string | null;
     filterSearch: IInventoryFilterSearch;
+    CategoryId?: number | null;
   },
   controller?: AbortController
 ) => {
@@ -41,8 +43,6 @@ export const inventoryDetailApi = async (
   const res = await makeApiCall<
     IGenericResponse<{
       inventoryDetails: IInventoryListResponse[];
-      shopId: number;
-      shopName: string;
       totalCountInventoryDetails: number;
     }>
   >({
@@ -52,6 +52,7 @@ export const inventoryDetailApi = async (
       PageNumber,
       PageSize,
       ShopId,
+      CategoryId,
       ProductId,
       ProductCode,
       keyword,
