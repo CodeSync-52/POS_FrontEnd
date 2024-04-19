@@ -1,3 +1,5 @@
+import { IShopResponse } from './shop-managment';
+
 export interface ISelectedInventoryRecord {
   shopId: number;
   productWithVariantDTOs: IProductWithVariantDTOs[];
@@ -11,13 +13,19 @@ export interface IVariantStocks {
   variantId_2: number;
   stockQuantity: number;
 }
-export interface IInventoryFilterSearch {
-  ProductId: number | null;
+export interface IInventoryFilterSearch extends IBaseInventoryFilterSearch {
   ShopId: number | null;
+}
+export interface IBaseInventoryFilterSearch {
+  ProductId: number | null;
   ProductCode: string | null;
   keyword: string | null;
   categoryName: string;
   CategoryId: number | null;
+}
+export interface IInventoryFilterSearchWithShopIdArray
+  extends IBaseInventoryFilterSearch {
+  ShopId: IShopResponse[] | null;
 }
 export interface IInventoryListResponse {
   addedDate: string;

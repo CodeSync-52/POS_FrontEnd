@@ -8,6 +8,12 @@ export const InventoryListColumn: QTableColumn<IInventoryListResponse>[] = [
     field: (row) => row.productName,
   },
   {
+    name: 'shop',
+    label: 'Shop Name',
+    align: 'left',
+    field: (row) => row.shopName,
+  },
+  {
     name: 'productImage',
     label: 'Image',
     align: 'left',

@@ -399,7 +399,7 @@
             <template v-slot:body-cell-productName="props">
               <q-td
                 :props="props"
-                class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+                class="whitespace-nowrap max-w-[174px] text-ellipsis overflow-hidden"
               >
                 {{ props.row.productName }}
               </q-td>
