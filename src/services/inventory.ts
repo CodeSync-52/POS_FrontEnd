@@ -1,6 +1,7 @@
 import {
   IGenericResponse,
   IInventoryFilterSearch,
+  IInventoryFilterSearchWithShopId,
   IInventoryListResponse,
   IProductWithVariantDTOs,
 } from 'src/interfaces';
@@ -29,17 +30,17 @@ export const GetInventoryDetail = async (
     ShopId,
     PageSize = 50,
     filterSearch,
-    CategoryId,
-  }: {
+  }: // CategoryId,
+  {
     PageNumber: number;
     PageSize: number;
-    ShopId: string | null;
-    filterSearch: IInventoryFilterSearch;
-    CategoryId?: number | null;
+    ShopId: string | number[] | null;
+    filterSearch: IInventoryFilterSearch | IInventoryFilterSearchWithShopId;
+    // CategoryId?: number | null;
   },
   controller?: AbortController
 ) => {
-  const { ProductId, keyword, ProductCode } = filterSearch;
+  const { ProductId, keyword, ProductCode, CategoryId } = filterSearch;
   const res = await makeApiCall<
     IGenericResponse<{
       inventoryDetails: IInventoryListResponse[];

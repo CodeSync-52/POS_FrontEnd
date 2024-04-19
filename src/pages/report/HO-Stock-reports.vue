@@ -94,7 +94,10 @@
           icon="search"
           label="Search"
           unelevated
-          :disable="filterSearch.userData !== null && filterSearch.userData?.userId! < 0"
+          :disable="
+            filterSearch.userData !== null &&
+            (filterSearch.userData?.userId ?? 0) < 0
+          "
           @click="getReceiptList()"
         />
         <q-btn
@@ -303,6 +306,7 @@ const getArticleList = async (productName?: string) => {
       PageSize: 1000000,
       Status: 'Active',
       Name: productName,
+      CategoryId: null,
     });
     if (res.type === 'Success') {
       if (res.data) {

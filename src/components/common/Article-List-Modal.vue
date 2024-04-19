@@ -21,6 +21,7 @@
             @request="handlePagination($event.pagination)"
             :selection="props.isSelectionSingle ? 'single' : 'multiple'"
             v-model:selected="selected"
+            :rows-per-page-options="[0]"
           >
             <template v-slot:top>
               <div

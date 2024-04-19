@@ -66,6 +66,7 @@
         color="btn-primary"
         label="Product Code"
       />
+      <!-- @update:model-value="filterSearch.ShopId = $event.shopId" -->
       <q-select
         popup-content-class="!max-h-[200px]"
         class="max-w-[220px] min-w-[220px]"
@@ -73,11 +74,12 @@
         :options="ShopOptionData"
         :loading="isLoading"
         use-input
+        multiple
+        clearable
         dense
         map-options
         outlined
         v-model="filterSearch.ShopId"
-        @update:model-value="filterSearch.ShopId = $event.shopId"
         label="Select Shop"
         color="btn-primary"
         option-label="name"
@@ -88,6 +90,7 @@
           </q-item>
         </template></q-select
       >
+
       <q-select
         popup-content-class="!max-h-[200px]"
         class="max-w-[220px] min-w-[220px]"
@@ -206,10 +209,11 @@ import {
   EUserModules,
   EUserRoles,
   IArticleData,
-  IInventoryFilterSearch,
+  // IInventoryFilterSearch,
   IInventoryListResponse,
   IShopResponse,
   getRoleModuleDisplayName,
+  IInventoryFilterSearchWithShopId,
 } from 'src/interfaces';
 import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
 import { useAuthStore } from 'src/stores';
@@ -227,9 +231,26 @@ const ShopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
-onMounted(() => {
+const filterSearch = ref<IInventoryFilterSearchWithShopId>({
+  ProductId: null,
+  ProductCode: null,
+  ShopId: [],
+  // authStore0.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+  keyword: null,
+  categoryName: '',
+  CategoryId: null,
+});
+const loggedInUserShopId = authStore.loggedInUser?.userShopInfoDTO.shopId;
+const selectedShopIdDetails = ref<null | IShopResponse>(null);
+onMounted(async () => {
   getArticleList();
-  getShopList();
+  await getShopList();
+  const loggedInUserShopDetails = ShopOptionData.value.find(
+    (shop) => shop.shopId === loggedInUserShopId
+  );
+  if (loggedInUserShopDetails)
+    selectedShopIdDetails.value = loggedInUserShopDetails;
+  filterSearch.value.ShopId!.push(loggedInUserShopDetails!);
 });
 const pagination = ref({
   sortBy: 'desc',
@@ -246,14 +267,6 @@ const filteredData = ref<{
   color: '',
 });
 const $q = useQuasar();
-const filterSearch = ref<IInventoryFilterSearch>({
-  ProductId: null,
-  ProductCode: null,
-  ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
-  keyword: null,
-  categoryName: '',
-  CategoryId: null,
-});
 const addCategory = () => {
   isCategoryModalVisible.value = true;
 };
@@ -272,7 +285,7 @@ const resetFilter = () => {
   filterSearch.value = {
     ProductId: null,
     ProductCode: null,
-    ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+    ShopId: [selectedShopIdDetails.value!],
     keyword: '',
     CategoryId: null,
     categoryName: '',
@@ -320,7 +333,7 @@ const getInventoryList = async (data?: {
     apiController.value = new AbortController();
     const res = await GetInventoryDetail(
       {
-        ShopId: filterSearch.value.ShopId?.toString() ?? '-1',
+        ShopId: filterSearch.value.ShopId!.map((shop) => shop.shopId).join(','),
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
         filterSearch: filterSearch.value,

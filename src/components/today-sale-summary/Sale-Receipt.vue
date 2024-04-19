@@ -92,7 +92,11 @@
           product.discount
         }}</span>
         <span class="text-base" style="text-align: right">
-          {{ product.isReturn ? product.amount * -1 : product.amount }}</span
+          {{
+            product.isReturn
+              ? product.amount * -1 - product.discount
+              : product.amount - product.discount
+          }}</span
         >
       </div>
       <div
@@ -116,9 +120,16 @@
         <span v-if="isFirstSample === 'first'">{{
           receiptDetail?.totalDiscount
         }}</span>
-        <span style="text-align: right">{{
-          receiptDetail?.totalSalesAmount
-        }}</span>
+        <span style="text-align: right">
+          {{
+            (receiptDetail && receiptDetail.totalSalesAmount
+              ? receiptDetail.totalSalesAmount
+              : 0) -
+            (receiptDetail && receiptDetail.totalDiscount
+              ? receiptDetail.totalDiscount
+              : 0)
+          }}
+        </span>
       </div>
       <div
         style="

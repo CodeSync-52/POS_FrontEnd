@@ -408,6 +408,7 @@ const getArticleList = async (data?: {
         Status: filterSearch.value.status,
         ShowZeroWholePrice:
           filterSearch.value.selectWholeSalePriceCategory?.statusId,
+        CategoryId: filterSearch.value.categoryId,
       },
       apiController.value
     );
