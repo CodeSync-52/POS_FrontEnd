@@ -189,6 +189,8 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductCode: null,
   ShopId: null,
   keyword: null,
+  CategoryId: null,
+  categoryName: '',
 });
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
@@ -232,6 +234,7 @@ const getArticleList = async (productName?: string) => {
       PageSize: 1000000,
       Status: 'Active',
       Name: productName,
+      CategoryId: null,
     });
     if (res.type === 'Success') {
       if (res.data) {
@@ -266,7 +269,8 @@ const inventoryDetailList = async (data?: {
     apiController.value = new AbortController();
     const res = await GetInventoryDetail(
       {
-        ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
+        ShopId:
+          authStore.loggedInUser?.userShopInfoDTO.shopId?.toString() ?? '-1',
         PageNumber: pagination.value.page,
         PageSize: pagination.value.rowsPerPage,
         filterSearch: filterSearch.value,

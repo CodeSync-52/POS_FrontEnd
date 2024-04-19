@@ -252,7 +252,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
   keyword: null,
   categoryName: '',
-  categoryId: null,
+  CategoryId: null,
 });
 const addCategory = () => {
   isCategoryModalVisible.value = true;
@@ -262,7 +262,7 @@ const handleSelectedCategory = (selectedCategory: {
   categoryId: number;
 }) => {
   filterSearch.value.categoryName = selectedCategory.categoryName;
-  filterSearch.value.categoryId = selectedCategory.categoryId;
+  filterSearch.value.CategoryId = selectedCategory.categoryId;
   isCategoryModalVisible.value = false;
 };
 const resetFilter = () => {
@@ -274,7 +274,7 @@ const resetFilter = () => {
     ProductCode: null,
     ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
     keyword: '',
-    categoryId: null,
+    CategoryId: null,
     categoryName: '',
   };
   getInventoryList();
@@ -320,7 +320,7 @@ const getInventoryList = async (data?: {
     apiController.value = new AbortController();
     const res = await GetInventoryDetail(
       {
-        ShopId: filterSearch.value.ShopId,
+        ShopId: filterSearch.value.ShopId?.toString() ?? '-1',
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
         filterSearch: filterSearch.value,
@@ -353,6 +353,7 @@ const getArticleList = async (productName?: string) => {
       PageSize: 1000000,
       Status: 'Active',
       Name: productName,
+      CategoryId: null,
     });
     if (res.type === 'Success') {
       if (res.data) {

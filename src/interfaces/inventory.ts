@@ -17,11 +17,13 @@ export interface IInventoryFilterSearch {
   ProductCode: string | null;
   keyword: string | null;
   categoryName: string;
-  categoryId: number | null;
+  CategoryId: number | null;
 }
 export interface IInventoryListResponse {
   addedDate: string;
   productId: number;
+  shopId: number;
+  shopName: string;
   productName: string;
   productImage: string;
   inventoryId: number;
