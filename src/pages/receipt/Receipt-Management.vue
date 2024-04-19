@@ -329,10 +329,10 @@ import {
 } from 'src/interfaces';
 import { useAuthStore } from 'src/stores';
 import {
-  receiptListApi,
-  cancelReceiptApi,
-  getUserListApi,
-  getCustomerGroupList,
+  GetPurchaseList,
+  CancelPurchase,
+  GetUsers,
+  GetCustomerGroupList,
 } from 'src/services';
 import { isPosError, receiptColumn, purchaseStatusOptions } from 'src/utils';
 import moment from 'moment';
@@ -390,7 +390,7 @@ const customerGroupList = ref<ICustomerListResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 500,
     });
@@ -440,7 +440,7 @@ const handleCancelReceipt = async () => {
   if (isCancellingReceipt.value) return;
   isCancellingReceipt.value = true;
   try {
-    const res = await cancelReceiptApi(selectedRowData.value?.purchaseId ?? -1);
+    const res = await CancelPurchase(selectedRowData.value?.purchaseId ?? -1);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -481,7 +481,7 @@ const getReceiptList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await receiptListApi(
+    const res = await GetPurchaseList(
       {
         ToDate: filterSearch.value.endDate,
         FromDate: filterSearch.value.startDate,
@@ -523,7 +523,7 @@ async function getCustomerListOption() {
   if (isCustomerGroupListLoading.value) return;
   isCustomerGroupListLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'Active' });
+    const res = await GetCustomerGroupList({ status: 'Active' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupList.value = res?.data;
     }

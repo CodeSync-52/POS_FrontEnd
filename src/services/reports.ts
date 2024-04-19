@@ -7,7 +7,7 @@ import {
   IOutStandingReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
-export const accountReportListApi = async (
+export const GetAccountReport = async (
   {
     ToDate,
     FromDate,
@@ -34,7 +34,7 @@ export const accountReportListApi = async (
   return res;
 };
 
-export const userOutStandingReportListApi = async (
+export const GetUserOutstandingReport = async (
   {
     customerGroupId,
     includeZeroBalance,
@@ -58,7 +58,7 @@ export const userOutStandingReportListApi = async (
   return res;
 };
 
-export const HOStockReportListApi = async (
+export const GetHOStockReport = async (
   {
     userId,
     categoryId,
@@ -94,7 +94,7 @@ export const HOStockReportListApi = async (
   return res;
 };
 
-export const HOArticleSaleReportListApi = async (
+export const GetHOArticleSaleReport = async (
   {
     purchaseFromCustomerGroup,
     purchaseFromCustomer,
@@ -136,7 +136,7 @@ export const HOArticleSaleReportListApi = async (
   return res;
 };
 
-export const HOSaleDetailReportListApi = async (
+export const GetHOSaleDetailReport = async (
   {
     ToDate,
     FromDate,
@@ -163,7 +163,7 @@ export const HOSaleDetailReportListApi = async (
   return res;
 };
 
-export const HOPurchaseDetailReportListApi = async (
+export const GetHOPurchaseDetailReport = async (
   {
     ToDate,
     FromDate,

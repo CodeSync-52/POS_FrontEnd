@@ -110,9 +110,9 @@ import moment from 'moment';
 import { IArticleData, IHOSaleDetailReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
-import { articleListApi } from 'src/services';
+import { GetArticleList } from 'src/services';
 import {
-  HOPurchaseDetailReportListApi,
+  GetHOPurchaseDetailReport,
   wrapCsvValue,
 } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
@@ -161,7 +161,7 @@ const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 1000000,
       Status: 'Active',
@@ -221,7 +221,7 @@ const getReceiptList = async () => {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await HOPurchaseDetailReportListApi(
+    const res = await GetHOPurchaseDetailReport(
       {
         ToDate: filterSearch.value.endDate,
         FromDate: filterSearch.value.startDate,

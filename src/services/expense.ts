@@ -1,6 +1,6 @@
-import { IGenericResponse, Iexpenses } from 'src/interfaces';
+import { IGenericResponse, IExpenses } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
-export const getExpenseList = async ({
+export const GetExpenseList = async ({
   pageNumber,
   pageSize,
 }: {
@@ -10,7 +10,7 @@ export const getExpenseList = async ({
   const res = await makeApiCall<
     IGenericResponse<{
       totalItemCount: number;
-      items: Iexpenses[];
+      items: IExpenses[];
     }>
   >({
     method: 'GET',
@@ -18,7 +18,7 @@ export const getExpenseList = async ({
   });
   return res;
 };
-export const addNewExpenseApi = async (expenseTypeName: string) => {
+export const CreateExpense = async (expenseTypeName: string) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
     url: 'api/expensetype/add',
@@ -26,7 +26,7 @@ export const addNewExpenseApi = async (expenseTypeName: string) => {
   });
   return res;
 };
-export const updateExpenseType = async ({
+export const UpdateExpense = async ({
   expenseId,
   newName,
 }: {

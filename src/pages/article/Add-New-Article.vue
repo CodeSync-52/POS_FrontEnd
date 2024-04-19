@@ -217,15 +217,15 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  newArticleApi,
-  articleDetailApi,
+  CreateArticle,
+  GetArticleDetail,
 } from 'src/services/article-management';
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import { INewArticleData } from 'src/interfaces/article-management';
 import { isPosError, billingHistoryColumn } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { IBillingHistoryResponse } from 'src/interfaces';
-import { updateProductApi, billingHistoryApi } from 'src/services';
+import { UpdateArticle, GetArticlebillingHistory } from 'src/services';
 const router = useRouter();
 const isCategoryModalVisible = ref(false);
 const isLoading = ref(false);
@@ -334,7 +334,7 @@ async function addNewArticle() {
     if (productImage) {
       base64Image = await convertToBase64(productImage);
     }
-    const res = await newArticleApi({
+    const res = await CreateArticle({
       categoryId,
       name,
       description,
@@ -385,7 +385,7 @@ const getArticleDetail = async (productId: number) => {
   if (isFetching.value) return;
   isFetching.value = true;
   try {
-    const res = await articleDetailApi(productId);
+    const res = await GetArticleDetail(productId);
     if (res.type === 'Success') {
       newArticle.value = { ...res.data, productImage: null };
       const previewUrl = res.data.productImage;
@@ -436,7 +436,7 @@ const handleUpdateArticle = async () => {
     base64Image = imageData.value;
   }
   try {
-    const res = await updateProductApi({
+    const res = await UpdateArticle({
       productId,
       description,
       categoryId,
@@ -469,7 +469,7 @@ const handleUpdateArticle = async () => {
 };
 const getArticleBillingHistory = async (productId: number) => {
   try {
-    const res = await billingHistoryApi(productId);
+    const res = await GetArticlebillingHistory(productId);
     if (res.type === 'Success') {
       billingHistoryRecord.value = res.data;
     }

@@ -6,7 +6,7 @@ import {
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const addInventoryApi = async ({
+export const CreateInventoryAtHO = async ({
   shopId,
   productWithVariantDTOs,
 }: {
@@ -23,7 +23,7 @@ export const addInventoryApi = async ({
   });
   return res;
 };
-export const inventoryDetailApi = async (
+export const GetInventoryDetail = async (
   {
     PageNumber = 1,
     ShopId,

@@ -149,7 +149,7 @@ import { useQuasar } from 'quasar';
 import { ref, onMounted } from 'vue';
 import {
   EUserModules,
-  IShopAddNew,
+  IShopBasicInfo,
   getRoleModuleDisplayName,
   IShopResponse,
 } from 'src/interfaces';
@@ -157,10 +157,10 @@ import AddShopModal from 'src/components/shop-managment/Add-Shop-Modal.vue';
 import ShopStatusModal from 'src/components/shop-managment/Shop-Status-Modal.vue';
 import { OrderBy, shopStatusOptions, shopColumn, isPosError } from 'src/utils';
 import {
-  shopListApi,
-  changeShopStatusApi,
-  AddShopApi,
-  updateShopApi,
+  GetShopList,
+  ChangeShopStatus,
+  CreateShop,
+  UpdateShop,
 } from 'src/services';
 const pageTitle = getRoleModuleDisplayName(EUserModules.ShopManagement);
 const isLoading = ref(false);
@@ -213,9 +213,9 @@ const handleEditStatusPopup = (selectedRow: IShopResponse) => {
 onMounted(() => {
   getShopList();
 });
-async function handleAddNewShop(shopData: IShopAddNew, callback: () => void) {
+async function handleAddNewShop(shopData: IShopBasicInfo, callback: () => void) {
   try {
-    const response = await AddShopApi(shopData);
+    const response = await CreateShop(shopData);
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,
@@ -249,7 +249,7 @@ const getShopList = async (data?: {
   try {
     const rowsPerPage =
       pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: pagination.value.page,
       PageSize: rowsPerPage,
       filterSearch: filterSearch.value,
@@ -280,7 +280,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   }
   const id = selectedRowData.value?.shopId ?? -1;
   try {
-    const response = await changeShopStatusApi(id);
+    const response = await ChangeShopStatus(id);
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,
@@ -313,7 +313,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
 const handleEditShop = async (data: IShopResponse, callback: () => void) => {
   const { name, phone, code, shopId, address } = data;
   try {
-    const response = await updateShopApi({
+    const response = await UpdateShop({
       name,
       phone,
       code,

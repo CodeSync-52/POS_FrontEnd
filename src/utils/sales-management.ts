@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { QTableColumn } from 'quasar';
-import { ISalesManagementData, IWholeSaleProductsInfo } from 'src/interfaces';
+import { IWholeSalesData, IWholeSaleProductsInfo } from 'src/interfaces';
 
 export const wholeSaleStatusOptions = ['Open', 'Cancelled', 'Completed'];
-export const salesManagementColumn: QTableColumn<ISalesManagementData>[] = [
+export const salesManagementColumn: QTableColumn<IWholeSalesData>[] = [
   {
     name: 'createdDate',
     label: 'Date',

@@ -313,11 +313,11 @@ import { useRouter } from 'vue-router';
 import { ISaleInfo, IPreviewSaleResponse, ISaleDetail } from 'src/interfaces';
 import InventoryListModal from 'src/components/inventory/New-Inventory-List-Modal.vue';
 import {
-  previewSaleApi,
-  changeSaleStatusApi,
-  deleteSaleApi,
-  addSaleItemApi,
-  updateSaleItemApi,
+  GetSaleDetail,
+  ChangeSaleStatus,
+  DeleteSaleLineItem,
+  CreateSaleLineItem,
+  UpdateSaleLineItem,
 } from 'src/services';
 import { printReceipt, shopSalePreviewTableColumn } from './utils';
 import { isPosError } from 'src/utils';
@@ -458,7 +458,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
 const previewBill = async (saleId: number) => {
   try {
     isLoading.value = true;
-    const res = await previewSaleApi(saleId);
+    const res = await GetSaleDetail(saleId);
     if (res.type === 'Success') {
       receiptDetail.value = res.data;
       const responseData = res.data as IPreviewSaleResponse | null;
@@ -496,7 +496,7 @@ const previewBill = async (saleId: number) => {
 };
 const handleCompleteSale = async (saleId: number, saleStatus: number) => {
   try {
-    const response = await changeSaleStatusApi({ saleId, saleStatus });
+    const response = await ChangeSaleStatus({ saleId, saleStatus });
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,
@@ -530,7 +530,7 @@ const handleDeleteSaleItem = async (
       );
       SaleSummary.value.saleDetailInfos.splice(indexToRemove, 1);
     } else {
-      const response = await deleteSaleApi({ saleId, saleDetailId });
+      const response = await DeleteSaleLineItem({ saleId, saleDetailId });
       if (response.type === 'Success') {
         $q.notify({
           message: response.message,
@@ -596,7 +596,7 @@ const handleUpdateSaleItem = async (
   saleDetails: ISaleDetail
 ) => {
   try {
-    const res = await updateSaleItemApi({
+    const res = await UpdateSaleLineItem({
       saleDetailId,
       saleDetails: { ...saleDetails },
     });
@@ -625,7 +625,7 @@ const handleUpdateSaleItem = async (
 
 const handleAddSaleItem = async (saleId: number, saleDetails: ISaleDetail) => {
   try {
-    const res = await addSaleItemApi({
+    const res = await CreateSaleLineItem({
       saleId,
       saleDetails: { ...saleDetails },
     });

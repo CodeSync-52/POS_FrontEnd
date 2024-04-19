@@ -192,28 +192,28 @@ import { useQuasar } from 'quasar';
 import {
   IArticleData,
   IPagination,
-  ISelectedArticle,
+  ISelectedArticleRecord,
   IVariantData,
   IVariantDetailsData,
   IVariantGroup,
 } from 'src/interfaces';
 import {
-  variantGroupListApi,
-  variantListApi,
-  variantListByIdApi,
+  GetVariantGroupList,
+  GetVariantList,
+  GetVariantListByGroupId,
 } from 'src/services';
 import { isPosError } from 'src/utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { CanceledError } from 'axios';
 
 interface propTypes {
-  selectedArticle: ISelectedArticle[];
+  selectedArticle: ISelectedArticleRecord[];
 }
 interface propTypes {
   articleList: IArticleData[];
   isArticlesLoading: boolean;
   pagination: IPagination;
-  selectedArticle: ISelectedArticle[];
+  selectedArticle: ISelectedArticleRecord[];
 }
 
 const emit = defineEmits<{
@@ -358,7 +358,7 @@ const getSelectedVariantDetails = async (
   isSecond: boolean
 ) => {
   try {
-    const res = await variantListByIdApi({
+    const res = await GetVariantListByGroupId({
       status: selectedVariantGroup?.status,
       variantGroupId: selectedVariantGroup?.variantGroupId,
     });
@@ -392,7 +392,7 @@ const getVariantList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
-    const res = await variantListApi({
+    const res = await GetVariantList({
       pageNumber: pagination.value.page,
       pageSize: pagination.value.rowsPerPage,
     });
@@ -427,7 +427,7 @@ watch(variantDetailsRecord, setFilteredData);
 const getVariantGroupList = async () => {
   isLoading.value = true;
   try {
-    const res = await variantGroupListApi({
+    const res = await GetVariantGroupList({
       pageNumber: 1,
       pageSize: 500,
     });

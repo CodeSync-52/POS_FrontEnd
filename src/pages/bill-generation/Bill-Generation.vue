@@ -300,17 +300,17 @@ import {
   EActionPermissions,
   EUserModules,
   IBillGenerationData,
-  IBillGenerationFilter,
+  IBillFilter,
   IUserResponse,
   EUserRoles,
   ICustomerListResponse,
 } from 'src/interfaces';
 import {
-  billListApi,
-  cancelBillApi,
-  completeBillApi,
-  getCustomerGroupList,
-  getUserListApi,
+  GetBillList,
+  CancelBill,
+  CompleteBill,
+  GetCustomerGroupList,
+  GetUsers,
 } from 'src/services';
 import { CanceledError } from 'axios';
 import { date } from 'quasar';
@@ -338,7 +338,7 @@ const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const isCustomerGroupListLoading = ref(false);
 const customerGroupList = ref<ICustomerListResponse[]>([]);
-const filterSearch = ref<IBillGenerationFilter>({
+const filterSearch = ref<IBillFilter>({
   userId: null,
   userName: null,
   ToDate: formattedToDate,
@@ -361,7 +361,7 @@ const options = ref<IUserResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 500,
     });
@@ -406,7 +406,7 @@ const handleGenerateBillPopup = async (selectedRow: IBillGenerationData) => {
 };
 const handleGenerateBill = async (id: number, callback: () => void) => {
   try {
-    const res = await completeBillApi(id);
+    const res = await CompleteBill(id);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -437,7 +437,7 @@ const handleCancelBillPopup = async (selectedRow: IBillGenerationData) => {
 };
 const handleCancelBill = async (id: number, callback: () => void) => {
   try {
-    const res = await cancelBillApi(id);
+    const res = await CancelBill(id);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -478,7 +478,7 @@ const getBillList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await billListApi(
+    const res = await GetBillList(
       {
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
@@ -515,7 +515,7 @@ async function getCustomerListOption() {
   if (isCustomerGroupListLoading.value) return;
   isCustomerGroupListLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'Active' });
+    const res = await GetCustomerGroupList({ status: 'Active' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupList.value = res?.data;
     }

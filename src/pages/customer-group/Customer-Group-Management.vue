@@ -149,10 +149,10 @@ import {
   getRoleModuleDisplayName,
 } from 'src/interfaces';
 import {
-  getCustomerGroupList,
-  changeCustomerStatus,
-  addNewCustomerGroup,
-  updateCustomerGroup,
+  GetCustomerGroupList,
+  ChangeCustomerGroupStatus,
+  CreateCustomerGroup,
+  UpdateCustomerGroup,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, customerGroupColumns } from 'src/utils';
@@ -207,8 +207,8 @@ const updateOrAddCustomer = async (
     }
     const customerId = selectedRowData.value?.customerGroupId ?? -1;
     const res = await (action === 'add'
-      ? addNewCustomerGroup(newName)
-      : updateCustomerGroup({ newName, customerId }));
+      ? CreateCustomerGroup(newName)
+      : UpdateCustomerGroup({ newName, customerId }));
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -233,7 +233,7 @@ const updateOrAddCustomer = async (
 };
 const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   try {
-    const res = await changeCustomerStatus(
+    const res = await ChangeCustomerGroupStatus(
       selectedRowData.value?.customerGroupId ?? -1
     );
     if (res.type === 'Success') {
@@ -301,7 +301,7 @@ async function fetchingCustomerGroupList() {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'ALL' });
+    const res = await GetCustomerGroupList({ status: 'ALL' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupRows.value = res.data;
     }

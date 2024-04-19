@@ -5,7 +5,7 @@ import {
   IGenericResponse,
 } from 'src/interfaces';
 
-export const newArticleApi = async ({
+export const CreateArticle = async ({
   name,
   description,
   categoryId,
@@ -28,7 +28,7 @@ export const newArticleApi = async ({
   });
   return res;
 };
-export const articleListApi = async (
+export const GetArticleList = async (
   {
     PageNumber = 1,
     PageSize = 10000,
@@ -63,7 +63,7 @@ export const articleListApi = async (
   });
   return res;
 };
-export const changeArticleStatus = async (productId: number) => {
+export const ChangeArticleStatus = async (productId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: 'api/Product/changestatus',
@@ -73,7 +73,7 @@ export const changeArticleStatus = async (productId: number) => {
   });
   return res;
 };
-export const updateProductApi = async ({
+export const UpdateArticle = async ({
   productId,
   name,
   description,
@@ -114,7 +114,7 @@ export const updateProductApi = async ({
   });
   return res;
 };
-export const articleDetailApi = async (productId: number) => {
+export const GetArticleDetail = async (productId: number) => {
   const res = await makeApiCall<IGenericResponse<IArticleData>>({
     method: 'GET',
     url: 'api/product/detail',
@@ -124,7 +124,7 @@ export const articleDetailApi = async (productId: number) => {
   });
   return res;
 };
-export const billingHistoryApi = async (productId: number) => {
+export const GetArticlebillingHistory = async (productId: number) => {
   const res = await makeApiCall<IGenericResponse<IBillingHistoryResponse[]>>({
     url: 'api/product/billinghistory',
     method: 'GET',

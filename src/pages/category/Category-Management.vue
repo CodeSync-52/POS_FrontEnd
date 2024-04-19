@@ -206,10 +206,10 @@ import {
 } from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import {
-  changeCategoryStatus,
-  categoryListApi,
-  createCategory,
-  updateCategory,
+  ChangeCategoryStatus,
+  GetCategoryList,
+  CreateCategory,
+  UpdateCategory,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 const router = useRouter();
@@ -292,7 +292,7 @@ const updateOrAddCategory = async (
   isLoading.value = true;
   if (action === 'Edit' && selectedRowData.value) {
     try {
-      const res = await updateCategory({
+      const res = await UpdateCategory({
         categoryId: selectedRowData.value?.categoryId,
         name: newName,
       });
@@ -318,7 +318,7 @@ const updateOrAddCategory = async (
     }
   } else {
     try {
-      const res = await createCategory(newName);
+      const res = await CreateCategory(newName);
       if (res.type === 'Success') {
         $q.notify({
           message: res.message,
@@ -354,7 +354,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   isLoading.value = true;
   if (selectedRowData?.value) {
     try {
-      const res = await changeCategoryStatus(
+      const res = await ChangeCategoryStatus(
         selectedRowData?.value?.categoryId
       );
       if (res.type === 'Success') {
@@ -400,7 +400,7 @@ const getCategoryList = async (data?: {
   try {
     const rowsPerPage =
       pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
-    const res = await categoryListApi({
+    const res = await GetCategoryList({
       pageNumber: pagination.value.page,
       pageSize: rowsPerPage,
     });

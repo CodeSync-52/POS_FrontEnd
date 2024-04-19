@@ -1,4 +1,4 @@
-export interface Iexpenses {
+export interface IExpenses {
   expenseTypeId: number;
   expenseTypeName: string;
   createdBy: number;

@@ -1,13 +1,13 @@
 import {
   IGenericResponse,
   IGrnListFilter,
-  IGrnRecords,
-  ISelectedPayload,
+  IGrnRecord,
+  ISelectedGRNRecord,
   IGrnPreviewResponse,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const addGrnApi = async (payload: ISelectedPayload) => {
+export const CreateGRN = async (payload: ISelectedGRNRecord) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/grn/add',
     method: 'POST',
@@ -18,7 +18,7 @@ export const addGrnApi = async (payload: ISelectedPayload) => {
   return res;
 };
 
-export const viewGrnApi = async (grnId: number) => {
+export const GetGRNDetail = async (grnId: number) => {
   const res = await makeApiCall<IGenericResponse<IGrnPreviewResponse>>({
     url: 'api/grn/detail',
     method: 'GET',
@@ -28,7 +28,7 @@ export const viewGrnApi = async (grnId: number) => {
   });
   return res;
 };
-export const grnListApi = async (
+export const GetGRNList = async (
   {
     PageNumber = 1,
     PageSize = 50,
@@ -43,7 +43,7 @@ export const grnListApi = async (
   controller?: AbortController
 ) => {
   const res = await makeApiCall<
-    IGenericResponse<{ items: IGrnRecords[]; totalItemCount: number }>
+    IGenericResponse<{ items: IGrnRecord[]; totalItemCount: number }>
   >({
     url: 'api/grn/list',
     method: 'GET',
@@ -58,7 +58,7 @@ export const grnListApi = async (
   return res;
 };
 
-export const updateGrnDetail = async (payload: any) => {
+export const UpdateGRN = async (payload: any) => {
   const res = await makeApiCall<any>({
     url: `api/grn/update?grnDetailId=${payload.grnId}&quantity=${payload.quantity}`,
     method: 'PUT',

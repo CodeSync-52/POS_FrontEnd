@@ -154,8 +154,8 @@ import {
 } from 'src/interfaces';
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
-import { articleListApi, getUserListApi } from 'src/services';
-import { HOStockReportListApi, wrapCsvValue } from 'src/services/reports';
+import { GetArticleList, GetUsers } from 'src/services';
+import { GetHOStockReport, wrapCsvValue } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOStockReportColumn } from 'src/utils/reports';
@@ -199,7 +199,7 @@ onUnmounted(() => {
 const getUserList = async () => {
   isLoading.value = true;
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 5000,
     });
@@ -259,7 +259,7 @@ const getReceiptList = async () => {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await HOStockReportListApi(
+    const res = await GetHOStockReport(
       {
         userId: filterSearch.value.userData?.userId ?? null,
         categoryId: filterSearch.value.categoryId,
@@ -298,7 +298,7 @@ const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 1000000,
       Status: 'Active',

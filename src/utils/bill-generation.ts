@@ -2,7 +2,7 @@ import moment from 'moment';
 import { QTableColumn } from 'quasar';
 import {
   IBillGenerationData,
-  IBillGenerationDetailsInfoProductList,
+  IBillProductList,
   IProductInfoDetailList,
 } from 'src/interfaces';
 
@@ -72,7 +72,7 @@ export const editBillGenerationRecordsColumn: QTableColumn<IProductInfoDetailLis
       field: (row) => row.amount * row.quantity,
     },
   ];
-export const BillGenerationDetailsInfoColumn: QTableColumn<IBillGenerationDetailsInfoProductList>[] =
+export const BillGenerationDetailsInfoColumn: QTableColumn<IBillProductList>[] =
   [
     {
       name: 'image',

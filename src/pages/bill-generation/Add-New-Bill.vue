@@ -448,20 +448,20 @@ import {
   ITableHeaders,
 } from 'src/utils';
 import {
-  billDetailsApi,
-  addBillApi,
-  billDetailInfoApi,
-  updateBillApi,
-  updateClaimFreightApi,
+  GetBillDetail,
+  CreateBill,
+  GetBillBasicInfo,
+  UpdateBill,
+  UpdateBillClaimFreight,
 } from 'src/services';
 import moment from 'moment';
 import {
   IBillDetail,
   IProductInfoDetailList,
   INewBillData,
-  IBillGenerationDetailsInfoData,
-  IBillGenerationDetailsInfoProductList,
-  IUpdatedBillProductList,
+  IBillData,
+  IBillProductList,
+  IProductIdWithAmount,
 } from 'src/interfaces';
 import { ITableItems, downloadPdf } from 'src/utils/pdf-make/pdf-make';
 import { processTableItems } from 'src/utils/process-table-items';
@@ -473,7 +473,7 @@ const isPreviewImageModalVisible = ref(false);
 const selectedPreviewImage = ref('');
 const isUpdating = ref(false);
 const isSavingDraft = ref(false);
-const billGenerationDetailsInfoData = ref<IBillGenerationDetailsInfoData>({
+const billGenerationDetailsInfoData = ref<IBillData>({
   billId: 0,
   billStatus: '',
   createdDate: '',
@@ -597,7 +597,7 @@ const BillGenerationTotalAmount = computed(() => {
 const BillGenerationDetailsInfoTotalAmount = computed(() => {
   const rows = billGenerationDetailsInfoData.value.productList;
   return rows.reduce(
-    (total: number, row: IBillGenerationDetailsInfoProductList) => {
+    (total: number, row: IBillProductList) => {
       return total + row.quantity * row.amount;
     },
     0
@@ -607,7 +607,7 @@ const addNewBill = async (newBillInfo: INewBillData) => {
   if (isSavingDraft.value) return;
   isSavingDraft.value = true;
   try {
-    const res = await addBillApi(newBillInfo);
+    const res = await CreateBill(newBillInfo);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -640,7 +640,7 @@ const getBillDetailInfo = async (BillId: number) => {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await billDetailInfoApi(BillId);
+    const res = await GetBillBasicInfo(BillId);
     if (res.type === 'Success') {
       if (res.data) {
         billGenerationDetailsInfoData.value = res.data;
@@ -668,7 +668,7 @@ const getBillDetails = async (purchaseId: number) => {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await billDetailsApi(purchaseId);
+    const res = await GetBillDetail(purchaseId);
     if (res.type === 'Success') {
       billGenerationData.value = res.data;
       if (res.data.outStandingBalance === null) {
@@ -698,7 +698,7 @@ const updateClaimFreight = async ({
   freight: number;
 }) => {
   try {
-    const res = await updateClaimFreightApi({ billId, claim, freight });
+    const res = await UpdateBillClaimFreight({ billId, claim, freight });
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -719,12 +719,12 @@ const updateClaimFreight = async ({
 };
 const updateExistingBill = async (
   billId: number,
-  productList: IUpdatedBillProductList[]
+  productList: IProductIdWithAmount[]
 ) => {
   if (isUpdating.value) return;
   isUpdating.value = true;
   try {
-    const res = await updateBillApi({ billId, productList });
+    const res = await UpdateBill({ billId, productList });
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -782,7 +782,7 @@ const convertToBase64 = (file: File): Promise<string> => {
   });
 };
 const defaultImage = ref<string | null>(null);
-async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
+async function convertArray(array: IBillProductList[]) {
   if (!defaultImage.value) {
     defaultImage.value = await fetch('/assets/default-image.png')
       .then((res) => res.blob())
@@ -815,7 +815,7 @@ async function convertArray(array: IBillGenerationDetailsInfoProductList[]) {
     'Net Total:',
     `${billGenerationDetailsInfoData.value.totalAmount}`,
   ];
-  array.forEach((item: IBillGenerationDetailsInfoProductList) => {
+  array.forEach((item: IBillProductList) => {
     const row = [
       {
         image: item.image || defaultImage.value,

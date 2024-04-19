@@ -250,10 +250,10 @@ import { date } from 'quasar';
 import { useRouter } from 'vue-router';
 import { shopAllBillsTableColumn, billStatusOptionList } from './utils';
 import {
-  getSaleListApi,
-  shopListApi,
-  cancelSaleApi,
-  changeSaleStatusApi,
+  GetSaleList,
+  GetShopList,
+  CancelSale,
+  ChangeSaleStatus,
 } from 'src/services';
 import {
   IBillStatusOptionList,
@@ -342,7 +342,7 @@ const searchBills = async (paginationData?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await getSaleListApi(
+    const res = await GetSaleList(
       {
         filterSearch: {
           statusId: filterSearch.value.selectStatus,
@@ -406,7 +406,7 @@ const handleUpdateFromShop = (newVal: IShopResponse) => {
 const getShopList = async () => {
   isFetchingShopList.value = true;
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
@@ -432,7 +432,7 @@ const handleCompleteSale = async (selectedRow: number) => {
 };
 const completeSale = async (saleId: number, saleStatus: number) => {
   try {
-    const response = await changeSaleStatusApi({ saleId, saleStatus });
+    const response = await ChangeSaleStatus({ saleId, saleStatus });
     if (response.type === 'Success') {
       const saleToUpdate = saleList.value.find(
         (sale) => sale.saleId === saleId
@@ -463,7 +463,7 @@ const handleCancelBill = async (selectedRow: number) => {
 };
 const handleCancelSale = async (id: number) => {
   try {
-    const response = await cancelSaleApi(id);
+    const response = await CancelSale(id);
     if (response.type === 'Success') {
       const saleToUpdate = saleList.value.find((sale) => sale.saleId === id);
       if (saleToUpdate) {

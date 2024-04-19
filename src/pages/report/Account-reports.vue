@@ -100,8 +100,8 @@
 import { CanceledError } from 'axios';
 import { date, exportFile, useQuasar } from 'quasar';
 import { IAccountReportData, IUserData, IUserResponse } from 'src/interfaces';
-import { getUserListApi } from 'src/services';
-import { accountReportListApi, wrapCsvValue } from 'src/services/reports';
+import { GetUsers } from 'src/services';
+import { GetAccountReport, wrapCsvValue } from 'src/services/reports';
 import { downloadPdf, isPosError, ITableHeaders, ITableItems } from 'src/utils';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { accountReportColumn } from 'src/utils/reports';
@@ -140,7 +140,7 @@ onUnmounted(() => {
 const getUserList = async () => {
   isLoading.value = true;
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 5000,
     });
@@ -208,7 +208,7 @@ const getReceiptList = async () => {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await accountReportListApi(
+    const res = await GetAccountReport(
       {
         ToDate: filterSearch.value.endDate,
         FromDate: filterSearch.value.startDate,

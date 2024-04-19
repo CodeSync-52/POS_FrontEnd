@@ -255,7 +255,7 @@ import {
   IProductGRN,
   ProductVariant,
 } from 'src/interfaces';
-import { updateGrnDetail, viewGrnApi } from 'src/services';
+import { UpdateGRN, GetGRNDetail } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { onMounted, ref } from 'vue';
@@ -339,7 +339,7 @@ const handleUpdateStrStockQuantity = (value: number, row: ProductVariant) => {
 const previewGrn = async (selectedId: number) => {
   isLoading.value = true;
   try {
-    const res = await viewGrnApi(selectedId);
+    const res = await GetGRNDetail(selectedId);
     if (res.type === 'Success') {
       selectedGrnData.value = res.data;
       selectedGrnData.value.addedDate = moment(res.data.addedDate).format(
@@ -396,7 +396,7 @@ const updateSelectedProductVariant = async (
   quantity: number
 ) => {
   try {
-    const res = await updateGrnDetail({
+    const res = await UpdateGRN({
       grnId: grnDetailId,
       quantity: quantity,
     });

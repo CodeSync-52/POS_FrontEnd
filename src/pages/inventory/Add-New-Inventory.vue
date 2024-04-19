@@ -357,10 +357,10 @@ import {
   IShopResponse,
 } from 'src/interfaces';
 import {
-  addInventoryApi,
-  articleListApi,
-  viewGrnApi,
-  shopListApi,
+  CreateInventoryAtHO,
+  GetArticleList,
+  GetGRNDetail,
+  GetShopList,
 } from 'src/services';
 import { isPosError } from 'src/utils';
 const grandTotal = computed(() => {
@@ -556,7 +556,7 @@ const shopOptionRecords = computed(() => {
 const getShopList = async () => {
   isShopLoading.value = true;
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
@@ -605,7 +605,7 @@ const getArticleList = async (data?: {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 2000,
       Status: 'Active',
@@ -787,7 +787,7 @@ const handleAddInventory = async (
 ) => {
   const shopId = authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
   try {
-    const res = await addInventoryApi({
+    const res = await CreateInventoryAtHO({
       shopId,
       productWithVariantDTOs,
     });
@@ -884,7 +884,7 @@ function modifyArray(inputArray: { productCode: string; quantity: number }[]) {
 }
 const handlePreviewGrn = async () => {
   try {
-    const res = await viewGrnApi(selectedId.value);
+    const res = await GetGRNDetail(selectedId.value);
     if (res.type === 'Success') {
       const selectedGrnDetails: { productCode: string; quantity: number }[] =
         res.data.grnDetails.map((records) => ({

@@ -86,9 +86,9 @@
 import { exportFile, useQuasar } from 'quasar';
 import { ICustomerListResponse, IOutStandingReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
-import { getCustomerGroupList } from 'src/services';
+import { GetCustomerGroupList } from 'src/services';
 import {
-  userOutStandingReportListApi,
+  GetUserOutstandingReport,
   wrapCsvValue,
 } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
@@ -122,7 +122,7 @@ async function getCustomerListOption() {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'Active' });
+    const res = await GetCustomerGroupList({ status: 'Active' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupList.value = res?.data;
     }
@@ -170,7 +170,7 @@ const getUserOutStandingBalanceReportList = async () => {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await userOutStandingReportListApi(
+    const res = await GetUserOutstandingReport(
       {
         customerGroupId: filterSearch.value.customerGroup.customerGroupId,
         includeZeroBalance: filterSearch.value.includeZeroBalance,

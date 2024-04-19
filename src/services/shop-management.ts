@@ -1,9 +1,9 @@
-import { IGenericResponse, IShopAddNew, IShopResponse } from 'src/interfaces';
+import { IGenericResponse, IShopBasicInfo, IShopResponse } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const shopListApi = async ({
+export const GetShopList = async ({
   PageNumber = 1,
-  PageSize = 50,
+  PageSize = 500,
   filterSearch,
 }: {
   PageNumber?: number;
@@ -45,14 +45,14 @@ export const shopListApi = async ({
     return res;
   }
 };
-export const changeShopStatusApi = async (id: number) => {
+export const ChangeShopStatus = async (id: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: `api/shop/changestatus?shopId=${id}`,
     method: 'PUT',
   });
   return res;
 };
-export const AddShopApi = async (shopData: IShopAddNew) => {
+export const CreateShop = async (shopData: IShopBasicInfo) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/shop/add',
     method: 'POST',
@@ -60,7 +60,7 @@ export const AddShopApi = async (shopData: IShopAddNew) => {
   });
   return res;
 };
-export const updateShopApi = async ({
+export const UpdateShop = async ({
   shopId,
   name,
   phone,

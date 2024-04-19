@@ -121,7 +121,7 @@
 import { useQuasar } from 'quasar';
 import { categoryTreeColumn, isPosError } from 'src/utils';
 import { onMounted, ref } from 'vue';
-import { categoryTreeList } from 'src/services/category-management';
+import { GetCategoryTree } from 'src/services/category-management';
 import { IArticleCategory } from 'src/interfaces';
 const selectedCategory = ref<{ categoryId: number; categoryName: string }>({
   categoryId: -1,
@@ -158,7 +158,7 @@ const emit = defineEmits<{
 }>();
 const getCategoryTreeList = async () => {
   try {
-    const res = await categoryTreeList();
+    const res = await GetCategoryTree();
     if (res.type === 'Success') {
       articleCategory.value = res.data.categoryTree;
     }

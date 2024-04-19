@@ -106,7 +106,7 @@ import {
   ITableItems,
   downloadPdf,
 } from 'src/utils/pdf-make/pdf-make';
-import { getUserListApi } from 'src/services';
+import { GetUsers } from 'src/services';
 import { CanceledError } from 'axios';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
@@ -240,7 +240,7 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
 
 const getUserList = async () => {
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 500,
     });

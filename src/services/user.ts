@@ -6,7 +6,7 @@ import {
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const viewUserProfile = async () => {
+export const GetUserProfile = async () => {
   const res = await makeApiCall<
     IGenericResponse<{ fullName: string; phoneNumber: string }>
   >({
@@ -16,7 +16,7 @@ export const viewUserProfile = async () => {
   return res;
 };
 
-export const editUserProfile = async ({
+export const UpdateUserProfile = async ({
   payload,
 }: {
   payload: {
@@ -31,7 +31,7 @@ export const editUserProfile = async ({
   });
   return res;
 };
-export const resetUserPassword = async (customerId: number) => {
+export const ResetUserPassword = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: `api/User/password/reset?userId=${customerId}`,
@@ -39,21 +39,21 @@ export const resetUserPassword = async (customerId: number) => {
   return res;
 };
 
-export const changeUserRetailDisc = async (customerId: number) => {
+export const ChangeUserRetailDisc = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: `api/user/change/retaildiscount/eligibility?userId=${customerId}`,
   });
   return res;
 };
-export const changeUserStatus = async (customerId: number) => {
+export const ChangeUserStatus = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: `api/User/change/status?userId=${customerId}`,
   });
   return res;
 };
-export const updateUser = async ({
+export const UpdateUser = async ({
   userId,
   ...data
 }: Partial<IUserPayload>) => {
@@ -65,7 +65,7 @@ export const updateUser = async ({
   return res;
 };
 
-export const getUserListApi = async (
+export const GetUsers = async (
   {
     filterSearch,
     pageNumber = 1,

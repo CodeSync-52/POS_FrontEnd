@@ -70,18 +70,18 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
-import { Iexpenses } from 'src/interfaces';
+import { IExpenses } from 'src/interfaces';
 import {
-  addNewExpenseApi,
-  getExpenseList,
-  updateExpenseType,
+  CreateExpense,
+  GetExpenseList,
+  UpdateExpense,
 } from 'src/services';
 import AddExpenseModal from 'src/components/expenses/Add-Update-Expense-Modal.vue';
 import { isPosError } from 'src/utils';
 import { expenseColumns } from 'src/utils/expense';
 const $q = useQuasar();
-const expenseListRows = ref<Iexpenses[]>([]);
-const selectedRowData = ref<Iexpenses | null>(null);
+const expenseListRows = ref<IExpenses[]>([]);
+const selectedRowData = ref<IExpenses | null>(null);
 const showAddNewExpensePopup = ref(false);
 const isEditExpense = ref(false);
 const isLoading = ref(false);
@@ -102,7 +102,7 @@ const handleAddNewExpense = () => {
   newExpenseName.value = '';
   showAddNewExpensePopup.value = true;
 };
-const handleEditExpenseNamePopup = (selectedRow: Iexpenses) => {
+const handleEditExpenseNamePopup = (selectedRow: IExpenses) => {
   isEditExpense.value = true;
   newExpenseName.value = selectedRow.expenseTypeName;
   showAddNewExpensePopup.value = true;
@@ -121,8 +121,8 @@ const updateOrAddExpense = async (
   try {
     const expenseId = selectedRowData.value?.expenseTypeId ?? -1;
     const res = await (action === 'add'
-      ? addNewExpenseApi(newName)
-      : updateExpenseType({ newName, expenseId }));
+      ? CreateExpense(newName)
+      : UpdateExpense({ newName, expenseId }));
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -155,7 +155,7 @@ async function fetchingExpenseList(data?: {
   try {
     const pageSize =
       pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
-    const res = await getExpenseList({
+    const res = await GetExpenseList({
       pageNumber: pagination.value.page,
       pageSize: pageSize,
     });

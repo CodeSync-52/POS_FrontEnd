@@ -223,10 +223,10 @@ import {
   IInventoryListResponseWithDispatchQuantity,
 } from 'src/interfaces';
 import {
-  addGrnApi,
-  articleListApi,
-  inventoryDetailApi,
-  shopListApi,
+  CreateGRN,
+  GetArticleList,
+  GetInventoryDetail,
+  GetShopList,
 } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
@@ -319,7 +319,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
       if (scannedLabelLoading.value) return;
       scannedLabelLoading.value = true;
       try {
-        const res = await inventoryDetailApi({
+        const res = await GetInventoryDetail({
           ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
           PageNumber: pagination.value.page,
           PageSize: pagination.value.rowsPerPage,
@@ -470,7 +470,7 @@ const handleSaveGrn = async () => {
   };
   isSavingNewGrn.value = true;
   try {
-    const res = await addGrnApi(selectedInventoryDataPayload);
+    const res = await CreateGRN(selectedInventoryDataPayload);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -508,7 +508,7 @@ const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 1000000,
       Status: 'Active',
@@ -548,7 +548,7 @@ const inventoryDetailList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await inventoryDetailApi(
+    const res = await GetInventoryDetail(
       {
         ShopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
         PageNumber: pagination.value.page,
@@ -590,7 +590,7 @@ const shopOptionRecords = computed(() => {
 const getShopList = async () => {
   isLoading.value = true;
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });

@@ -1,7 +1,7 @@
 import { IGenericResponse } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const acceptStrApi = async (grnId: number) => {
+export const AcceptSTR = async (grnId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/str/accept',
     method: 'POST',
@@ -11,7 +11,7 @@ export const acceptStrApi = async (grnId: number) => {
   });
   return res;
 };
-export const rejectStrApi = async ({
+export const RejectSTR = async ({
   grnId,
   reason,
 }: {

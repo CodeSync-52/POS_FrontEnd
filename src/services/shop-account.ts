@@ -1,6 +1,6 @@
 import { IGenericResponse } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
-export const getShopAccountReportApi = async ({
+export const GetShopAccountReport = async ({
   shopIds,
   fromDate,
   toDate,
@@ -26,7 +26,7 @@ export const getShopAccountReportApi = async ({
   });
   return res;
 };
-export const accountSummaryApi = async (shopAccountId: number) => {
+export const GetShopAccountSummary = async (shopAccountId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/shopaccount/shopaccount',
     method: 'GET',

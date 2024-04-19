@@ -1,4 +1,6 @@
-export interface ISalesManagementData {
+import { IProductIdWithQuantity } from "./receipt-management";
+
+export interface IWholeSalesData {
   wholeSaleId: number;
   userId: number;
   fullName: string;
@@ -9,7 +11,7 @@ export interface ISalesManagementData {
   wholeSaleStatus: string;
   createdDate: string;
 }
-export interface ISalesFilterSearch {
+export interface IWholeSalesFilter {
   userId: null | number;
   userName: null | string;
   startDate: null | string;
@@ -36,9 +38,8 @@ export interface IWholeSalesDetailInfo {
   wholeSaleStatus: string;
   comments: string | null;
 }
-export interface IWholeSaleProductsInfo {
-  productId: number;
-  quantity: number;
+
+export interface IWholeSaleProductsInfo extends IProductIdWithQuantity {
   totalAmount: number;
   unitWholeSalePrice: number;
   wholeSaleDetailId: number;
@@ -46,21 +47,14 @@ export interface IWholeSaleProductsInfo {
   productImage: string | null;
   masterStock?: number;
 }
-export interface IWholesaleProductList {
-  productId: number;
-  quantity: number;
-}
-export interface IAddNewSale {
+export interface IAddNewWholeSale {
   userId: number | null;
   userDiscount: number;
   userOutstandingBalance: number;
-  productList: ISelectedArticleList[];
+  productList: IProductIdWithQuantity[];
   comments: string | null;
 }
-export interface ISelectedArticleList {
-  productId: null | number;
-  quantity: null | number;
-}
+
 export interface ISelectedWholeSaleArticleData {
   productId: number | null;
   quantity?: number | null;

@@ -89,7 +89,7 @@ import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 import { useRouter } from 'vue-router';
 const router = useRouter();
-import { getUserListApi, cashReturnToHOApi } from 'src/services';
+import { GetUsers, RetaurnCashToHO } from 'src/services';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
@@ -123,7 +123,7 @@ const handleUpdateAmount = (newVal: string | number | null) => {
 };
 const getUserList = async () => {
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 5000,
     });
@@ -149,7 +149,7 @@ const getUserList = async () => {
 const handleCloseShop = async () => {
   const { user, amount, comment } = returnAmount.value;
   try {
-    const res = await cashReturnToHOApi({
+    const res = await RetaurnCashToHO({
       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
       amount: amount,
       transactionUserId: user?.userId ?? -1,

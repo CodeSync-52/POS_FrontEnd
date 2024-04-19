@@ -3,12 +3,6 @@ export interface IOption<T = string | number> {
   value: T;
 }
 
-export type userManagementSearchFilter = {
-  customerGroup: null | string | number;
-  role: null | string | number;
-  status: null | string | number;
-};
-
 export enum EUserRoles {
   SuperAdmin = 'SuperAdmin',
   Admin = 'Admin',
@@ -105,6 +99,7 @@ export interface IUserShopInfo {
   shopId: number;
   shopName: string;
 }
+
 export interface LoginTokenResponseDTO {
   access_Token: string;
   access_Token_Expires_In: number;

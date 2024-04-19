@@ -502,13 +502,13 @@ import {
   printReceipt,
 } from './utils';
 import {
-  articleListApi,
-  inventoryDetailApi,
-  shopListApi,
-  addShopSaleManagementApi,
-  holdBillApi,
-  getShopOfficersApi,
-  previewSaleApi,
+  GetArticleList,
+  GetInventoryDetail,
+  GetShopList,
+  CreateSale,
+  HoldSale,
+  GetShopOfficers,
+  GetSaleDetail,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -741,7 +741,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
       if (scannedLabelLoading.value) return;
       scannedLabelLoading.value = true;
       try {
-        const res = await inventoryDetailApi({
+        const res = await GetInventoryDetail({
           ShopId: selectedShop.value.fromShop?.shopId ?? null,
           PageNumber: pagination.value.page,
           PageSize: pagination.value.rowsPerPage,
@@ -912,7 +912,7 @@ const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 1000000,
       Status: 'Active',
@@ -939,7 +939,7 @@ const getArticleList = async (productName?: string) => {
 const getShopList = async () => {
   isFetchingShopList.value = true;
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
@@ -973,7 +973,7 @@ const inventoryDetailList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await inventoryDetailApi(
+    const res = await GetInventoryDetail(
       {
         ShopId: selectedShop.value.fromShop?.shopId ?? null,
         PageNumber: pagination.value.page,
@@ -1023,9 +1023,9 @@ const handleAddShopSale = async () => {
         isReturn: record.isReturn,
       })),
     };
-    const addingSaleResponse = await addShopSaleManagementApi(payload);
+    const addingSaleResponse = await CreateSale(payload);
     if (addingSaleResponse.type === 'Success') {
-      const previewSaleResponse = await previewSaleApi(
+      const previewSaleResponse = await GetSaleDetail(
         addingSaleResponse.data.saleId
       );
       await (receiptDetail.value = previewSaleResponse.data);
@@ -1084,7 +1084,7 @@ const handleHoldBill = async () => {
         discount: record.discount,
       })),
     };
-    const response = await holdBillApi(payload);
+    const response = await HoldSale(payload);
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,
@@ -1124,7 +1124,7 @@ const getShopOfficers = async () => {
     }
     apiController.value = new AbortController();
 
-    const res = await getShopOfficersApi(requestFilter, apiController.value);
+    const res = await GetShopOfficers(requestFilter, apiController.value);
 
     if (res?.data) {
       roleDropdownOptions.value = res.data.items;

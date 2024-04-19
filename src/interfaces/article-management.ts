@@ -13,13 +13,13 @@ export interface IArticleData {
   commission: number;
 }
 
-export interface ISelectedArticle {
+export interface ISelectedArticleRecord {
   productId: number;
   productName?: string;
   productImage: string | null;
 }
 export interface ISelectedArticleWithMasterStockAndRetailPrice
-  extends ISelectedArticle {
+  extends ISelectedArticleRecord {
   retailPrice: number;
   masterStock: number;
 }
@@ -56,7 +56,6 @@ export interface IBillingHistoryResponse {
   name: string;
   productId: number;
 }
-
 export interface IWholeSalePriceOption {
   name: string;
   statusId: number | null;

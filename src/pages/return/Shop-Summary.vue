@@ -167,7 +167,7 @@ import { IShopSaleExpenses, SaleSummaryResponse } from 'src/interfaces';
 import AddNewExpenseModal from 'src/components/today-sale-summary/Add-New-Expense-Modal.vue';
 import CompleteCancelBillModal from 'src/components/return/Complete-Or-Cancel-Modal.vue';
 import CloseShopModal from 'src/components/today-sale-summary/Close-Shop.vue';
-import { saleSummaryApi, deleteExpenseApi } from 'src/services';
+import { GetShopAccountSummary, DiscardExpenseFromShopAccount } from 'src/services';
 import { shopSaleExpenseTableColumn } from './utils';
 import { isPosError } from 'src/utils';
 import moment from 'moment';
@@ -229,7 +229,7 @@ const handleColseShop = async () => {
 };
 const updateSaleSummary = async () => {
   try {
-    const res = await saleSummaryApi(ShopId);
+    const res = await GetShopAccountSummary(ShopId);
     if (res.type === 'Success') {
       const responseData = res.data as SaleSummaryResponse | null;
       if (responseData) {
@@ -266,7 +266,7 @@ const updateSaleSummary = async () => {
 };
 const handleDeleteExpense = async (shopAccountDetailId: number) => {
   try {
-    const response = await deleteExpenseApi({ shopAccountDetailId });
+    const response = await DiscardExpenseFromShopAccount({ shopAccountDetailId });
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,

@@ -170,7 +170,7 @@ import {
   IShopExpenses,
   InComingOutgoingToHo,
 } from 'src/interfaces';
-import { accountSummaryApi } from 'src/services';
+import { GetShopAccountSummary } from 'src/services';
 import {
   shopExpenseTableColumn,
   incomingOutgoingToHoTableColumn,
@@ -228,7 +228,7 @@ onMounted(async () => {
 });
 const updateAccountSummary = async () => {
   try {
-    const res = await accountSummaryApi(Number(selectedId));
+    const res = await GetShopAccountSummary(Number(selectedId));
     if (res.type === 'Success') {
       const responseData = res.data as IShopAccountReport | null;
       if (responseData) {

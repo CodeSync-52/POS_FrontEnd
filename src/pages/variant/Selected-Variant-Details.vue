@@ -180,10 +180,10 @@ import { variantDetailsColumn } from './utils';
 import { useQuasar } from 'quasar';
 import { isPosError } from 'src/utils';
 import {
-  addVariantApi,
-  changeVariantStatus,
-  updateVariantApi,
-  variantListByIdApi,
+  CreateVariant,
+  ChangeVariantStatus,
+  UpdateVariant,
+  GetVariantListByGroupId,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 const authStore = useAuthStore();
@@ -249,7 +249,7 @@ const handleUpdateStatus = async (
   isLoading.value = true;
   try {
     const variantId = selectedRowData.value?.variantId ?? -1;
-    const res = await changeVariantStatus(variantId);
+    const res = await ChangeVariantStatus(variantId);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -318,8 +318,8 @@ const updateOrAddVariant = async (
   try {
     const variantId = selectedRowData.value?.variantId ?? -1;
     const res = await (action === 'Add'
-      ? addVariantApi({ name, displayName, variantGroupId })
-      : updateVariantApi({ variantId, name, displayName, variantGroupId }));
+      ? CreateVariant({ name, displayName, variantGroupId })
+      : UpdateVariant({ variantId, name, displayName, variantGroupId }));
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -346,7 +346,7 @@ const updateOrAddVariant = async (
 };
 const getSelectedVariantDetails = async () => {
   try {
-    const res = await variantListByIdApi({
+    const res = await GetVariantListByGroupId({
       status: variantGroupStatus,
       variantGroupId,
     });

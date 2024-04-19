@@ -303,20 +303,20 @@ import {
   EActionPermissions,
   EUserModules,
   IPagination,
-  ISalesManagementData,
+  IWholeSalesData,
   getRoleModuleDisplayName,
-  ISalesFilterSearch,
+  IWholeSalesFilter,
   IUserResponse,
   EUserRoles,
   ICustomerListResponse,
 } from 'src/interfaces';
 import { onMounted, ref } from 'vue';
 import {
-  salesManagementListApi,
-  completeWholeSaleApi,
-  cancelWholeSaleApi,
-  getUserListApi,
-  getCustomerGroupList,
+  GetWholeSaleList,
+  CompleteWholeSale,
+  CancelWholeSale,
+  GetUsers,
+  GetCustomerGroupList,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import {
@@ -343,7 +343,7 @@ const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
-const filterSearch = ref<ISalesFilterSearch>({
+const filterSearch = ref<IWholeSalesFilter>({
   userId: null,
   userName: null,
   startDate: formattedFromDate,
@@ -355,11 +355,11 @@ const isGenerateOrCancelSaleModalVisible = ref(false);
 const isGeneratingSale = ref(false);
 const isCustomerGroupListLoading = ref(false);
 const customerGroupList = ref<ICustomerListResponse[]>([]);
-const salesManagementRecords = ref<ISalesManagementData[]>([]);
+const salesManagementRecords = ref<IWholeSalesData[]>([]);
 const pagination = ref<IPagination>(defaultPagination);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
-const selectedRowData = ref<ISalesManagementData | null>(null);
+const selectedRowData = ref<IWholeSalesData | null>(null);
 const UserList = ref<IUserResponse[]>([]);
 const options = ref<IUserResponse[]>([]);
 onMounted(() => {
@@ -381,19 +381,19 @@ const handleResetFilter = () => {
   };
   getSalesManagementList();
 };
-const handleGenerateSalePopup = (selectedRow: ISalesManagementData) => {
+const handleGenerateSalePopup = (selectedRow: IWholeSalesData) => {
   selectedRowData.value = selectedRow;
   isCancel.value = false;
   isGenerateOrCancelSaleModalVisible.value = true;
 };
-const handleCancelSalePopup = (selectedRow: ISalesManagementData) => {
+const handleCancelSalePopup = (selectedRow: IWholeSalesData) => {
   selectedRowData.value = selectedRow;
   isCancel.value = true;
   isGenerateOrCancelSaleModalVisible.value = true;
 };
 const handleCancelSale = async (id: number, callback: () => void) => {
   try {
-    const res = await cancelWholeSaleApi(id);
+    const res = await CancelWholeSale(id);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -433,7 +433,7 @@ const getSalesManagementList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await salesManagementListApi(
+    const res = await GetWholeSaleList(
       {
         filterSearch: filterSearch.value,
         PageNumber: pagination.value.page,
@@ -463,7 +463,7 @@ const handleGenerateSale = async () => {
   isGeneratingSale.value = true;
   try {
     const selectedId = selectedRowData.value?.wholeSaleId ?? -1;
-    const res = await completeWholeSaleApi(selectedId);
+    const res = await CompleteWholeSale(selectedId);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -490,7 +490,7 @@ const handleGenerateSale = async () => {
 const getUserList = async () => {
   isLoading.value = true;
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 500,
     });
@@ -526,7 +526,7 @@ async function getCustomerListOption() {
   if (isCustomerGroupListLoading.value) return;
   isCustomerGroupListLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'Active' });
+    const res = await GetCustomerGroupList({ status: 'Active' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupList.value = res?.data;
     }

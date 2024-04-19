@@ -1,15 +1,15 @@
 import {
   IBillDetail,
   IBillGenerationData,
-  IBillGenerationDetailsInfoData,
-  IBillGenerationFilter,
+  IBillData,
+  IBillFilter,
   IGenericResponse,
   INewBillData,
-  IUpdatedBillProductList,
+  IProductIdWithAmount,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const addBillApi = async (newBillInfo: INewBillData) => {
+export const CreateBill = async (newBillInfo: INewBillData) => {
   const res = makeApiCall<IGenericResponse<null>>({
     method: 'POST',
     url: 'api/bill/add',
@@ -19,12 +19,12 @@ export const addBillApi = async (newBillInfo: INewBillData) => {
   });
   return res;
 };
-export const updateBillApi = async ({
+export const UpdateBill = async ({
   billId,
   productList,
 }: {
   billId: number;
-  productList: IUpdatedBillProductList[];
+  productList: IProductIdWithAmount[];
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/bill/update',
@@ -38,7 +38,7 @@ export const updateBillApi = async ({
   });
   return res;
 };
-export const cancelBillApi = async (BillId: number) => {
+export const CancelBill = async (BillId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/bill/cancel',
     method: 'PUT',
@@ -48,7 +48,7 @@ export const cancelBillApi = async (BillId: number) => {
   });
   return res;
 };
-export const completeBillApi = async (BillId: number) => {
+export const CompleteBill = async (BillId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/bill/complete',
     method: 'PUT',
@@ -58,7 +58,7 @@ export const completeBillApi = async (BillId: number) => {
   });
   return res;
 };
-export const billDetailsApi = async (purchaseId: number) => {
+export const GetBillDetail = async (purchaseId: number) => {
   const res = await makeApiCall<IGenericResponse<IBillDetail>>({
     url: 'api/Bill/detail',
     method: 'GET',
@@ -68,9 +68,9 @@ export const billDetailsApi = async (purchaseId: number) => {
   });
   return res;
 };
-export const billDetailInfoApi = async (BillId: number) => {
+export const GetBillBasicInfo = async (BillId: number) => {
   const res = await makeApiCall<
-    IGenericResponse<IBillGenerationDetailsInfoData>
+    IGenericResponse<IBillData>
   >({
     url: 'api/bill/detailinfo',
     method: 'GET',
@@ -81,7 +81,7 @@ export const billDetailInfoApi = async (BillId: number) => {
   return res;
 };
 
-export const billListApi = async (
+export const GetBillList = async (
   {
     PageNumber = 1,
     PageSize = 50,
@@ -89,7 +89,7 @@ export const billListApi = async (
   }: {
     PageNumber: number;
     PageSize: number;
-    filterSearch?: IBillGenerationFilter;
+    filterSearch?: IBillFilter;
   },
   controller?: AbortController
 ) => {
@@ -112,7 +112,7 @@ export const billListApi = async (
   });
   return res;
 };
-export const updateClaimFreightApi = async ({
+export const UpdateBillClaimFreight = async ({
   billId,
   claim,
   freight,

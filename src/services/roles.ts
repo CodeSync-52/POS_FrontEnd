@@ -10,7 +10,7 @@ export interface IUserRoleResponse {
   permissionModuleActions: IUserRolePermissions[];
 }
 
-export const fetchUserRoles = async (
+export const GetUserRoleDetail = async (
   roleName: EUserRoles,
   controller: AbortController
 ) => {

@@ -1,4 +1,4 @@
-export interface ISelectedPayload {
+export interface ISelectedGRNRecord {
   fromShopId: number | null;
   toShopId: number | null;
   grnDetails: IGrnDetails[];
@@ -9,11 +9,7 @@ export interface IGrnDetails {
   variantId_2: number;
   quantity: number;
 }
-export interface IGrnDetailsWithId {
-  productId: number;
-  variantId_1: number;
-  variantId_2: number;
-  quantity: number;
+export interface IGrnDetailsWithId extends IGrnDetails {
   retailPrice: number;
   inventoryId?: number;
   productName?: string;
@@ -29,7 +25,7 @@ export interface IGrnListFilter {
   fromShopId: null | number;
   toShopId: null | number;
 }
-export interface IGrnRecords {
+export interface IGrnRecord {
   grnId: number;
   fromShopId: number;
   toShopId: number;
@@ -39,20 +35,10 @@ export interface IGrnRecords {
   grnStatus: string;
   addedDate: string;
 }
-
-export interface IGrnPreviewResponse {
-  grnId: number;
-  fromShopId: number;
-  toShopId: number;
-  fromShopName: string;
-  toShopName: string;
-  quantity: number;
-  grnStatus: string;
-  addedDate: string;
+export interface IGrnPreviewResponse extends IGrnRecord{
   grnDetails: IPreviewGrnDetail[];
 }
-
-export interface IPreviewGrnDetail {
+export interface IPreviewGrnDetail extends IGrnDetails{
   productName: string;
   productImage: string;
   productCode: string;
@@ -60,12 +46,7 @@ export interface IPreviewGrnDetail {
   grnDetailId: number;
   variant_2_Name: string;
   retailPrice: number;
-  productId: number;
-  variantId_1: number;
-  variantId_2: number;
-  quantity: number;
 }
-
 export interface IProductGRN {
   productId: number;
   productName: string;
@@ -73,7 +54,6 @@ export interface IProductGRN {
   retailPrice: number;
   data: ProductVariant[];
 }
-
 export interface ProductVariant {
   variantId1: number;
   variantName1: string;
@@ -83,7 +63,6 @@ export interface ProductVariant {
   quantity: number;
   v2details: V2Detail[];
 }
-
 export interface V2Detail {
   grnDetailId: number;
   productName: string;
@@ -95,54 +74,6 @@ export interface V2Detail {
   variantId_1: number;
   variantId_2: number;
   quantity: number;
-}
-
-export interface PurchaseOrder {
-  id?: 0;
-  action: '';
-  name: '';
-  supplier?: {
-    id: '';
-    vendorname: '';
-  };
-  orders: {
-    id?: 0;
-    name: '';
-  }[];
-  approver?: {
-    id: 0;
-    email: '';
-    full_name: '';
-    display_name: '';
-  };
-  created_by?: {
-    id: 0;
-    email: '';
-    full_name: '';
-    display_name: '';
-  };
-  comment: '';
-  currency: '';
-  status: [];
-  division: {
-    id?: 0;
-    name: '';
-    report_by_contract: false;
-    report_period: 'monthly';
-    division_group: 0;
-  };
-  payment_term: '';
-  shipping_location: '';
-  net_total: '';
-  shipping_method: '';
-  shipping_charges: '';
-  discount: '';
-  tax: '';
-  grand_total: '';
-  purchaseorderitem_set: [];
-  required_by: '';
-  readonly created?: '';
-  readonly modified?: '';
 }
 export interface IPreviewGrnPayload {
   productId: number;
@@ -178,14 +109,12 @@ export interface IGrnDetailVariant {
   grnDetailId?: number;
 }
 
-interface FirstVariantSelection {
+interface VariantSelection {
   variantId: number;
   displayName: string;
 }
 
-interface SecondVariantSelection {
-  variantId: number;
-  displayName: string;
+interface SecondVariantSelection extends VariantSelection {
   quantity: number;
   grnDetailId: number;
 }
@@ -195,7 +124,7 @@ interface ProductDetail {
   quantity: number;
   productName: string;
   grnDetailId: number;
-  firstVariantSelection: FirstVariantSelection[];
+  firstVariantSelection: VariantSelection[];
   secondVariantSelection: SecondVariantSelection[];
 }
 
