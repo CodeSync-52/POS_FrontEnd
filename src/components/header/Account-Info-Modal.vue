@@ -137,8 +137,8 @@
 import { ref, computed, onMounted } from 'vue';
 import {
   changeUserPassword,
-  viewUserProfile,
-  editUserProfile,
+  GetUserProfile,
+  UpdateUserProfile,
 } from 'src/services';
 import { useQuasar } from 'quasar';
 import { IGenericResponse } from 'src/interfaces';
@@ -177,7 +177,7 @@ const handleUpdateProfile = () => {
 const updateProfile = async () => {
   try {
     isLoading.value = true;
-    const res: IGenericResponse = await editUserProfile({
+    const res: IGenericResponse = await UpdateUserProfile({
       payload: userInfo.value,
     });
     isLoading.value = false;
@@ -204,7 +204,7 @@ async function callingViewUserProfileApi() {
     const response: IGenericResponse<{
       fullName: string;
       phoneNumber: string;
-    }> = await viewUserProfile();
+    }> = await GetUserProfile();
     if (response && response.data) userInfo.value = response.data;
   } catch (e) {
     let message = 'Unexpected Error Occurred';

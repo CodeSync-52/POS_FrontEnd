@@ -1,7 +1,7 @@
 import { ICashFlowRecords, IGenericResponse } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const cashFlowListApi = async (
+export const GetCashFlowList = async (
   {
     filterSearch,
     PageNumber = 1,
@@ -29,7 +29,7 @@ export const cashFlowListApi = async (
   });
   return res;
 };
-export const addCashFlowApi = async ({
+export const CreateTransaction = async ({
   sourceUserId,
   amount,
   targetUserId,
@@ -75,7 +75,7 @@ export const cashReceiveFromHOApi = async ({
   });
   return res;
 };
-export const cashReturnToHOApi = async ({
+export const RetaurnCashToHO = async ({
   shopId,
   amount,
   transactionUserId,

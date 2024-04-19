@@ -173,10 +173,10 @@ import {
 } from 'src/interfaces';
 import { categoryDetailsColumn } from 'src/pages/category/utils';
 import {
-  createSubcategory,
-  subcategoryListApi,
-  changeCategoryStatus,
-  updateCategory,
+  CreateSubcategory,
+  GetSubcategoryList,
+  ChangeCategoryStatus,
+  UpdateCategory,
 } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
@@ -233,7 +233,7 @@ const getCategoryDetailsList = async (data?: {
   try {
     const rowsPerPage =
       pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
-    const res = await subcategoryListApi({
+    const res = await GetSubcategoryList({
       parentCategory: Number(selectedGroupName),
       pageNumber: pagination.value.page,
       pageSize: rowsPerPage,
@@ -268,7 +268,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await changeCategoryStatus(
+    const res = await ChangeCategoryStatus(
       selectedRowData.value?.categoryId ?? -1
     );
     if (res.type === 'Success') {
@@ -346,12 +346,12 @@ const updateOrAddCategory = async (
         isLoading.value = false;
         return;
       }
-      res = await updateCategory({
+      res = await UpdateCategory({
         categoryId,
         name,
       });
     } else {
-      res = await createSubcategory({
+      res = await CreateSubcategory({
         name,
         parentCategoryId: Number(selectedGroupName),
       });

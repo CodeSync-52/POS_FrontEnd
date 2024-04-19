@@ -1,6 +1,6 @@
 import { ICustomerListResponse, IGenericResponse } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
-export const getCustomerGroupList = async ({ status }: { status: string }) => {
+export const GetCustomerGroupList = async ({ status }: { status: string }) => {
   const res = await makeApiCall<
     IGenericResponse<{
       items: ICustomerListResponse[];
@@ -11,14 +11,14 @@ export const getCustomerGroupList = async ({ status }: { status: string }) => {
   });
   return res;
 };
-export const changeCustomerStatus = async (customerId: number) => {
+export const ChangeCustomerGroupStatus = async (customerId: number) => {
   const res = await makeApiCall<IGenericResponse>({
     method: 'PUT',
     url: `api/CustomerGroup/changestatus?customerGroupID=${customerId}`,
   });
   return res;
 };
-export const addNewCustomerGroup = async (newCustomer: string) => {
+export const CreateCustomerGroup = async (newCustomer: string) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
     url: 'api/CustomerGroup/create',
@@ -26,7 +26,7 @@ export const addNewCustomerGroup = async (newCustomer: string) => {
   });
   return res;
 };
-export const updateCustomerGroup = async ({
+export const UpdateCustomerGroup = async ({
   customerId,
   newName,
 }: {

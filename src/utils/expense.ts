@@ -1,6 +1,6 @@
 import { QTableColumn } from 'quasar';
-import { Iexpenses } from 'src/interfaces';
-export const expenseColumns: QTableColumn<Iexpenses>[] = [
+import { IExpenses } from 'src/interfaces';
+export const expenseColumns: QTableColumn<IExpenses>[] = [
   {
     name: 'expenseTypeName',
     required: true,

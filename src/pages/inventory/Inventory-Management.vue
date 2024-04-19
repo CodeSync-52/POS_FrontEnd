@@ -211,7 +211,7 @@ import {
   IShopResponse,
   getRoleModuleDisplayName,
 } from 'src/interfaces';
-import { articleListApi, inventoryDetailApi, shopListApi } from 'src/services';
+import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
@@ -281,7 +281,7 @@ const resetFilter = () => {
 };
 const getShopList = async () => {
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
@@ -318,7 +318,7 @@ const getInventoryList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await inventoryDetailApi(
+    const res = await GetInventoryDetail(
       {
         ShopId: filterSearch.value.ShopId?.toString() ?? '-1',
         PageNumber: pagination.value.page,
@@ -348,7 +348,7 @@ const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 1000000,
       Status: 'Active',

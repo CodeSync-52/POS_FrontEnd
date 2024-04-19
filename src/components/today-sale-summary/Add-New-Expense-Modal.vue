@@ -88,15 +88,15 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Iexpenses } from 'src/interfaces';
+import { IExpenses } from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { getExpenseList, addExpenseApi } from 'src/services';
+import { GetExpenseList, RecordExpenseInShopAccount } from 'src/services';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
-const expenseList = ref<Iexpenses[]>([]);
+const expenseList = ref<IExpenses[]>([]);
 const emit = defineEmits<{ (event: 'confirm'): void }>();
 const confirmAction = async () => {
   isLoading.value = true;
@@ -107,7 +107,7 @@ onMounted(() => {
   getExpenseTypeList();
 });
 const expenseType = ref<{
-  expense: Iexpenses | null;
+  expense: IExpenses | null;
   amount: number;
   comments: string;
 }>({
@@ -127,7 +127,7 @@ const handleUpdateAmount = (newVal: string | number | null) => {
 };
 const getExpenseTypeList = async () => {
   try {
-    const res = await getExpenseList({
+    const res = await GetExpenseList({
       pageNumber: 1,
       pageSize: 100,
     });
@@ -148,7 +148,7 @@ const getExpenseTypeList = async () => {
 const handleAddNewExpense = async () => {
   const { expense, amount, comments } = expenseType.value;
   try {
-    const res = await addExpenseApi({
+    const res = await RecordExpenseInShopAccount({
       expenseId: expense?.expenseTypeId ?? -1,
       shopId: authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1,
       amount: amount,

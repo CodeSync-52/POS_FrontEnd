@@ -30,8 +30,7 @@ export interface ISelectedArticleData {
   retailPrice?: number;
   comments?: string;
 }
-
-export interface IProductList {
+export interface IProductIdWithQuantity {
   productId: null | number;
   quantity: null | number;
 }
@@ -40,7 +39,7 @@ export interface IAddNewReceipt {
   userOutstandingBalance: number;
   userDiscount: number;
   createdDate: string;
-  productList: IProductList[];
+  productList: IProductIdWithQuantity[];
   createdBy: string;
   userName: string;
   purchaseStatus: string;

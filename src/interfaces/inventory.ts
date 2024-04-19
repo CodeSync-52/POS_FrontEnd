@@ -1,4 +1,4 @@
-export interface ISelectedInventoryPayload {
+export interface ISelectedInventoryRecord {
   shopId: number;
   productWithVariantDTOs: IProductWithVariantDTOs[];
 }

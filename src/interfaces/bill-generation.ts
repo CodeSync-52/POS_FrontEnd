@@ -8,7 +8,19 @@ export interface IBillGenerationData {
   createdDate: string;
   createdBy: null | number | string;
 }
-export interface IBillGenerationFilter {
+
+export interface IBillData {
+  billId: number;
+  billStatus: string;
+  createdDate: string;
+  outStandingBalance: number;
+  fullName: string;
+  productList: IBillProductList[];
+  totalAmount: number;
+  claim: number;
+  freight: number;
+}
+export interface IBillFilter {
   userId: null | number;
   userName: null | string;
   ToDate: null | string;
@@ -36,33 +48,16 @@ export interface IProductInfoDetailList {
 }
 export interface INewBillData {
   purchaseId: number;
-  productList: INewBillProductList[];
+  productList: IProductGenericList[];
 }
-export interface IUpdatedBillProductList {
+export interface IProductIdWithAmount {
   productId: number;
   amount: number;
 }
-export interface INewBillProductList {
-  productId: number;
-  amount: number;
+export interface IProductGenericList extends IProductIdWithAmount {
   name: string;
   image: string;
 }
-export interface IBillGenerationDetailsInfoData {
-  billId: number;
-  billStatus: string;
-  createdDate: string;
-  outStandingBalance: number;
-  fullName: string;
-  productList: IBillGenerationDetailsInfoProductList[];
-  totalAmount: number;
-  claim: number;
-  freight: number;
-}
-export interface IBillGenerationDetailsInfoProductList {
-  amount: number;
-  image: string;
-  name: string;
-  productId: number;
+export interface IBillProductList extends IProductGenericList {
   quantity: number;
 }

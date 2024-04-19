@@ -271,13 +271,13 @@ import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
 import {
-  getUserListApi,
-  createNewReceipt,
-  editReceiptRow,
-  articleListApi,
-  addReceiptRow,
-  deleteReceiptRow,
-  getReceiptData,
+  GetUsers,
+  CreatePurchase,
+  UpdatePurchaseLineItem,
+  GetArticleList,
+  CreatePurchaseLineItem,
+  DeletePurchaseLineItem,
+  GetPurchaseDetail,
 } from 'src/services';
 import {
   EActionPermissions,
@@ -389,7 +389,7 @@ const selectedData = (
         }
       });
       if (isEdit.value) {
-        addReceiptRow({
+        CreatePurchaseLineItem({
           productId: item.productId,
           quantity: 0,
           purchaseId: selectedId.value,
@@ -429,7 +429,7 @@ const onDeleteButtonClick = async (row: ISelectedArticleData) => {
     selectedArticleData.value.splice(tempIndex, 1);
     if (isEdit.value && row.purchaseDetailId !== undefined) {
       try {
-        await deleteReceiptRow({
+        await DeletePurchaseLineItem({
           purchaseDetailId: row.purchaseDetailId,
           purchaseId: selectedId.value,
         });
@@ -472,7 +472,7 @@ const UserList = ref<IUserResponse[]>([]);
 const getUserList = async () => {
   isLoading.value = true;
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 5000,
     });
@@ -515,7 +515,7 @@ const saveNewReceipt = async () => {
   addNewReceipt.value.productList = productList;
 
   try {
-    const res = await createNewReceipt({
+    const res = await CreatePurchase({
       data: addNewReceipt.value,
     });
     if (res.type === 'Success') {
@@ -563,7 +563,7 @@ const getArticleList = async (data?: {
       pagination.value.rowsPerPage === 0
         ? 100000
         : pagination.value.rowsPerPage;
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: pagination.value.page,
       PageSize: rowsPerPage,
       Status: 'Active',
@@ -590,7 +590,7 @@ const getArticleList = async (data?: {
 const selectedId = ref<number | string>(-1);
 const tableItems = ref<ITableItems[][]>([]);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
-  getReceiptData(selectedItemId).then(async (res) => {
+  GetPurchaseDetail(selectedItemId).then(async (res) => {
     addNewReceipt.value.userId = res.data.userId;
     addNewReceipt.value.createdBy = res.data.createdBy ?? '';
     addNewReceipt.value.userName = res.data.fullName;
@@ -645,7 +645,7 @@ async function saveUpdatedData(row: ISelectedArticleData) {
       });
       return;
     }
-    const res = await editReceiptRow({
+    const res = await UpdatePurchaseLineItem({
       purchaseId: selectedId.value,
       purchaseDetailId: row.purchaseDetailId,
       quantity: row.quantity,
@@ -741,11 +741,6 @@ async function downloadPdfData() {
     },
     {
       content: addNewReceipt.value.userName,
-    },
-    {
-      heading: 'Outstanding Balance',
-      content: addNewReceipt.value.userOutstandingBalance,
-      styleContent: true,
     },
     {
       heading: 'Date',

@@ -505,7 +505,7 @@ import {
   IArticleData,
   IPagination,
   IWholeSalesDetailInfo,
-  IAddNewSale,
+  IAddNewWholeSale,
   ISelectedWholeSaleArticleData,
   IWholeSaleProductsInfo,
   IUserResponse,
@@ -518,14 +518,14 @@ import {
   selectedSalesArticleColumn,
 } from 'src/utils';
 import {
-  addWholeSaleApi,
-  addWholeSaleDetailApi,
-  articleListApi,
-  deleteWholeSaleDetailApi,
-  getUserListApi,
-  updateWholeSaleDetailApi,
-  wholeSaleDetailApi,
-  ClaimFreightApi,
+  CreateWholeSale,
+  CreateWholeSaleLineItem,
+  GetArticleList,
+  DeleteWholeSaleLineItem,
+  GetUsers,
+  UpdateWholeSaleLineItem,
+  GetWholeSaleDetail,
+  UpdateWholeSaleClaimFreight,
 } from 'src/services';
 import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
@@ -576,7 +576,7 @@ const defaultPagination = {
 };
 const pagination = ref<IPagination>({ ...defaultPagination });
 const tableItems = ref<ITableItems[][]>([]);
-const addNewSale = ref<IAddNewSale>({
+const addNewSale = ref<IAddNewWholeSale>({
   userId: null,
   userDiscount: 0,
   userOutstandingBalance: 0,
@@ -584,7 +584,7 @@ const addNewSale = ref<IAddNewSale>({
   comments: '',
 });
 const selectedUserDiscount = ref<number | undefined>(0);
-watch(addNewSale.value, (newVal: IAddNewSale) => {
+watch(addNewSale.value, (newVal: IAddNewWholeSale) => {
   const selectedUser = UserList.value.find(
     (row) => newVal.userId === row.userId
   );
@@ -744,7 +744,7 @@ const saveNewSale = async () => {
     return;
   }
   try {
-    const res = await addWholeSaleApi({
+    const res = await CreateWholeSale({
       userId: addNewSale.value.userId,
       claim: claim.value,
       freight: freight.value,
@@ -804,7 +804,7 @@ const selectedData = (
       });
 
       if (action.value === 'Edit') {
-        addWholeSaleDetailApi({
+        CreateWholeSaleLineItem({
           productId: item.productId,
           quantity: 0,
           wholeSaleId: selectedId.value,
@@ -846,7 +846,7 @@ const onDeleteButtonClick = async (row: ISelectedWholeSaleArticleData) => {
     freight.value = 0;
     if (action.value === 'Edit' && row.wholeSaleDetailId !== undefined) {
       try {
-        await deleteWholeSaleDetailApi(row.wholeSaleDetailId);
+        await DeleteWholeSaleLineItem(row.wholeSaleDetailId);
         $q.notify({
           type: 'positive',
           message: 'Row deleted successfully',
@@ -872,7 +872,7 @@ const getArticleList = async (data?: {
   try {
     const rowsPerPage =
       pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: pagination.value.page,
       PageSize: rowsPerPage,
     });
@@ -899,7 +899,7 @@ const getArticleList = async (data?: {
 };
 const getUserList = async () => {
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 5000,
     });
@@ -998,7 +998,7 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await wholeSaleDetailApi(wholeSaleId);
+    const res = await GetWholeSaleDetail(wholeSaleId);
     if (res.type === 'Success') {
       if (res.data) {
         selectedSaleRecord.value = res.data;
@@ -1046,7 +1046,7 @@ async function saveUpdatedData(row: IWholeSaleProductsInfo) {
       });
       return;
     }
-    const res = await updateWholeSaleDetailApi({
+    const res = await UpdateWholeSaleLineItem({
       wholeSaleDetailId: row.wholeSaleDetailId,
       quantity: row.quantity,
       unitWholeSalePrice: row.unitWholeSalePrice,
@@ -1265,7 +1265,11 @@ const handleClaimFreight = async (
 ) => {
   isLoading.value = true;
   try {
-    const response = await ClaimFreightApi({ wholeSaleId, claim, freight });
+    const response = await UpdateWholeSaleClaimFreight({
+      wholeSaleId,
+      claim,
+      freight,
+    });
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,

@@ -208,12 +208,8 @@ import {
   IHOArticleReportData,
   IUserResponse,
 } from 'src/interfaces';
-import {
-  articleListApi,
-  getCustomerGroupList,
-  getUserListApi,
-} from 'src/services';
-import { HOArticleSaleReportListApi, wrapCsvValue } from 'src/services/reports';
+import { GetArticleList, GetCustomerGroupList, GetUsers } from 'src/services';
+import { GetHOArticleSaleReport, wrapCsvValue } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOArticleReportColumn } from 'src/utils/reports';
@@ -271,7 +267,7 @@ async function getCustomerListOption() {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'Active' });
+    const res = await GetCustomerGroupList({ status: 'Active' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupList.value = res?.data;
     }
@@ -334,7 +330,7 @@ const getUserOutStandingBalanceReportList = async () => {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await HOArticleSaleReportListApi(
+    const res = await GetHOArticleSaleReport(
       {
         purchaseFromCustomer:
           filterSearch.value.purchaseFromCustomer?.customerGroupId ?? 0,
@@ -378,7 +374,7 @@ const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 1000000,
       Status: 'Active',
@@ -405,7 +401,7 @@ const getArticleList = async (productName?: string) => {
 const getUserList = async () => {
   isLoading.value = true;
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 5000,
     });

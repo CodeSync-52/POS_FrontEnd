@@ -158,7 +158,7 @@ import {
   IPagination,
   ISaleInfo,
 } from 'src/interfaces';
-import { articleListApi, inventoryDetailApi } from 'src/services';
+import { GetArticleList, GetInventoryDetail } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
@@ -229,7 +229,7 @@ const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
   try {
-    const res = await articleListApi({
+    const res = await GetArticleList({
       PageNumber: 1,
       PageSize: 1000000,
       Status: 'Active',
@@ -267,7 +267,7 @@ const inventoryDetailList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await inventoryDetailApi(
+    const res = await GetInventoryDetail(
       {
         ShopId:
           authStore.loggedInUser?.userShopInfoDTO.shopId?.toString() ?? '-1',

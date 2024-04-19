@@ -244,14 +244,14 @@ import {
   EUserModules,
   EUserRoles,
   IGrnListFilter,
-  IGrnRecords,
+  IGrnRecord,
   IPagination,
   IShopResponse,
   getRoleModuleDisplayName,
   IGrnStatusOptionList,
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/Accept-Or-Reject-Str-Modal.vue';
-import { grnListApi, shopListApi, rejectStrApi } from 'src/services';
+import { GetGRNList, GetShopList, RejectSTR } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { GrnTableColumn } from 'src/utils';
@@ -259,7 +259,7 @@ import { grnStatusOptionList } from 'src/pages/stock-transfer/utils';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.GoodsReceiptNotes);
 const $q = useQuasar();
-const GrnRecords = ref<IGrnRecords[]>([]);
+const GrnRecords = ref<IGrnRecord[]>([]);
 const isLoading = ref(false);
 const shopData = ref<IShopResponse[]>([]);
 const grnStatus = ref<IGrnStatusOptionList>(grnStatusOptionList[0]);
@@ -288,7 +288,7 @@ const selectedShop = ref<{
   toShopId: null,
 });
 const apiController = ref<AbortController | null>(null);
-const selectedRowData = ref<IGrnRecords | null>(null);
+const selectedRowData = ref<IGrnRecord | null>(null);
 const isAcceptOrRejectStrModalVisible = ref(false);
 
 const resetFilter = () => {
@@ -337,7 +337,7 @@ onMounted(() => {
       apiController.value.abort();
     }
   });
-const handleRejectStrPopup = (selectedRow: IGrnRecords) => {
+const handleRejectStrPopup = (selectedRow: IGrnRecord) => {
   selectedRowData.value = selectedRow;
   isAcceptOrRejectStrModalVisible.value = true;
 };
@@ -365,7 +365,7 @@ const getGrnList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await grnListApi(
+    const res = await GetGRNList(
       {
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
@@ -393,7 +393,7 @@ const getGrnList = async (data?: {
 const getShopList = async () => {
   isLoading.value = true;
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
@@ -415,7 +415,7 @@ const getShopList = async () => {
 };
 const handleRejectStr = async (reason: string, callback: () => void) => {
   try {
-    const res = await rejectStrApi({
+    const res = await RejectSTR({
       grnId: selectedRowData.value?.grnId ?? -1,
       reason,
     });

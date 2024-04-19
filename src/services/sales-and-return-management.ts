@@ -9,7 +9,7 @@ import {
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const addShopSaleManagementApi = async ({
+export const CreateSale = async ({
   salePersonCode,
   shopId,
   comments,
@@ -28,7 +28,7 @@ export const addShopSaleManagementApi = async ({
   return res;
 };
 
-export const holdBillApi = async ({
+export const HoldSale = async ({
   salePersonCode,
   shopId,
   comments,
@@ -46,7 +46,7 @@ export const holdBillApi = async ({
   });
   return res;
 };
-export const getSaleListApi = async (
+export const GetSaleList = async (
   {
     filterSearch,
     pageNumber = 1,
@@ -75,7 +75,7 @@ export const getSaleListApi = async (
   });
   return res;
 };
-export const cancelSaleApi = async (saleId: number) => {
+export const CancelSale = async (saleId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/sale/cancel',
     method: 'PUT',
@@ -85,7 +85,7 @@ export const cancelSaleApi = async (saleId: number) => {
   });
   return res;
 };
-export const previewSaleApi = async (saleId: number) => {
+export const GetSaleDetail = async (saleId: number) => {
   const res = await makeApiCall<IGenericResponse<IPreviewSaleResponse>>({
     url: 'api/sale/preview',
     method: 'GET',
@@ -95,7 +95,7 @@ export const previewSaleApi = async (saleId: number) => {
   });
   return res;
 };
-export const addSaleItemApi = async ({
+export const CreateSaleLineItem = async ({
   saleId,
   saleDetails,
 }: {
@@ -113,7 +113,7 @@ export const addSaleItemApi = async ({
   return res;
 };
 
-export const deleteSaleApi = async ({
+export const DeleteSaleLineItem = async ({
   saleId,
   saleDetailId,
 }: {
@@ -130,7 +130,7 @@ export const deleteSaleApi = async ({
   });
   return res;
 };
-export const updateSaleItemApi = async ({
+export const UpdateSaleLineItem = async ({
   saleDetailId,
   saleDetails,
 }: {
@@ -147,7 +147,7 @@ export const updateSaleItemApi = async ({
   });
   return res;
 };
-export const changeSaleStatusApi = async ({
+export const ChangeSaleStatus = async ({
   saleId,
   saleStatus,
 }: {
@@ -164,7 +164,7 @@ export const changeSaleStatusApi = async ({
   });
   return res;
 };
-export const returnSaleApi = async ({
+export const RevokeSale = async ({
   shopId,
   returnSaleDetails,
 }: Partial<IAddShopSaleManagement>) => {
@@ -178,7 +178,7 @@ export const returnSaleApi = async ({
   });
   return res;
 };
-export const saleSummaryApi = async (shopId: number) => {
+export const GetShopAccountSummary = async (shopId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/shopaccount/summary',
     method: 'GET',
@@ -188,7 +188,7 @@ export const saleSummaryApi = async (shopId: number) => {
   });
   return res;
 };
-export const addExpenseApi = async ({
+export const RecordExpenseInShopAccount = async ({
   expenseId,
   shopId,
   amount,
@@ -211,7 +211,7 @@ export const addExpenseApi = async ({
   });
   return res;
 };
-export const getShopOfficersApi = async (
+export const GetShopOfficers = async (
   {
     RoleName,
     ShopId,
@@ -246,7 +246,7 @@ export const getShopOfficersApi = async (
   });
   return res;
 };
-export const deleteExpenseApi = async ({
+export const DiscardExpenseFromShopAccount = async ({
   shopAccountDetailId,
 }: {
   shopAccountDetailId: number;

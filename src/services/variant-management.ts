@@ -5,7 +5,7 @@ import {
   IVariantDetailsData,
 } from 'src/interfaces';
 
-export const addVariantGroupApi = async (name: string) => {
+export const CreateVariantGroup = async (name: string) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
     url: 'api/Variant/group/add',
@@ -15,7 +15,7 @@ export const addVariantGroupApi = async (name: string) => {
   });
   return res;
 };
-export const updateVariantGroupApi = async ({
+export const UpdateVariantGroup = async ({
   variantGroupId,
   name,
 }: {
@@ -34,7 +34,7 @@ export const updateVariantGroupApi = async ({
   });
   return res;
 };
-export const variantGroupListApi = async ({
+export const GetVariantGroupList = async ({
   pageNumber = 1,
   pageSize = 50,
 }: {
@@ -53,7 +53,7 @@ export const variantGroupListApi = async ({
   });
   return res;
 };
-export const variantGroupUpdateStatus = async (variantGroupId: number) => {
+export const ChangeVariantGroupStatus = async (variantGroupId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: 'api/Variant/group/changestatus',
@@ -63,7 +63,7 @@ export const variantGroupUpdateStatus = async (variantGroupId: number) => {
   });
   return res;
 };
-export const addVariantApi = async ({
+export const CreateVariant = async ({
   name,
   displayName,
   variantGroupId,
@@ -83,7 +83,7 @@ export const addVariantApi = async ({
   });
   return res;
 };
-export const updateVariantApi = async ({
+export const UpdateVariant = async ({
   variantId,
   name,
   displayName,
@@ -108,7 +108,7 @@ export const updateVariantApi = async ({
   });
   return res;
 };
-export const changeVariantStatus = async (variantId: number) => {
+export const ChangeVariantStatus = async (variantId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: 'api/Variant/changestatus',
@@ -118,7 +118,7 @@ export const changeVariantStatus = async (variantId: number) => {
   });
   return res;
 };
-export const variantListApi = async ({
+export const GetVariantList = async ({
   pageNumber = 1,
   pageSize = 50,
 }: {
@@ -137,7 +137,7 @@ export const variantListApi = async ({
   });
   return res;
 };
-export const variantListByIdApi = async ({
+export const GetVariantListByGroupId = async ({
   status,
   variantGroupId,
 }: {

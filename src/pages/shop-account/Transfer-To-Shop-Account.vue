@@ -119,11 +119,7 @@ import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 import { useRouter } from 'vue-router';
-import {
-  shopListApi,
-  getUserListApi,
-  cashReceiveFromHOApi,
-} from 'src/services';
+import { GetShopList, GetUsers, cashReceiveFromHOApi } from 'src/services';
 import { IShopResponse, EUserRoles, IUserResponse } from 'src/interfaces';
 import { CanceledError } from 'axios';
 const $q = useQuasar();
@@ -155,7 +151,7 @@ onMounted(() => {
 const getShopList = async () => {
   isFetchingShopList.value = true;
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
@@ -177,7 +173,7 @@ const getShopList = async () => {
 };
 const getUserList = async () => {
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 5000,
     });

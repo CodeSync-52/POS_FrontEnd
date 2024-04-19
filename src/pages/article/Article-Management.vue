@@ -259,7 +259,7 @@ import ArticleStatusModal from 'src/components/article-management/Article-Status
 import { useAuthStore } from 'src/stores';
 import { IArticleData } from 'src/interfaces';
 import { ArticleColumn, isPosError, WholeSalePriceOptionList } from 'src/utils';
-import { articleListApi, changeArticleStatus } from 'src/services';
+import { GetArticleList, ChangeArticleStatus } from 'src/services';
 import { statusOptions } from 'src/constants';
 import { CanceledError } from 'axios';
 const authStore = useAuthStore();
@@ -345,7 +345,7 @@ const updatingStatus = async (updatedStatus: string, callback: () => void) => {
   isLoading.value = true;
   const selectedProductId = selectedRowData.value?.productId ?? -1;
   try {
-    const res = await changeArticleStatus(selectedProductId);
+    const res = await ChangeArticleStatus(selectedProductId);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -400,7 +400,7 @@ const getArticleList = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await articleListApi(
+    const res = await GetArticleList(
       {
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,

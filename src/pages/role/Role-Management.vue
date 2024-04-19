@@ -85,7 +85,7 @@ import {
   EActionPermissions,
 } from 'src/interfaces';
 import { QTableColumn, useQuasar } from 'quasar';
-import { fetchUserRoles, updateUserRoles } from 'src/services';
+import { GetUserRoleDetail, updateUserRoles } from 'src/services';
 import { isPosError } from 'src/utils';
 import { CanceledError } from 'axios';
 import { useAuthStore } from 'src/stores';
@@ -139,7 +139,7 @@ const showEditPopup = async (shouldEdit: boolean, role: EUserRoles) => {
   isFetchingPermissions.value = true;
   isRoleModalVisible.value = true;
   isEdit.value = shouldEdit;
-  await fetchUserRoles(role, apiController.value)
+  await GetUserRoleDetail(role, apiController.value)
     .then((res) => {
       selectedModulePermissions.value.permissions.forEach((moduleBase) => {
         const selectedModule = res.data.permissionModuleActions.find(

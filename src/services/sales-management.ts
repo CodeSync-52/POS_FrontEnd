@@ -1,13 +1,13 @@
 import {
   IGenericResponse,
-  ISalesFilterSearch,
-  ISalesManagementData,
-  ISelectedArticleList,
+  IWholeSalesFilter,
+  IWholeSalesData,
+  IProductIdWithQuantity,
   IWholeSalesDetailInfo,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const addWholeSaleApi = async ({
+export const CreateWholeSale = async ({
   userId,
   claim,
   freight,
@@ -17,7 +17,7 @@ export const addWholeSaleApi = async ({
   userId: number | null;
   claim: number | undefined;
   freight: number | undefined;
-  productList: ISelectedArticleList[] | null;
+  productList: IProductIdWithQuantity[] | null;
   comments: string | null;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
@@ -33,13 +33,13 @@ export const addWholeSaleApi = async ({
   });
   return res;
 };
-export const salesManagementListApi = async (
+export const GetWholeSaleList = async (
   {
     filterSearch,
     PageNumber = 1,
     PageSize = 50,
   }: {
-    filterSearch: ISalesFilterSearch;
+    filterSearch: IWholeSalesFilter;
     PageNumber: number;
     PageSize: number;
   },
@@ -54,7 +54,7 @@ export const salesManagementListApi = async (
     customerGroupId,
   } = filterSearch;
   const res = await makeApiCall<
-    IGenericResponse<{ items: ISalesManagementData[]; totalItemCount: number }>
+    IGenericResponse<{ items: IWholeSalesData[]; totalItemCount: number }>
   >({
     method: 'GET',
     url: 'api/wholesale/list',
@@ -72,7 +72,7 @@ export const salesManagementListApi = async (
   });
   return res;
 };
-export const wholeSaleDetailApi = async (wholeSaleId: number) => {
+export const GetWholeSaleDetail = async (wholeSaleId: number) => {
   const res = await makeApiCall<IGenericResponse<IWholeSalesDetailInfo>>({
     url: 'api/wholesale/detail',
     method: 'GET',
@@ -82,7 +82,7 @@ export const wholeSaleDetailApi = async (wholeSaleId: number) => {
   });
   return res;
 };
-export const completeWholeSaleApi = async (wholeSaleId: number) => {
+export const CompleteWholeSale = async (wholeSaleId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: 'api/wholesale/complete',
@@ -92,7 +92,7 @@ export const completeWholeSaleApi = async (wholeSaleId: number) => {
   });
   return res;
 };
-export const deleteWholeSaleDetailApi = async (wholeSaleDetailId: number) => {
+export const DeleteWholeSaleLineItem = async (wholeSaleDetailId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/wholesale/detail/delete',
     method: 'PUT',
@@ -102,7 +102,7 @@ export const deleteWholeSaleDetailApi = async (wholeSaleDetailId: number) => {
   });
   return res;
 };
-export const updateWholeSaleDetailApi = async ({
+export const UpdateWholeSaleLineItem = async ({
   wholeSaleDetailId,
   quantity,
   unitWholeSalePrice,
@@ -122,7 +122,7 @@ export const updateWholeSaleDetailApi = async ({
   });
   return res;
 };
-export const addWholeSaleDetailApi = async ({
+export const CreateWholeSaleLineItem = async ({
   wholeSaleId,
   productId,
   quantity,
@@ -142,7 +142,7 @@ export const addWholeSaleDetailApi = async ({
   });
   return res;
 };
-export const cancelWholeSaleApi = async (wholeSaleId: number) => {
+export const CancelWholeSale = async (wholeSaleId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/wholesale/cancel',
     method: 'PUT',
@@ -152,7 +152,7 @@ export const cancelWholeSaleApi = async (wholeSaleId: number) => {
   });
   return res;
 };
-export const ClaimFreightApi = async ({
+export const UpdateWholeSaleClaimFreight = async ({
   wholeSaleId,
   claim,
   freight,

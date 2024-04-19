@@ -37,7 +37,7 @@
           </span>
         </div>
         <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Item's Sold Today :</span>
+          <span class="font-medium md:text-lg">Item's Sold :</span>
           <span class="md:text-lg">
             {{ shopAccountSummary.totalItemsSale }}
           </span>
@@ -170,7 +170,7 @@ import {
   IShopExpenses,
   InComingOutgoingToHo,
 } from 'src/interfaces';
-import { accountSummaryApi } from 'src/services';
+import { GetShopAccount } from 'src/services';
 import {
   shopExpenseTableColumn,
   incomingOutgoingToHoTableColumn,
@@ -228,7 +228,7 @@ onMounted(async () => {
 });
 const updateAccountSummary = async () => {
   try {
-    const res = await accountSummaryApi(Number(selectedId));
+    const res = await GetShopAccount(Number(selectedId));
     if (res.type === 'Success') {
       const responseData = res.data as IShopAccountReport | null;
       if (responseData) {

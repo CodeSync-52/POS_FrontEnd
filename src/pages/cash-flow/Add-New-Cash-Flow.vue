@@ -144,7 +144,7 @@ import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { onMounted, ref } from 'vue';
 import { IUserResponse } from 'src/interfaces';
-import { addCashFlowApi, getUserListApi } from 'src/services';
+import { CreateTransaction, GetUsers } from 'src/services';
 import { isPosError } from 'src/utils';
 const router = useRouter();
 const isAdding = ref(false);
@@ -180,7 +180,7 @@ const handleAddNewFlow = async () => {
   isAdding.value = true;
   const { cashIn, cashOut, amount, comment } = addNewFlow.value;
   try {
-    const res = await addCashFlowApi({
+    const res = await CreateTransaction({
       sourceUserId: cashIn?.userId ?? -1,
       amount: amount,
       targetUserId: cashOut?.userId ?? -1,
@@ -224,7 +224,7 @@ const handleShowOutstandingBalance = (
 };
 const getUserList = async () => {
   try {
-    const res = await getUserListApi({
+    const res = await GetUsers({
       pageNumber: 1,
       pageSize: 500,
     });

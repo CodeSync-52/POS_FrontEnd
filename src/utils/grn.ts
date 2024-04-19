@@ -1,12 +1,12 @@
 import moment from 'moment';
 import { QTableColumn } from 'quasar';
 import {
-  IGrnRecords,
+  IGrnRecord,
   IGrnDetailsWithId,
   IPreviewGrnDetail,
 } from 'src/interfaces';
 
-export const GrnTableColumn: QTableColumn<IGrnRecords>[] = [
+export const GrnTableColumn: QTableColumn<IGrnRecord>[] = [
   {
     name: 'addedDate',
     required: true,

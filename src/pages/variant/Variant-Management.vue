@@ -212,10 +212,10 @@ import {
   getRoleModuleDisplayName,
 } from 'src/interfaces';
 import {
-  variantGroupListApi,
-  addVariantGroupApi,
-  updateVariantGroupApi,
-  variantGroupUpdateStatus,
+  GetVariantGroupList,
+  CreateVariantGroup,
+  UpdateVariantGroup,
+  ChangeVariantGroupStatus,
 } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
@@ -254,7 +254,7 @@ const getVariantGroupList = async (data?: {
   try {
     const rowsPerPage =
       pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
-    const res = await variantGroupListApi({
+    const res = await GetVariantGroupList({
       pageNumber: pagination.value.page,
       pageSize: rowsPerPage,
     });
@@ -292,7 +292,7 @@ const handleUpdateStatus = async (
   try {
     const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
 
-    const res = await variantGroupUpdateStatus(variantGroupId);
+    const res = await ChangeVariantGroupStatus(variantGroupId);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -370,8 +370,8 @@ const updateOrAddVariant = async (
   try {
     const variantGroupId = selectedRowData.value?.variantGroupId ?? -1;
     const res = await (action === 'Add'
-      ? addVariantGroupApi(name)
-      : updateVariantGroupApi({ variantGroupId, name }));
+      ? CreateVariantGroup(name)
+      : UpdateVariantGroup({ variantGroupId, name }));
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,

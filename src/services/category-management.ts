@@ -6,7 +6,7 @@ import {
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
-export const changeCategoryStatus = async (categoryId: number) => {
+export const ChangeCategoryStatus = async (categoryId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: 'api/Category/changestatus',
@@ -16,7 +16,7 @@ export const changeCategoryStatus = async (categoryId: number) => {
   });
   return res;
 };
-export const changeSubcategoryStatus = async (categoryId: number) => {
+export const ChangeSubCategoryStatus = async (categoryId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: 'api/Category/subcategory/changestatus',
@@ -26,7 +26,7 @@ export const changeSubcategoryStatus = async (categoryId: number) => {
   });
   return res;
 };
-export const createCategory = async (name: string) => {
+export const CreateCategory = async (name: string) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
     url: 'api/Category/add',
@@ -37,7 +37,7 @@ export const createCategory = async (name: string) => {
   });
   return res;
 };
-export const createSubcategory = async ({
+export const CreateSubcategory = async ({
   name,
   parentCategoryId,
 }: {
@@ -55,7 +55,7 @@ export const createSubcategory = async ({
   });
   return res;
 };
-export const categoryListApi = async ({
+export const GetCategoryList = async ({
   pageNumber = 1,
   pageSize = 50,
 }: {
@@ -74,7 +74,7 @@ export const categoryListApi = async ({
   });
   return res;
 };
-export const subcategoryListApi = async ({
+export const GetSubcategoryList = async ({
   parentCategory,
   pageNumber = 1,
   pageSize = 50,
@@ -96,7 +96,7 @@ export const subcategoryListApi = async ({
   });
   return res;
 };
-export const updateCategory = async ({
+export const UpdateCategory = async ({
   categoryId,
   name,
 }: {
@@ -116,7 +116,7 @@ export const updateCategory = async ({
   });
   return res;
 };
-export const categoryTreeList = async () => {
+export const GetCategoryTree = async () => {
   const res = await makeApiCall<
     IGenericResponse<{ categoryTree: IArticleCategory[] }>
   >({

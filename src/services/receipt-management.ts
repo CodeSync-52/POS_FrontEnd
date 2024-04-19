@@ -1,6 +1,6 @@
 import { IAddNewReceipt, IGenericResponse, IReceiptData } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
-export const receiptListApi = async (
+export const GetPurchaseList = async (
   {
     customerGroupId,
     ToDate,
@@ -41,7 +41,7 @@ export const receiptListApi = async (
   });
   return res;
 };
-export const cancelReceiptApi = async (purchaseId: number) => {
+export const CancelPurchase = async (purchaseId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'PUT',
     url: 'api/Purchase/cancel',
@@ -52,7 +52,7 @@ export const cancelReceiptApi = async (purchaseId: number) => {
   return res;
 };
 
-export const createNewReceipt = async ({ data }: { data: IAddNewReceipt }) => {
+export const CreatePurchase = async ({ data }: { data: IAddNewReceipt }) => {
   return makeApiCall<IGenericResponse<null>>({
     url: 'api/Purchase/add',
     method: 'POST',
@@ -64,7 +64,7 @@ export const createNewReceipt = async ({ data }: { data: IAddNewReceipt }) => {
   });
 };
 
-export const getReceiptData = async (purchaseId: string | number) => {
+export const GetPurchaseDetail = async (purchaseId: string | number) => {
   return makeApiCall<IGenericResponse<IReceiptData>>({
     url: 'api/Purchase/detail',
     params: {
@@ -73,7 +73,7 @@ export const getReceiptData = async (purchaseId: string | number) => {
   });
 };
 
-export const deleteReceiptRow = async (params: {
+export const DeletePurchaseLineItem = async (params: {
   purchaseId: number | string;
   purchaseDetailId: number | string;
 }) => {
@@ -84,7 +84,7 @@ export const deleteReceiptRow = async (params: {
   });
 };
 
-export const addReceiptRow = async (params: {
+export const CreatePurchaseLineItem = async (params: {
   purchaseId: number | string;
   productId: number;
   quantity: number;
@@ -95,7 +95,7 @@ export const addReceiptRow = async (params: {
     params,
   });
 };
-export const editReceiptRow = async (params: {
+export const UpdatePurchaseLineItem = async (params: {
   purchaseId: number | string;
   purchaseDetailId: number | string;
   quantity: number | string;

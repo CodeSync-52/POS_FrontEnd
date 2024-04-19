@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { IShopResponse, EUserRoles, IShopAccountReport } from 'src/interfaces';
-import { shopListApi, getShopAccountReportApi } from 'src/services';
+import { GetShopList, GetShopAccountReport } from 'src/services';
 import { shopAccountReportTableColumn } from 'src/utils';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
@@ -160,7 +160,7 @@ onMounted(async () => {
 const getShopList = async () => {
   isFetchingShopList.value = true;
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
@@ -182,7 +182,7 @@ const getShopList = async () => {
 };
 const searchShopAccountReport = async () => {
   try {
-    const res = await getShopAccountReportApi({
+    const res = await GetShopAccountReport({
       shopIds: selectedShop.value?.map((shop) => shop.shopId) ?? [],
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,

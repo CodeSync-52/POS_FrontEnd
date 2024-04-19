@@ -224,7 +224,7 @@ import {
   ICashFlowRecords,
 } from 'src/interfaces';
 import { date } from 'quasar';
-import { cashFlowListApi, addCashFlowApi } from 'src/services';
+import { GetCashFlowList, CreateTransaction } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
 import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
@@ -305,7 +305,7 @@ const handleUndoCashFlow = async (selectedRow: ICashFlowRecords) => {
 };
 const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
   try {
-    const res = await addCashFlowApi({
+    const res = await CreateTransaction({
       sourceUserId: selectedRow.targetUserId ?? -1,
       amount: selectedRow.amount,
       targetUserId: selectedRow.sourceUserId ?? -1,
@@ -350,7 +350,7 @@ const getCashFlowRecords = async (data?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await cashFlowListApi(
+    const res = await GetCashFlowList(
       {
         filterSearch: filterSearch.value,
         PageNumber: pagination.value.page,

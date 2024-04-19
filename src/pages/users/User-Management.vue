@@ -371,12 +371,12 @@ import {
 } from 'src/interfaces';
 import { isPosError, makeApiCall } from 'src/utils';
 import {
-  getUserListApi,
-  resetUserPassword,
-  changeUserStatus,
-  updateUser,
-  getCustomerGroupList,
-  changeUserRetailDisc,
+  GetUsers,
+  ResetUserPassword,
+  ChangeUserStatus,
+  UpdateUser,
+  GetCustomerGroupList,
+  ChangeUserRetailDisc,
 } from 'src/services';
 const $q = useQuasar();
 const authStore = useAuthStore();
@@ -509,7 +509,7 @@ const editUserInfo = async (userData: IUserPayload) => {
       data.customerGroupId = customerGroupId;
       data.discount = Number(discount);
     }
-    const res = await updateUser({
+    const res = await UpdateUser({
       ...data,
       flatDiscount: data.discount,
     });
@@ -553,7 +553,7 @@ const getUserList = async (paginationData?: {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await getUserListApi(
+    const res = await GetUsers(
       {
         filterSearch: filterSearch.value,
         pageNumber: pagination.value.page,
@@ -585,7 +585,7 @@ const getUserList = async (paginationData?: {
 };
 async function handleChangeStatusApi(id: number, updatedStatus: string) {
   try {
-    const res = await changeUserStatus(id);
+    const res = await ChangeUserStatus(id);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -650,7 +650,7 @@ async function handleUserAdd(userData: IUserPayload) {
 }
 async function handleResetPasswordApi(customerId: number) {
   try {
-    const res = await resetUserPassword(customerId);
+    const res = await ResetUserPassword(customerId);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -672,7 +672,7 @@ async function handleResetPasswordApi(customerId: number) {
 
 async function handleChangeRetailDiscApi(customerId: number) {
   try {
-    const res = await changeUserRetailDisc(customerId);
+    const res = await ChangeUserRetailDisc(customerId);
     if (res.type === 'Success') {
       $q.notify({
         message: res.message,
@@ -708,7 +708,7 @@ async function getCustomerListOption() {
   if (isCustomerGroupListLoading.value) return;
   isCustomerGroupListLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'Active' });
+    const res = await GetCustomerGroupList({ status: 'Active' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupList.value = res?.data;
     }

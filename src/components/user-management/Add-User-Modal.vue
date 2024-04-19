@@ -226,7 +226,7 @@ import {
   IUserPayload,
   IUserResponse,
 } from 'src/interfaces';
-import { getCustomerGroupList, shopListApi } from 'src/services';
+import { GetCustomerGroupList, GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
 type PropType = {
   selectedUser: IUserResponse | null;
@@ -389,7 +389,7 @@ async function getCustomerAndShopListOption() {
   if (isLoading.value) return;
   isLoading.value = true;
   try {
-    const res = await getCustomerGroupList({ status: 'Active' });
+    const res = await GetCustomerGroupList({ status: 'Active' });
     if (res?.data && Array.isArray(res.data)) {
       customerGroupList.value = res?.data;
     }
@@ -405,7 +405,7 @@ async function getCustomerAndShopListOption() {
     });
   }
   try {
-    const response = await shopListApi({
+    const response = await GetShopList({
       PageNumber: 1,
       PageSize: 200,
     });
