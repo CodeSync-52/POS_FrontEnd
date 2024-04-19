@@ -276,7 +276,6 @@ const handleSelectedCategory = (selectedCategory: {
 }) => {
   filterSearch.value.categoryName = selectedCategory.categoryName;
   filterSearch.value.CategoryId = selectedCategory.categoryId;
-  console.log(filterSearch.value);
   isCategoryModalVisible.value = false;
 };
 const resetFilter = () => {
