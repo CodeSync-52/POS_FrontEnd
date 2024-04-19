@@ -321,7 +321,6 @@ const handleKeyPress = async (e: KeyboardEvent) => {
       if (scannedLabelLoading.value) return;
       scannedLabelLoading.value = true;
       try {
-    
         const res = await GetInventoryDetail({
           ShopId:
             authStore.loggedInUser?.userShopInfoDTO.shopId?.toString() ?? '-1',
