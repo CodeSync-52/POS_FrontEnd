@@ -40,7 +40,7 @@ export const GetArticleList = async (
     Name?: string | null;
     Status?: string | null;
     ShowZeroWholePrice?: number | null;
-    CategoryId: number | null;
+    CategoryId?: number | null;
     PageNumber: number;
     PageSize: number;
   },
