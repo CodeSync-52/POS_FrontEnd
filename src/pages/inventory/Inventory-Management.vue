@@ -213,7 +213,7 @@ import {
   IInventoryListResponse,
   IShopResponse,
   getRoleModuleDisplayName,
-  IInventoryFilterSearchWithShopIdArray,
+  IInventoryFilterSearchWithShopId,
 } from 'src/interfaces';
 import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
 import { useAuthStore } from 'src/stores';
@@ -231,7 +231,7 @@ const ShopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
-const filterSearch = ref<IInventoryFilterSearchWithShopIdArray>({
+const filterSearch = ref<IInventoryFilterSearchWithShopId>({
   ProductId: null,
   ProductCode: null,
   ShopId: [],

@@ -23,7 +23,7 @@ export interface IBaseInventoryFilterSearch {
   categoryName: string;
   CategoryId: number | null;
 }
-export interface IInventoryFilterSearchWithShopIdArray
+export interface IInventoryFilterSearchWithShopId
   extends IBaseInventoryFilterSearch {
   ShopId: IShopResponse[] | null;
 }

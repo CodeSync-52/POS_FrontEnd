@@ -1,7 +1,7 @@
 import {
   IGenericResponse,
   IInventoryFilterSearch,
-  IInventoryFilterSearchWithShopIdArray,
+  IInventoryFilterSearchWithShopId,
   IInventoryListResponse,
   IProductWithVariantDTOs,
 } from 'src/interfaces';
@@ -35,9 +35,7 @@ export const GetInventoryDetail = async (
     PageNumber: number;
     PageSize: number;
     ShopId: string | number[] | null;
-    filterSearch:
-      | IInventoryFilterSearch
-      | IInventoryFilterSearchWithShopIdArray;
+    filterSearch: IInventoryFilterSearch | IInventoryFilterSearchWithShopId;
     // CategoryId?: number | null;
   },
   controller?: AbortController
