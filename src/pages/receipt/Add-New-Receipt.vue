@@ -743,11 +743,6 @@ async function downloadPdfData() {
       content: addNewReceipt.value.userName,
     },
     {
-      heading: 'Outstanding Balance',
-      content: addNewReceipt.value.userOutstandingBalance,
-      styleContent: true,
-    },
-    {
       heading: 'Date',
       content: moment(addNewReceipt.value.createdDate).format('DD-MM-YYYY'),
     },
