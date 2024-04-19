@@ -58,6 +58,6 @@ export interface IProductGenericList extends IProductIdWithAmount {
   name: string;
   image: string;
 }
-export interface IBillProductList extends IProductGenericList{
+export interface IBillProductList extends IProductGenericList {
   quantity: number;
 }

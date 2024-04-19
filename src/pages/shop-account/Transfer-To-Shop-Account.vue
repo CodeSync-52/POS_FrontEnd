@@ -119,11 +119,7 @@ import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 import { useRouter } from 'vue-router';
-import {
-  GetShopList,
-  GetUsers,
-  cashReceiveFromHOApi,
-} from 'src/services';
+import { GetShopList, GetUsers, cashReceiveFromHOApi } from 'src/services';
 import { IShopResponse, EUserRoles, IUserResponse } from 'src/interfaces';
 import { CanceledError } from 'axios';
 const $q = useQuasar();

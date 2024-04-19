@@ -239,12 +239,7 @@ import {
 } from 'src/interfaces';
 import AcceptOrRejectStrModal from 'src/components/str/Accept-Or-Reject-Str-Modal.vue';
 import { grnStatusOptionList } from './utils';
-import {
-  GetGRNList,
-  RejectSTR,
-  AcceptSTR,
-  GetShopList,
-} from 'src/services';
+import { GetGRNList, RejectSTR, AcceptSTR, GetShopList } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { GrnTableColumn } from 'src/utils';

@@ -1,5 +1,3 @@
-
-
 export interface IShopResponse extends IShopBasicInfo {
   shopId: number;
   closingBalance: number;

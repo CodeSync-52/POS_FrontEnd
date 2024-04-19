@@ -71,11 +71,7 @@
 import { ref, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { IExpenses } from 'src/interfaces';
-import {
-  CreateExpense,
-  GetExpenseList,
-  UpdateExpense,
-} from 'src/services';
+import { CreateExpense, GetExpenseList, UpdateExpense } from 'src/services';
 import AddExpenseModal from 'src/components/expenses/Add-Update-Expense-Modal.vue';
 import { isPosError } from 'src/utils';
 import { expenseColumns } from 'src/utils/expense';

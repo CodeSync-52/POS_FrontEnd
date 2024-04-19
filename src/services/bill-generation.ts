@@ -69,9 +69,7 @@ export const GetBillDetail = async (purchaseId: number) => {
   return res;
 };
 export const GetBillBasicInfo = async (BillId: number) => {
-  const res = await makeApiCall<
-    IGenericResponse<IBillData>
-  >({
+  const res = await makeApiCall<IGenericResponse<IBillData>>({
     url: 'api/bill/detailinfo',
     method: 'GET',
     params: {

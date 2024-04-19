@@ -1265,7 +1265,11 @@ const handleClaimFreight = async (
 ) => {
   isLoading.value = true;
   try {
-    const response = await UpdateWholeSaleClaimFreight({ wholeSaleId, claim, freight });
+    const response = await UpdateWholeSaleClaimFreight({
+      wholeSaleId,
+      claim,
+      freight,
+    });
     if (response.type === 'Success') {
       $q.notify({
         message: response.message,

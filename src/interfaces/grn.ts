@@ -35,10 +35,10 @@ export interface IGrnRecord {
   grnStatus: string;
   addedDate: string;
 }
-export interface IGrnPreviewResponse extends IGrnRecord{
+export interface IGrnPreviewResponse extends IGrnRecord {
   grnDetails: IPreviewGrnDetail[];
 }
-export interface IPreviewGrnDetail extends IGrnDetails{
+export interface IPreviewGrnDetail extends IGrnDetails {
   productName: string;
   productImage: string;
   productCode: string;

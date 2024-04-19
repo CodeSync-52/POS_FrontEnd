@@ -111,10 +111,7 @@ import { IArticleData, IHOSaleDetailReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { GetArticleList } from 'src/services';
-import {
-  GetHOPurchaseDetailReport,
-  wrapCsvValue,
-} from 'src/services/reports';
+import { GetHOPurchaseDetailReport, wrapCsvValue } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { HOArticleSaleDetailReportColumn } from 'src/utils/reports';
 import { onUnmounted, ref } from 'vue';

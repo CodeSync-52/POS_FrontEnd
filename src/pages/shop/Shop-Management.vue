@@ -213,7 +213,10 @@ const handleEditStatusPopup = (selectedRow: IShopResponse) => {
 onMounted(() => {
   getShopList();
 });
-async function handleAddNewShop(shopData: IShopBasicInfo, callback: () => void) {
+async function handleAddNewShop(
+  shopData: IShopBasicInfo,
+  callback: () => void
+) {
   try {
     const response = await CreateShop(shopData);
     if (response.type === 'Success') {

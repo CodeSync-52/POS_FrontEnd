@@ -1,4 +1,4 @@
-import { IProductIdWithQuantity } from "./receipt-management";
+import { IProductIdWithQuantity } from './receipt-management';
 
 export interface IWholeSalesData {
   wholeSaleId: number;

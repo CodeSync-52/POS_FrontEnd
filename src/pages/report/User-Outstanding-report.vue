@@ -87,10 +87,7 @@ import { exportFile, useQuasar } from 'quasar';
 import { ICustomerListResponse, IOutStandingReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { GetCustomerGroupList } from 'src/services';
-import {
-  GetUserOutstandingReport,
-  wrapCsvValue,
-} from 'src/services/reports';
+import { GetUserOutstandingReport, wrapCsvValue } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { outStandingReportColumn } from 'src/utils/reports';

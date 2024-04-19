@@ -1,4 +1,8 @@
-import { IGenericResponse, IShopBasicInfo, IShopResponse } from 'src/interfaces';
+import {
+  IGenericResponse,
+  IShopBasicInfo,
+  IShopResponse,
+} from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 
 export const GetShopList = async ({

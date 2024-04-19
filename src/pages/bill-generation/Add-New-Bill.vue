@@ -596,12 +596,9 @@ const BillGenerationTotalAmount = computed(() => {
 
 const BillGenerationDetailsInfoTotalAmount = computed(() => {
   const rows = billGenerationDetailsInfoData.value.productList;
-  return rows.reduce(
-    (total: number, row: IBillProductList) => {
-      return total + row.quantity * row.amount;
-    },
-    0
-  );
+  return rows.reduce((total: number, row: IBillProductList) => {
+    return total + row.quantity * row.amount;
+  }, 0);
 });
 const addNewBill = async (newBillInfo: INewBillData) => {
   if (isSavingDraft.value) return;

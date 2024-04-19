@@ -26,7 +26,7 @@ export const GetShopAccountReport = async ({
   });
   return res;
 };
-export const GetShopAccountSummary = async (shopAccountId: number) => {
+export const GetShopAccount = async (shopAccountId: number) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     url: 'api/shopaccount/shopaccount',
     method: 'GET',

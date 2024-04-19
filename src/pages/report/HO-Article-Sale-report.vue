@@ -208,11 +208,7 @@ import {
   IHOArticleReportData,
   IUserResponse,
 } from 'src/interfaces';
-import {
-  GetArticleList,
-  GetCustomerGroupList,
-  GetUsers,
-} from 'src/services';
+import { GetArticleList, GetCustomerGroupList, GetUsers } from 'src/services';
 import { GetHOArticleSaleReport, wrapCsvValue } from 'src/services/reports';
 import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
