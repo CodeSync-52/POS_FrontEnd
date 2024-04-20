@@ -500,7 +500,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 200,
   rowsNumber: 0,
 });
 onMounted(() => {
@@ -816,8 +816,8 @@ async function convertArray(array: IBillProductList[]) {
     const row = [
       {
         image: item.image || defaultImage.value,
-        width: 70,
-        height: 70,
+        width: 50,
+        height: 50,
       },
       { text: item.name, margin: [0, 20] },
       { text: item.quantity, bold: true, margin: [0, 20] },
@@ -836,11 +836,11 @@ async function downloadPdfData() {
       content: Number(router.currentRoute.value.params.id),
     },
     {
-      content: billGenerationDetailsInfoData.value.fullName,
-    },
-    {
       heading: 'Bill Status',
       content: billGenerationDetailsInfoData.value.billStatus,
+    },
+    {
+      content: billGenerationDetailsInfoData.value.fullName,
     },
     {
       heading: 'Date',

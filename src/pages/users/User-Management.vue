@@ -410,7 +410,7 @@ const defaultPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 200,
   rowsNumber: 0,
 };
 const pagination = ref<{
