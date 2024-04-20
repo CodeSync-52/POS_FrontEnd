@@ -167,8 +167,12 @@
                 v-if="
                   (authStore.loggedInUser?.rolePermissions.roleName ===
                     EUserRoles.SuperAdmin.toLowerCase() ||
-                    authStore.loggedInUser?.rolePermissions.roleName ===
-                      EUserRoles.Admin.toLowerCase()) &&
+                    (authStore.loggedInUser?.rolePermissions.roleName ===
+                      EUserRoles.Admin.toLowerCase() &&
+                      authStore.checkUserHasPermission(
+                        EUserModules.GoodsReceiptNotes,
+                        EActionPermissions.Delete
+                      ))) &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "
@@ -202,13 +206,8 @@
                   v-if="
                     authStore.checkUserHasPermission(
                       EUserModules.GoodsReceiptNotes,
-                      EActionPermissions.Delete
-                    ) &&
-                    authStore.checkUserHasPermission(
-                      EUserModules.GoodsReceiptNotes,
                       EActionPermissions.Update
-                    ) &&
-                    props.row.grnStatus === 'Pending'
+                    ) && props.row.grnStatus === 'Pending'
                   "
                   size="sm"
                   flat
@@ -277,7 +276,7 @@ const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 200,
   rowsNumber: 0,
 });
 const selectedShop = ref<{

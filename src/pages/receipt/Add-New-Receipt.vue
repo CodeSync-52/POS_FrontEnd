@@ -717,8 +717,8 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
     const row = [
       {
         image: item.productImage || defaultImage.value,
-        width: 70,
-        height: 70,
+        width: 50,
+        height: 50,
       },
       { text: item.productName, margin: [0, 20] },
       { text: item.quantity, bold: true, margin: [0, 20] },
@@ -745,10 +745,6 @@ async function downloadPdfData() {
     {
       heading: 'Date',
       content: moment(addNewReceipt.value.createdDate).format('DD-MM-YYYY'),
-    },
-    {
-      heading: 'Created By',
-      content: addNewReceipt.value.createdBy,
     },
   ];
 

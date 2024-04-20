@@ -103,16 +103,30 @@ export const downloadPdf = async ({
       },
     });
   }
-  const docData = { content };
-  if (title !== '') {
-    docData.content.unshift({
-      text: title,
-      alignment: 'center',
-      width: '*',
-      bold: true,
-      fontSize: 20,
-    });
-  }
+  //const docData = { content };
+  // if (title !== '') {
+  //   docData.content.unshift({
+  //     text: title,
+  //     alignment: 'center',
+  //     width: '*',
+  //     bold: true,
+  //     fontSize: 20,
+  //   });
+  // }
+
+  // Adding footer with page numbers
+  const docData = {
+    content,
+    footer(currentPage, pageCount) {
+      return {
+        text: currentPage.toString() + ' of ' + pageCount,
+        alignment: 'center',
+        fontSize: 10,
+        margin: [5, 0, 10, 0],
+        height: 30,
+      };
+    },
+  };
   const doc = await pdfMake.createPdf(docData);
   await doc.download(filename);
 };

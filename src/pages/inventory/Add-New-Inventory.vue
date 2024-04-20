@@ -607,7 +607,7 @@ const getArticleList = async (data?: {
   try {
     const res = await GetArticleList({
       PageNumber: 1,
-      PageSize: 2000,
+      PageSize: 1000000,
       Status: 'Active',
     });
     if (res.type === 'Success') {

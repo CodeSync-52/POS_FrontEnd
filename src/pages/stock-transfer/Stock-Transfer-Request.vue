@@ -159,8 +159,8 @@
               </q-btn>
               <q-btn
                 v-if="
-                  authStore.loggedInUser?.userShopInfoDTO.shopId ===
-                    props.row.toShopId &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() &&
                   props.row.grnStatus !== 'Accept' &&
                   props.row.grnStatus !== 'Reject'
                 "
@@ -273,7 +273,7 @@ const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 25,
+  rowsPerPage: 200,
   rowsNumber: 0,
 });
 const isAcceptOrRejectStrModalVisible = ref(false);

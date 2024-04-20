@@ -1154,11 +1154,13 @@ async function convertArrayToPdfData(
     '',
     {
       text: 'Freight:',
-      margin: 5,
+      margin: [5, 0],
+      width: 10,
     },
     {
       text: `${freight.value}`,
-      margin: 5,
+      margin: [5, 0],
+      width: 10,
     },
   ];
   const claimRow = [
@@ -1167,11 +1169,13 @@ async function convertArrayToPdfData(
     '',
     {
       text: 'Claim:',
-      margin: 5,
+      margin: [5, 0],
+      width: 10,
     },
     {
       text: `${claim.value}`,
-      margin: 5,
+      margin: [5, 0],
+      width: 10,
     },
   ];
   const netTotalRow = [
@@ -1180,11 +1184,13 @@ async function convertArrayToPdfData(
     '',
     {
       text: 'Net Total:',
-      margin: 5,
+      margin: [5, 0],
+      width: 10,
     },
     {
       text: `${selectedSaleRecord.value.netAmount}`,
-      margin: 5,
+      margin: [5, 0],
+      width: 10,
     },
   ];
   array.forEach(
@@ -1192,8 +1198,8 @@ async function convertArrayToPdfData(
       const row = [
         {
           image: item.productImage || defaultImage.value,
-          width: 70,
-          height: 70,
+          width: 50,
+          height: 50,
         },
         { text: item.productName, bold: true, margin: [0, 20] },
         { text: item.quantity, margin: [0, 20] },
