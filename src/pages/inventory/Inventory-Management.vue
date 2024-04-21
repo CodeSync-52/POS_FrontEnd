@@ -43,6 +43,17 @@
           color=""
           to="/inventory/add-new"
         />
+        <!-- <download-pdf-excel
+          @downloadCSVData="downloadCSVData"
+          @downloadPdfData="downloadPdfData"
+        /> -->
+        <q-btn
+          label="Download in Excel"
+          unelevated
+          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+          color=""
+          @click="downloadCSVData"
+        ></q-btn>
       </div>
     </div>
     <div
@@ -124,13 +135,13 @@
           label="Search"
           @click="getInventoryList()"
         />
-        <q-btn
+        <!-- <q-btn
           unelevated
           color=""
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="resetFilter"
-        />
+        /> -->
       </div>
     </div>
     <div class="py-4">
@@ -157,6 +168,12 @@
               dense
               label="Color"
               color="btn-primary"
+              @change="filterSelectedShopDetailList"
+            />
+            <q-checkbox
+              v-model="filteredData.excludeZeroQuantity"
+              color="btn-primary"
+              label="Exclude Zero Quantity"
               @change="filterSelectedShopDetailList"
             />
           </div>
@@ -203,7 +220,7 @@
 <script setup lang="ts">
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import { onMounted, ref, watch } from 'vue';
-import { useQuasar } from 'quasar';
+import { exportFile, useQuasar } from 'quasar';
 import {
   EActionPermissions,
   EUserModules,
@@ -217,8 +234,12 @@ import {
 } from 'src/interfaces';
 import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
 import { useAuthStore } from 'src/stores';
-import { isPosError } from 'src/utils';
+import { ITableHeaders, ITableItems, downloadPdf, isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
+import { wrapCsvValue } from 'src/services/reports';
+import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
+import moment from 'moment';
+import { processTableItems } from 'src/utils/process-table-items';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const InventoryListRecords = ref<IInventoryListResponse[]>([]);
@@ -240,31 +261,29 @@ const filterSearch = ref<IInventoryFilterSearchWithShopId>({
   categoryName: '',
   CategoryId: null,
 });
-const loggedInUserShopId = authStore.loggedInUser?.userShopInfoDTO.shopId;
-const selectedShopIdDetails = ref<null | IShopResponse>(null);
+var selectedShopIdDetails = ref<null | IShopResponse>(null);
+const tableItems = ref<ITableItems[][]>([]);
 onMounted(async () => {
   getArticleList();
   await getShopList();
-  const loggedInUserShopDetails = ShopOptionData.value.find(
-    (shop) => shop.shopId === loggedInUserShopId
-  );
-  if (loggedInUserShopDetails)
-    selectedShopIdDetails.value = loggedInUserShopDetails;
-  filterSearch.value.ShopId!.push(loggedInUserShopDetails!);
+
+  filterSearch.value.ShopId!.push(...ShopData.value);
 });
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 200,
+  rowsPerPage: 2000,
   rowsNumber: 0,
 });
 const filteredData = ref<{
   size: string;
   color: string;
+  excludeZeroQuantity: boolean;
 }>({
   size: '',
   color: '',
+  excludeZeroQuantity: false,
 });
 const $q = useQuasar();
 const addCategory = () => {
@@ -296,7 +315,7 @@ const getShopList = async () => {
   try {
     const response = await GetShopList({
       PageNumber: 1,
-      PageSize: 200,
+      PageSize: 200000,
     });
     if (response.data) {
       ShopData.value = response.data.items;
@@ -343,6 +362,7 @@ const getInventoryList = async (data?: {
     if (res.data) {
       InventoryListRecords.value = res.data.inventoryDetails;
       pagination.value.rowsNumber = res.data.totalCountInventoryDetails;
+      tableItems.value = await convertArrayToPdfData(res.data.inventoryDetails);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -409,7 +429,7 @@ const filterSelectedShopDetailList = () => {
   filteredShopDetailList.value = InventoryListRecords.value.filter((item) => {
     let sizeMatch = true;
     let colorMatch = true;
-
+    let excludeZero = true;
     if (filteredData.value.size) {
       sizeMatch =
         item.size
@@ -424,16 +444,95 @@ const filterSelectedShopDetailList = () => {
           .includes(filteredData.value.color.toLowerCase()) || false;
     }
 
-    return sizeMatch && colorMatch;
+    if (filteredData.value.excludeZeroQuantity) {
+      excludeZero = item.quantity !== 0 ? true : false;
+    }
+
+    return sizeMatch && colorMatch && excludeZero;
   });
 };
 watch([filteredData, InventoryListRecords], filterSelectedShopDetailList, {
   deep: true,
 });
 
-watch(filteredData, (newValue) => {
+watch(filteredData, async (newValue) => {
   if (!newValue) {
     filteredShopDetailList.value = InventoryListRecords.value;
   }
 });
+const downloadCSVData = () => {
+  const selectedColumnsData = InventoryListColumn.filter(
+    (col) => col.name !== 'productImage'
+  );
+  const content = [selectedColumnsData.map((col) => wrapCsvValue(col.label))]
+    .concat(
+      filteredShopDetailList.value.map((row: any) =>
+        selectedColumnsData
+          .map((col) =>
+            wrapCsvValue(
+              typeof col.field === 'function'
+                ? col.field(row)
+                : row[col.field === void 0 ? col.name : col.field],
+              col.format,
+              row
+            )
+          )
+          .join(',')
+      )
+    )
+    .join('\r\n');
+
+  const status = exportFile(
+    `Inventory-Management-${moment().format('DD/MM/YYYY')}.csv`,
+    content,
+    'text/csv'
+  );
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning',
+    });
+  }
+};
+
+async function convertArrayToPdfData(array: IInventoryListResponse[]) {
+  const tableStuff = [];
+  const headerRow = [
+    'Article',
+    'Shop Name',
+    'Size',
+    'Retail Price',
+    'Available Quantity',
+  ];
+  tableStuff.push(headerRow);
+
+  array.forEach((item: IInventoryListResponse) => {
+    const row = [
+      { text: item.productName },
+      { text: item.shopName },
+      { text: item.size },
+      { text: item.retailPrice },
+      { text: item.quantity },
+    ];
+    tableStuff.push(row);
+  });
+  return tableStuff;
+}
+async function downloadPdfData() {
+  const fileTitle = 'Inventory Management';
+  const myFileName = `Inventory-Management-${moment().format(
+    'DD/MM/YYYY'
+  )}.pdf`;
+
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    title: fileTitle,
+  });
+}
 </script>

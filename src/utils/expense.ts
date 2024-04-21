@@ -4,7 +4,7 @@ export const expenseColumns: QTableColumn<IExpenses>[] = [
   {
     name: 'expenseTypeName',
     required: true,
-    label: 'Expense Name',
+    label: 'Expense',
     align: 'left',
     field: (row) => row.expenseTypeName,
   },

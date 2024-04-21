@@ -257,7 +257,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 200,
+  rowsPerPage: 20000,
   rowsNumber: 0,
 });
 onMounted(async () => {

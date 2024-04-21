@@ -14,13 +14,13 @@ export interface IVariantStocks {
   stockQuantity: number;
 }
 export interface IInventoryFilterSearch extends IBaseInventoryFilterSearch {
-  ShopId: number | null;
+  ShopId?: string | null;
 }
 export interface IBaseInventoryFilterSearch {
   ProductId: number | null;
   ProductCode: string | null;
   keyword: string | null;
-  categoryName: string;
+  categoryName: string | null;
   CategoryId: number | null;
 }
 export interface IInventoryFilterSearchWithShopId

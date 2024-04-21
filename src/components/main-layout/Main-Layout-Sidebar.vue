@@ -158,10 +158,6 @@ const essentialLinks = [
         title: EUserModules.SaleAndReturnManagement,
         path: '/shop-sale',
       },
-      {
-        title: EUserModules.SaleAndReturnManagement,
-        path: '/expenses',
-      },
     ],
   },
 

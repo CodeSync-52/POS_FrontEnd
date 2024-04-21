@@ -192,7 +192,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 200,
+  rowsPerPage: 200000,
   rowsNumber: 0,
 });
 const isLoading = ref(false);

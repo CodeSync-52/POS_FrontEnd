@@ -156,7 +156,7 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
   {
     name: 'expenseName',
     required: true,
-    label: 'Expense Name',
+    label: 'Expense',
     align: 'left',
     field: (row) => row.expenseName,
   },
