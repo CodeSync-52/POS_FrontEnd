@@ -273,7 +273,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 2000,
+  rowsPerPage: 2000000,
   rowsNumber: 0,
 });
 const filteredData = ref<{
