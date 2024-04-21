@@ -276,7 +276,7 @@ const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 200,
+  rowsPerPage: 200000,
   rowsNumber: 0,
 });
 const selectedShop = ref<{
@@ -394,7 +394,7 @@ const getShopList = async () => {
   try {
     const response = await GetShopList({
       PageNumber: 1,
-      PageSize: 200,
+      PageSize: 200000,
     });
     if (response.data) {
       shopData.value = response.data.items;

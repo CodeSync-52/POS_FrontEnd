@@ -25,7 +25,25 @@
       label="Receipt Management"
       to="/receipt"
     />
+
+    <q-btn
+      unelevated
+      color=""
+      v-if="
+        authStore.loggedInUser?.rolePermissions.roleName ===
+        EUserRoles.SuperAdmin.toLowerCase()
+      "
+      icon="attach_money"
+      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      label="Expense"
+      to="/expenses"
+    />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { EUserRoles } from 'src/interfaces';
+import { useAuthStore } from 'src/stores';
+
+const authStore = useAuthStore();
+</script>

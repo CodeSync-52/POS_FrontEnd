@@ -91,6 +91,12 @@
           color="btn-primary"
           @change="filterSelectedShopDetailList"
         />
+        <q-checkbox
+          v-model="filteredData.excludeZeroQuantity"
+          color="btn-primary"
+          label="Exclude Zero Quantity"
+          @change="filterSelectedShopDetailList"
+        />
       </div>
       <q-table
         :columns="InventoryListColumn"
@@ -296,15 +302,18 @@ const inventoryDetailList = async (data?: {
 const filteredData = ref<{
   size: string;
   color: string;
+  excludeZeroQuantity: boolean;
 }>({
   size: '',
   color: '',
+  excludeZeroQuantity: false,
 });
 const filterSelectedShopDetailList = () => {
   filteredShopDetailList.value = selectedShopDetailRecords.value.filter(
     (item) => {
       let sizeMatch = true;
       let colorMatch = true;
+      let excludeZero = true;
       if (filteredData.value.size) {
         sizeMatch =
           item.size
@@ -317,7 +326,12 @@ const filterSelectedShopDetailList = () => {
             ?.toLowerCase()
             .includes(filteredData.value.color.toLowerCase()) || false;
       }
-      return sizeMatch && colorMatch;
+
+      if (filteredData.value.excludeZeroQuantity) {
+        excludeZero = item.quantity !== 0 ? true : false;
+      }
+
+      return sizeMatch && colorMatch && excludeZero;
     }
   );
 };

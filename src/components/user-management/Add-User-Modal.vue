@@ -407,7 +407,7 @@ async function getCustomerAndShopListOption() {
   try {
     const response = await GetShopList({
       PageNumber: 1,
-      PageSize: 200,
+      PageSize: 2000,
     });
     if (response.data) {
       ShopList.value = response.data.items;

@@ -92,6 +92,12 @@
           color="btn-primary"
           @change="filterSelectedShopDetailList"
         />
+        <q-checkbox
+          v-model="filteredData.excludeZeroQuantity"
+          color="btn-primary"
+          label="Exclude Zero Quantity"
+          @change="filterSelectedShopDetailList"
+        />
       </div>
       <q-table
         :columns="InventoryListColumn"
@@ -166,7 +172,7 @@ const InventoryPagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 200,
+  rowsPerPage: 20000,
   rowsNumber: 0,
 });
 const productSelectInputRef = ref<QSelect | null>(null);
@@ -177,20 +183,25 @@ const filterSearch = ref<IInventoryFilterSearch>({
   ProductCode: null,
   ShopId: null,
   keyword: null,
+  CategoryId: null,
+  categoryName: null,
 });
 const filteredShopDetailList = ref<IInventoryListResponse[]>([]);
 const filteredData = ref<{
   size: string;
   color: string;
+  excludeZeroQuantity: boolean;
 }>({
   size: '',
   color: '',
+  excludeZeroQuantity: false,
 });
 
 const filterSelectedShopDetailList = () => {
   filteredShopDetailList.value = selectedShopDetailList.value.filter((item) => {
     let sizeMatch = true;
     let colorMatch = true;
+    let excludeZero = true;
 
     if (filteredData.value.size) {
       sizeMatch =
@@ -206,7 +217,11 @@ const filterSelectedShopDetailList = () => {
           .includes(filteredData.value.color.toLowerCase()) || false;
     }
 
-    return sizeMatch && colorMatch;
+    if (filteredData.value.excludeZeroQuantity) {
+      excludeZero = item.quantity !== 0 ? true : false;
+    }
+
+    return sizeMatch && colorMatch && excludeZero;
   });
 };
 
