@@ -753,7 +753,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
           filterSearch: filterSearch.value,
         });
         if (res.type === 'Success' && res.data.inventoryDetails.length > 0) {
-                    const selectedProduct = selectedInventoryData.value.find((record) => {
+          const selectedProduct = selectedInventoryData.value.find((record) => {
             return (
               res.data.inventoryDetails[0].inventoryId === record.inventoryId
             );
@@ -764,7 +764,10 @@ const handleKeyPress = async (e: KeyboardEvent) => {
             selectedProduct.quantity > selectedProduct.dispatchQuantity
           ) {
             selectedProduct.dispatchQuantity += 1;
-          } else if (!selectedProduct && res.data.inventoryDetails[0].quantity > 0) {
+          } else if (
+            !selectedProduct &&
+            res.data.inventoryDetails[0].quantity > 0
+          ) {
             selectedInventoryData.value.unshift({
               ...res.data.inventoryDetails[0],
               dispatchQuantity: 1,

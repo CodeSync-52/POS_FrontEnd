@@ -210,12 +210,12 @@ onMounted(() => {
   window.addEventListener('keypress', handleGlobalKeypress);
 });
 function handleGlobalKeypress(event: KeyboardEvent) {
-    const idList = selected.value.map((item) => item.productId);
+  const idList = selected.value.map((item) => item.productId);
   if (
     event.key === 'Enter' &&
     filteredRows.value.length > selected.value.length
   ) {
-        const firstUnselectedItem = filteredRows.value.findIndex(
+    const firstUnselectedItem = filteredRows.value.findIndex(
       (item) => !idList.includes(item.productId)
     );
     if (firstUnselectedItem !== -1) {
@@ -227,9 +227,9 @@ function handleGlobalKeypress(event: KeyboardEvent) {
   }
 }
 function handleSelectFilteredArticle(event: KeyboardEvent) {
-    event.stopPropagation();
+  event.stopPropagation();
   if (filter.value !== '' && filteredRows.value.length > 0) {
-        const oldIdList = selected.value.map((item) => item.productId);
+    const oldIdList = selected.value.map((item) => item.productId);
     const arrToAdd = filteredRows.value.filter(
       (item) => !oldIdList.includes(item.productId)
     );
@@ -238,7 +238,7 @@ function handleSelectFilteredArticle(event: KeyboardEvent) {
   }
   setTimeout(() => {
     emit('selected-data', selectedArticles.value);
-      }, 300);
+  }, 300);
 }
 
 onUnmounted(() => {
@@ -249,7 +249,7 @@ watch(props, setFilteredData, {
   deep: true,
 });
 const handleSave = () => {
-    emit('selected-data', selectedArticles.value);
+  emit('selected-data', selectedArticles.value);
 };
 const handlePagination = (newVal: Omit<IPagination, 'rowsNumber'>) => {
   const selectedPagination = {
