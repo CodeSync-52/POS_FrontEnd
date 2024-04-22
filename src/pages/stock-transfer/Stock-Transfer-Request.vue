@@ -154,7 +154,7 @@
                 @click="handleAcceptOrRejectStrPopup(props.row, false)"
               >
                 <q-tooltip class="bg-green" :offset="[10, 10]">
-                  Accept GRN
+                  Accept STR
                 </q-tooltip>
               </q-btn>
               <q-btn
@@ -173,7 +173,7 @@
                 @click="handleAcceptOrRejectStrPopup(props.row, true)"
               >
                 <q-tooltip class="bg-red" :offset="[10, 10]">
-                  Reject GRN
+                  Reject STR
                 </q-tooltip>
               </q-btn>
               <q-btn

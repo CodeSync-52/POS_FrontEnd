@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="row justify-between items-center mb-2">
         <span class="text-lg font-medium">
-          {{ isReject ? 'Reject Grn' : 'Accept Grn' }}</span
+          {{ isReject ? 'Reject STR' : 'Accept STR' }}</span
         >
         <span
           ><q-btn

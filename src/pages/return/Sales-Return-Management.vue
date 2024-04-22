@@ -883,12 +883,13 @@ const handlePagination = (selectedPagination: IPagination) => {
   inventoryDetailList();
 };
 const handleSelectedData = (payload: IInventoryListResponse[]) => {
+  debugger
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
       selectedInventoryData.value.push({
         ...item,
-        dispatchQuantity: 0,
+        dispatchQuantity: 1,
         discount: 0,
         isReturn: false,
       });
@@ -1010,11 +1011,20 @@ const inventoryDetailList = async (data?: {
 };
 
 const handleAddShopSale = async () => {
+  debugger
   receiptItems.value = selectedInventoryData.value;
   if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
     $q.notify({
       message:
         'Cannot Complete this sale. One or more items have a retailPrice of 0.',
+      type: 'warning',
+    });
+    return;
+  }
+  if (selectedInventoryData.value.some((record) => record.quantity <= 0 && !record.isReturn)) {
+    $q.notify({
+      message:
+        'Cannot Complete this sale. One or more items have a Available Quantity 0. Either make it return or delete it',
       type: 'warning',
     });
     return;
