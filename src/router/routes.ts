@@ -170,6 +170,7 @@ export const routeList = [
       module: EUserModules.InventoryManagement,
     },
   },
+
   {
     path: '/goods-receipt',
     component: () => import('src/pages/goods-receipt/Good-Receipt-Notes.vue'),

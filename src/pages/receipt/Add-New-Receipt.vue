@@ -209,8 +209,15 @@
           class="w-[32%]"
           :readonly="isReceiptPreview"
         />
-
         <div class="flex items-center gap-2">
+          <q-btn
+            v-if="isEdit && isCommentEntered"
+            unelevated
+            label="Update Comment"
+            color="btn-primary hover:bg-btn-cancel-hover"
+            @click="updateReceiptComment"
+          />
+
           <q-btn
             unelevated
             :label="isReceiptPreview ? 'Close' : 'Go Back'"
@@ -279,6 +286,7 @@ import {
   CreatePurchaseLineItem,
   DeletePurchaseLineItem,
   GetPurchaseDetail,
+  updateReceiptCommentApi,
 } from 'src/services';
 import {
   EActionPermissions,
@@ -295,6 +303,7 @@ import {
   ITableItems,
   downloadPdf,
   isPosError,
+  makeApiCall,
 } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
@@ -303,6 +312,10 @@ import OutsideClickContainer from 'src/components/common/Outside-Click-Container
 import { useAuthStore } from 'src/stores';
 import moment from 'moment';
 import { processTableItems } from 'src/utils/process-table-items';
+const isCommentEntered = computed(() => {
+  return addNewReceipt.value.comments.trim() !== '';
+});
+
 const authStore = useAuthStore();
 const route = useRoute();
 const options = ref<IUserResponse[]>([]);
@@ -544,6 +557,30 @@ const saveNewReceipt = async () => {
   }
   isAddingPurchase.value = false;
 };
+const updateReceiptComment = async () => {
+  try {
+    const res = await updateReceiptCommentApi({
+      purchaseId: Number(selectedId.value),
+      comments: addNewReceipt.value.comments,
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: 'Comment updated successfully',
+        type: 'positive',
+      });
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Updating Comments';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+};
+
 const isEdit = ref(false);
 // const receiptComment = ref('');
 const isFetchingArticleList = ref(false);
