@@ -112,7 +112,7 @@ import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Ex
 import { processTableItems } from 'src/utils/process-table-items';
 import { GetArticleList } from 'src/services';
 import { GetHOPurchaseDetailReport, wrapCsvValue } from 'src/services/reports';
-import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
+import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { HOArticleSaleDetailReportColumn } from 'src/utils/reports';
 import { onUnmounted, ref } from 'vue';
 const tableItems = ref<ITableItems[][]>([]);
@@ -259,7 +259,7 @@ async function convertArrayToPdfData(array: IHOSaleDetailReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'Article',
       content: filterSearch?.value.articleData?.name,
@@ -285,7 +285,7 @@ async function downloadPdfData() {
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
     title: fileTitle,
   });
 }

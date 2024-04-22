@@ -20,8 +20,6 @@ export interface IWholeSalesFilter {
   customerGroupId: null | number;
 }
 export interface IWholeSalesDetailInfo {
-  createdBy: string;
-  createdById: number;
   createdDate: string;
   discount: number;
   fullName: string;
@@ -31,12 +29,12 @@ export interface IWholeSalesDetailInfo {
   outStandingBalance: number;
   totalAmount: number;
   totalQuantity: number;
-  updatedBy: null | number;
-  updatedDate: string;
   userId: number | null;
   wholeSaleDetails: IWholeSaleProductsInfo[];
   wholeSaleStatus: string;
   comments: string | null;
+  phone: string | null;
+  address: string | null;
 }
 
 export interface IWholeSaleProductsInfo extends IProductIdWithQuantity {

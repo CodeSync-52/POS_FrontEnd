@@ -234,7 +234,7 @@ import {
 } from 'src/interfaces';
 import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
 import { useAuthStore } from 'src/stores';
-import { ITableHeaders, ITableItems, downloadPdf, isPosError } from 'src/utils';
+import { IPdfHeaders, ITableItems, downloadPdf, isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
 import { wrapCsvValue } from 'src/services/reports';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
