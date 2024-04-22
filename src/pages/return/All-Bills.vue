@@ -15,7 +15,7 @@
       :options="billStatusOptionList"
       map-options
       popup-content-class="!max-h-[200px]"
-      label="Bill Status"
+      label="Status"
       :disable="titleAction === 'Hold Bills'"
       option-label="name"
       option-value="statusId"

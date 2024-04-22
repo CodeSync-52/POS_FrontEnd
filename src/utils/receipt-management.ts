@@ -31,7 +31,7 @@ export const receiptColumn: QTableColumn<IReceiptData>[] = [
   {
     name: 'purchaseStatus',
     required: true,
-    label: 'Purchase Status',
+    label: 'Status',
     align: 'left',
     field: (row) => row.purchaseStatus,
   },

@@ -38,7 +38,7 @@ export const GrnTableColumn: QTableColumn<IGrnRecord>[] = [
   {
     name: 'grnStatus',
     required: true,
-    label: 'Grn Status',
+    label: 'Status',
     align: 'left',
     field: (row) => row.grnStatus,
   },

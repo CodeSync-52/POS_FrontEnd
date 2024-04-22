@@ -737,7 +737,7 @@ async function downloadPdfData() {
       content: Number(route.params.id),
     },
     {
-      heading: 'Purchased Status',
+      heading: 'Status',
       content: addNewReceipt.value.purchaseStatus,
     },
     {

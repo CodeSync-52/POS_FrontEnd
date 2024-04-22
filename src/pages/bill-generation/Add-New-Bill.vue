@@ -836,7 +836,7 @@ async function downloadPdfData() {
       content: Number(router.currentRoute.value.params.id),
     },
     {
-      heading: 'Bill Status',
+      heading: 'Status',
       content: billGenerationDetailsInfoData.value.billStatus,
     },
     {

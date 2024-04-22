@@ -68,7 +68,7 @@
         :options="wholeSaleStatusOptions"
         style="min-width: 200px"
         v-model="filterSearch.wholeSaleStatus"
-        label="Wholesale Status"
+        label="Status"
         color="btn-primary"
       />
       <q-input
