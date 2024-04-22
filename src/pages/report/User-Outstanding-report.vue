@@ -178,6 +178,17 @@ const getUserOutStandingBalanceReportList = async () => {
       outStandingReportData.value = res.data?.list;
       tableItems.value = await convertArrayToPdfData(res.data?.list);
     }
+    outStandingReportData.value.sort((a, b) => {
+      const userA = a.user.toUpperCase();
+      const userB = b.user.toUpperCase();
+      if (userA < userB) {
+        return -1;
+      }
+      if (userA > userB) {
+        return 1;
+      }
+      return 0;
+    });
   } catch (e) {
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {

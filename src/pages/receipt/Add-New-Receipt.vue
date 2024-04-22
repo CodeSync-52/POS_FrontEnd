@@ -79,7 +79,7 @@
           :columns="selectedArticleColumn"
           row-key="name"
           v-model:pagination="pagination"
-          :rows-per-page-options="[0]"
+          hide-pagination
         >
           <template v-slot:body-cell-image="props">
             <q-td :props="props" class="!h-[71px]">
@@ -189,7 +189,7 @@
             <q-tr :props="props">
               <q-td colspan="3" />
               <q-td>
-                <div>
+                <div class="font-bold">
                   Total:
                   {{ addNewReceiptTotalQuantity }}
                 </div>

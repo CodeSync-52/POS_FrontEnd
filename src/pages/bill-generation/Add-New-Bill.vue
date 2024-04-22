@@ -304,6 +304,7 @@
             v-model:pagination="pagination"
             :rows="billGenerationDetailsInfoData.productList"
             :columns="BillGenerationDetailsInfoColumn"
+            hide-pagination=""
           >
             <template v-slot:body-cell-amount="props">
               <q-td :props="props" class="flex items-center !h-[70px]">
@@ -380,7 +381,7 @@
               <q-tr :props="props">
                 <q-td colspan="4" />
                 <q-td>
-                  <div>
+                  <div class="font-bold">
                     Total:
                     {{
                       BillGenerationDetailsInfoTotalAmount -

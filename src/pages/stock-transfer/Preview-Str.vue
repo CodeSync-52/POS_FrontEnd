@@ -36,19 +36,6 @@
             dense
             disable
             outlined
-            :loading="isLoading"
-            maxlength="250px"
-            v-model="selectedGrnData.quantity"
-            label="Total Quantity"
-            lazy-rules
-            color="btn-primary"
-          />
-        </div>
-        <div class="col-4">
-          <q-input
-            dense
-            disable
-            outlined
             maxlength="250"
             :loading="isLoading"
             v-model="selectedGrnData.grnStatus"
@@ -204,8 +191,8 @@
         </div>
       </div>
     </q-card-section>
-    <div class="text-end text-[16px] px-4 mb-4">
-      Grand Total: <span class="font-bold">{{ selectedGrnData.quantity }}</span>
+    <div class="text-end text-[16px] px-4 mb-4 font-bold">
+      Grand Total: <span>{{ selectedGrnData.quantity }}</span>
     </div>
 
     <q-card-actions align="right">
