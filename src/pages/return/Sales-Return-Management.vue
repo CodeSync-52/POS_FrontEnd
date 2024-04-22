@@ -1010,7 +1010,6 @@ const inventoryDetailList = async (data?: {
 };
 
 const handleAddShopSale = async () => {
-  debugger;
   receiptItems.value = selectedInventoryData.value;
   if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
     $q.notify({
