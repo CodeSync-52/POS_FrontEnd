@@ -1226,7 +1226,7 @@ async function downloadPdfData() {
       content: Number(router.currentRoute.value.params.id),
     },
     {
-      heading: 'Sale Status',
+      heading: 'Status',
       content: selectedSaleRecord.value.wholeSaleStatus,
     },
     {

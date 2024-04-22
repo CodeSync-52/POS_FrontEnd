@@ -39,7 +39,7 @@ export const shopColumn: QTableColumn<IShopResponse>[] = [
   {
     name: 'status',
     required: true,
-    label: 'Shop Status',
+    label: 'Status',
     align: 'left',
     field: (row) => row.status,
   },

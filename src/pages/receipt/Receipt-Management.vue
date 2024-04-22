@@ -68,7 +68,7 @@
         style="min-width: 200px"
         v-model="filterSearch.purchaseStatus"
         :options="purchaseStatusOptions"
-        label="Purchased Status"
+        label="Status"
         color="btn-primary"
       />
       <q-input

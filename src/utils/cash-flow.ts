@@ -29,7 +29,7 @@ export const cashFlowColumn: QTableColumn<ICashFlowRecords>[] = [
   },
   {
     name: 'cashFlowStatus',
-    label: 'Cash Flow Status',
+    label: 'Status',
     align: 'left',
     field: (row) => row.cashFlowStatus,
   },

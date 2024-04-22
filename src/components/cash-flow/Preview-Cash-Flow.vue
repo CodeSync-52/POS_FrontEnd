@@ -28,7 +28,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            label="Cash Flow Status"
+            label="Status"
             v-model="previewCashFlow.cashFlowStatus"
             outlined
             maxlength="250"
@@ -213,7 +213,7 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
       content: comments || 'N/A',
     },
     {
-      heading: 'CashFlow Status',
+      heading: 'Status',
       content: cashFlowStatus,
     },
   ];

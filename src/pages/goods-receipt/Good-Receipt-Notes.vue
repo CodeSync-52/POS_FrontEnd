@@ -30,7 +30,7 @@
         :options="grnStatusOptionList"
         map-options
         popup-content-class="!max-h-[200px]"
-        label="Grn Status"
+        label="Status"
         option-label="name"
         option-value="statusId"
         color="btn-primary"

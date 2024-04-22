@@ -53,7 +53,7 @@
         style="min-width: 200px"
         v-model="filterSearch.billStatus"
         :options="billStatusOptions"
-        label="Bill Status"
+        label="Status"
         color="btn-primary"
       />
       <q-input

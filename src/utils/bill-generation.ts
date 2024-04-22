@@ -28,7 +28,7 @@ export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
   },
   {
     name: 'recordStatus',
-    label: 'Record Status',
+    label: 'Status',
     align: 'left',
     field: (row) => row.billStatus,
   },

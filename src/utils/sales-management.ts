@@ -42,7 +42,7 @@ export const salesManagementColumn: QTableColumn<IWholeSalesData>[] = [
   },
   {
     name: 'wholesaleStatus',
-    label: 'Wholesale Status',
+    label: 'Status',
     field: (row) => row.wholeSaleStatus,
     align: 'left',
   },

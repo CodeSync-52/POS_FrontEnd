@@ -35,7 +35,7 @@
         use-input
         v-model="filterSearch.Status"
         :options="shopStatusOptions"
-        label="Shop Status"
+        label="Status"
         color="btn-primary"
       />
 
