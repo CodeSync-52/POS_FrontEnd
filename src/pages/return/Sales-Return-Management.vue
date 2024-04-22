@@ -883,7 +883,6 @@ const handlePagination = (selectedPagination: IPagination) => {
   inventoryDetailList();
 };
 const handleSelectedData = (payload: IInventoryListResponse[]) => {
-  debugger;
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
