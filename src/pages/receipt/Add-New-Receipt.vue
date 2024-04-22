@@ -79,6 +79,7 @@
           :columns="selectedArticleColumn"
           row-key="name"
           v-model:pagination="pagination"
+          :rows-per-page-options="[0]"
         >
           <template v-slot:body-cell-image="props">
             <q-td :props="props" class="!h-[71px]">
