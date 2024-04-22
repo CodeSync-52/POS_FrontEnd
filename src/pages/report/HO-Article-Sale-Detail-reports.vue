@@ -108,7 +108,7 @@ import { date, exportFile, QSelect, useQuasar } from 'quasar';
 import { IArticleData, IHOSaleDetailReportData } from 'src/interfaces';
 import { GetArticleList } from 'src/services';
 import { GetHOSaleDetailReport, wrapCsvValue } from 'src/services/reports';
-import { downloadPdf, isPosError, ITableHeaders, ITableItems } from 'src/utils';
+import { downloadPdf, isPosError, IPdfHeaders, ITableItems } from 'src/utils';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOArticleSaleDetailReportColumn } from 'src/utils/reports';
@@ -228,7 +228,7 @@ async function convertArrayToPdfData(array: IHOSaleDetailReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'Product',
       content: filterSearch.value.ProductId?.name,
@@ -254,7 +254,7 @@ async function downloadPdfData() {
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
     title: fileTitle,
   });
 }

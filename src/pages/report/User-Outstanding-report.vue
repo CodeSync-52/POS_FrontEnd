@@ -88,7 +88,7 @@ import { ICustomerListResponse, IOutStandingReportData } from 'src/interfaces';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { GetCustomerGroupList } from 'src/services';
 import { GetUserOutstandingReport, wrapCsvValue } from 'src/services/reports';
-import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
+import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { outStandingReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -206,7 +206,7 @@ async function convertArrayToPdfData(array: IOutStandingReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'User Category',
       content: filterSearch.value.customerGroup?.name,
@@ -220,7 +220,7 @@ async function downloadPdfData() {
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
     title: fileTitle,
   });
 }

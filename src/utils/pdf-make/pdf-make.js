@@ -3,14 +3,16 @@ import { pdfFont } from './pdf-Font';
 pdfMake.vfs = pdfFont;
 
 export const downloadPdf = async ({
-  tableHeaders = [],
+  pdfHeaders = [],
   tableData = [],
+  pdfFooters = [],
   filename = 'data.pdf',
   title = '',
 }) => {
   let content = [];
   let currentHeaders = [];
-  tableHeaders.forEach((header, i) => {
+  let currentFooters = [];
+  pdfHeaders.forEach((header, i) => {
     if (i % 2 === 0) {
       currentHeaders = {
         marginTop: 5,
@@ -42,8 +44,8 @@ export const downloadPdf = async ({
           },
         ],
       };
-      if (tableHeaders[i + 1] !== undefined) {
-        const item = tableHeaders[i + 1];
+      if (pdfHeaders[i + 1] !== undefined) {
+        const item = pdfHeaders[i + 1];
         currentHeaders.columns.push({
           width: '*',
           alignment: 'right',
@@ -103,6 +105,71 @@ export const downloadPdf = async ({
       },
     });
   }
+
+  pdfFooters.forEach((footer, i) => {
+    if (i % 2 === 0) {
+      currentFooters = {
+        marginTop: 5,
+        marginBottom: 5,
+        columns: [
+          {
+            width: '*',
+            alignemnt: 'right',
+            stack: [
+              {
+                columns: [
+                  {
+                    text: footer.heading ? footer.heading + ': ' : '',
+                    bold: true,
+                    width: 'auto',
+                    fontSize: footer?.styleContent ? 18 : 12,
+                    bold: footer?.styleContent ? true : false,
+                  },
+                  {
+                    text: footer.content,
+                    width: 'auto',
+                    marginLeft: 3,
+                    fontSize: footer?.styleContent ? 18 : 12,
+                    bold: footer?.styleContent ? true : false,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+      if (pdfFooters[i + 1] !== undefined) {
+        const item = pdfFooters[i + 1];
+        currentFooters.columns.push({
+          width: '*',
+          alignment: 'right',
+          stack: [
+            {
+              columns: [
+                {
+                  alignment: 'right',
+                  text: item.heading ? item.heading + ': ' : '',
+                  width: '*',
+                  marginRight: 3,
+                  fontSize: item?.styleContent ? 18 : 12,
+                  bold: item?.styleContent ? true : false,
+                },
+                {
+                  alignment: 'right',
+                  text: item.content,
+                  width: 'auto',
+                  fontSize: item?.styleContent ? 18 : 12,
+                  bold: item?.styleContent ? true : false,
+                },
+              ],
+            },
+          ],
+        });
+      }
+      content.push(currentFooters);
+      currentFooters = {};
+    }
+  });
   //const docData = { content };
   // if (title !== '') {
   //   docData.content.unshift({

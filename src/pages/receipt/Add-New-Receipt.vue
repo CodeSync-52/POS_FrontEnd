@@ -289,7 +289,13 @@ import {
   IUserResponse,
 } from 'src/interfaces';
 import { CanceledError } from 'axios';
-import { ITableHeaders, ITableItems, downloadPdf, isPosError } from 'src/utils';
+import {
+  IPdfFooters,
+  IPdfHeaders,
+  ITableItems,
+  downloadPdf,
+  isPosError,
+} from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
 import { selectedArticleColumn } from 'src/utils';
@@ -453,11 +459,11 @@ const addNewReceipt = ref<IAddNewReceipt>({
   userDiscount: 0,
   productList: [],
   createdDate: '',
-  createdBy: '',
   userName: '',
   purchaseStatus: '',
   comments: '',
 });
+
 watch(addNewReceipt.value, (newVal: IAddNewReceipt) => {
   const selectedUser = UserList.value.find(
     (row) => newVal.userId === row.userId
@@ -593,7 +599,6 @@ const tableItems = ref<ITableItems[][]>([]);
 const getReceiptDataFromApi = async (selectedItemId: string | number) => {
   GetPurchaseDetail(selectedItemId).then(async (res) => {
     addNewReceipt.value.userId = res.data.userId;
-    addNewReceipt.value.createdBy = res.data.createdBy ?? '';
     addNewReceipt.value.userName = res.data.fullName;
     addNewReceipt.value.userOutstandingBalance = res.data.outStandingBalance;
     addNewReceipt.value.createdDate = res.data.createdDate;
@@ -731,7 +736,7 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'Receipt Id',
       content: Number(route.params.id),
@@ -752,12 +757,21 @@ async function downloadPdfData() {
   const tableDataWithImage: ITableItems[][] = await processTableItems(
     tableItems.value
   );
+
+  const footers: IPdfFooters[] = [
+    {
+      heading: 'Comments',
+      content: addNewReceipt.value.comments,
+    },
+  ];
+
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
+    pdfFooters: footers,
     title: fileTitle,
   });
 }

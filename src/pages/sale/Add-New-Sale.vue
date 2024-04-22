@@ -511,7 +511,8 @@ import {
   IUserResponse,
 } from 'src/interfaces';
 import {
-  ITableHeaders,
+  IPdfFooters,
+  IPdfHeaders,
   ITableItems,
   downloadPdf,
   isPosError,
@@ -531,8 +532,6 @@ import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 const selectedSaleRecord = ref<IWholeSalesDetailInfo>({
-  createdBy: '',
-  createdById: 0,
   createdDate: '',
   discount: 0,
   fullName: '',
@@ -540,8 +539,8 @@ const selectedSaleRecord = ref<IWholeSalesDetailInfo>({
   outStandingBalance: 0,
   totalAmount: 0,
   totalQuantity: 1,
-  updatedBy: null,
-  updatedDate: '',
+  phone: '',
+  address: '',
   userId: null,
   wholeSaleDetails: [],
   wholeSaleStatus: '',
@@ -950,7 +949,7 @@ const saleGenerationTotalAmount = computed(() => {
   if (action.value === 'Edit') {
     return selectedSaleRecord.value.wholeSaleDetails.reduce(
       (total: number, row: IWholeSaleProductsInfo) => {
-        return total + row.quantity * row.unitWholeSalePrice;
+        return total + Number(row.quantity) * row.unitWholeSalePrice;
       },
       0
     );
@@ -1008,9 +1007,6 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
         selectedSaleRecord.value.createdDate = moment(
           res.data.createdDate
         ).format('YYYY-MM-DD');
-        selectedSaleRecord.value.updatedDate = moment(
-          res.data.updatedDate
-        ).format('DD/MM/YYYY');
         selectedUserDiscount.value = UserList.value.find(
           (user) => selectedSaleRecord.value.userId === user.userId
         )?.discount;
@@ -1220,28 +1216,40 @@ async function convertArrayToPdfData(
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'Sale Id',
       content: Number(router.currentRoute.value.params.id),
+    },
+    {
+      content: selectedSaleRecord.value.fullName,
     },
     {
       heading: 'Status',
       content: selectedSaleRecord.value.wholeSaleStatus,
     },
     {
-      content: selectedSaleRecord.value.fullName,
-    },
-    {
-      heading: 'Outstanding Balance',
-      content: selectedSaleRecord.value.outStandingBalance,
-      styleContent: true,
+      content: selectedSaleRecord.value.phone?.toString(),
     },
     {
       heading: 'Date',
       content: moment(selectedSaleRecord?.value?.createdDate).format(
         'DD/MM/YYYY'
       ),
+    },
+    {
+      content: selectedSaleRecord.value.address?.toString(),
+    },
+  ];
+
+  const footers: IPdfFooters[] = [
+    {
+      heading: 'Comments: ',
+      content: selectedSaleRecord.value.comments,
+    },
+    {
+      heading: 'Outstanding Balance',
+      content: selectedSaleRecord.value.outStandingBalance,
     },
   ];
   const fileTitle = 'Sale';
@@ -1252,7 +1260,8 @@ async function downloadPdfData() {
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
+    pdfFooters: footers,
     title: fileTitle,
   });
 }

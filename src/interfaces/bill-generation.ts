@@ -19,6 +19,7 @@ export interface IBillData {
   totalAmount: number;
   claim: number;
   freight: number;
+  comments: string;
 }
 export interface IBillFilter {
   userId: null | number;

@@ -159,7 +159,7 @@ import ArticleCategoryModal from 'src/components/article-management/Article-Cate
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { GetArticleList, GetUsers } from 'src/services';
 import { GetHOStockReport, wrapCsvValue } from 'src/services/reports';
-import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
+import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOStockReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -385,7 +385,7 @@ async function convertArrayToPdfData(array: IHOStockReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'User',
       content: filterSearch.value.userData?.fullName,
@@ -410,7 +410,7 @@ async function downloadPdfData() {
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
     title: fileTitle,
   });
 }
