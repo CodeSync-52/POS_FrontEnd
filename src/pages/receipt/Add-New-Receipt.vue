@@ -303,7 +303,6 @@ import {
   ITableItems,
   downloadPdf,
   isPosError,
-  makeApiCall,
 } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { ISelectedArticleData } from 'src/interfaces';
