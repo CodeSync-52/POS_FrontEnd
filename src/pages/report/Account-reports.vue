@@ -102,7 +102,7 @@ import { date, exportFile, useQuasar } from 'quasar';
 import { IAccountReportData, IUserData, IUserResponse } from 'src/interfaces';
 import { GetUsers } from 'src/services';
 import { GetAccountReport, wrapCsvValue } from 'src/services/reports';
-import { downloadPdf, isPosError, ITableHeaders, ITableItems } from 'src/utils';
+import { downloadPdf, isPosError, IPdfHeaders, ITableItems } from 'src/utils';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { accountReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -269,7 +269,7 @@ async function convertArrayToPdfData(array: IAccountReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'User',
       content: filterSearch.value.user?.fullName,
@@ -295,7 +295,7 @@ async function downloadPdfData() {
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
     title: fileTitle,
   });
 }

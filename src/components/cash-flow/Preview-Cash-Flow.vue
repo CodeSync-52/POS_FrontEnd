@@ -102,7 +102,7 @@ import { onMounted, ref } from 'vue';
 import { ICashFlowRecords, IUserResponse } from '../../interfaces';
 import moment from 'moment';
 import {
-  ITableHeaders,
+  IPdfHeaders,
   ITableItems,
   downloadPdf,
 } from 'src/utils/pdf-make/pdf-make';
@@ -191,7 +191,7 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
       userOutstandingBalance = selectedUserData.outStandingBalance ?? 0;
     }
   }
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'Sender Username',
       content: targetUserName,
@@ -232,7 +232,7 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
   const myFileName = 'CashFlow.pdf';
   downloadPdf({
     filename: myFileName,
-    tableHeaders: headers,
+    pdfHeaders: headers,
     tableData: [],
     title: fileTitle,
   });

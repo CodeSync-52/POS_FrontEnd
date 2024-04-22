@@ -6,13 +6,20 @@ export type ITableItems =
     }
   | { image: string; [key: string]: any };
 
-export interface ITableHeaders {
+export interface IPdfHeaders {
+  heading?: string;
+  content: string | number | null | undefined;
+  styleContent?: boolean;
+}
+
+export interface IPdfFooters {
   heading?: string;
   content: string | number | null | undefined;
   styleContent?: boolean;
 }
 export interface IPdfPayload {
-  tableHeaders?: ITableHeaders[];
+  pdfHeaders?: IPdfHeaders[];
+  pdfFooters?: IPdfFooters[];
   tableData?: ITableItems[][];
   filename?: string;
   title?: string;

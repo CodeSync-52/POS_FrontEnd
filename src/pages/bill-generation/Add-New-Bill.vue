@@ -446,7 +446,7 @@ import {
   editBillGenerationRecordsColumn,
   isPosError,
   BillGenerationDetailsInfoColumn,
-  ITableHeaders,
+  IPdfHeaders,
 } from 'src/utils';
 import {
   GetBillDetail,
@@ -464,7 +464,11 @@ import {
   IBillProductList,
   IProductIdWithAmount,
 } from 'src/interfaces';
-import { ITableItems, downloadPdf } from 'src/utils/pdf-make/pdf-make';
+import {
+  IPdfFooters,
+  ITableItems,
+  downloadPdf,
+} from 'src/utils/pdf-make/pdf-make';
 import { processTableItems } from 'src/utils/process-table-items';
 const billAction = ref('');
 const router = useRouter();
@@ -484,6 +488,7 @@ const billGenerationDetailsInfoData = ref<IBillData>({
   totalAmount: 0,
   claim: 0,
   freight: 0,
+  comments: '',
 });
 const billGenerationData = ref<IBillDetail>({
   userId: 0,
@@ -831,7 +836,7 @@ async function convertArray(array: IBillProductList[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'Bill Id',
       content: Number(router.currentRoute.value.params.id),
@@ -851,12 +856,20 @@ async function downloadPdfData() {
   const tableDataWithImage: ITableItems[][] = await processTableItems(
     tableItems.value
   );
+
+  const footers: IPdfFooters[] = [
+    {
+      heading: 'Outstanding Balance',
+      content: billGenerationDetailsInfoData.value.outStandingBalance,
+    },
+  ];
   const fileTitle = 'Bill';
   const myFileName = 'Bill.pdf';
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
+    pdfFooters: footers,
     title: fileTitle,
   });
 }

@@ -210,7 +210,7 @@ import {
 } from 'src/interfaces';
 import { GetArticleList, GetCustomerGroupList, GetUsers } from 'src/services';
 import { GetHOArticleSaleReport, wrapCsvValue } from 'src/services/reports';
-import { isPosError, ITableHeaders, ITableItems, downloadPdf } from 'src/utils';
+import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOArticleReportColumn } from 'src/utils/reports';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
@@ -476,7 +476,7 @@ async function convertArrayToPdfData(array: IHOArticleReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
-  const headers: ITableHeaders[] = [
+  const headers: IPdfHeaders[] = [
     {
       heading: 'Purchase From User Category',
       content: filterSearch.value.purchaseFromCustomerGroup?.name,
@@ -521,7 +521,7 @@ async function downloadPdfData() {
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
-    tableHeaders: headers,
+    pdfHeaders: headers,
     title: fileTitle,
   });
 }
