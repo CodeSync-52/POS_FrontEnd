@@ -185,6 +185,7 @@
             align="left"
             :columns="selectedSalesArticleColumn"
             row-key="name"
+            hide-pagination
           >
             <template v-slot:body-cell-productImage="props">
               <q-td :props="props">
