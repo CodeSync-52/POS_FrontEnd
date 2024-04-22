@@ -163,6 +163,10 @@
               </q-td>
             </template>
           </q-table>
+          <div class="font-bold text-[16px] text-end">
+            Total:
+            {{ grandTotal }}
+          </div>
           <div class="flex justify-end gap-2">
             <q-btn
               label="Save"
@@ -239,6 +243,17 @@ const selectedShop = ref<{
 }>({
   fromShop: null,
   toShop: null,
+});
+const grandTotal = computed(() => {
+  return selectedInventoryData.value.reduce(
+    (total: number, row: IInventoryListResponseWithDispatchQuantity) => {
+      if (row.dispatchQuantity) {
+        return total + Number(row.dispatchQuantity);
+      }
+      return total;
+    },
+    0
+  );
 });
 const $q = useQuasar();
 const authStore = useAuthStore();
