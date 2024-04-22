@@ -883,7 +883,7 @@ const handlePagination = (selectedPagination: IPagination) => {
   inventoryDetailList();
 };
 const handleSelectedData = (payload: IInventoryListResponse[]) => {
-  debugger
+  debugger;
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
@@ -1011,7 +1011,7 @@ const inventoryDetailList = async (data?: {
 };
 
 const handleAddShopSale = async () => {
-  debugger
+  debugger;
   receiptItems.value = selectedInventoryData.value;
   if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
     $q.notify({
@@ -1021,7 +1021,11 @@ const handleAddShopSale = async () => {
     });
     return;
   }
-  if (selectedInventoryData.value.some((record) => record.quantity <= 0 && !record.isReturn)) {
+  if (
+    selectedInventoryData.value.some(
+      (record) => record.quantity <= 0 && !record.isReturn
+    )
+  ) {
     $q.notify({
       message:
         'Cannot Complete this sale. One or more items have a Available Quantity 0. Either make it return or delete it',
