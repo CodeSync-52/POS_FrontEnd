@@ -764,7 +764,10 @@ const handleKeyPress = async (e: KeyboardEvent) => {
             selectedProduct.quantity > selectedProduct.dispatchQuantity
           ) {
             selectedProduct.dispatchQuantity += 1;
-          } else if (!selectedProduct) {
+          } else if (
+            !selectedProduct &&
+            res.data.inventoryDetails[0].quantity > 0
+          ) {
             selectedInventoryData.value.unshift({
               ...res.data.inventoryDetails[0],
               dispatchQuantity: 1,

@@ -233,7 +233,8 @@ function handleSelectFilteredArticle(event: KeyboardEvent) {
     const arrToAdd = filteredRows.value.filter(
       (item) => !oldIdList.includes(item.productId)
     );
-    selected.value = [...selected.value, ...arrToAdd];
+    // selected.value = [...selected.value, ...arrToAdd];
+    selected.value.push(arrToAdd[0]);
   }
   setTimeout(() => {
     emit('selected-data', selectedArticles.value);
