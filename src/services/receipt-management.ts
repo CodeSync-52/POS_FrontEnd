@@ -1,5 +1,4 @@
 import { IAddNewReceipt, IGenericResponse, IReceiptData } from 'src/interfaces';
-import AddNewReceipt from 'src/pages/receipt/Add-New-Receipt.vue';
 import { makeApiCall } from 'src/utils';
 export const GetPurchaseList = async (
   {

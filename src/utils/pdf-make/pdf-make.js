@@ -7,7 +7,6 @@ export const downloadPdf = async ({
   tableData = [],
   pdfFooters = [],
   filename = 'data.pdf',
-  title = '',
 }) => {
   let content = [];
   let currentHeaders = [];
