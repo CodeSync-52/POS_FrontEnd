@@ -266,6 +266,7 @@ import {
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import CompleteCancelBillModal from 'src/components/return/Complete-Or-Cancel-Modal.vue';
+import { compileTemplate } from 'vue/compiler-sfc';
 const router = useRouter();
 const timeStamp = Date.now();
 const authStore = useAuthStore();
@@ -484,12 +485,14 @@ const handleCancelSale = async (id: number) => {
       type: 'negative',
     });
   }
-  showCancelBillModal.value = false;
+  showCancelBillModal.value = false;7
 };
 const calculateTotal = (columnName: keyof (typeof saleList.value)[0]) => {
-  return saleList.value.reduce(
+  const completedSales = saleList.value.filter(row => row.status === 'Completed');
+  return completedSales.reduce(
     (total, row) => total + Number(row[columnName]),
     0
   );
 };
+
 </script>
