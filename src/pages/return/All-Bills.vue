@@ -485,14 +485,16 @@ const handleCancelSale = async (id: number) => {
       type: 'negative',
     });
   }
-  showCancelBillModal.value = false;7
+  showCancelBillModal.value = false;
+  7;
 };
 const calculateTotal = (columnName: keyof (typeof saleList.value)[0]) => {
-  const completedSales = saleList.value.filter(row => row.status === 'Completed');
+  const completedSales = saleList.value.filter(
+    (row) => row.status === 'Completed'
+  );
   return completedSales.reduce(
     (total, row) => total + Number(row[columnName]),
     0
   );
 };
-
 </script>
