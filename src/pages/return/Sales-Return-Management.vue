@@ -1011,7 +1011,7 @@ const inventoryDetailList = async (data?: {
 };
 
 const handleAddShopSale = async () => {
-  isApiCall.value = true
+  isApiCall.value = true;
   receiptItems.value = selectedInventoryData.value;
   if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
     $q.notify({
@@ -1019,7 +1019,7 @@ const handleAddShopSale = async () => {
         'Cannot Complete this sale. One or more items have a retailPrice of 0.',
       type: 'warning',
     });
-    isApiCall.value = false
+    isApiCall.value = false;
     return;
   }
   if (
@@ -1031,7 +1031,8 @@ const handleAddShopSale = async () => {
       message:
         'Cannot Complete this sale. One or more items have a Available Quantity 0. Either make it return or delete it',
       type: 'warning',
-    });isApiCall.value = false
+    });
+    isApiCall.value = false;
     return;
   }
   try {
@@ -1078,7 +1079,8 @@ const handleAddShopSale = async () => {
       type: 'negative',
     });
   } finally {
-    isLoading.value = false;isApiCall.value = false
+    isLoading.value = false;
+    isApiCall.value = false;
   }
 };
 const handleHoldBill = async () => {

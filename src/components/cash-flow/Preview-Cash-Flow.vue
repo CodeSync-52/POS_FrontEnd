@@ -18,8 +18,28 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
+            v-model="previewCashFlow.sourceOutstandingBalance"
+            label="Receiver O/B"
+            outlined
+            maxlength="250"
+            dense
+            readonly
+          />
+        </div>
+        <div class="col-12 col-md-6">
+          <q-input
             v-model="previewCashFlow.targetUserName"
             label="Sender Username"
+            outlined
+            maxlength="250"
+            dense
+            readonly
+          />
+        </div>
+        <div class="col-12 col-md-6">
+          <q-input
+            v-model="previewCashFlow.targetOutstandingBalance"
+            label="Sender O/B"
             outlined
             maxlength="250"
             dense
@@ -124,6 +144,8 @@ const previewCashFlow = ref<ICashFlowRecords>({
   targetUserName: '',
   cashFlowStatus: '',
   transactionDate: '',
+  sourceOutstandingBalance: 0,
+  targetOutstandingBalance: 0,
   createdBy: null,
   amount: 0,
   comments: '',
@@ -246,6 +268,14 @@ const getUserList = async () => {
     });
     if (res?.data) {
       userList.value = res.data.items;
+
+      previewCashFlow.value.sourceOutstandingBalance = userList.value.find(
+        (record) => record.userId === previewCashFlow.value.sourceUserId
+      )?.outStandingBalance;
+
+      previewCashFlow.value.targetOutstandingBalance = userList.value.find(
+        (record) => record.userId === previewCashFlow.value.targetUserId
+      )?.outStandingBalance;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
