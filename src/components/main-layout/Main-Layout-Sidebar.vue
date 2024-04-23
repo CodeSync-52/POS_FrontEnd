@@ -104,13 +104,14 @@ const essentialLinks = [
         path: '/user',
       },
       {
-        title: EUserModules.RolePermission,
-        path: '/role',
-      },
-      {
         title: EUserModules.CustomerGroupManagement,
         path: '/customer-group',
       },
+      {
+        title: EUserModules.RolePermission,
+        path: '/role',
+      },
+
       {
         title: EUserModules.VariantManagement,
         path: '/variant',
@@ -127,7 +128,7 @@ const essentialLinks = [
   },
   {
     title: 'Product Management',
-    caption: 'quasar.dev',
+
     icon: 'local_florist',
     children: [
       {
@@ -138,8 +139,8 @@ const essentialLinks = [
   },
 
   {
-    title: 'Sales Operations',
-    icon: 'receipt',
+    title: 'Stock Operations',
+    icon: 'stock',
     children: [
       {
         title: EUserModules.ReceiptManagement,
@@ -149,7 +150,13 @@ const essentialLinks = [
         title: EUserModules.BillGeneration,
         path: '/bill-generation',
       },
+    ],
+  },
 
+  {
+    title: 'Sales Operations',
+    icon: 'receipt',
+    children: [
       {
         title: EUserModules.SalesManagement,
         path: '/sale',
@@ -162,10 +169,13 @@ const essentialLinks = [
   },
 
   {
-    title: 'Stock Management',
-    caption: 'quasar.dev',
+    title: 'Inventory Control',
     icon: 'store',
     children: [
+      {
+        title: EUserModules.InventoryManagement,
+        path: '/inventory',
+      },
       {
         title: EUserModules.GoodsReceiptNotes,
         path: '/goods-receipt',
@@ -174,15 +184,10 @@ const essentialLinks = [
         title: EUserModules.StockTransferRequests,
         path: '/stock-transfer',
       },
-      {
-        title: EUserModules.InventoryManagement,
-        path: '/inventory',
-      },
     ],
   },
   {
-    title: 'Cash Flow Management',
-    caption: 'quasar.dev',
+    title: 'Cash Operations',
     icon: 'currency_exchange',
     children: [
       {
