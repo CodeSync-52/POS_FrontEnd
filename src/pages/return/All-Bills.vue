@@ -486,7 +486,6 @@ const handleCancelSale = async (id: number) => {
     });
   }
   showCancelBillModal.value = false;
-  7;
 };
 const calculateTotal = (columnName: keyof (typeof saleList.value)[0]) => {
   const completedSales = saleList.value.filter(
