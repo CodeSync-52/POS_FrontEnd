@@ -214,7 +214,7 @@
             v-if="isEdit && isCommentEntered"
             unelevated
             label="Update Comment"
-            color="btn-primary hover:bg-btn-cancel-hover"
+            color="btn-primary hover:bg-btn-primary-hover"
             @click="updateReceiptComment"
           />
 

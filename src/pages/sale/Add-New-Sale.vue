@@ -423,9 +423,18 @@
           color="btn-primary"
           type="text"
           class="w-[32%]"
-          :readonly="isSalePreview"
+          :readonly="action === 'Preview'"
         />
         <div class="flex gap-2">
+          <q-btn
+            v-if="action === 'Edit'"
+            v-model="addNewSale.comments"
+            label="Update Comments"
+            :loading="isLoading"
+            unelevated
+            color="btn-primary hover:bg-btn-primary-hover"
+            @click="updateSaleComment"
+          />
           <router-link to="/sale">
             <q-btn
               unelevated
@@ -528,6 +537,7 @@ import {
   UpdateWholeSaleLineItem,
   GetWholeSaleDetail,
   UpdateWholeSaleClaimFreight,
+  updateSaleManagementCommentApi,
 } from 'src/services';
 import ArticleListModal from 'src/components/common/Article-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
@@ -1304,5 +1314,28 @@ const handleClaimFreight = async (
     });
   }
   isLoading.value = false;
+};
+const updateSaleComment = async () => {
+  try {
+    const res = await updateSaleManagementCommentApi({
+      wholeSaleId: Number(selectedId.value),
+      comments: addNewSale.value.comments ?? '',
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: 'Comment updated successfully',
+        type: 'positive',
+      });
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Updating Comments';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
 };
 </script>

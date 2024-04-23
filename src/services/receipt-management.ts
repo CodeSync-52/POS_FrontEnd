@@ -80,10 +80,12 @@ export const updateReceiptCommentApi = async ({
   comments: string;
 }) => {
   return makeApiCall<IGenericResponse<null>>({
-    url: `api/purchase/update?purchaseId=${purchaseId}&comments=${encodeURIComponent(
-      comments
-    )}`,
+    url: `api/purchase/update`,
     method: 'PUT',
+    params: {
+      purchaseId,
+      comments,
+    },
   });
 };
 

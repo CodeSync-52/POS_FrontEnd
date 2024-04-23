@@ -194,8 +194,17 @@
     <div class="text-end text-[16px] px-4 mb-4 font-bold">
       Grand Total: <span>{{ selectedGrnData.quantity }}</span>
     </div>
-
     <q-card-actions align="right">
+      <q-btn
+        v-if="
+          selectedGrnData.grnStatus === 'Accept' &&
+          selectedGrnData.fromShopId === selectedGrnData.toShopId
+        "
+        unelevated
+        label="Copy STR"
+        color="btn-primary hover:bg-btn-primary-hover"
+        @click="handleOpenCopyModal"
+      />
       <q-btn
         unelevated
         v-if="
@@ -232,7 +241,14 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="isCopyDialogVisible">
+    <copy-str-modal
+      :grn-id="selectedGrnData.grnId"
+      @close-modal="handleCloseCopyDialog"
+    />
+  </q-dialog>
 </template>
+
 <script lang="ts" setup>
 import moment from 'moment';
 import { useQuasar } from 'quasar';
@@ -242,12 +258,14 @@ import {
   IProductGRN,
   ProductVariant,
 } from 'src/interfaces';
-import { UpdateGRN, GetGRNDetail } from 'src/services';
+import { UpdateGRN, GetGRNDetail, CopyGrnApi } from 'src/services';
 import { useAuthStore } from 'src/stores';
+import CopyStrModal from 'src/components/str/Copy-Str-Modal.vue';
 import { isPosError } from 'src/utils';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
+const isCopyDialogVisible = ref(false);
 const $q = useQuasar();
 const isLoading = ref(false);
 const authStore = useAuthStore();
@@ -262,7 +280,9 @@ const selectedGrnData = ref<IGrnPreviewResponse>({
   addedDate: '',
   grnDetails: [],
 });
-
+const handleOpenCopyModal = () => {
+  isCopyDialogVisible.value = true;
+};
 const uniqueVariantNames = (data: ProductVariant[]) => {
   const uniqueNames = new Set();
   if (data) {
@@ -272,6 +292,10 @@ const uniqueVariantNames = (data: ProductVariant[]) => {
   }
 
   return Array.from(uniqueNames);
+};
+const handleCloseCopyDialog = () => {
+  isCopyDialogVisible.value = false;
+  router.go(-1);
 };
 const limitedRecord = (data: ProductVariant[], variantName2: any) => {
   let rec = data.filter((item) => item.variantName2 === variantName2);
@@ -303,6 +327,7 @@ const handlePreviewImage = (selectedImage: string | null) => {
 onMounted(() => {
   selectedGrnId.value = Number(router.currentRoute.value.params.id);
   previewGrn(selectedGrnId.value);
+
   if (router.currentRoute.value.path.includes('edit')) {
     isEdit.value = true;
   } else {
