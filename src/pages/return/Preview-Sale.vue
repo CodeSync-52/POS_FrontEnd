@@ -94,7 +94,7 @@
           routerPath.includes('preview')
             ? [
                 'productImage',
-                'productName',
+                'productCode',
                 'dispatchQuantity',
                 'amount',
                 authStore.loggedInUser?.isRetailDiscountAllowed && 'discount',
