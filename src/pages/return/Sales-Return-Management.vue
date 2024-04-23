@@ -390,7 +390,7 @@
           icon="shopping_cart"
           label="Save"
           @click="handleAddShopSale()"
-          :disable="isButtonDisable"
+          :disable="isButtonDisable || isApiCall"
         />
         <q-fab-action
           v-for="(button, index) in buttons"
@@ -410,11 +410,11 @@
         <div class="flex flex-nowrap flex-col h-full gap-3 lg:gap-4">
           <q-btn
             unelevated
-            :disable="isButtonDisable"
+            :disable="isButtonDisable || isApiCall"
             color=""
             @click="handleAddShopSale"
             class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
-            label="Save"
+            label="Save "
             icon="shopping_cart"
           />
           <q-btn
@@ -521,6 +521,7 @@ const router = useRouter();
 const shopData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
 const isFetchingShopList = ref(false);
+const isApiCall = ref(false);
 const isFetchingRecords = ref(false);
 const apiController = ref<AbortController | null>(null);
 const isPreviewImageModalVisible = ref(false);
@@ -1010,6 +1011,7 @@ const inventoryDetailList = async (data?: {
 };
 
 const handleAddShopSale = async () => {
+  isApiCall.value = true
   receiptItems.value = selectedInventoryData.value;
   if (selectedInventoryData.value.some((record) => record.retailPrice === 0)) {
     $q.notify({
@@ -1017,6 +1019,7 @@ const handleAddShopSale = async () => {
         'Cannot Complete this sale. One or more items have a retailPrice of 0.',
       type: 'warning',
     });
+    isApiCall.value = false
     return;
   }
   if (
@@ -1028,7 +1031,7 @@ const handleAddShopSale = async () => {
       message:
         'Cannot Complete this sale. One or more items have a Available Quantity 0. Either make it return or delete it',
       type: 'warning',
-    });
+    });isApiCall.value = false
     return;
   }
   try {
@@ -1044,6 +1047,7 @@ const handleAddShopSale = async () => {
         isReturn: record.isReturn,
       })),
     };
+
     const addingSaleResponse = await CreateSale(payload);
     if (addingSaleResponse.type === 'Success') {
       const previewSaleResponse = await GetSaleDetail(
@@ -1074,7 +1078,7 @@ const handleAddShopSale = async () => {
       type: 'negative',
     });
   } finally {
-    isLoading.value = false;
+    isLoading.value = false;isApiCall.value = false
   }
 };
 const handleHoldBill = async () => {
