@@ -174,7 +174,8 @@
                         EActionPermissions.Delete
                       ))) &&
                   props.row.grnStatus !== 'Accept' &&
-                  props.row.grnStatus !== 'Reject'
+                  props.row.grnStatus !== 'Reject' &&
+                  props.row.grnStatus !== 'Copied'
                 "
                 flat
                 unelevated

@@ -4,9 +4,18 @@
     <q-btn
       unelevated
       color=""
+      icon="receipt"
+      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      label="Stock Receive"
+      to="/receipt"
+    />
+
+    <q-btn
+      unelevated
+      color=""
       icon="category"
       class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-      label="Article Management"
+      label="Article"
       to="/article"
     />
     <q-btn
@@ -14,16 +23,8 @@
       icon="bar_chart"
       color=""
       class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-      label="Sale Management"
+      label="Sale From HO"
       to="/sale"
-    />
-    <q-btn
-      unelevated
-      color=""
-      icon="receipt"
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-      label="Receipt Management"
-      to="/receipt"
     />
 
     <q-btn
@@ -37,6 +38,24 @@
       class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
       label="Expense"
       to="/expenses"
+    />
+
+    <q-btn
+      unelevated
+      icon="inventory"
+      color=""
+      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      label="Inventory (GRN)"
+      to="/inventory"
+    />
+
+    <q-btn
+      unelevated
+      icon="LocalShipping"
+      color=""
+      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      label="STR"
+      to="/goods-receipt"
     />
   </div>
 </template>

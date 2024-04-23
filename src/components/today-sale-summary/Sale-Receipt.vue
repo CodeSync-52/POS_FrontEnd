@@ -79,7 +79,7 @@
             : 'grid-template-columns: 1fr 1fr 1fr'
         "
       >
-        <span class="text-base">{{ product.productName }}</span>
+        <span class="text-base">{{ product.productCode.split(',')[0] }}</span>
         <span class="text-base">{{
           product.isReturn
             ? product.dispatchQuantity * -1
