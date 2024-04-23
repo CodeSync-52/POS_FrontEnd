@@ -65,3 +65,20 @@ export const UpdateGRN = async (payload: any) => {
   });
   return res;
 };
+export const CopyGrnApi = async ({
+  grnId,
+  shopId,
+}: {
+  grnId: number;
+  shopId: string;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/grn/copy',
+    method: 'POST',
+    data: {
+      grnId,
+      shopId,
+    },
+  });
+  return res;
+};

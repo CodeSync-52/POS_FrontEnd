@@ -122,6 +122,22 @@ export const UpdateWholeSaleLineItem = async ({
   });
   return res;
 };
+export const updateSaleManagementCommentApi = async ({
+  wholeSaleId,
+  comments,
+}: {
+  wholeSaleId: number;
+  comments: string;
+}) => {
+  return makeApiCall<IGenericResponse<null>>({
+    url: `api/wholesale/update`,
+    method: 'PUT',
+    params: {
+      wholeSaleId,
+      comments,
+    },
+  });
+};
 export const CreateWholeSaleLineItem = async ({
   wholeSaleId,
   productId,
