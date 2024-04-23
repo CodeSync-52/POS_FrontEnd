@@ -146,7 +146,7 @@
     </div>
     <div class="py-4">
       <q-table
-        :columns="InventoryListColumn"
+        :columns="InventoryBasicColumn"
         :rows="filteredShopDetailList"
         :loading="isLoading"
         v-model:pagination="pagination"
@@ -235,7 +235,7 @@ import {
 import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { ITableItems, isPosError } from 'src/utils';
-import { InventoryListColumn } from 'src/utils/inventory';
+import { InventoryBasicColumn } from 'src/utils/inventory';
 import { wrapCsvValue } from 'src/services/reports';
 import moment from 'moment';
 const authStore = useAuthStore();
@@ -444,7 +444,7 @@ watch(filteredData, async (newValue) => {
   }
 });
 const downloadCSVData = () => {
-  const selectedColumnsData = InventoryListColumn.filter(
+  const selectedColumnsData = InventoryBasicColumn.filter(
     (col) => col.name !== 'productImage'
   );
   const content = [selectedColumnsData.map((col) => wrapCsvValue(col.label))]
