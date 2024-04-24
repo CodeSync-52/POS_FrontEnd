@@ -743,7 +743,7 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
       });
   }
   const tableStuff = [];
-  const headerRow = ['Image', 'Article', 'Quantity'];
+  const headerRow = ['Row#', 'Image', 'Article', 'Quantity'];
   tableStuff.push(headerRow);
   const netQuantity = array.reduce(
     (total: number, row: ISelectedArticleData) => {
@@ -754,9 +754,12 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
     },
     0
   );
-  const footerRow = ['', '', { text: `Total: ${netQuantity}`, margin: 5 }];
-  array.forEach((item: ISelectedArticleData) => {
+  const footerRow = ['', '', '', { text: `Total: ${netQuantity}`, margin: 5 }];
+  array.forEach((item: ISelectedArticleData, index: number) => {
     const row = [
+      {
+        text: index + 1,
+      },
       {
         image: item.productImage || defaultImage.value,
         width: 50,
