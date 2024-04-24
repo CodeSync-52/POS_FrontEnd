@@ -200,6 +200,19 @@
             </div>
           </q-td>
         </template>
+        <template v-slot:body-cell-action="props">
+          <q-td>
+            <q-btn
+            v-if="authStore.loggedInUser?.rolePermissions.roleName !==
+                EUserRoles.SuperAdmin.toLowerCase()"
+              icon="content_copy"
+              unelevated
+              dense
+              size="sm"
+              @click="handleDuplicateInventory(props.row.inventoryId)"
+            />
+          </q-td>
+        </template>
       </q-table>
     </div>
   </div>
@@ -232,7 +245,12 @@ import {
   getRoleModuleDisplayName,
   IInventoryFilterSearchWithShopId,
 } from 'src/interfaces';
-import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
+import {
+  DuplicateInventory,
+  GetArticleList,
+  GetInventoryDetail,
+  GetShopList,
+} from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { ITableItems, isPosError } from 'src/utils';
 import { InventoryBasicColumn } from 'src/utils/inventory';
@@ -270,7 +288,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 2000000,
+  rowsPerPage: 1000,
   rowsNumber: 0,
 });
 const filteredData = ref<{
@@ -280,7 +298,7 @@ const filteredData = ref<{
 }>({
   size: '',
   color: '',
-  excludeZeroQuantity: false,
+  excludeZeroQuantity: true,
 });
 const $q = useQuasar();
 const addCategory = () => {
@@ -503,4 +521,27 @@ async function convertArrayToPdfData(array: IInventoryListResponse[]) {
   });
   return tableStuff;
 }
+
+const handleDuplicateInventory = async (inventoryId: number) => {
+  try {
+    const res = await DuplicateInventory({
+      inventoryId,
+    });
+    if (res.type === 'Success') {
+      $q.notify({
+        message: 'Duplicate successfully',
+        type: 'positive',
+      });
+    }
+  } catch (error) {
+    let message = '';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  }
+};
 </script>

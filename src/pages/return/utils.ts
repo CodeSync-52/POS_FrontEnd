@@ -27,13 +27,13 @@ export const buttons = [
     name: 'showHoldBill',
   },
   {
-    label: 'Shop Summary',
+    label: 'Shop Closing',
     icon: 'trending_up',
     shortcut: 'F7',
     name: 'shopSummary',
   },
   {
-    label: 'Shop Account',
+    label: 'Closed Record',
     icon: 'account_balance_wallet',
     shortcut: 'F8',
     name: 'shopAccount',

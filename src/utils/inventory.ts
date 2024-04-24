@@ -88,4 +88,11 @@ export const InventoryBasicColumn: QTableColumn<IInventoryListResponse>[] = [
     align: 'left',
     field: (row) => row.quantity,
   },
+  {
+    name: 'action',
+    required: true,
+    label: 'Action',
+    align: 'left',
+    field: () => '',
+  },
 ];

@@ -30,13 +30,11 @@ export const GetInventoryDetail = async (
     ShopId,
     PageSize = 50,
     filterSearch,
-  }: // CategoryId,
-  {
+  }: {
     PageNumber: number;
     PageSize: number;
     ShopId: string | number[] | null;
     filterSearch: IInventoryFilterSearch | IInventoryFilterSearchWithShopId;
-    // CategoryId?: number | null;
   },
   controller?: AbortController
 ) => {
@@ -59,6 +57,21 @@ export const GetInventoryDetail = async (
       keyword,
     },
     signal: controller?.signal,
+  });
+  return res;
+};
+
+export const DuplicateInventory = async ({
+  inventoryId,
+}: {
+  inventoryId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/inventory/duplicate',
+    method: 'GET',
+    params: {
+      inventoryId,
+    },
   });
   return res;
 };

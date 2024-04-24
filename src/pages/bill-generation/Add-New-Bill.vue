@@ -83,7 +83,7 @@
           <q-table
             :loading="isLoading"
             v-model:pagination="pagination"
-            :rows="billGenerationData.productInfoDetailList"
+            :rows="billGenerationData.productInfoDetailList.reverse()"
             :columns="editBillGenerationRecordsColumn"
           >
             <template v-slot:body-cell-amount="props">
@@ -302,9 +302,9 @@
           <q-table
             :loading="isLoading"
             v-model:pagination="pagination"
-            :rows="billGenerationDetailsInfoData.productList"
+            :rows="billGenerationDetailsInfoData.productList.reverse()"
             :columns="BillGenerationDetailsInfoColumn"
-            hide-pagination=""
+            hide-pagination
           >
             <template v-slot:body-cell-amount="props">
               <q-td :props="props" class="flex items-center !h-[70px]">

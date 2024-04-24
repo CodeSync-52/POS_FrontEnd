@@ -306,7 +306,7 @@ const filteredData = ref<{
 }>({
   size: '',
   color: '',
-  excludeZeroQuantity: false,
+  excludeZeroQuantity: true,
 });
 const filterSelectedShopDetailList = () => {
   filteredShopDetailList.value = selectedShopDetailRecords.value.filter(

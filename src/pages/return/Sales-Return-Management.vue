@@ -19,8 +19,8 @@
                     <p>Hold Sale (Ctrl + F3)</p>
                     <p>All Bills (Ctrl + F5)</p>
                     <p>Hold Bills (Ctrl + F6)</p>
-                    <p>Shop Summary (Ctrl + F7)</p>
-                    <p>Shop Account (Ctrl + F8)</p>
+                    <p>Shop Closing (Ctrl + F7)</p>
+                    <p>Closed Record (Ctrl + F8)</p>
                   </div>
                 </q-tooltip></q-btn
               >

@@ -51,7 +51,7 @@
 
     <q-btn
       unelevated
-      icon="LocalShipping"
+      icon="local_shipping"
       color=""
       class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
       label="STR"
