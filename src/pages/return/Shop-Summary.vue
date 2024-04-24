@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="font-semibold text-lg text-center">
-      <span>Shop Summary : {{ SaleSummary.shopName }} </span>
+      <span>Shop Closing : {{ SaleSummary.shopName }} </span>
       <div>
         {{ moment(SaleSummary.createdDate).format('dddd, D MMMM, YYYY') }}
       </div>

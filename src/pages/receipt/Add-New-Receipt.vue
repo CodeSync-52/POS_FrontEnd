@@ -74,7 +74,7 @@
           v-if="selectedArticleData.length > 0"
           :loading="isLoading"
           tabindex="0"
-          :rows="selectedArticleData"
+          :rows="selectedArticleData.reverse()"
           align="left"
           :columns="selectedArticleColumn"
           row-key="name"
@@ -123,7 +123,7 @@
                     (isEdit &&
                       authStore.checkUserHasPermission(
                         EUserModules.ReceiptManagement,
-                        EActionPermissions.Delete
+                        EActionPermissions.Update
                       ))
                   "
                   size="sm"

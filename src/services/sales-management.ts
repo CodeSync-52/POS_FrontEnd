@@ -130,7 +130,7 @@ export const updateSaleManagementCommentApi = async ({
   comments: string;
 }) => {
   return makeApiCall<IGenericResponse<null>>({
-    url: `api/wholesale/update`,
+    url: 'api/wholesale/update',
     method: 'PUT',
     params: {
       wholeSaleId,

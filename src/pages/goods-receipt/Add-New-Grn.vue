@@ -97,7 +97,7 @@
 
         <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
           <q-table
-            :rows="selectedInventoryData"
+            :rows="selectedInventoryData.reverse()"
             hide-pagination
             v-model:pagination="selectedInventoryPagination"
             :columns="selectedGrnInventoryTableColumn"

@@ -258,7 +258,7 @@ import {
   IProductGRN,
   ProductVariant,
 } from 'src/interfaces';
-import { UpdateGRN, GetGRNDetail, CopyGrnApi } from 'src/services';
+import { UpdateGRN, GetGRNDetail } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import CopyStrModal from 'src/components/str/Copy-Str-Modal.vue';
 import { isPosError } from 'src/utils';

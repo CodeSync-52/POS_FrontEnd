@@ -17,6 +17,20 @@
         >
           <div class="accountInfoIcon relative flex">
             <div class="flex justify-center items-center">
+              <q-btn
+                unelevated
+                color=""
+                v-if="
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase() ||
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.Admin.toLowerCase()
+                "
+                class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+                label="Dashboard"
+                to="/dashboard"
+              />
+
               <span
                 class="text-black rounded-full text-bold flex justify-center items-center bg-[#bab6b6] m-2 w-[3rem] h-[3rem]"
               >
@@ -103,6 +117,7 @@
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
+import { EUserRoles } from 'src/interfaces';
 import AccountInfoModal from 'src/components/header/Account-Info-Modal.vue';
 import OutsideClickContainer from '../common/Outside-Click-Container.vue';
 import { logoutUser } from 'src/services';

@@ -97,7 +97,7 @@ const authStore = useAuthStore();
 const essentialLinks = [
   {
     title: 'Store Management',
-    icon: 'dashboard',
+    icon: 'add_business',
     children: [
       {
         title: EUserModules.UserManagment,
@@ -128,8 +128,7 @@ const essentialLinks = [
   },
   {
     title: 'Product Management',
-
-    icon: 'local_florist',
+    icon: 'category',
     children: [
       {
         title: EUserModules.ArticleManagement,
@@ -140,7 +139,7 @@ const essentialLinks = [
 
   {
     title: 'Stock Operations',
-    icon: 'stock',
+    icon: 'precision_manufacturing',
     children: [
       {
         title: EUserModules.ReceiptManagement,
@@ -170,7 +169,7 @@ const essentialLinks = [
 
   {
     title: 'Inventory Control',
-    icon: 'store',
+    icon: 'local_shipping',
     children: [
       {
         title: EUserModules.InventoryManagement,
@@ -202,7 +201,7 @@ const essentialLinks = [
   },
   {
     title: 'Reporting and Analytics',
-    icon: 'chat',
+    icon: 'score',
     children: [
       {
         title: EUserModules.Report,
