@@ -795,9 +795,10 @@ async function convertArray(array: IBillProductList[]) {
       });
   }
   const tableStuff = [];
-  const headerRow = ['Image', 'Article', 'Quantity', 'Amount', 'Total'];
+  const headerRow = ['Row#', 'Image', 'Article', 'Quantity', 'Amount', 'Total'];
   tableStuff.push(headerRow);
   const claimAmount = [
+    '',
     '',
     '',
     '',
@@ -808,6 +809,7 @@ async function convertArray(array: IBillProductList[]) {
     '',
     '',
     '',
+    '',
     'Freight:',
     `${billGenerationDetailsInfoData.value.freight}`,
   ];
@@ -815,11 +817,15 @@ async function convertArray(array: IBillProductList[]) {
     '',
     '',
     '',
+    '',
     'Net Total:',
     `${billGenerationDetailsInfoData.value.totalAmount}`,
   ];
-  array.forEach((item: IBillProductList) => {
+  array.forEach((item: IBillProductList, index: number) => {
     const row = [
+      {
+        text: index + 1,
+      },
       {
         image: item.image || defaultImage.value,
         width: 50,

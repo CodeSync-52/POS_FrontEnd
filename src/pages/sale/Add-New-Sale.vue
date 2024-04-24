@@ -1114,7 +1114,7 @@ async function convertArrayToPdfData(
   }
 
   const tableStuff = [];
-  const headerRow = ['Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
+  const headerRow = ['Row#', 'Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
   tableStuff.push(headerRow);
   const totalAmount = array.reduce(
     (total, row: IWholeSaleProductsInfo | ISelectedWholeSaleArticleData) => {
@@ -1126,6 +1126,7 @@ async function convertArrayToPdfData(
     0
   );
   const footerRow = [
+    '',
     {
       text: 'Total',
       margin: 5,
@@ -1139,6 +1140,7 @@ async function convertArrayToPdfData(
     { text: `${totalAmount}`, margin: 5 },
   ];
   const discountRow = [
+    '',
     '',
     '',
     '',
@@ -1159,6 +1161,7 @@ async function convertArrayToPdfData(
     '',
     '',
     '',
+    '',
     {
       text: 'Freight:',
       margin: [5, 0],
@@ -1171,6 +1174,7 @@ async function convertArrayToPdfData(
     },
   ];
   const claimRow = [
+    '',
     '',
     '',
     '',
@@ -1189,6 +1193,7 @@ async function convertArrayToPdfData(
     '',
     '',
     '',
+    '',
     {
       text: 'Net Total:',
       margin: [5, 0],
@@ -1201,8 +1206,14 @@ async function convertArrayToPdfData(
     },
   ];
   array.forEach(
-    (item: IWholeSaleProductsInfo | ISelectedWholeSaleArticleData) => {
+    (
+      item: IWholeSaleProductsInfo | ISelectedWholeSaleArticleData,
+      index: number
+    ) => {
       const row = [
+        {
+          text: index + 1,
+        },
         {
           image: item.productImage || defaultImage.value,
           width: 50,

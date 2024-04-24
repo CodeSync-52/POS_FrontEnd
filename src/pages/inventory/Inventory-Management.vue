@@ -203,8 +203,10 @@
         <template v-slot:body-cell-action="props">
           <q-td>
             <q-btn
-            v-if="authStore.loggedInUser?.rolePermissions.roleName !==
-                EUserRoles.SuperAdmin.toLowerCase()"
+              v-if="
+                authStore.loggedInUser?.rolePermissions.roleName !==
+                EUserRoles.SuperAdmin.toLowerCase()
+              "
               icon="content_copy"
               unelevated
               dense
@@ -501,6 +503,7 @@ const downloadCSVData = () => {
 async function convertArrayToPdfData(array: IInventoryListResponse[]) {
   const tableStuff = [];
   const headerRow = [
+    'Row#',
     'Article',
     'Shop Name',
     'Size',
@@ -509,8 +512,11 @@ async function convertArrayToPdfData(array: IInventoryListResponse[]) {
   ];
   tableStuff.push(headerRow);
 
-  array.forEach((item: IInventoryListResponse) => {
+  array.forEach((item: IInventoryListResponse, index: number) => {
     const row = [
+      {
+        text: index + 1,
+      },
       { text: item.productName },
       { text: item.shopName },
       { text: item.size },
