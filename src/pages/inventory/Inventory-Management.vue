@@ -203,6 +203,8 @@
         <template v-slot:body-cell-action="props">
           <q-td>
             <q-btn
+            v-if="authStore.loggedInUser?.rolePermissions.roleName !==
+                EUserRoles.SuperAdmin.toLowerCase()"
               icon="content_copy"
               unelevated
               dense
