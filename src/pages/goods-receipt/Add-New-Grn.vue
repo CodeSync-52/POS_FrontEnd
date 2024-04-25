@@ -97,7 +97,7 @@
 
         <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
           <q-table
-            :rows="selectedInventoryData.reverse()"
+            :rows="selectedInventoryData"
             hide-pagination
             v-model:pagination="selectedInventoryPagination"
             :columns="selectedGrnInventoryTableColumn"
@@ -289,7 +289,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 20000,
+  rowsPerPage: 2000,
   rowsNumber: 0,
 });
 const filterSearch = ref<IInventoryFilterSearch>({
@@ -465,7 +465,7 @@ const handleSelectedData = (payload: IInventoryListResponse[]) => {
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
-      selectedInventoryData.value.push({ ...item, dispatchQuantity: 0 });
+      selectedInventoryData.value.unshift({ ...item, dispatchQuantity: 0 });
     }
   });
   isInventoryListModalVisible.value = false;

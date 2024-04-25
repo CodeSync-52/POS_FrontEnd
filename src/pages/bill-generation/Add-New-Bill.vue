@@ -83,7 +83,7 @@
           <q-table
             :loading="isLoading"
             v-model:pagination="pagination"
-            :rows="billGenerationData.productInfoDetailList.reverse()"
+            :rows="billGenerationData.productInfoDetailList"
             :columns="editBillGenerationRecordsColumn"
           >
             <template v-slot:body-cell-amount="props">
@@ -302,7 +302,7 @@
           <q-table
             :loading="isLoading"
             v-model:pagination="pagination"
-            :rows="billGenerationDetailsInfoData.productList.reverse()"
+            :rows="billGenerationDetailsInfoData.productList"
             :columns="BillGenerationDetailsInfoColumn"
             hide-pagination
           >
@@ -506,7 +506,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 20000,
+  rowsPerPage: 2000,
   rowsNumber: 0,
 });
 onMounted(() => {

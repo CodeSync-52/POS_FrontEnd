@@ -74,7 +74,7 @@
           v-if="selectedArticleData.length > 0"
           :loading="isLoading"
           tabindex="0"
-          :rows="selectedArticleData.reverse()"
+          :rows="selectedArticleData"
           align="left"
           :columns="selectedArticleColumn"
           row-key="name"
@@ -397,7 +397,7 @@ const selectedData = (
   const oldIdList = selectedArticleData.value.map((item) => item.productId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.productId)) {
-      selectedArticleData.value.push({
+      selectedArticleData.value.unshift({
         ...item,
         quantity: 0,
         productImage: item.productImage ?? '',

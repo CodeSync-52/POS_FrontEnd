@@ -172,7 +172,7 @@ const InventoryPagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 20000,
+  rowsPerPage: 2000,
   rowsNumber: 0,
 });
 const productSelectInputRef = ref<QSelect | null>(null);
