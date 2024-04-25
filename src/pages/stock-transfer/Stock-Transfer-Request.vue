@@ -141,9 +141,7 @@
               <q-btn
                 v-if="
                   authStore.loggedInUser?.userShopInfoDTO.shopId ===
-                    props.row.toShopId &&
-                  props.row.grnStatus !== 'Accept' &&
-                  props.row.grnStatus !== 'Reject'
+                    props.row.toShopId && props.row.grnStatus === 'Pending'
                 "
                 flat
                 unelevated
@@ -161,8 +159,7 @@
                 v-if="
                   authStore.loggedInUser?.rolePermissions.roleName ===
                     EUserRoles.SuperAdmin.toLowerCase() &&
-                  props.row.grnStatus !== 'Accept' &&
-                  props.row.grnStatus !== 'Reject'
+                  props.row.grnStatus === 'Pending'
                 "
                 flat
                 unelevated
