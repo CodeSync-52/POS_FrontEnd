@@ -509,7 +509,6 @@ async function downloadPdfData() {
           : '',
     },
   ];
-  const fileTitle = 'HO Article Sale Report';
   const myFileName = `HO-Article-Sale-report-${moment(
     filterSearch?.value?.startDate
   ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.endDate).format(
@@ -522,7 +521,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: fileTitle,
+    title: '',
   });
 }
 

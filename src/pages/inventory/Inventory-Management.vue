@@ -119,12 +119,13 @@
         color="btn-primary"
         option-label="name"
         option-value="productId"
-        ><template v-slot:no-option>
+      >
+        <template v-slot:no-option>
           <q-item>
             <q-item-section class="text-grey"> No results </q-item-section>
           </q-item>
-        </template></q-select
-      >
+        </template>
+      </q-select>
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           unelevated
@@ -290,7 +291,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 1000,
+  rowsPerPage: 100000,
   rowsNumber: 0,
 });
 const filteredData = ref<{
@@ -318,7 +319,7 @@ const getShopList = async () => {
   try {
     const response = await GetShopList({
       PageNumber: 1,
-      PageSize: 200000,
+      PageSize: 25,
     });
     if (response.data) {
       ShopData.value = response.data.items;

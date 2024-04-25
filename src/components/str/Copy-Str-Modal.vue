@@ -75,7 +75,7 @@ const getShopList = async () => {
   try {
     const response = await GetShopList({
       PageNumber: 1,
-      PageSize: 200000,
+      PageSize: 25,
     });
     if (response.data) {
       shopRecords.value = response.data.items;

@@ -178,7 +178,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 200000,
+  rowsPerPage: 25,
   rowsNumber: 0,
 });
 const handleEditShopPopup = (selectedRow: IShopResponse) => {

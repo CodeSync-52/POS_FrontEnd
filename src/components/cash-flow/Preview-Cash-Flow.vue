@@ -250,13 +250,12 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
       content: userOutstandingBalance,
     });
   }
-  const fileTitle = 'CashFlow Report';
   const myFileName = 'CashFlow.pdf';
   downloadPdf({
     filename: myFileName,
     pdfHeaders: headers,
     tableData: [],
-    title: fileTitle,
+    title: '',
   });
 }
 

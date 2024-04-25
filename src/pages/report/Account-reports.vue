@@ -283,7 +283,6 @@ async function downloadPdfData() {
       content: moment(filterSearch?.value?.endDate).format('DD/MM/YYYY'),
     },
   ];
-  const fileTitle = 'Account Reports';
   const myFileName = `Account-Reports-${moment(
     filterSearch?.value?.startDate
   ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.endDate).format(
@@ -296,7 +295,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: fileTitle,
+    title: '',
   });
 }
 

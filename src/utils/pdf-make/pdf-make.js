@@ -5,7 +5,10 @@ pdfMake.vfs = pdfFont;
 export const downloadPdf = async ({
   pdfHeaders = [],
   tableData = [],
+  tableData2 = [],
+  tableData3 = [],
   pdfFooters = [],
+  title = '',
   filename = 'data.pdf',
 }) => {
   let content = [];
@@ -105,6 +108,30 @@ export const downloadPdf = async ({
     });
   }
 
+  if (tableData2 && tableData2.length > 0) {
+    content.push({
+      marginTop: 10,
+      layout: 'lightHorizontalLines',
+      table: {
+        headerRows: 1,
+        //widths: tableData2[0].map(() => '*'),
+        body: tableData2,
+      },
+    });
+  }
+
+  if (tableData3 && tableData3.length > 0) {
+    content.push({
+      marginTop: 10,
+      layout: 'lightHorizontalLines',
+      table: {
+        headerRows: 1,
+        //widths: tableData3[0].map(() => '*'),
+        body: tableData3,
+      },
+    });
+  }
+
   pdfFooters.forEach((footer, i) => {
     if (i % 2 === 0) {
       currentFooters = {
@@ -169,18 +196,6 @@ export const downloadPdf = async ({
       currentFooters = {};
     }
   });
-  //const docData = { content };
-  // if (title !== '') {
-  //   docData.content.unshift({
-  //     text: title,
-  //     alignment: 'center',
-  //     width: '*',
-  //     bold: true,
-  //     fontSize: 20,
-  //   });
-  // }
-
-  // Adding footer with page numbers
   const docData = {
     content,
     footer(currentPage, pageCount) {
@@ -193,6 +208,19 @@ export const downloadPdf = async ({
       };
     },
   };
+  // var docData = { content };
+  if (title !== '') {
+    docData.content.unshift({
+      text: title,
+      alignment: 'center',
+      width: '*',
+      bold: true,
+      fontSize: 20,
+    });
+  }
+
+  // Adding footer with page numbers
+
   const doc = await pdfMake.createPdf(docData);
   await doc.download(filename);
 };
