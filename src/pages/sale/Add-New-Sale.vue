@@ -800,7 +800,7 @@ const selectedData = (
   const oldIdList = selectedArticleData.value.map((item) => item.productId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.productId)) {
-      selectedArticleData.value.push({
+      selectedArticleData.value.unshift({
         ...item,
         quantity: 0,
         totalAmount: 0,
