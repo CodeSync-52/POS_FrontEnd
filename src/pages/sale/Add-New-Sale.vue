@@ -1117,7 +1117,10 @@ async function convertArrayToPdfData(
   const headerRow = ['Row#', 'Image', 'Name', 'Quantity', 'W.Price', 'Amount'];
   tableStuff.push(headerRow);
   const totalAmount = array.reduce(
-    (total, row: IWholeSaleProductsInfo | ISelectedWholeSaleArticleData) => {
+    (
+      total: number,
+      row: IWholeSaleProductsInfo | ISelectedWholeSaleArticleData
+    ) => {
       if (row.totalAmount) {
         return total + row.totalAmount ?? 0;
       }

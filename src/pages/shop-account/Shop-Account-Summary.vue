@@ -152,7 +152,14 @@
         </q-table>
       </div>
     </q-card>
-    <div class="row justify-center md:justify-end mt-5">
+
+    <div class="row justify-center md:justify-end gap-3 mt-5">
+      <q-btn
+        label="Download Pdf"
+        unelevated
+        color="btn-primary"
+        @click="downloadPdfData"
+      />
       <q-btn
         class="mr-5"
         label="Back"
@@ -170,10 +177,12 @@ import {
   IShopExpenses,
   InComingOutgoingToHo,
 } from 'src/interfaces';
+import { downloadPdf } from 'src/utils/pdf-make/pdf-make';
 import { GetShopAccount } from 'src/services';
 import {
   shopExpenseTableColumn,
   incomingOutgoingToHoTableColumn,
+  ITableItems,
 } from 'src/utils';
 import { isPosError } from 'src/utils';
 import moment from 'moment';
@@ -182,6 +191,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const selectedId: string | string[] = router.currentRoute.value.params.id;
 const $q = useQuasar();
+const tableItems = ref<ITableItems[][]>([]);
 const shopAccountSummary = ref<{
   shopAccountId: number;
   shopId: number;
@@ -223,6 +233,79 @@ const shopAccountSummary = ref<{
   outgoingToHO: [],
   salesExpenseSummary: [],
 });
+const convertArray = (expenseArray: IShopExpenses[]) => {
+  const tableStuff = [];
+  const expenseTitleHeading = [{ text: 'Expenses', fontSize: 22 }, '', ''];
+  tableStuff.push(expenseTitleHeading);
+  const expenseHeaderRow = ['Expense Name', 'Amount', 'Comment'];
+  tableStuff.push(expenseHeaderRow);
+
+  expenseArray.forEach((item: IShopExpenses) => {
+    const expenseRow = [
+      { text: item.expenseName, bold: true, margin: [10, 20] },
+      { text: item.amount, margin: [10, 20] },
+      { text: item.comment, margin: [10, 20] },
+    ];
+    tableStuff.push(expenseRow);
+  });
+  return tableStuff;
+};
+function downloadPdfData() {
+  const headers = [
+    {
+      heading: 'Shop Name',
+      content: shopAccountSummary.value.shopName,
+    },
+    {
+      heading: 'Status',
+      content: shopAccountSummary.value.shopAccountStatus,
+    },
+    {
+      heading: 'Created Date',
+      content: shopAccountSummary.value.createdDate,
+    },
+    {
+      heading: 'Opening Balance',
+      content: shopAccountSummary.value.openingBalance,
+    },
+    {
+      heading: 'Last Closing Date',
+      content: shopAccountSummary.value.lastClosingDate,
+    },
+    {
+      heading: 'Remaining Balance',
+      content: shopAccountSummary.value.remainingBalance,
+    },
+    {
+      heading: 'Available Stock',
+      content: shopAccountSummary.value.availableStock,
+    },
+    {
+      heading: 'Items Sold',
+      content: shopAccountSummary.value.totalItemsSale,
+    },
+    {
+      heading: 'Net Sale',
+      content: shopAccountSummary.value.totalSale,
+    },
+
+    {
+      heading: 'Expenses',
+      content: shopAccountSummary.value.totalExpense,
+    },
+    {
+      heading: 'Expenses',
+      content: shopAccountSummary.value.totalExpense,
+    },
+  ];
+  const fileTitle = `${shopAccountSummary.value.shopName} Account Summary`;
+  downloadPdf({
+    filename: `${fileTitle}.pdf`,
+    pdfHeaders: headers,
+    tableData: JSON.parse(JSON.stringify(tableItems.value)),
+    title: fileTitle,
+  });
+}
 onMounted(async () => {
   await updateAccountSummary();
 });
@@ -253,6 +336,8 @@ const updateAccountSummary = async () => {
           outgoingToHO: responseData.outgoingToHO || [],
           salesExpenseSummary: responseData.salesExpenseSummary || [],
         };
+        const { salesExpenseSummary } = responseData;
+        tableItems.value = convertArray(salesExpenseSummary!);
       }
     }
   } catch (error) {
