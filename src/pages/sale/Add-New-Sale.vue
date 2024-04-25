@@ -371,6 +371,7 @@
               <q-td :props="props">
                 <div class="flex gap-2 flex-nowrap">
                   <q-input
+                    :class="'row-' + props.rowIndex"
                     ref="firstRow"
                     :disable="
                       (action === 'Edit' &&
@@ -808,9 +809,8 @@ const selectedData = (
         masterStock: item.masterStock,
       });
       nextTick(() => {
-        if (firstRow.value) {
-          firstRow.value.focus();
-        }
+        const firstRow = document.getElementsByClassName('row-0');
+        firstRow[0].querySelector('input')?.focus();
       });
 
       if (action.value === 'Edit') {

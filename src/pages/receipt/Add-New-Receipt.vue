@@ -146,7 +146,7 @@
             <q-td :props="props">
               <div class="flex gap-2 flex-nowrap">
                 <q-input
-                  ref="firstRow"
+                  :class="'row-' + props.rowIndex"
                   :disable="
                     (isEdit &&
                       !authStore.checkUserHasPermission(
@@ -359,7 +359,6 @@ const dialoagClose = (e: KeyboardEvent) => {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
-const firstRow = ref<HTMLElement | null>(null);
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   getArticleList();
@@ -403,9 +402,8 @@ const selectedData = (
         productImage: item.productImage ?? '',
       });
       nextTick(() => {
-        if (firstRow.value) {
-          firstRow.value.focus();
-        }
+        const firstRow = document.getElementsByClassName('row-0');
+        firstRow[0].querySelector('input')?.focus();
       });
       if (isEdit.value) {
         CreatePurchaseLineItem({
@@ -806,6 +804,7 @@ async function downloadPdfData() {
 
   const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
+  console.log(tableDataWithImage);
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
