@@ -802,15 +802,13 @@ async function downloadPdfData() {
     },
   ];
 
-  const fileTitle = 'Receipt';
   const myFileName = 'Receipt.pdf';
-  console.log(tableDataWithImage);
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
     pdfFooters: footers,
-    title: fileTitle,
+    title: '',
   });
 }
 

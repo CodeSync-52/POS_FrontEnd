@@ -207,7 +207,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 200000,
+  rowsPerPage: 500,
   rowsNumber: 0,
 });
 const filteredRows = ref<IVariantDetailsData[]>([]);

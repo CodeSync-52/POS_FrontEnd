@@ -223,7 +223,6 @@ async function downloadPdfData() {
       content: filterSearch.value.customerGroup?.name,
     },
   ];
-  const fileTitle = 'User Outstanding Report';
   const myFileName = 'User-Outstanding-report.pdf';
   const tableDataWithImage: ITableItems[][] = await processTableItems(
     tableItems.value
@@ -232,7 +231,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: fileTitle,
+    title: '',
   });
 }
 

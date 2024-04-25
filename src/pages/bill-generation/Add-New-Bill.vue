@@ -869,14 +869,13 @@ async function downloadPdfData() {
       content: billGenerationDetailsInfoData.value.outStandingBalance,
     },
   ];
-  const fileTitle = 'Bill';
   const myFileName = 'Bill.pdf';
   downloadPdf({
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
     pdfFooters: footers,
-    title: fileTitle,
+    title: '',
   });
 }
 </script>

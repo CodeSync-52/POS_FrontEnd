@@ -1277,7 +1277,6 @@ async function downloadPdfData() {
       content: selectedSaleRecord.value.outStandingBalance,
     },
   ];
-  const fileTitle = 'Sale';
   const myFileName = 'Sale.pdf';
   const tableDataWithImage: ITableItems[][] = await processTableItems(
     tableItems.value
@@ -1287,7 +1286,7 @@ async function downloadPdfData() {
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
     pdfFooters: footers,
-    title: fileTitle,
+    title: '',
   });
 }
 const filterFn = (val: string, update: CallableFunction) => {

@@ -402,7 +402,6 @@ async function downloadPdfData() {
           : '',
     },
   ];
-  const fileTitle = 'HO-Stock-Reports';
   const myFileName = 'HO-Stock-reports.pdf';
   const tableDataWithImage: ITableItems[][] = await processTableItems(
     tableItems.value
@@ -411,7 +410,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: fileTitle,
+    title: '',
   });
 }
 

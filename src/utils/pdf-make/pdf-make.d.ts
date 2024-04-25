@@ -21,6 +21,8 @@ export interface IPdfPayload {
   pdfHeaders?: IPdfHeaders[];
   pdfFooters?: IPdfFooters[];
   tableData?: ITableItems[][];
+  tableData2?: ITableItems[][];
+  tableData3?: ITableItems[][];
   filename?: string;
   title?: string;
 }

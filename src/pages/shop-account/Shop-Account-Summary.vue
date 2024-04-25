@@ -191,7 +191,9 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const selectedId: string | string[] = router.currentRoute.value.params.id;
 const $q = useQuasar();
-const tableItems = ref<ITableItems[][]>([]);
+const expenseItems = ref<ITableItems[][]>([]);
+const outgoingPaymentItems = ref<ITableItems[][]>([]);
+const incoingPaymentItems = ref<ITableItems[][]>([]);
 const shopAccountSummary = ref<{
   shopAccountId: number;
   shopId: number;
@@ -233,11 +235,11 @@ const shopAccountSummary = ref<{
   outgoingToHO: [],
   salesExpenseSummary: [],
 });
-const convertArray = (expenseArray: IShopExpenses[]) => {
+const convertExpenseArray = (expenseArray: IShopExpenses[]) => {
   const tableStuff = [];
-  const expenseTitleHeading = [{ text: 'Expenses', fontSize: 22 }, '', ''];
+  const expenseTitleHeading = [{ text: 'Expenses', fontSize: 15 }, '', ''];
   tableStuff.push(expenseTitleHeading);
-  const expenseHeaderRow = ['Expense Name', 'Amount', 'Comment'];
+  const expenseHeaderRow = ['Expense', 'Amount', 'Comment'];
   tableStuff.push(expenseHeaderRow);
 
   expenseArray.forEach((item: IShopExpenses) => {
@@ -250,19 +252,49 @@ const convertArray = (expenseArray: IShopExpenses[]) => {
   });
   return tableStuff;
 };
+
+const convertIncomingOutgoingArray = (
+  incomingOutgoingArray: InComingOutgoingToHo[],
+  isIncoming: boolean
+) => {
+  const tableStuff = [];
+  if (isIncoming) {
+    const titleHeading = [
+      { text: 'Incoming From HO', fontSize: 15 },
+      '',
+      '',
+      '',
+    ];
+
+    tableStuff.push(titleHeading);
+  } else {
+    const titleHeading = [{ text: 'Outgoing To HO', fontSize: 15 }, '', '', ''];
+
+    tableStuff.push(titleHeading);
+  }
+  const inoutHeaderRow = ['Name', 'Amount', 'Comment', 'Transaction Date'];
+  tableStuff.push(inoutHeaderRow);
+
+  incomingOutgoingArray.forEach((item: InComingOutgoingToHo) => {
+    const inoutRow = [
+      { text: item.userName, bold: true, margin: [10, 20] },
+      { text: item.amount, margin: [10, 20] },
+      { text: item.comment, margin: [10, 20] },
+      {
+        text: moment(item.transactionDate).format('ddd, D MMMM, YYYY'),
+        margin: [10, 20],
+      },
+    ];
+    tableStuff.push(inoutRow);
+  });
+  return tableStuff;
+};
+
 function downloadPdfData() {
   const headers = [
     {
-      heading: 'Shop Name',
-      content: shopAccountSummary.value.shopName,
-    },
-    {
       heading: 'Status',
       content: shopAccountSummary.value.shopAccountStatus,
-    },
-    {
-      heading: 'Created Date',
-      content: shopAccountSummary.value.createdDate,
     },
     {
       heading: 'Opening Balance',
@@ -270,40 +302,60 @@ function downloadPdfData() {
     },
     {
       heading: 'Last Closing Date',
-      content: shopAccountSummary.value.lastClosingDate,
+      content: moment(shopAccountSummary.value.lastClosingDate).format(
+        'ddd, D MMMM, YYYY'
+      ),
     },
     {
-      heading: 'Remaining Balance',
-      content: shopAccountSummary.value.remainingBalance,
+      heading: 'Net Sale',
+      content:
+        shopAccountSummary.value.totalSale -
+        shopAccountSummary.value.totalDiscount -
+        shopAccountSummary.value.totalReturnSaleAmount,
     },
     {
       heading: 'Available Stock',
       content: shopAccountSummary.value.availableStock,
     },
     {
+      heading: '- Expenses',
+      content: shopAccountSummary.value.totalExpense,
+    },
+    {
       heading: 'Items Sold',
       content: shopAccountSummary.value.totalItemsSale,
     },
     {
-      heading: 'Net Sale',
-      content: shopAccountSummary.value.totalSale,
-    },
-
-    {
-      heading: 'Expenses',
-      content: shopAccountSummary.value.totalExpense,
+      heading: '- Submitted TO HO',
+      content: shopAccountSummary.value.totalOutgoingToHO,
     },
     {
-      heading: 'Expenses',
-      content: shopAccountSummary.value.totalExpense,
+      heading: 'Discounts',
+      content: shopAccountSummary.value.totalDiscount,
+    },
+    {
+      heading: '+ Received From HO',
+      content: shopAccountSummary.value.totalIncomingFromHO,
+    },
+    {
+      heading: 'Refunds',
+      content: shopAccountSummary.value.totalReturnSaleAmount,
+    },
+    {
+      heading: 'Remaining Balance',
+      content: shopAccountSummary.value.remainingBalance,
     },
   ];
   const fileTitle = `${shopAccountSummary.value.shopName} Account Summary`;
   downloadPdf({
     filename: `${fileTitle}.pdf`,
     pdfHeaders: headers,
-    tableData: JSON.parse(JSON.stringify(tableItems.value)),
-    title: fileTitle,
+    tableData: JSON.parse(JSON.stringify(expenseItems.value)),
+    tableData2: JSON.parse(JSON.stringify(incoingPaymentItems.value)),
+    tableData3: JSON.parse(JSON.stringify(outgoingPaymentItems.value)),
+    title: `${shopAccountSummary.value.shopName} | ${moment(
+      shopAccountSummary.value.createdDate
+    ).format('dddd, D MMMM, YYYY')}`,
   });
 }
 onMounted(async () => {
@@ -336,8 +388,18 @@ const updateAccountSummary = async () => {
           outgoingToHO: responseData.outgoingToHO || [],
           salesExpenseSummary: responseData.salesExpenseSummary || [],
         };
-        const { salesExpenseSummary } = responseData;
-        tableItems.value = convertArray(salesExpenseSummary!);
+
+        expenseItems.value = convertExpenseArray(
+          shopAccountSummary.value.salesExpenseSummary
+        );
+        incoingPaymentItems.value = convertIncomingOutgoingArray(
+          shopAccountSummary.value.inComingFromHO,
+          true
+        );
+        outgoingPaymentItems.value = convertIncomingOutgoingArray(
+          shopAccountSummary.value.outgoingToHO,
+          false
+        );
       }
     }
   } catch (error) {
