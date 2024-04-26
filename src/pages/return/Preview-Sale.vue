@@ -228,40 +228,36 @@
         </template>
       </q-table>
     </div>
-    <div
-      class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-between q-pa-md"
-    >
-      <div
-        class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start"
-      >
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Comment :</span>
-          <span class="md:text-lg"> {{ SaleSummary.comments }} </span>
-        </div>
-      </div>
-      <div
-        class="flex flex-col gap-2 md:min-w-[350px] md:gap-4 items-center md:items-start md:pr-2"
-      >
-        <div class="md:flex md:justify-between md:w-full items-center">
+    <div class="flex justify-center lg:justify-start mb-3">
+      <div class="flex flex-col lg:flex-row gap-4 lg:gap-7">
+        <div class="md:flex gap-3">
           <span class="font-medium md:text-lg">Total :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalSalesAmount }} </span>
         </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
+        <div class="md:flex gap-3 items-center">
           <span class="font-medium md:text-lg">Total Discount :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
         </div>
         <div
           v-if="routerPath.includes('preview')"
-          class="md:flex md:justify-between md:w-full items-center"
+          class="md:flex gap-3 items-center"
         >
           <span class="font-medium md:text-lg">Refund :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalReturnAmount }} </span>
         </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Net Total :</span>
-          <span class="md:text-lg"> {{ SaleSummary.netAmount }} </span>
+        <div class="md:flex gap-3 items-center">
+          <span class="font-medium md:text-lg text-btn-primary"
+            >Net Total :</span
+          >
+          <span class="md:text-lg text-btn-primary font-medium">
+            {{ SaleSummary.netAmount }}
+          </span>
         </div>
       </div>
+    </div>
+    <div class="flex justify-center items-center lg:justify-start">
+      <span class="font-medium md:text-lg">Comment :</span>
+      <span class="md:text-lg"> {{ SaleSummary.comments }} </span>
     </div>
     <div class="row justify-center md:justify-end gap-2">
       <q-btn

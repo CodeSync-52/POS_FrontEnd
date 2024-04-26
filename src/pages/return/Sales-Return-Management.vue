@@ -170,7 +170,7 @@
           v-if="selectedInventoryData.length"
           class="flex flex-col justify-between"
         >
-          <div class="py-4 w-full">
+          <div class="my-4 w-full max-h-[200px] overflow-y-auto">
             <q-table
               auto-width
               :loading="isLoading"
@@ -305,21 +305,8 @@
               </template>
             </q-table>
           </div>
-          <div
-            class="w-full flex flex-col gap-4 md:flex-row items-center md:items-start justify-center md:justify-between mb-3"
-          >
-            <div class="max-w-[300px] min-w-[200px] md:w-1/3">
-              <q-input
-                v-model="shopSale.comment"
-                maxlength="250"
-                outlined
-                dense
-                color="btn-primary"
-                label="Comments"
-                @keydown="dialogClose"
-              />
-            </div>
-            <div class="max-w-[200px] min-w-[200px] flex flex-col gap-4">
+          <div class="w-full mb-3">
+            <div class="min-w-[200px] flex flex-wrap gap-3">
               <div>
                 <span class="font-medium text-base">Total</span>
                 <q-input
@@ -327,8 +314,8 @@
                   type="number"
                   maxlength="250"
                   readonly
+                  borderless
                   :input-style="{ fontSize: '16px', fontWeight: '500' }"
-                  outlined
                   dense
                   color="btn-primary"
                 />
@@ -342,7 +329,7 @@
                   maxlength="250"
                   readonly
                   :input-style="{ fontSize: '16px', fontWeight: '500' }"
-                  outlined
+                  borderless
                   dense
                   color="btn-primary"
                 />
@@ -355,24 +342,41 @@
                   maxlength="250"
                   readonly
                   :input-style="{ fontSize: '16px', fontWeight: '500' }"
-                  outlined
+                  borderless
                   dense
                   color="btn-primary"
                 />
               </div>
-              <div>
-                <span class="font-medium text-base">Net Total</span>
+              <div class="">
+                <span class="font-medium text-base text-btn-primary"
+                  >Net Total</span
+                >
                 <q-input
                   v-model="shopSalesNetAmount"
                   type="number"
                   maxlength="250"
                   readonly
-                  :input-style="{ fontSize: '16px', fontWeight: '500' }"
-                  outlined
+                  :input-style="{
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    color: 'var(--btn-primary)',
+                  }"
+                  borderless
                   dense
-                  color="btn-primary"
+                  color=" btn-primary"
                 />
               </div>
+            </div>
+            <div class="max-w-[300px] mt-3 min-w-[200px] md:w-1/3">
+              <q-input
+                v-model="shopSale.comment"
+                maxlength="250"
+                outlined
+                dense
+                color="btn-primary"
+                label="Comments"
+                @keydown="dialogClose"
+              />
             </div>
           </div>
         </div>
@@ -916,6 +920,7 @@ const handleCloseDescriptionModal = (callback: () => void) => {
   callback();
   isReceiptDescriptionModalVisible.value = false;
 };
+
 //------------------------------------------------------------ Api---------------------------------------------------------
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
