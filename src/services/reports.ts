@@ -215,3 +215,34 @@ export function wrapCsvValue(
 
   return `"${formatted}"`;
 }
+export const GetShopStockReport = async (
+  {
+    shopId,
+    categoryId,
+    productIds,
+    excludeZeroStock,
+  }: {
+    shopId: number | null;
+    categoryId?: number | null;
+    productIds?: string | null;
+    excludeZeroStock?: boolean;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IHOStockReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/shopstock',
+    data: {
+      requestDTO: {
+        shopId: shopId ?? 0,
+        categoryId,
+        productIds,
+        excludeZeroStock,
+      },
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
