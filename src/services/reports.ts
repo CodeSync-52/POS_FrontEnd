@@ -222,10 +222,10 @@ export const GetShopStockReport = async (
     productIds,
     excludeZeroStock,
   }: {
-    shopId: number | null;
-    categoryId?: number | null;
-    productIds?: string | null;
-    excludeZeroStock?: boolean;
+    shopId: number;
+    categoryId: number;
+    productIds: string;
+    excludeZeroStock: boolean;
   },
   controller?: AbortController
 ) => {
@@ -235,12 +235,36 @@ export const GetShopStockReport = async (
     method: 'POST',
     url: 'api/report/shopstock',
     data: {
-      requestDTO: {
-        shopId: shopId ?? 0,
-        categoryId,
-        productIds,
-        excludeZeroStock,
-      },
+      shopId: shopId,
+      categoryId: categoryId,
+      productIds: productIds,
+      excludeZeroStock: excludeZeroStock,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
+export const GetShopSaleStockReport = async (
+  {
+    toDate,
+    fromDate,
+    productId,
+  }: {
+    toDate: string | null;
+    fromDate: string | null;
+    productId: number | null;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IHOStockReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/saleandstockbyshop',
+    data: {
+      productId: productId,
+      toDate: toDate,
+      fromDate: fromDate,
     },
     signal: controller?.signal,
   });

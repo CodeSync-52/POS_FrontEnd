@@ -14,12 +14,13 @@
         style="min-width: 200px; max-width: 200px"
         use-input
         @filter="filterFn"
-        v-model="filterSearch.userData"
-        @update:model-value="filterSearch.userData"
+        v-model="filterSearch.shopId"
+        @update:model-value="filterSearch.shopId = $event.shopId"
         :options="options"
         map-options
+        option-value="shopId"
         popup-content-class="!max-h-[200px]"
-        option-label="fullName"
+        option-label="name"
         label="Select Shop"
         color="btn-primary"
       />
@@ -27,7 +28,6 @@
         maxlength="250"
         v-model="filterSearch.categoryName"
         dense
-        required
         readonly
         label="Select Category"
         outlined
@@ -71,15 +71,15 @@
           icon="search"
           label="Search"
           unelevated
-          @click="getDataList()"
+          @click="getShopStock()"
         />
-        <!-- <q-btn
+        <q-btn
           color=""
           unelevated
           class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
           label="Clear"
           @click="handleResetFilter"
-        /> -->
+        />
       </div>
       <q-dialog v-model="isCategoryModalVisible">
         <article-category-modal @category-selected="handleSelectedCategory" />
@@ -89,23 +89,22 @@
 </template>
 <script setup lang="ts">
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
-import { IArticleData, IUserResponse } from 'src/interfaces';
-import { GetArticleList, GetUsers } from 'src/services';
+import { IArticleData, IShopResponse } from 'src/interfaces';
+import { GetArticleList, GetShopList } from 'src/services';
 import { useQuasar } from 'quasar';
 import { GetShopStockReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref, onMounted } from 'vue';
-import { CanceledError } from 'axios';
 const isLoading = ref(false);
 const $q = useQuasar();
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
-const UserList = ref<IUserResponse[]>([]);
-const options = ref<IUserResponse[]>([]);
+const shopListRecords = ref<IShopResponse[]>([]);
+const options = ref<IShopResponse[]>([]);
 onMounted(() => {
-  getUserList();
+  getShopList();
 });
 const addCategory = () => {
   isCategoryModalVisible.value = true;
@@ -119,14 +118,12 @@ const handleSelectedCategory = (selectedCategory: {
   isCategoryModalVisible.value = false;
 };
 const filterSearch = ref<{
-  userData: null | IUserResponse;
   categoryId: number | null;
   categoryName: string;
   shopId: number | null;
   excludeZeroStock: boolean;
   ProductId: IArticleData[];
 }>({
-  userData: null,
   categoryId: null,
   shopId: null,
   categoryName: '',
@@ -138,6 +135,19 @@ const handleFilterArticles = (value: any, update: CallableFunction) => {
     getArticleList(value);
   });
 };
+const handleResetFilter = () => {
+  if (Object.values(filterSearch.value).every((value) => value === null)) {
+    return;
+  }
+  filterSearch.value = {
+    categoryName: '',
+    shopId: null,
+    categoryId: null,
+    excludeZeroStock: true,
+    ProductId: [],
+  };
+};
+
 const getArticleList = async (productName?: string) => {
   if (isFetchingArticleList.value) return;
   isFetchingArticleList.value = true;
@@ -155,7 +165,7 @@ const getArticleList = async (productName?: string) => {
       }
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred';
+    let message = 'Unexpected Error Occurred while fetching articles';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -167,7 +177,16 @@ const getArticleList = async (productName?: string) => {
   }
   isFetchingArticleList.value = false;
 };
-const getDataList = async () => {
+const getShopStock = async () => {
+  if (!filterSearch.value.shopId) {
+    $q.notify({
+      message: 'Please select a shop.',
+      icon: 'error',
+      color: 'red',
+    });
+    return; // Stop further execution of the function
+  }
+
   if (isLoading.value) return;
   isLoading.value = true;
   try {
@@ -178,8 +197,8 @@ const getDataList = async () => {
     apiController.value = new AbortController();
     const res = await GetShopStockReport(
       {
-        shopId: filterSearch.value.userData?.shopId ?? null,
-        categoryId: filterSearch.value.categoryId,
+        shopId: filterSearch.value.shopId,
+        categoryId: filterSearch.value.categoryId ?? 0,
         productIds: filterSearch.value.ProductId.map(
           (product) => product.productId
         ).join(','),
@@ -187,9 +206,8 @@ const getDataList = async () => {
       },
       apiController.value
     );
-    return res;
   } catch (e) {
-    let message = 'Unexpected Error Occurred';
+    let message = 'Unexpected Error Occurred while fetching shop stock';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -197,43 +215,39 @@ const getDataList = async () => {
       message,
       icon: 'error',
       color: 'red',
-    });
-  }
-  isLoading.value = false;
-};
-const getUserList = async () => {
-  isLoading.value = true;
-  try {
-    const res = await GetUsers({
-      pageNumber: 1,
-      pageSize: 5000,
-    });
-    if (res?.data) {
-      UserList.value = res.data.items.filter(
-        (user) => user.status === 'Active' && user.roleName === 'Customer'
-      );
-      options.value = UserList.value.filter((x) => x.roleName === 'Customer');
-    }
-  } catch (e) {
-    if (e instanceof CanceledError) return;
-    let message = 'Unexpected Error Occurred';
-    if (isPosError(e)) {
-      message = e.message;
-    }
-    $q.notify({
-      message,
-      color: 'red',
-      icon: 'error',
     });
   }
   isLoading.value = false;
 };
 
+const getShopList = async () => {
+  isLoading.value = true;
+  try {
+    const response = await GetShopList({
+      PageNumber: 1,
+      PageSize: 25,
+    });
+    if (response.data) {
+      shopListRecords.value = response.data.items;
+    }
+  } catch (error) {
+    let message = 'Unexpected Error Occurred while fetching shop list';
+    if (isPosError(error)) {
+      message = error.message;
+    }
+    $q.notify({
+      message,
+      type: 'negative',
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
-    options.value = UserList.value.filter((v) =>
-      v.fullName?.toLowerCase().includes(needle)
+    options.value = shopListRecords.value.filter((v) =>
+      v.name?.toLowerCase().includes(needle)
     );
   });
 };
