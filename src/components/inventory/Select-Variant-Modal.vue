@@ -9,7 +9,7 @@
         <div class="text-h6 flex gap-3 pb-5 items-center">
           <div
             @click="handlePreviewImage(props.selectedArticle[0]?.productImage)"
-            class="h-[100px] w-[100px] min-w-[3rem] overflow-hidden rounded-full"
+            class="h-[100px] w-[100px] min-w-[3rem] overflow-hidden"
             :class="
               props.selectedArticle[0].productImage ? 'cursor-pointer' : ''
             "

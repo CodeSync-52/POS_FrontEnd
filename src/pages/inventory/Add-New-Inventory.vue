@@ -106,7 +106,7 @@
             <tr>
               <th>
                 <div class="row items-center gap-1">
-                  <div class="w-8 h-8 rounded-full overflow-hidden">
+                  <div class="w-8 h-8 overflow-hidden">
                     <img
                       class="w-full h-full object-cover"
                       :src="product.productImage || 'assets/default-image.png'"
@@ -262,18 +262,31 @@
                       "
                     >
                       <span
-                        v-for="(labelPiece,index) in barcode.productCode
+                        v-for="(labelPiece, index) in barcode.productCode
                           .split(',')[0]
                           .split('-')"
                         :key="labelPiece"
                         class="font-semibold"
-                        :class="!showfirstBarcodePreview ? (index === 0 ? 'text-2xl':'text-xl') : (index === 0 ? 'text-xl':'text-lg')"
-
+                        :class="
+                          !showfirstBarcodePreview
+                            ? index === 0
+                              ? 'text-2xl'
+                              : 'text-xl'
+                            : index === 0
+                            ? 'text-xl'
+                            : 'text-lg'
+                        "
                       >
                         {{ labelPiece }}
                       </span>
                     </div>
-                    <div :class="showfirstBarcodePreview ? 'min-w-[140px] max-w-[155px]' : 'min-w-[145px] max-w-[150px]'">
+                    <div
+                      :class="
+                        showfirstBarcodePreview
+                          ? 'min-w-[140px] max-w-[155px]'
+                          : 'min-w-[145px] max-w-[150px]'
+                      "
+                    >
                       <img
                         :id="`barcode-image-${index}`"
                         :class="`barcode-` + barcode.productCode"
