@@ -5,6 +5,12 @@
     >
       <span class="text-lg font-medium">{{ pageTitle }}</span>
       <q-btn
+        v-if="
+          authStore.checkUserHasPermission(
+            EUserModules.CustomerGroupManagement,
+            EActionPermissions.Create
+          )
+        "
         label="Add New"
         icon="add"
         unelevated

@@ -421,16 +421,7 @@ const pagination = ref<{
   rowsNumber: number;
 }>(defaultPagination);
 const filterSearch = ref<IUserFilterList>(defaultFilterValues);
-const roleDropdownOptions = computed(() =>
-  roleOptions.filter(
-    (role) =>
-      role.value === EUserRoles.Customer ||
-      role.value === EUserRoles.Admin ||
-      role.value === EUserRoles.SuperAdmin ||
-      role.value === EUserRoles.ShopManager ||
-      role.value === EUserRoles.ShopOfficer
-  )
-);
+const roleDropdownOptions = computed(() => roleOptions);
 onMounted(() => {
   getUserList();
   getCustomerListOption();
