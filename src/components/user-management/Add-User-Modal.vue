@@ -257,16 +257,7 @@ const userData = ref<IUserResponse>({
   address: '',
   shopId: null,
 });
-const roleDropdownOptions = computed(() =>
-  roleOptions.filter(
-    (role) =>
-      role.value === EUserRoles.Customer ||
-      role.value === EUserRoles.Admin ||
-      role.value === EUserRoles.SuperAdmin ||
-      role.value === EUserRoles.ShopOfficer ||
-      role.value === EUserRoles.ShopManager
-  )
-);
+const roleDropdownOptions = computed(() => roleOptions);
 const handleUpdateDiscount = (newVal: string | number | null) => {
   if (typeof newVal === 'string') {
     const val = parseInt(newVal);
@@ -291,7 +282,7 @@ const isButtonDisabled = computed(() => {
   if (
     roleName === EUserRoles.Admin ||
     roleName === EUserRoles.SuperAdmin ||
-    roleName === EUserRoles.OfficeManager
+    roleName === EUserRoles.HOOfficer
   ) {
     validations.value = [
       !fullName,

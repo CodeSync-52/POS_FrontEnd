@@ -10,6 +10,7 @@
           :columns="rolesManagementTableColumns"
           row-key="name"
           :hide-bottom="true"
+          :rows-per-page-options="[0]"
         >
           <template v-slot:body-cell-action="props">
             <q-td class="!text-right" :props="props">

@@ -9,7 +9,7 @@ export enum EUserRoles {
   Customer = 'Customer',
   ShopManager = 'ShopManager',
   ShopOfficer = 'ShopOfficer',
-  OfficeManager = 'OfficeManager',
+  HOOfficer = 'HOOfficer',
 }
 
 export enum EActionPermissions {
@@ -52,7 +52,7 @@ export interface IRoleActionResponse {
 const roleDisplayList: Record<EUserRoles, string> = {
   [EUserRoles.Admin]: 'Admin',
   [EUserRoles.Customer]: 'Customer',
-  [EUserRoles.OfficeManager]: 'Office Manager',
+  [EUserRoles.HOOfficer]: 'HO Officer',
   [EUserRoles.ShopManager]: 'Shop Manager',
   [EUserRoles.ShopOfficer]: 'Shop Officer',
   [EUserRoles.SuperAdmin]: 'Super Admin',
