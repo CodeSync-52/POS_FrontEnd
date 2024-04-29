@@ -280,6 +280,20 @@ export const routeList = [
     },
   },
   {
+    path: '/shop-stock-report',
+    component: () => import('src/pages/report/Shop-Stock-report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
+    path: '/shop-sale-stock-report',
+    component: () => import('src/pages/report/Shop-Sale-Stock-report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {
