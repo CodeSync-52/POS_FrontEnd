@@ -257,20 +257,23 @@
                     <div
                       :class="
                         showfirstBarcodePreview
-                          ? 'firstBarcodeLabel flex flex-col justify-center items-center gap-2'
-                          : 'secondBarcodeLabel flex justify-center gap-2'
+                          ? 'firstBarcodeLabel flex flex-col justify-center items-center '
+                          : 'secondBarcodeLabel flex justify-center gap-6'
                       "
                     >
                       <span
-                        v-for="labelPiece in barcode.productCode
+                        v-for="(labelPiece,index) in barcode.productCode
                           .split(',')[0]
                           .split('-')"
                         :key="labelPiece"
+                        class="font-semibold"
+                        :class="!showfirstBarcodePreview ? (index === 0 ? 'text-2xl':'text-xl') : (index === 0 ? 'text-xl':'text-lg')"
+
                       >
                         {{ labelPiece }}
                       </span>
                     </div>
-                    <div class="min-w-[155px] max-w-[155px]">
+                    <div :class="showfirstBarcodePreview ? 'min-w-[140px] max-w-[155px]' : 'min-w-[145px] max-w-[150px]'">
                       <img
                         :id="`barcode-image-${index}`"
                         :class="`barcode-` + barcode.productCode"
