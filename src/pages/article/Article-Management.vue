@@ -134,7 +134,7 @@
           <q-td :props="props">
             <div
               @click="handlePreviewImage(props.row.productImage)"
-              class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
+              class="h-[100px] w-[100px] min-w-[2rem] overflow-hidden"
               :class="props.row.productImage ? 'cursor-pointer' : ''"
             >
               <img
@@ -180,7 +180,7 @@
           "
           v-slot:body-cell-action="props"
         >
-          <q-td class="flex items-center !h-[65px]" :props="props">
+          <q-td class="flex items-center !h-[116px]" :props="props">
             <router-link
               :to="`/article/${props.row.productId}/update`"
               class="flex gap-2 flex-nowrap"

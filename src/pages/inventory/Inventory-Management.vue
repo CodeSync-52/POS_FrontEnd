@@ -190,7 +190,7 @@
           <q-td :props="props">
             <div
               @click="handlePreviewImage(props.row.productImage)"
-              class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden rounded-full"
+              class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden"
               :class="props.row.productImage ? 'cursor-pointer' : ''"
             >
               <img
