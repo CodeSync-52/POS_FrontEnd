@@ -94,6 +94,7 @@ export interface IUser {
   rolePermissions: RolePermissions;
   userShopInfoDTO: IUserShopInfo;
   isRetailDiscountAllowed: boolean;
+  discount: number;
 }
 export interface IUserShopInfo {
   shopId: number;

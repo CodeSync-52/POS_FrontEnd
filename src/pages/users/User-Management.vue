@@ -314,7 +314,7 @@
       </q-table>
     </div>
     <q-dialog
-      v-model="showAddNewAdminRolePopup"
+      v-model="showAddNewUserPopup"
       @update:model-value="selectedUser = null"
     >
       <add-user-modal
@@ -382,7 +382,7 @@ const $q = useQuasar();
 const authStore = useAuthStore();
 const customerGroupList = ref<ICustomerListResponse[]>([]);
 const pageTitle = getRoleModuleDisplayName(EUserModules.UserManagment);
-const showAddNewAdminRolePopup = ref(false);
+const showAddNewUserPopup = ref(false);
 const isChangeStatusModalVisible = ref(false);
 const isLoading = ref(false);
 const isResetPasswordModalVisible = ref(false);
@@ -459,7 +459,7 @@ const handleResetPassword = (customerGroupId: number) => {
   isResetPasswordModalVisible.value = false;
 };
 const showAddUserModal = (isVisible: boolean) => {
-  showAddNewAdminRolePopup.value = isVisible;
+  showAddNewUserPopup.value = isVisible;
 };
 const handleChangeRetailDisc = (customerGroupId: number) => {
   handleChangeRetailDiscApi(customerGroupId);
@@ -500,6 +500,10 @@ const editUserInfo = async (userData: IUserPayload) => {
       data.customerGroupId = customerGroupId;
       data.discount = Number(discount);
     }
+    if (userData.roleName === EUserRoles.ShopManager) {
+      const { discount } = userData;
+      data.discount = Number(discount);
+    }
     const res = await UpdateUser({
       ...data,
       flatDiscount: data.discount,
@@ -524,7 +528,7 @@ const editUserInfo = async (userData: IUserPayload) => {
       icon: 'error',
     });
   }
-  showAddNewAdminRolePopup.value = false;
+  showAddNewUserPopup.value = false;
 };
 const getUserList = async (paginationData?: {
   pagination?: Omit<typeof pagination.value, 'rowsNumber'>;
@@ -637,7 +641,7 @@ async function handleUserAdd(userData: IUserPayload) {
       icon: 'error',
     });
   }
-  showAddNewAdminRolePopup.value = false;
+  showAddNewUserPopup.value = false;
 }
 async function handleResetPasswordApi(customerId: number) {
   try {
