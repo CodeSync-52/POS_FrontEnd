@@ -35,6 +35,7 @@
                   dense
                   maxlength="250"
                   outlined
+                  autofocus
                   label="search"
                   debounce="300"
                   color="btn-primary"

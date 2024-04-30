@@ -87,7 +87,10 @@
             :columns="editBillGenerationRecordsColumn"
           >
             <template v-slot:body-cell-amount="props">
-              <q-td :props="props" class="flex items-center !h-[70px]">
+              <q-td
+                :props="props"
+                class="flex flex-nowrap items-center !h-[115px]"
+              >
                 <span
                   :class="billAction === 'Generate Receipt' && 'cursor-pointer'"
                   >{{ props.row.amount }}</span
@@ -124,7 +127,7 @@
             <template v-slot:body-cell-image="props">
               <q-td :props="props">
                 <div
-                  class="h-[50px] w-[50px] min-w-[2rem] overflow-hidden"
+                  class="h-[100px] w-[100px] min-w-[2rem] overflow-hidden"
                   :class="props.row.image ? 'cursor-pointer' : ''"
                   @click="handleShowImagePreview(props.row.image)"
                 >
