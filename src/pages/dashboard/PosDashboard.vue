@@ -57,6 +57,18 @@
       label="STR"
       to="/goods-receipt"
     />
+
+    <q-btn
+      v-if="
+        authStore.loggedInUser?.rolePermissions.roleName ===
+        EUserRoles.SuperAdmin.toLowerCase()
+      "
+      unelevated
+      icon="settings"
+      color=""
+      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      label="Settings"
+    />
   </div>
 </template>
 
