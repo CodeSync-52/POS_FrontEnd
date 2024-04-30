@@ -104,12 +104,20 @@
         </div>
         <div class="row px-2 q-col-gutter-xs"></div>
         <div
-          v-if="userData.roleName === EUserRoles.Customer"
+          v-if="
+            userData.roleName.toLocaleLowerCase() ===
+              EUserRoles.Customer.toLowerCase() ||
+            userData.roleName.toLocaleLowerCase() ===
+              EUserRoles.ShopManager.toLowerCase()
+          "
           class="row px-2 q-col-gutter-sm"
         >
           <div
-            v-if="action === 'Add New User'"
-            class="col-md-6 w-full col-sm-12"
+            v-if="
+              userData.roleName.toLocaleLowerCase() ===
+              EUserRoles.Customer.toLowerCase()
+            "
+            class="col-md-4 w-full col-sm-12"
           >
             <div>
               <q-select
@@ -123,7 +131,6 @@
                 @update:model-value="
                   userData.customerGroupId = $event.customerGroupId
                 "
-                :disable="action !== 'Add New User'"
                 label="User Category"
                 color="btn-primary"
                 option-label="name"
@@ -138,14 +145,14 @@
               >
             </div>
           </div>
-          <div class="col-md-6 w-full col-sm-12">
+          <div class="col-md-4 w-full col-sm-12">
             <div>
               <q-input
                 type="number"
                 dense
                 outlined
                 :min="0"
-                :max="5000000"
+                :max="100"
                 v-model="userData.discount"
                 @update:model-value="handleUpdateDiscount($event)"
                 fill-mask="0"
@@ -156,15 +163,13 @@
               />
             </div>
           </div>
-        </div>
-        <div
-          v-if="
-            userData.roleName === EUserRoles.ShopManager ||
-            userData.roleName === EUserRoles.ShopOfficer
-          "
-          class="row px-2 q-col-gutter-sm"
-        >
-          <div class="col-md-6 w-full col-sm-12">
+          <div
+            v-if="
+              userData.roleName === EUserRoles.ShopManager ||
+              userData.roleName === EUserRoles.ShopOfficer
+            "
+            class="col-md-4 w-full col-sm-12"
+          >
             <div>
               <q-select
                 :options="ShopList"
@@ -263,6 +268,8 @@ const handleUpdateDiscount = (newVal: string | number | null) => {
     const val = parseInt(newVal);
     if (val < 0 || !val) {
       userData.value.discount = 0;
+    } else if (val > 100) {
+      userData.value.discount = 100;
     } else {
       userData.value.discount = val;
     }
@@ -302,7 +309,7 @@ const isButtonDisabled = computed(() => {
     validations.value = shopValidation;
   } else if (roleName === EUserRoles.Customer) {
     const customerValidation = [
-      discount !== undefined && discount > 5000000,
+      discount !== undefined && discount > 100,
       !fullName,
       !(phoneNumber.length >= 14 && phoneNumber.length <= 15),
       !userName,
@@ -346,7 +353,7 @@ function handleAddNewUser() {
   delete userData.value.status;
   if (userData.value.roleName !== EUserRoles.Customer) {
     delete userData.value.customerGroupId;
-    delete userData.value.discount;
+    // delete userData.value.discount;
   }
   if (
     userData.value.roleName !== EUserRoles.ShopOfficer &&

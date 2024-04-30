@@ -160,7 +160,10 @@
           </q-td>
         </template>
         <template
-          v-if="routerPath.includes('editHoldBill')"
+          v-if="
+            routerPath.includes('editHoldBill') &&
+            authStore.loggedInUser?.isRetailDiscountAllowed
+          "
           v-slot:body-cell-discount="props"
         >
           <q-td :props="props">
@@ -173,7 +176,13 @@
               outlined
               color="btn-primary"
               class="w-[150px]"
-              @update:model-value="handleUpdateDiscount($event, props.row)"
+              @update:model-value="
+                handleUpdateDiscount(
+                  $event,
+                  props.row,
+                  authStore.loggedInUser?.discount ?? 0
+                )
+              "
             />
           </q-td>
         </template>
@@ -430,14 +439,23 @@ const handleUpdatedispatchQuantity = (
 };
 const handleUpdateDiscount = (
   newVal: string | number | null,
-  row: ISaleInfo
+  row: ISaleInfo,
+  discountPercentage: number
 ) => {
+  const retailPrice = row.retailPrice;
+  const dispatchQuantity = row.dispatchQuantity;
+  const dP = discountPercentage / 100;
+  const discountAmount = retailPrice * dispatchQuantity * dP;
   if (newVal === null || newVal === '') {
     row.discount = 0;
   } else {
     const value = parseInt(newVal.toString());
     if (!value) {
       row.discount = 0;
+    } else if (value > discountAmount) {
+      row.discount = discountAmount;
+    } else if (value < -1 * discountAmount) {
+      row.discount = -1 * discountAmount;
     } else {
       row.discount = value;
     }

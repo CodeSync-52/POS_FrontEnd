@@ -243,7 +243,11 @@
                   <q-input
                     v-model="props.row.discount"
                     @update:model-value="
-                      handleUpdateDiscount($event, props.row)
+                      handleUpdateDiscount(
+                        $event,
+                        props.row,
+                        authStore.loggedInUser?.discount ?? 0
+                      )
                     "
                     :disable="props.row.isReturn"
                     type="number"
@@ -474,7 +478,6 @@ import { useRouter } from 'vue-router';
 import InventoryListModal from 'src/components/inventory/Inventory-List-Modal.vue';
 import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import SaleReceipt from 'src/components/today-sale-summary/Sale-Receipt.vue';
-import ReceiptDescriptionModal from 'src/components/today-sale-summary/Receipt-Description-Modal.vue';
 import {
   IArticleData,
   IInventoryFilterSearch,
@@ -739,7 +742,6 @@ const handleKeyPress = async (e: KeyboardEvent) => {
       try {
         const res = await GetInventoryDetail({
           ShopId: selectedShop.value.fromShop?.shopId?.toString() ?? '-1',
-
           PageNumber: pagination.value.page,
           PageSize: pagination.value.rowsPerPage,
           filterSearch: filterSearch.value,
@@ -850,14 +852,24 @@ const handleSelectedInventoryFilters = (
 };
 const handleUpdateDiscount = (
   newVal: string | number | null,
-  row: ISaleShopSelectedInventory
+  row: ISaleShopSelectedInventory,
+  discountPercentage: number
 ) => {
+  const retailPrice = row.retailPrice;
+  const dispatchQuantity = row.dispatchQuantity;
+  const dP = discountPercentage / 100;
+  const discountAmount = retailPrice * dispatchQuantity * dP;
+
   if (newVal === null || newVal === '') {
     row.discount = 0;
   } else {
     const value = parseInt(newVal.toString());
     if (!value) {
       row.discount = 0;
+    } else if (value > discountAmount) {
+      row.discount = discountAmount;
+    } else if (value < -1 * discountAmount) {
+      row.discount = -1 * discountAmount;
     } else {
       row.discount = value;
     }
