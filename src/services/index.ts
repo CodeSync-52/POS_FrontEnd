@@ -16,3 +16,4 @@ export * from './grn';
 export * from './str';
 export * from './sales-and-return-management';
 export * from './shop-account';
+export * from './setting';

@@ -148,8 +148,27 @@
           {{ receiptDetail?.netAmount }}
         </span>
       </div>
-      <p style="white-space: pre; text-transform: uppercase">
-        {{ receiptDescriptionNote.description }}
+      <p
+        v-if="settingObj.receiptDescription"
+        style="white-space: pre; text-transform: uppercase"
+      >
+        <span
+          v-for="(item, index) in settingObj.receiptDescription.split('.')"
+          :key="index"
+        >
+          {{
+            index === settingObj.receiptDescription.split('.').length - 1
+              ? item.trim()
+              : item.trim() + '.'
+          }}<br
+            v-if="index !== settingObj.receiptDescription.split('.').length - 1"
+          />
+        </span>
+      </p>
+      <p v-else style="white-space: pre; text-transform: uppercase">
+        No Refunds. <br />You must have your receipt to exchange within 15 days.
+        <br />We can not change used shoes sale stock. <br />Thank you for your
+        visit.
       </p>
       <div
         style="
@@ -170,10 +189,26 @@
 </template>
 <script setup lang="ts">
 import moment from 'moment';
-import receiptDescriptionNote from 'src/utils/receipt-description.json';
 import ShoeStoreIcon from 'src/components/pos-icon/Shoe-Store-Svg.vue';
-import { IPreviewSaleResponse } from 'src/interfaces';
-import { computed } from 'vue';
+import { IPreviewSaleResponse, ISetting } from 'src/interfaces';
+import { GetSetting } from 'src/services';
+import { ref, onMounted, computed } from 'vue';
+const settingObj = ref<ISetting>({
+  receiptDescription: '',
+});
+onMounted(() => {
+  getSettings();
+});
+
+const getSettings = async () => {
+  try {
+    const response = await GetSetting();
+    if (response.data && response.data.receiptDescription) {
+      settingObj.value = response.data;
+    }
+  } catch (error) {}
+};
+
 interface IProps {
   receiptDetail: IPreviewSaleResponse | null;
   isFirstSample: string;

@@ -382,6 +382,10 @@ export const routeList = [
     path: '/dashboard',
     component: () => import('src/pages/dashboard/PosDashboard.vue'),
   },
+  {
+    path: '/setting',
+    component: () => import('src/pages/setting/Pos-Setting.vue'),
+  },
 ];
 
 const routes: RouteRecordRaw[] = [
