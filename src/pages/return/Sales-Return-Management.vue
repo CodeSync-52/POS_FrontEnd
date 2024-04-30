@@ -98,10 +98,10 @@
               class="text-center md:text-left"
             >
               <q-btn
-              v-if="
-            authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.SuperAdmin.toLowerCase()
-          "
+                v-if="
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                  EUserRoles.SuperAdmin.toLowerCase()
+                "
                 label="change receipt description"
                 size="sm"
                 unelevated
