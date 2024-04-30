@@ -97,17 +97,6 @@
               v-if="selectedInventoryData.length"
               class="text-center md:text-left"
             >
-              <q-btn
-              v-if="
-            authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.SuperAdmin.toLowerCase()
-          "
-                label="change receipt description"
-                size="sm"
-                unelevated
-                color="btn-primary"
-                @click="isReceiptDescriptionModalVisible = true"
-              />
             </div>
           </div>
         </div>
@@ -469,11 +458,8 @@
       />
     </q-dialog>
   </div>
-  <q-dialog v-model="isReceiptDescriptionModalVisible">
-    <receipt-description-modal
-      @close-description-modal="handleCloseDescriptionModal"
-    />
-  </q-dialog>
+
+  </q-dialog> -->
   <div ref="ReceiptToPrint" class="receipt hidden">
     <sale-receipt
       :receipt-detail="receiptDetail"
@@ -557,7 +543,6 @@ const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
 const filterChanged = ref(false);
 const isLoading = ref(false);
-const isReceiptDescriptionModalVisible = ref(false);
 const ReceiptToPrint = ref<null | HTMLDivElement>(null);
 const dispatchQuantityInput = ref<null | HTMLDivElement>(null);
 const selectedShop = ref<{ fromShop: IShopResponse | null }>({
@@ -920,10 +905,6 @@ const isButtonDisable = computed(() => {
   ];
   return validations.some((validation) => validation);
 });
-const handleCloseDescriptionModal = (callback: () => void) => {
-  callback();
-  isReceiptDescriptionModalVisible.value = false;
-};
 
 //------------------------------------------------------------ Api---------------------------------------------------------
 const getArticleList = async (productName?: string) => {
