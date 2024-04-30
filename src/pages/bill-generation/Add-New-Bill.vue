@@ -795,6 +795,14 @@ async function convertArray(array: IBillProductList[]) {
       });
   }
   const tableStuff = [];
+
+  const netQuantity = array.reduce((total: number, row: IBillProductList) => {
+    if (row.quantity) {
+      return total + row.quantity;
+    }
+    return total;
+  }, 0);
+
   const headerRow = ['Row#', 'Image', 'Article', 'Quantity', 'Amount', 'Total'];
   tableStuff.push(headerRow);
   const claimAmount = [
@@ -813,6 +821,7 @@ async function convertArray(array: IBillProductList[]) {
     'Freight:',
     `${billGenerationDetailsInfoData.value.freight}`,
   ];
+  const qtyRow = ['', '', '', '', 'Quantity:', `${netQuantity}`];
   const footerRow = [
     '',
     '',
@@ -838,7 +847,7 @@ async function convertArray(array: IBillProductList[]) {
     ];
     tableStuff.push(row);
   });
-  tableStuff.push(claimAmount, freightAmount, footerRow);
+  tableStuff.push(claimAmount, freightAmount, qtyRow, footerRow);
   return tableStuff;
 }
 async function downloadPdfData() {
