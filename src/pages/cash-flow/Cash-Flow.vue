@@ -23,6 +23,12 @@
     <div
       class="row flex lg:justify-end sm:justify-start items-center w-full min-h-[3.5rem] gap-8"
     >
+      <q-checkbox
+        dense
+        v-model="filterSearch.IsReverted"
+        color="btn-primary"
+        label="Reverted"
+      />
       <q-input
         v-model="filterSearch.FromDate"
         :max="filterSearch.ToDate"
@@ -250,6 +256,7 @@ const $q = useQuasar();
 const filterSearch = ref({
   FromDate: formattedFromDate || null,
   ToDate: formattedToDate || null,
+  IsReverted: false,
 });
 const filterChanged = ref(false);
 const cashFlowRecords = ref<ICashFlowRecords[]>([]);
@@ -280,6 +287,7 @@ const handleResetFilter = () => {
   filterSearch.value = {
     FromDate: null,
     ToDate: null,
+    IsReverted: false,
   };
   getCashFlowRecords();
 };
@@ -290,6 +298,7 @@ const pagination = ref({
   page: 1,
   rowsPerPage: 1000000,
   rowsNumber: 0,
+  IsReverted: true,
 });
 const handleShowCashFlow = (selectedRow: ICashFlowRecords) => {
   selectedRowData.value = selectedRow;
@@ -355,6 +364,7 @@ const getCashFlowRecords = async (data?: {
         filterSearch: filterSearch.value,
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
+        IsReverted: filterSearch.value.IsReverted,
       },
       apiController.value
     );
