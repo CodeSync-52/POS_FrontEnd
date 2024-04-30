@@ -60,6 +60,9 @@
               :disable="!filterSearch.ProductId"
               @click="handleSelectedFilters"
             /> -->
+            <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+              Total Qty. : {{ totalAvailableQuantity }}
+            </div>
             <q-btn
               unelevated
               color=""
@@ -163,7 +166,7 @@ import {
   IPagination,
 } from 'src/interfaces';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { onMounted, onUpdated, ref, watch } from 'vue';
+import { onMounted, onUpdated, ref, watch, computed } from 'vue';
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const selectedShopDetailList = ref<IInventoryListResponse[]>([]);
@@ -195,6 +198,12 @@ const filteredData = ref<{
   size: '',
   color: '',
   excludeZeroQuantity: true,
+});
+const totalAvailableQuantity = computed(() => {
+  return filteredShopDetailList.value.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 });
 
 const filterSelectedShopDetailList = () => {
