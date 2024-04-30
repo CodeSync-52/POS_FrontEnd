@@ -96,8 +96,7 @@
             <div
               v-if="selectedInventoryData.length"
               class="text-center md:text-left"
-            >
-            </div>
+            ></div>
           </div>
         </div>
         <div class="md:flex justify-between">
@@ -459,7 +458,6 @@
     </q-dialog>
   </div>
 
-  </q-dialog> -->
   <div ref="ReceiptToPrint" class="receipt hidden">
     <sale-receipt
       :receipt-detail="receiptDetail"
