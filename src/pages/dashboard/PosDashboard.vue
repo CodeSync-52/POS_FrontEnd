@@ -68,6 +68,7 @@
       color=""
       class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
       label="Settings"
+      to="/setting"
     />
   </div>
 </template>

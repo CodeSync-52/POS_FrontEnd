@@ -33,7 +33,7 @@ export default route(function () {
       next('/login');
       return;
     }
-    if (to.path === '/dashboard') {
+    if (to.path === '/dashboard' || to.path === '/setting') {
       next();
       return;
     }
