@@ -6,10 +6,12 @@ export const GetCashFlowList = async (
     filterSearch,
     PageNumber = 1,
     PageSize = 50,
+    IsReverted,
   }: {
     filterSearch: { FromDate: string | null; ToDate: string | null };
     PageNumber: number;
     PageSize: number;
+    IsReverted: boolean;
   },
   controller?: AbortController
 ) => {
@@ -24,6 +26,7 @@ export const GetCashFlowList = async (
       PageSize,
       FromDate,
       ToDate,
+      IsReverted,
     },
     signal: controller?.signal,
   });
