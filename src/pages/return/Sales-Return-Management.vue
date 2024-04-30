@@ -95,8 +95,8 @@
             </div>
             <div
               v-if="selectedInventoryData.length"
-              class="text-center md:text-left">
-            </div>
+              class="text-center md:text-left"
+            ></div>
           </div>
         </div>
         <div class="md:flex justify-between">
