@@ -752,7 +752,12 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
     },
     0
   );
-  const footerRow = ['', '', '', { text: `Total: ${netQuantity}`, margin: 5 }];
+  const footerRow = [
+    '',
+    '',
+    '',
+    { text: `Total Quantity: ${netQuantity}`, margin: 5 },
+  ];
   array.forEach((item: ISelectedArticleData, index: number) => {
     const row = [
       {
