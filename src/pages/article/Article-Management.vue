@@ -285,7 +285,7 @@ const pagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 1000000,
+  rowsPerPage: 100,
   rowsNumber: 0,
 });
 onUnmounted(() => {
