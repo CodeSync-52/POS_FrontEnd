@@ -160,7 +160,11 @@
                 </q-tooltip></q-btn
               >
               <q-btn
-                v-if="props.row.transactionDate > formattedUndoDate"
+                v-if="
+                  props.row.transactionDate > formattedUndoDate &&
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.SuperAdmin.toLowerCase()
+                "
                 icon="undo"
                 dense
                 flat
@@ -233,6 +237,7 @@ import { date } from 'quasar';
 import { GetCashFlowList, CreateTransaction } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError, cashFlowColumn } from 'src/utils';
+import { EUserRoles } from 'src/interfaces';
 import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
 import UndoCashFlowModal from 'src/components/return/Complete-Or-Cancel-Modal.vue';
 const authStore = useAuthStore();

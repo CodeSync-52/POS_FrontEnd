@@ -21,6 +21,9 @@
         <div style="margin-bottom: 1rem">
           <span>{{ receiptDetail?.address }}</span>
         </div>
+        <div style="margin-bottom: 1rem">
+          <span>{{ receiptDetail?.phone }}</span>
+        </div>
       </div>
       <div
         style="

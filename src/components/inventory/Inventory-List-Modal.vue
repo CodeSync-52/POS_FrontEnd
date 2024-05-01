@@ -105,7 +105,7 @@
       <q-table
         :columns="InventoryListColumn"
         @request="handlePagination($event.pagination)"
-        :rows="filteredShopDetailList"
+        :rows="filteredInvDetailList"
         :rows-per-page-options="[0]"
         v-model:pagination="InventoryPagination"
         row-key="inventoryId"
@@ -189,7 +189,7 @@ const filterSearch = ref<IInventoryFilterSearch>({
   CategoryId: null,
   categoryName: null,
 });
-const filteredShopDetailList = ref<IInventoryListResponse[]>([]);
+const filteredInvDetailList = ref<IInventoryListResponse[]>([]);
 const filteredData = ref<{
   size: string;
   color: string;
@@ -200,14 +200,14 @@ const filteredData = ref<{
   excludeZeroQuantity: true,
 });
 const totalAvailableQuantity = computed(() => {
-  return filteredShopDetailList.value.reduce(
+  return filteredInvDetailList.value.reduce(
     (total, item) => total + item.quantity,
     0
   );
 });
 
 const filterSelectedShopDetailList = () => {
-  filteredShopDetailList.value = selectedShopDetailList.value.filter((item) => {
+  filteredInvDetailList.value = selectedShopDetailList.value.filter((item) => {
     let sizeMatch = true;
     let colorMatch = true;
     let excludeZero = true;
@@ -241,7 +241,7 @@ watch([filteredData, selectedShopDetailList], filterSelectedShopDetailList, {
 
 watch(filteredData, (newValue) => {
   if (!newValue) {
-    filteredShopDetailList.value = selectedShopDetailList.value;
+    filteredInvDetailList.value = selectedShopDetailList.value;
   }
 });
 interface IProps {

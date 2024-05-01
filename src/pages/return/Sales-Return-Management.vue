@@ -353,7 +353,7 @@
                   maxlength="250"
                   readonly
                   :input-style="{
-                    fontSize: '16px',
+                    fontSize: '25px',
                     fontWeight: '500',
                     color: 'var(--btn-primary)',
                   }"
@@ -890,7 +890,7 @@ const handleSelectedData = (payload: IInventoryListResponse[]) => {
   const oldIdList = selectedInventoryData.value.map((item) => item.inventoryId);
   payload.forEach((item) => {
     if (!oldIdList.includes(item.inventoryId)) {
-      selectedInventoryData.value.push({
+      selectedInventoryData.value.unshift({
         ...item,
         dispatchQuantity: 1,
         discount: 0,

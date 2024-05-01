@@ -206,13 +206,11 @@
               <q-btn
                 v-if="
                   authStore.checkUserHasPermission(
-                    EUserModules.ReceiptManagement,
-                    EActionPermissions.Update
+                    EUserModules.BillGeneration,
+                    EActionPermissions.Create
                   ) &&
                   props.row.purchaseStatus !== 'Cancelled' &&
                   props.row.purchaseStatus !== 'Billed' &&
-                  authStore.loggedInUser?.rolePermissions.roleName ===
-                    EUserRoles.SuperAdmin.toLowerCase() &&
                   moment(
                     date.addToDate(props.row.createdDate, { date: 365 })
                   ).format('YYYY-MM-DD') >

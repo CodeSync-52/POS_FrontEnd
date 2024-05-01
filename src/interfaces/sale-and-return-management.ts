@@ -69,6 +69,7 @@ export interface IPreviewSaleResponse {
   totalReturnAmount: number;
   saleId: number;
   address: string;
+  phone: string;
   invoiceNumber: string;
   salePersonCode: string;
   shopId: number;
