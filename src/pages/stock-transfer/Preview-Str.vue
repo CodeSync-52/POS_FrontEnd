@@ -209,8 +209,6 @@
         unelevated
         v-if="
           authStore.loggedInUser?.rolePermissions.roleName !==
-            EUserRoles.ShopManager.toLowerCase() &&
-          authStore.loggedInUser?.rolePermissions.roleName !==
             EUserRoles.ShopOfficer.toLowerCase()
         "
         label="Print Label"
