@@ -193,18 +193,12 @@
                 v-if="
                   authStore.checkUserHasPermission(
                     EUserModules.BillGeneration,
-                    EActionPermissions.Delete
-                  ) &&
-                  authStore.checkUserHasPermission(
-                    EUserModules.BillGeneration,
-                    EActionPermissions.Delete
+                    EActionPermissions.Update
                   ) &&
                   props.row.billStatus !== 'Cancelled' &&
                   props.row.billStatus !== 'Completed' &&
-                  authStore.loggedInUser?.rolePermissions.roleName ===
-                    EUserRoles.SuperAdmin.toLowerCase() &&
                   moment(
-                    date.addToDate(props.row.createdDate, { date: 5 })
+                    date.addToDate(props.row.createdDate, { date: 365 })
                   ).format('YYYY-MM-DD') >
                     moment(timeStamp).format('YYYY-MM-DD')
                 "
@@ -226,16 +220,12 @@
                     EUserModules.BillGeneration,
                     EActionPermissions.Delete
                   ) &&
-                  authStore.checkUserHasPermission(
-                    EUserModules.BillGeneration,
-                    EActionPermissions.Delete
-                  ) &&
                   props.row.billStatus !== 'Cancelled' &&
                   props.row.billStatus !== 'Completed' &&
                   authStore.loggedInUser?.rolePermissions.roleName ===
                     EUserRoles.SuperAdmin.toLowerCase() &&
                   moment(
-                    date.addToDate(props.row.createdDate, { date: 5 })
+                    date.addToDate(props.row.createdDate, { date: 365 })
                   ).format('YYYY-MM-DD') >
                     moment(timeStamp).format('YYYY-MM-DD')
                 "

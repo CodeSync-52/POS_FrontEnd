@@ -126,6 +126,14 @@
           </q-item>
         </template>
       </q-select>
+
+      <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+        Total Qty. : {{ totalAvailableQuantity }}
+      </div>
+      <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+        Total Ret. Price : {{ totalRetailProce }}
+      </div>
+
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           unelevated
@@ -148,7 +156,7 @@
     <div class="py-4">
       <q-table
         :columns="InventoryBasicColumn"
-        :rows="filteredShopDetailList"
+        :rows="filteredInvDetailList"
         :loading="isLoading"
         v-model:pagination="pagination"
         @request="getInventoryList"
@@ -235,7 +243,7 @@
 
 <script setup lang="ts">
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { exportFile, useQuasar } from 'quasar';
 import {
   EActionPermissions,
@@ -262,7 +270,7 @@ import moment from 'moment';
 const authStore = useAuthStore();
 const pageTitle = getRoleModuleDisplayName(EUserModules.InventoryManagement);
 const InventoryListRecords = ref<IInventoryListResponse[]>([]);
-const filteredShopDetailList = ref<IInventoryListResponse[]>([]);
+const filteredInvDetailList = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
 const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
@@ -302,6 +310,19 @@ const filteredData = ref<{
   size: '',
   color: '',
   excludeZeroQuantity: true,
+});
+const totalAvailableQuantity = computed(() => {
+  return filteredInvDetailList.value.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+});
+
+const totalRetailProce = computed(() => {
+  return filteredInvDetailList.value.reduce(
+    (total, item) => total + item.retailPrice,
+    0
+  );
 });
 const $q = useQuasar();
 const addCategory = () => {
@@ -430,7 +451,7 @@ const handlePreviewImage = (selectedImage: string) => {
   }
 };
 const filterSelectedShopDetailList = () => {
-  filteredShopDetailList.value = InventoryListRecords.value.filter((item) => {
+  filteredInvDetailList.value = InventoryListRecords.value.filter((item) => {
     let sizeMatch = true;
     let colorMatch = true;
     let excludeZero = true;
@@ -461,7 +482,7 @@ watch([filteredData, InventoryListRecords], filterSelectedShopDetailList, {
 
 watch(filteredData, async (newValue) => {
   if (!newValue) {
-    filteredShopDetailList.value = InventoryListRecords.value;
+    filteredInvDetailList.value = InventoryListRecords.value;
   }
 });
 const downloadCSVData = () => {
@@ -470,7 +491,7 @@ const downloadCSVData = () => {
   );
   const content = [selectedColumnsData.map((col) => wrapCsvValue(col.label))]
     .concat(
-      filteredShopDetailList.value.map((row: any) =>
+      filteredInvDetailList.value.map((row: any) =>
         selectedColumnsData
           .map((col) =>
             wrapCsvValue(

@@ -24,7 +24,9 @@
                   authStore.loggedInUser?.rolePermissions.roleName ===
                     EUserRoles.SuperAdmin.toLowerCase() ||
                   authStore.loggedInUser?.rolePermissions.roleName ===
-                    EUserRoles.Admin.toLowerCase()
+                    EUserRoles.Admin.toLowerCase() ||
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                    EUserRoles.HOOfficer.toLowerCase()
                 "
                 class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
                 label="Dashboard"
