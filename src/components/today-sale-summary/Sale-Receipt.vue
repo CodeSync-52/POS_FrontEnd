@@ -1,7 +1,7 @@
 <template>
   <div
     class="mx-auto max-w-[400px]"
-    style="font-family: 'Courier New', Courier, monospace"
+    style="font-family: Arial, Helvetica, sans-serif"
   >
     <div class="flex flex-col">
       <div style="margin-bottom: 0.5rem; text-align: center">
@@ -31,6 +31,7 @@
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          font-size: 1.25rem;
         "
       >
         <span>Receipt #: </span>
@@ -42,6 +43,7 @@
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          font-size: 1.25rem;
         "
       >
         <span>Date: </span>
@@ -56,6 +58,7 @@
           border-style: dotted;
           border-color: rgba(0, 0, 0, 0.7);
           border-width: 0.5px 0;
+          font-size: 1.25rem;
         "
         :style="
           isFirstSample === 'first'
@@ -75,7 +78,12 @@
       <div
         v-for="product in receiptDetail?.saleDetailInfos"
         :key="product.inventoryId"
-        style="display: grid !important; gap: 0.5rem; padding: 0.3rem 0"
+        style="
+          display: grid !important;
+          gap: 0.5rem;
+          padding: 0.3rem 0;
+          font-size: 1.25rem;
+        "
         :style="
           isFirstSample === 'first'
             ? 'grid-template-columns: 1fr 1fr 1fr 1fr 2fr'
@@ -110,6 +118,7 @@
           border-style: dotted;
           border-color: rgba(0, 0, 0, 0.7);
           border-width: 0.5px 0;
+          font-size: 1.25rem;
         "
         :style="
           isFirstSample === 'first'
@@ -143,6 +152,7 @@
           border-color: rgba(0, 0, 0, 0.7);
           border-width: 0 0 0.5px;
           grid-template-columns: 1fr 1fr 1fr;
+          font-size: 1.25rem;
         "
       >
         <span></span>
@@ -168,7 +178,10 @@
           />
         </span>
       </p>
-      <p v-else style="white-space: pre; text-transform: uppercase">
+      <p
+        v-else
+        style="white-space: pre; text-transform: uppercase; font-size: 1.25rem"
+      >
         No Refunds. <br />You must have your receipt to exchange within 15 days.
         <br />We can not change used shoes sale stock. <br />Thank you for your
         visit.

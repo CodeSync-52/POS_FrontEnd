@@ -120,7 +120,7 @@
         <template v-slot:body-cell-sourceUserName="props">
           <q-td
             :props="props"
-            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+            class="whitespace-nowrap w-[260px] text-ellipsis overflow-hidden"
           >
             {{ props.row.sourceUserName }}
           </q-td>
@@ -182,7 +182,7 @@
         <template v-slot:body-cell-comments="props">
           <q-td
             :props="props"
-            class="whitespace-nowrap max-w-[150px] text-ellipsis overflow-hidden"
+            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
           >
             {{ props.row.comments || 'N/A' }}
           </q-td>
@@ -190,7 +190,7 @@
         <template v-slot:body-cell-targetUserName="props">
           <q-td
             :props="props"
-            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+            class="whitespace-nowrap w-[260px] text-ellipsis overflow-hidden"
           >
             {{ props.row.targetUserName }}
           </q-td>
