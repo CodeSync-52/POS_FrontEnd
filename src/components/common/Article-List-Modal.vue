@@ -116,7 +116,7 @@ const articlePagination = ref({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 50000,
+  rowsPerPage: 10000000,
   rowsNumber: 0,
 });
 const props = withDefaults(defineProps<propTypes>(), {

@@ -26,14 +26,14 @@ export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
   {
     name: 'debit',
     required: true,
-    label: 'Debit +',
+    label: 'Debit (Out)',
     align: 'left',
     field: (row) => row.debit ?? '-',
   },
   {
     name: 'credit',
     required: true,
-    label: 'Credit -',
+    label: 'Credit (In)',
     align: 'left',
     field: (row) => row.credit ?? '-',
   },
