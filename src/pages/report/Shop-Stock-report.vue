@@ -81,6 +81,65 @@
           @click="handleResetFilter"
         />
       </div>
+      <div class="container mx-auto mt-6">
+        <div
+          v-for="(item, itemIndex) in stockResponse"
+          :key="itemIndex"
+          class="mb-8 flex gap-10 border p-6"
+        >
+          <div class="flex flex-col w-[10%]">
+            <div class="font-semibold">Article</div>
+            <div>{{ item.article }}</div>
+          </div>
+          <div class="flex flex-col items-center mb-2 w-[20%]">
+            <div class="font-semibold">Image</div>
+            <img
+              :src="item.image"
+              alt="Product Image"
+              class="w-24 h-24 mt-2 mb-4 ml-4"
+            />
+          </div>
+
+          <div class="w-1/2">
+            <div class="flex border ml-auto p-2">
+              <div class="w-24 font-semibold">Color</div>
+              <template v-if="item.variant2List.length > 0">
+                <div class="relative">
+                  <div class="absolute -top-8 font-semibold">Size</div>
+                  <div class="flex">
+                    <div
+                      class="w-12 font-semibold"
+                      v-for="(size, sizeIndex) in getUniqueSizes(
+                        item.variant2List
+                      )"
+                      :key="sizeIndex"
+                    >
+                      {{ size }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <div class="font-semibold">Total</div>
+            </div>
+            <div
+              v-for="(variant, variantIndex) in item.variant2List"
+              :key="variantIndex"
+              class="flex items-center border ml-auto p-2"
+            >
+              <div class="w-24">{{ variant.variant2_Name }}</div>
+              <div class="flex">
+                <template
+                  v-for="(v1, v1Index) in variant.variant1List"
+                  :key="v1Index"
+                >
+                  <div class="w-12">{{ v1.stockQuantity }}</div>
+                </template>
+                <div class="w-12">{{ variant.totalQuantity }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <q-dialog v-model="isCategoryModalVisible">
         <article-category-modal @category-selected="handleSelectedCategory" />
       </q-dialog>
@@ -103,6 +162,7 @@ const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const shopListRecords = ref<IShopResponse[]>([]);
 const options = ref<IShopResponse[]>([]);
+const stockResponse = ref<any>([]);
 onMounted(() => {
   getShopList();
 });
@@ -146,6 +206,7 @@ const handleResetFilter = () => {
     excludeZeroStock: true,
     ProductId: [],
   };
+  stockResponse.value = [];
 };
 
 const getArticleList = async (productName?: string) => {
@@ -206,6 +267,7 @@ const getShopStock = async () => {
       },
       apiController.value
     );
+    stockResponse.value = res.data;
   } catch (e) {
     let message = 'Unexpected Error Occurred while fetching shop stock';
     if (isPosError(e)) {
@@ -219,7 +281,17 @@ const getShopStock = async () => {
   }
   isLoading.value = false;
 };
-
+const getUniqueSizes = (variant2List: any) => {
+  let uniqueSizes: any = [];
+  variant2List.forEach((variant: any) => {
+    variant.variant1List.forEach((v1: any) => {
+      if (!uniqueSizes.includes(v1.variant1_Name)) {
+        uniqueSizes.push(v1.variant1_Name);
+      }
+    });
+  });
+  return uniqueSizes;
+};
 const getShopList = async () => {
   isLoading.value = true;
   try {
