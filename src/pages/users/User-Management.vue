@@ -233,7 +233,7 @@
         <template v-slot:body-cell-customerGroup="props">
           <q-td
             :props="props"
-            class="whitespace-nowrap max-w-[60px] text-ellipsis overflow-hidden"
+            class="whitespace-nowrap max-w-[70px] text-ellipsis overflow-hidden"
           >
             {{ props.row.customerGroup ?? '-' }}
           </q-td>

@@ -237,15 +237,41 @@
         </template>
       </q-table>
     </div>
-    <div class="flex justify-center lg:justify-start mb-3">
+    <div
+      v-if="routerPath.includes('editHoldBill')"
+      class="flex justify-center lg:justify-start mb-3"
+    >
       <div class="flex flex-col lg:flex-row gap-4 lg:gap-7">
-        <div class="md:flex gap-3">
+        <div class="md:flex gap-3 items-center">
           <span class="font-medium md:text-lg">Total :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalSalesAmount }} </span>
         </div>
         <div class="md:flex gap-3 items-center">
           <span class="font-medium md:text-lg">Total Discount :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
+        </div>
+        <div class="md:flex gap-3 items-center">
+          <span class="font-medium md:text-lg">Cash Received:</span>
+          <q-input
+            v-model="cashReceived"
+            type="number"
+            maxlength="250"
+            outlined
+            dense
+            color="btn-primary"
+          />
+        </div>
+        <div class="md:flex gap-3 items-center">
+          <span class="font-medium md:text-lg">Change:</span>
+          <q-input
+            v-model="cashReturn"
+            type="number"
+            maxlength="250"
+            readonly
+            borderless
+            dense
+            color="btn-primary"
+          />
         </div>
         <div
           v-if="routerPath.includes('preview')"
@@ -312,7 +338,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import SaleReceipt from 'src/components/today-sale-summary/Sale-Receipt.vue';
 import { useRouter } from 'vue-router';
 import { ISaleInfo, IPreviewSaleResponse, ISaleDetail } from 'src/interfaces';
@@ -331,6 +357,7 @@ import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
 const $q = useQuasar();
 const router = useRouter();
+const cashReceived = ref<number>(0);
 const authStore = useAuthStore();
 const isLoading = ref(false);
 const receipt = ref<{
@@ -408,6 +435,7 @@ const handleSelectedData = (payload: ISaleInfo[]) => {
 
   isInventoryListModalVisible.value = false;
 };
+
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
     selectedPreviewImage.value = selectedImage;
@@ -437,6 +465,9 @@ const handleUpdatedispatchQuantity = (
     }
   }
 };
+const cashReturn = computed(() => {
+  return cashReceived.value - SaleSummary.value.netAmount;
+});
 const handleUpdateDiscount = (
   newVal: string | number | null,
   row: ISaleInfo,
@@ -461,6 +492,7 @@ const handleUpdateDiscount = (
     }
   }
 };
+
 const handlePrintReceipt = () => {
   printReceipt(ReceiptToPrint);
 };
