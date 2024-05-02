@@ -368,7 +368,7 @@
                   v-model="cashReceived"
                   type="number"
                   maxlength="250"
-                  borderless
+                  outlined
                   dense
                   color="btn-primary"
                 />
