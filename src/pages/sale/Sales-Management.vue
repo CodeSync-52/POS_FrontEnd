@@ -208,7 +208,7 @@
                   authStore.loggedInUser?.rolePermissions.roleName ===
                     EUserRoles.SuperAdmin.toLowerCase() &&
                   moment(
-                    date.addToDate(props.row.createdDate, { date: 5 })
+                    date.addToDate(props.row.createdDate, { date: 365 })
                   ).format('YYYY-MM-DD') >
                     moment(timeStamp).format('YYYY-MM-DD')
                 "
@@ -235,7 +235,7 @@
                   authStore.loggedInUser?.rolePermissions.roleName ===
                     EUserRoles.SuperAdmin.toLowerCase() &&
                   moment(
-                    date.addToDate(props.row.createdDate, { date: 5 })
+                    date.addToDate(props.row.createdDate, { date: 365 })
                   ).format('YYYY-MM-DD') >
                     moment(timeStamp).format('YYYY-MM-DD')
                 "
