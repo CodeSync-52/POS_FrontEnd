@@ -134,19 +134,24 @@
           @click="handleAddNewFlow"
           color="btn-primary"
         />
+        <q-dialog v-model="isPreviewCashFlowModalVisible">
+          <preview-cash-flow :selected-data="cashFlowResponse" />
+        </q-dialog>
       </q-card-actions>
     </q-card>
   </div>
 </template>
 <script lang="ts" setup>
 import { CanceledError } from 'axios';
-import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { onMounted, ref } from 'vue';
-import { IUserResponse } from 'src/interfaces';
+import { ICashFlowRecords, IUserResponse } from 'src/interfaces';
 import { CreateTransaction, GetUsers } from 'src/services';
+import PreviewCashFlow from 'src/components/cash-flow/Preview-Cash-Flow.vue';
 import { isPosError } from 'src/utils';
-const router = useRouter();
+
+const isPreviewCashFlowModalVisible = ref(false);
+const cashFlowResponse = ref<ICashFlowRecords | null>(null);
 const isAdding = ref(false);
 const addNewFlow = ref<{
   cashIn: IUserResponse | null;
@@ -163,6 +168,10 @@ const addNewFlow = ref<{
   cashInOutstandingBalance: null,
   cashOutOutstandingBalance: null,
 });
+const handleShowCashFlow = (cashFlowRes: ICashFlowRecords) => {
+  cashFlowResponse.value = cashFlowRes;
+  isPreviewCashFlowModalVisible.value = true;
+};
 const senderUserList = ref<IUserResponse[]>([]);
 const receiverUserList = ref<IUserResponse[]>([]);
 const handleUpdateAmount = (newVal: string | number | null) => {
@@ -187,11 +196,13 @@ const handleAddNewFlow = async () => {
       comments: comment,
     });
     if (res.type === 'Success') {
+      if (res.data) {
+        handleShowCashFlow(res.data);
+      }
       $q.notify({
         message: res.message,
         color: 'green',
       });
-      router.push('/cash-flow');
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Cash Flow';

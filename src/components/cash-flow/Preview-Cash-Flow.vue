@@ -3,7 +3,13 @@
     <q-card-section>
       <div class="text-lg font-medium row justify-between mb-2">
         <span>Preview Cash Flow</span>
-        <q-btn icon="close" flat unelevated dense v-close-popup />
+        <q-btn
+          icon="close"
+          flat
+          unelevated
+          dense
+          @click="ClosePreviewCashFlow()"
+        />
       </div>
       <div class="row q-col-gutter-md">
         <div class="col-12 col-md-6">
@@ -112,7 +118,7 @@
         color=""
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
         unelevated
-        v-close-popup
+        @click="ClosePreviewCashFlow()"
       />
     </q-card-actions>
   </q-card>
@@ -130,6 +136,8 @@ import { GetUsers } from 'src/services';
 import { CanceledError } from 'axios';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 interface IProps {
   selectedData: ICashFlowRecords | null;
 }
@@ -288,5 +296,8 @@ const getUserList = async () => {
       icon: 'error',
     });
   }
+};
+const ClosePreviewCashFlow = () => {
+  router.push('/cash-flow');
 };
 </script>
