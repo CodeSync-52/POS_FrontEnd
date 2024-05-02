@@ -181,7 +181,7 @@ const pagination = ref<IPagination>({
   sortBy: 'desc',
   descending: false,
   page: 1,
-  rowsPerPage: 10000,
+  rowsPerPage: 100000,
   rowsNumber: 0,
 });
 const selectedPreviewImage = ref('');

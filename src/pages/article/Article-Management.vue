@@ -394,7 +394,9 @@ const getArticleList = async (data?: {
   }
   try {
     const rowsPerPage =
-      pagination.value.rowsPerPage === 0 ? 10000 : pagination.value.rowsPerPage;
+      pagination.value.rowsPerPage === 0
+        ? 10000000
+        : pagination.value.rowsPerPage;
     if (isLoading.value && apiController.value) {
       apiController.value.abort();
       apiController.value = null;
