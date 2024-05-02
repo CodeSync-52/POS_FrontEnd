@@ -238,8 +238,8 @@ async function convertArrayToPdfData(array: IAccountReportData[]) {
   const headerRow = [
     'Date',
     'Transaction Detail',
-    'Debit +',
-    'Credit -',
+    'Debit (Out)',
+    'Credit (In)',
     'Balance',
   ];
   tableStuff.push(headerRow);
