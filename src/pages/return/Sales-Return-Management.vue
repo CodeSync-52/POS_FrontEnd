@@ -343,7 +343,7 @@
                   color="btn-primary"
                 />
               </div>
-              <div class="">
+              <div>
                 <span class="font-medium text-base text-btn-primary"
                   >Net Total</span
                 >
@@ -360,6 +360,29 @@
                   borderless
                   dense
                   color=" btn-primary"
+                />
+              </div>
+              <div>
+                <span class="font-medium text-base">Cash Received</span>
+                <q-input
+                  v-model="cashReceived"
+                  type="number"
+                  maxlength="250"
+                  borderless
+                  dense
+                  color="btn-primary"
+                />
+              </div>
+              <div>
+                <span class="font-medium text-base">Change</span>
+                <q-input
+                  v-model="cashReturn"
+                  type="number"
+                  maxlength="250"
+                  readonly
+                  borderless
+                  dense
+                  color="btn-primary"
                 />
               </div>
             </div>
@@ -512,6 +535,7 @@ const timeStamp = Date.now();
 const pageTitle = getRoleModuleDisplayName(
   EUserModules.SaleAndReturnManagement
 );
+const cashReceived = ref<number>(0);
 const router = useRouter();
 const shopData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
@@ -688,6 +712,9 @@ const shopSalesReturnItems = computed(() => {
   } else {
     return 0;
   }
+});
+const cashReturn = computed(() => {
+  return cashReceived.value - shopSalesNetAmount.value;
 });
 const shopSalesNetAmount = computed(() => {
   const netAmount =
