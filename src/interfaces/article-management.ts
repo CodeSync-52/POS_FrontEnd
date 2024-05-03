@@ -9,7 +9,7 @@ export interface IArticleData {
   status: string;
   costPrice: number;
   productImage: string | null;
-  masterStock: null | number;
+  masterStock: number;
   commission: number;
 }
 

@@ -105,6 +105,7 @@ interface propTypes {
     productName?: string;
     productImage: string;
     masterStock: number;
+    allowedDispatchQuantity: number;
     retailPrice: number;
   }[];
   articleList: IArticleData[];
@@ -133,6 +134,7 @@ const selectedArticles = ref<
     unitWholeSalePrice?: number;
     productImage: string | null;
     masterStock: number;
+    allowedDispatchQuantity: number;
     retailPrice: number;
   }[]
 >([...props.currentData]);
@@ -149,6 +151,7 @@ const emit = defineEmits<{
       productName?: string;
       productImage: string | null;
       masterStock: number;
+      allowedDispatchQuantity: number;
       retailPrice: number;
     }[]
   ): void;
@@ -169,6 +172,7 @@ watch(
       productImage: article.productImage,
       masterStock: article.masterStock ?? 0,
       retailPrice: article.retailPrice,
+      allowedDispatchQuantity: article.masterStock ?? 0,
     }));
   },
   {
