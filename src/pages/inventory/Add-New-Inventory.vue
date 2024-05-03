@@ -964,8 +964,3 @@ const selectedInventoryTotalQuantity = (
   );
 };
 </script>
-<!-- <style>
-*{
-  font-family: Verdana, Geneva, Tahoma, sans-serif
-}
-</style> -->
