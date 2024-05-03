@@ -258,33 +258,45 @@
                       :class="
                         showfirstBarcodePreview
                           ? 'firstBarcodeLabel flex flex-col justify-center items-center '
-                          : 'secondBarcodeLabel flex justify-center gap-6'
+                          : 'secondBarcodeLabel flex justify-center'
                       "
                     >
-                      <span
-                        v-for="(labelPiece, index) in barcode.productCode
-                          .split(',')[0]
-                          .split('-')"
-                        :key="labelPiece"
-                        class="font-semibold"
-                        :class="
-                          !showfirstBarcodePreview
-                            ? index === 0
-                              ? 'text-2xl'
-                              : 'text-xl'
-                            : index === 0
-                            ? 'text-xl'
-                            : 'text-lg'
-                        "
+                      <div
+                        v-if="showfirstBarcodePreview"
+                        class="firstBarcodeLabel flex flex-col justify-center items-center"
                       >
-                        {{ labelPiece }}
+                        <span
+                          v-for="(labelPiece, index) in barcode.productCode
+                            .split(',')[0]
+                            .split('-')"
+                          :key="labelPiece"
+                          class="font-semibold"
+                          :class="
+                            !showfirstBarcodePreview
+                              ? index === 0
+                                ? 'text-2xl'
+                                : 'text-xl'
+                              : index === 0
+                              ? 'text-xl'
+                              : 'text-lg'
+                          "
+                        >
+                          {{ labelPiece }}
+                        </span>
+                      </div>
+                      <span
+                        v-else
+                        class="font-semibold text-xl items-center flex"
+                      >
+                        {{ barcode.productCode.split(',')[0] }}
                       </span>
+                      <span> </span>
                     </div>
                     <div
                       :class="
                         showfirstBarcodePreview
-                          ? 'min-w-[140px] max-w-[155px]'
-                          : 'min-w-[145px] max-w-[150px]'
+                          ? 'min-w-[140px] max-w-[155px] '
+                          : 'min-w-[145px] max-w-[150px] barcode-container'
                       "
                     >
                       <img
@@ -515,11 +527,13 @@ const printBarcodes = () => {
   if (printWindow) {
     let stylesheets =
       '<style>' +
+      '.grid-parent {font-family:Verdana}' +
       '.grid-parent { .grid-container {display: grid !important; gap:1rem;grid-template-columns: auto; margin-left:auto;margin-right:auto} }' +
       '.grid-item {page-break-after:always;width:280px;margin-top:0.3rem;margin-bottom:0.7rem; font-size:1.1rem;margin-left:auto;margin-right:auto;padding: 0.34rem;text-align: center; }' +
-      '.firstBarcodeLabel {display:flex;gap:1rem;flex-direction:column;align-items:center;justify-content:center;margin-left:0.3rem}' +
+      '.firstBarcodeLabel {display:flex;gap:0.5rem;flex-direction:column;font-weight:bold;font-size:1.5rem;align-items:center;justify-content:center;margin-left:0.3rem}' +
       '.firstBarcodeContainer {display:flex;align-items:center;justify-content:center;}' +
-      '.secondBarcodeLabel {display:flex;gap:1rem;align-items:center;justify-content:center;}' +
+      '.secondBarcodeLabel {display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.5rem;}' +
+      '.barcode-container {margin-top:-0.3rem}' +
       '</style>';
     printWindow.document.write(
       header_string + stylesheets + new_string + footer_string
@@ -950,3 +964,8 @@ const selectedInventoryTotalQuantity = (
   );
 };
 </script>
+<!-- <style>
+*{
+  font-family: Verdana, Geneva, Tahoma, sans-serif
+}
+</style> -->
