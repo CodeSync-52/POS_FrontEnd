@@ -806,7 +806,14 @@ async function convertArray(array: IBillProductList[]) {
     return total;
   }, 0);
 
-  const headerRow = ['Row#', 'Image', 'Article', 'Quantity', 'Amount', 'Total'];
+  const headerRow = [
+    'Row#',
+    'Image',
+    'Article',
+    'Quantity',
+    'Item Score',
+    'Total',
+  ];
   tableStuff.push(headerRow);
   const claimAmount = [
     '',
@@ -834,6 +841,9 @@ async function convertArray(array: IBillProductList[]) {
     `${billGenerationDetailsInfoData.value.totalAmount}`,
   ];
   array.forEach((item: IBillProductList, index: number) => {
+    const randomTextBeforeAmount = generateRandomAlphaNumeric(3); // Generate 3-character random string
+    const randomTextAfterAmount = generateRandomAlphaNumeric(3); // Generate 3-character random string
+
     const row = [
       {
         text: index + 1,
@@ -845,7 +855,10 @@ async function convertArray(array: IBillProductList[]) {
       },
       { text: item.name, margin: [0, 20] },
       { text: item.quantity, bold: true, margin: [0, 20] },
-      { text: item.amount, margin: [0, 20] },
+      {
+        text: randomTextBeforeAmount + item.amount + randomTextAfterAmount,
+        margin: [0, 20],
+      },
       { text: item.amount * item.quantity, margin: [0, 20] },
     ];
     tableStuff.push(row);
@@ -853,6 +866,17 @@ async function convertArray(array: IBillProductList[]) {
   tableStuff.push(claimAmount, freightAmount, qtyRow, footerRow);
   return tableStuff;
 }
+
+function generateRandomAlphaNumeric(length: number) {
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 async function downloadPdfData() {
   const headers: IPdfHeaders[] = [
     {

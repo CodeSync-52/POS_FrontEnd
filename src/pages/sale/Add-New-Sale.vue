@@ -594,7 +594,7 @@ const addNewSale = ref<IAddNewWholeSale>({
   productList: [],
   comments: '',
 });
-const selectedUserDiscount = ref<number | undefined>(0);
+const selectedUserDiscount = ref<number>(0); // Initialize selectedUserDiscount with a default value of 0
 watch(addNewSale.value, (newVal: IAddNewWholeSale) => {
   const selectedUser = UserList.value.find(
     (row) => newVal.userId === row.userId
@@ -603,10 +603,11 @@ watch(addNewSale.value, (newVal: IAddNewWholeSale) => {
     addNewSale.value.userOutstandingBalance =
       selectedUser.outStandingBalance ?? 0;
     addNewSale.value.userDiscount = selectedUser.discount ?? 0;
-    selectedUserDiscount.value = selectedUser.discount;
+    selectedUserDiscount.value = selectedUser.discount ?? 0;
     selectedSaleRecord.value.discount = selectedUser.discount ?? 0;
   }
 });
+
 const handleKeyPress = (e: KeyboardEvent) => {
   if (e.key === '+') {
     isArticleListModalVisible.value = true;
@@ -922,9 +923,10 @@ const getUserList = async () => {
           user.customerGroup !== 'Cash Account'
       );
       options.value = res.data.items;
-      selectedUserDiscount.value = UserList.value.find(
-        (user) => selectedSaleRecord.value.userId === user.userId
-      )?.discount;
+      selectedUserDiscount.value =
+        UserList.value.find(
+          (user) => selectedSaleRecord.value.userId === user.userId
+        )?.discount ?? 0;
     }
   } catch (e) {
     if (e instanceof CanceledError) return;
@@ -1018,12 +1020,14 @@ const getSelectedWholesaleDetail = async (wholeSaleId: number) => {
         selectedSaleRecord.value.createdDate = moment(
           res.data.createdDate
         ).format('YYYY-MM-DD');
-        selectedUserDiscount.value = UserList.value.find(
-          (user) => selectedSaleRecord.value.userId === user.userId
-        )?.discount;
+        selectedUserDiscount.value =
+          UserList.value.find(
+            (user) => selectedSaleRecord.value.userId === user.userId
+          )?.discount ?? 0;
         selectedArticleData.value = res.data.wholeSaleDetails;
         tableItems.value = await convertArrayToPdfData(
-          res.data.wholeSaleDetails
+          res.data.wholeSaleDetails,
+          selectedSaleRecord.value.discount
         );
       }
     }
@@ -1075,9 +1079,6 @@ async function saveUpdatedData(row: IWholeSaleProductsInfo) {
     });
   }
   getSelectedWholesaleDetail(selectedId.value);
-  if (selectedArticleData.value) {
-    tableItems.value = await convertArrayToPdfData(selectedArticleData.value);
-  }
 }
 const convertToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -1102,7 +1103,8 @@ const convertToBase64 = (file: File): Promise<string> => {
 };
 const defaultImage = ref<string | null>(null);
 async function convertArrayToPdfData(
-  array: IWholeSaleProductsInfo[] | ISelectedWholeSaleArticleData[]
+  array: IWholeSaleProductsInfo[] | ISelectedWholeSaleArticleData[],
+  discount: number
 ) {
   if (!defaultImage.value) {
     defaultImage.value = await fetch('/assets/default-image.png')
@@ -1153,9 +1155,7 @@ async function convertArrayToPdfData(
       width: 10,
     },
     {
-      text: `${
-        (selectedUserDiscount.value ?? 0) * saleGenerationTotalQuantity.value
-      }`,
+      text: `${discount}`,
       margin: [5, 0],
       width: 10,
     },
