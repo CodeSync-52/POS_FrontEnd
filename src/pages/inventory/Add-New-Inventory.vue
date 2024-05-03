@@ -284,13 +284,6 @@
                           {{ labelPiece }}
                         </span>
                       </div>
-                      <span
-                        v-else
-                        class="font-semibold text-xl items-center flex"
-                      >
-                        {{ barcode.productCode.split(',')[0] }}
-                      </span>
-                      <span> </span>
                     </div>
                     <div
                       :class="
@@ -532,7 +525,6 @@ const printBarcodes = () => {
       '.grid-item {page-break-after:always;width:280px;margin-top:0.3rem;margin-bottom:0.7rem; font-size:1.1rem;margin-left:auto;margin-right:auto;padding: 0.34rem;text-align: center; }' +
       '.firstBarcodeLabel {display:flex;gap:0.5rem;flex-direction:column;font-weight:bold;font-size:1.5rem;align-items:center;justify-content:center;margin-left:0.3rem}' +
       '.firstBarcodeContainer {display:flex;align-items:center;justify-content:center;}' +
-      '.secondBarcodeLabel {display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.5rem;}' +
       '.barcode-container {margin-top:-0.3rem}' +
       '</style>';
     printWindow.document.write(
@@ -874,8 +866,12 @@ const setBarcodeProps = (callback?: () => void) => {
               format: 'CODE128',
               width: 1.25,
               height: 55,
-              displayValue: false,
-              text: '',
+              displayValue: true,
+              textPosition: 'top',
+              text: barcode.productCode.split(',')[0],
+              fontOptions: 'bold',
+              fontSize:
+                barcode.productCode.split(',')[0].length <= 12 ? 40 : 35,
             }
           );
       progressbar.value = [(index + 1) / selectedProductBarcodes.value.length];
