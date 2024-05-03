@@ -688,7 +688,7 @@ const handleUpdateQuantity = (
 ) => {
   if (typeof newVal === 'string') {
     const val = parseInt(newVal);
-    const masterStock = row.masterStock ?? 0;
+    const masterStock = row.allowedDispatchQuantity ?? 0;
     if (val >= 0 && val <= masterStock) {
       row.quantity = val;
       row.errorMessage = '';
