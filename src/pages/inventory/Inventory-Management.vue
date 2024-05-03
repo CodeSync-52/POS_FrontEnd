@@ -8,6 +8,14 @@
         class="flex flex-col items-center justify-center md:flex-row q-gutter-sm"
       >
         <q-btn
+          label="Custom Barcode"
+          unelevated
+          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+          color=""
+          to="/custom-barcode"
+        />
+
+        <q-btn
           v-if="
             (authStore.checkUserHasPermission(
               EUserModules.InventoryManagement,

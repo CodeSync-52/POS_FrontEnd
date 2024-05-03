@@ -157,6 +157,13 @@ export const routeList = [
     },
   },
   {
+    path: '/custom-barcode',
+    component: () => import('src/pages/inventory/Custom-Barcode.vue'),
+    meta: {
+      module: EUserModules.InventoryManagement,
+    },
+  },
+  {
     path: '/inventory/add-new/:id?',
     component: () => import('src/pages/inventory/Add-New-Inventory.vue'),
     meta: {
