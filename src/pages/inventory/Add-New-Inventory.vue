@@ -284,13 +284,6 @@
                           {{ labelPiece }}
                         </span>
                       </div>
-                      <!-- <span
-                        v-else
-                        class="font-semibold text-xl items-center flex"
-                      >
-                        {{ barcode.productCode.split(',')[0] }}
-                      </span>
-                      <span> </span> -->
                     </div>
                     <div
                       :class="
