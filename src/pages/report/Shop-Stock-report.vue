@@ -134,7 +134,7 @@
                   v-for="(v1, v1Index) in variant.variant1List"
                   :key="v1Index"
                 >
-                  <div class="w-12">{{ v1.stockQuantity }}</div>
+                  <div class="w-12">{{ v1.quantity }}</div>
                 </template>
                 <div class="w-12">{{ variant.totalQuantity }}</div>
               </div>
