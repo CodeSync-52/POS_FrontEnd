@@ -43,7 +43,8 @@ export interface IWholeSaleProductsInfo extends IProductIdWithQuantity {
   wholeSaleDetailId: number;
   productName?: string;
   productImage: string | null;
-  masterStock?: number;
+  masterStock: number;
+  allowedDispatchQuantity?: number;
 }
 export interface IAddNewWholeSale {
   userId: number | null;
@@ -54,8 +55,8 @@ export interface IAddNewWholeSale {
 }
 
 export interface ISelectedWholeSaleArticleData {
-  productId: number | null;
-  quantity?: number | null;
+  productId: number;
+  quantity?: number;
   productName?: string;
   wholeSaleDetailId?: number;
   productImage: string | null;
@@ -64,4 +65,5 @@ export interface ISelectedWholeSaleArticleData {
   masterStock?: number;
   retailPrice?: number;
   errorMessage?: string;
+  allowedDispatchQuantity?: number;
 }
