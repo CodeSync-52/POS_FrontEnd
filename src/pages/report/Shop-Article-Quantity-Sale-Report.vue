@@ -3,7 +3,7 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
-      <span class="text-lg font-medium">Shop Stock Report</span>
+      <span class="text-lg font-medium">Article Sale Report</span>
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -58,11 +58,28 @@
           </q-item>
         </template>
       </q-select>
-      <q-checkbox
-        v-model="filterSearch.excludeZeroStock"
+
+      <q-input
+        v-model="filterSearch.fromDate"
+        label="From"
+        :max="filterSearch.toDate"
+        type="date"
+        style="min-width: 200px"
+        outlined
+        dense
         color="btn-primary"
-        label="Exclude Zero Stock"
       />
+      <q-input
+        v-model="filterSearch.toDate"
+        label="To"
+        type="date"
+        style="min-width: 200px"
+        :min="filterSearch.fromDate"
+        outlined
+        color="btn-primary"
+        dense
+      />
+
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           :loading="isLoading"
@@ -71,7 +88,7 @@
           icon="search"
           label="Search"
           unelevated
-          @click="getShopStock()"
+          @click="getArticleQuantitySale()"
         />
         <q-btn
           color=""
@@ -85,7 +102,7 @@
       <div>Grand Total: {{ grandTotal }}</div>
       <div class="container mx-auto mt-6">
         <div
-          v-for="(item, itemIndex) in stockResponse"
+          v-for="(item, itemIndex) in articlquantitySaleResponse"
           :key="itemIndex"
           class="mb-8 flex gap-10 border p-6"
         >
@@ -156,8 +173,8 @@ import {
   IShopStockReportData,
 } from 'src/interfaces';
 import { GetArticleList, GetShopList } from 'src/services';
-import { useQuasar } from 'quasar';
-import { GetShopStockReport } from 'src/services/reports';
+import { date, useQuasar } from 'quasar';
+import { GetShopArticleQuantitySaleReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref, onMounted } from 'vue';
 const isLoading = ref(false);
@@ -168,7 +185,12 @@ const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const shopListRecords = ref<IShopResponse[]>([]);
 const options = ref<IShopResponse[]>([]);
-const stockResponse = ref<IShopStockReportData[]>([]);
+const articlquantitySaleResponse = ref<IShopStockReportData[]>([]);
+
+const timeStamp = Date.now();
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const past30Date = date.subtractFromDate(timeStamp, { year: 1 });
+const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 let grandTotal = ref<number>(0);
 onMounted(() => {
   getShopList();
@@ -188,13 +210,15 @@ const filterSearch = ref<{
   categoryId: number | null;
   categoryName: string;
   shopId: number | null;
-  excludeZeroStock: boolean;
+  fromDate: string;
+  toDate: string;
   ProductId: IArticleData[];
 }>({
   categoryId: null,
   shopId: null,
   categoryName: '',
-  excludeZeroStock: true,
+  fromDate: formattedFromDate,
+  toDate: formattedToDate,
   ProductId: [],
 });
 const handleFilterArticles = (value: any, update: CallableFunction) => {
@@ -210,10 +234,11 @@ const handleResetFilter = () => {
     categoryName: '',
     shopId: null,
     categoryId: null,
-    excludeZeroStock: true,
+    fromDate: '',
+    toDate: '',
     ProductId: [],
   };
-  stockResponse.value = [];
+  articlquantitySaleResponse.value = [];
   grandTotal.value = 0;
 };
 
@@ -246,10 +271,19 @@ const getArticleList = async (productName?: string) => {
   }
   isFetchingArticleList.value = false;
 };
-const getShopStock = async () => {
+const getArticleQuantitySale = async () => {
   if (!filterSearch.value.shopId) {
     $q.notify({
       message: 'Please select a shop.',
+      icon: 'error',
+      color: 'red',
+    });
+    return; // Stop further execution of the function
+  }
+
+  if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
+    $q.notify({
+      message: 'Please select date range.',
       icon: 'error',
       color: 'red',
     });
@@ -264,20 +298,21 @@ const getShopStock = async () => {
       apiController.value = null;
     }
     apiController.value = new AbortController();
-    const res = await GetShopStockReport(
+    const res = await GetShopArticleQuantitySaleReport(
       {
         shopId: filterSearch.value.shopId,
         categoryId: filterSearch.value.categoryId ?? 0,
         productIds: filterSearch.value.ProductId?.map(
           (product) => product.productId
         ).join(','),
-        excludeZeroStock: filterSearch.value.excludeZeroStock,
+        fromDate: filterSearch.value.fromDate,
+        toDate: filterSearch.value.toDate,
       },
       apiController.value
     );
-    stockResponse.value = res.data;
+    articlquantitySaleResponse.value = res.data;
     grandTotal.value = 0;
-    stockResponse.value.forEach((item: any) => {
+    articlquantitySaleResponse.value.forEach((item: any) => {
       if (item && item.variant2List) {
         item.variant2List.forEach((variant2: any) => {
           if (variant2 && variant2.totalQuantity) {
