@@ -104,14 +104,13 @@
           </div>
           <div class="flex justify-end gap-2">
             <q-btn
-              label="Save"
+              label="Generate Barcode"
               flat
               :loading="isSavingNewGrn"
               unelevated
               color="signature"
-              :disable="isButtonDisable"
               class="bg-btn-primary hover:bg-btn-primary-hover"
-              @click="handleSaveGrn"
+              @click="handleSaveGrne"
             />
           </div>
         </div>
@@ -415,46 +414,60 @@ const handleRemoveSelectedInventoryRecord = (
   );
   selectedInventoryData.value.splice(selectedRecordIndex, 1);
 };
-const handleSaveGrn = async () => {
-  const selectedInventoryDataPayload = {
-    fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
-    toShopId: selectedShop.value.toShop?.shopId ?? -1,
-    grnDetails: selectedInventoryData.value.map((record) => ({
-      productId: record.productId,
-      variantId_1: record.variantId_1,
-      variantId_2: record.variantId_2,
-      quantity: record.dispatchQuantity,
-    })),
-  };
-  isSavingNewGrn.value = true;
-  try {
-    const res = await CreateGRN(selectedInventoryDataPayload);
-    if (res.type === 'Success') {
-      $q.notify({
-        message: res.message,
-        type: 'positive',
-      });
-    }
-  } catch (e) {
-    let message = 'Unexpected error occurred adding Grn';
-    if (isPosError(e)) {
-      message = e.message;
-    }
+
+const handleSaveGrne = async () => {
+  const zeroQuantityRecords = selectedInventoryData.value.filter(
+    record => record.dispatchQuantity === 0
+  );
+
+  if (zeroQuantityRecords.length > 0) {
     $q.notify({
-      message,
+      message: 'Quantity must be greater than 0.',
       type: 'negative',
     });
-  }
-  isSavingNewGrn.value = false;
-  router.push('/goods-receipt');
-};
-const isButtonDisable = computed(() => {
-  const validations = [
-    selectedInventoryData.value.some((record) => record.dispatchQuantity === 0),
-    selectedShop.value.toShop?.shopId === undefined,
-  ];
-  return validations.some((validation) => validation);
-});
+    return;
+  } }
+
+// const handleSaveGrn = async () => {
+//   const selectedInventoryDataPayload = {
+//     fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
+//     toShopId: selectedShop.value.toShop?.shopId ?? -1,
+//     grnDetails: selectedInventoryData.value.map((record) => ({
+//       productId: record.productId,
+//       variantId_1: record.variantId_1,
+//       variantId_2: record.variantId_2,
+//       quantity: record.dispatchQuantity,
+//     })),
+//   };
+//   isSavingNewGrn.value = true;
+//   try {
+//     const res = await CreateGRN(selectedInventoryDataPayload);
+//     if (res.type === 'Success') {
+//       $q.notify({
+//         message: res.message,
+//         type: 'positive',
+//       });
+//     }
+//   } catch (e) {
+//     let message = 'Unexpected error occurred adding Grn';
+//     if (isPosError(e)) {
+//       message = e.message;
+//     }
+//     $q.notify({
+//       message,
+//       type: 'negative',
+//     });
+//   }
+//   isSavingNewGrn.value = false;
+//   router.push('/goods-receipt');
+// };
+// const isButtonDisable = computed(() => {
+//   const validations = [
+//     selectedInventoryData.value.some((record) => record.dispatchQuantity === 0),
+//     selectedShop.value.toShop?.shopId === undefined,
+//   ];
+//   return validations.some((validation) => validation);
+// });
 
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
