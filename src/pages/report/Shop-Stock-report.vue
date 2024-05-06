@@ -82,7 +82,7 @@
         />
       </div>
 
-      <div>Grand Total: {{ totalStock }}</div>
+      <div>Grand Total: {{ grandTotal }}</div>
       <div class="container mx-auto mt-6">
         <div
           v-for="(item, itemIndex) in stockResponse"
@@ -165,7 +165,7 @@ const apiController = ref<AbortController | null>(null);
 const shopListRecords = ref<IShopResponse[]>([]);
 const options = ref<IShopResponse[]>([]);
 const stockResponse = ref<any>([]);
-let totalStock = ref<number>(0);
+let grandTotal = ref<number>(0);
 onMounted(() => {
   getShopList();
 });
@@ -272,18 +272,17 @@ const getShopStock = async () => {
       apiController.value
     );
     stockResponse.value = res.data;
-    totalStock.value = 0;
+    grandTotal.value = 0;
     stockResponse.value.forEach((item: any) => {
       if (item && item.variant2List) {
         item.variant2List.forEach((variant2: any) => {
           if (variant2 && variant2.totalQuantity) {
-            totalStock.value += variant2.totalQuantity;
+            grandTotal.value += variant2.totalQuantity;
           }
         });
       }
     });
 
-    console.log(totalStock.value);
   } catch (e) {
     let message = 'Unexpected Error Occurred while fetching shop stock';
     if (isPosError(e)) {
