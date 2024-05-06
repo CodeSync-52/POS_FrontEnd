@@ -298,7 +298,7 @@ const resetFilter = () => {
     return;
   }
   filterSearch.value = {
-    selectWholeSalePriceCategory: 0,
+    selectWholeSalePriceCategory: { statusId: 0, name: 'Zero W.P' },
     articleName: null,
     status: null,
     categoryName: '',
