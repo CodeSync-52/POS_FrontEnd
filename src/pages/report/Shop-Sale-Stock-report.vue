@@ -72,13 +72,63 @@
         />
       </div>
     </div>
+    <div>
+      <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+        Grand Total Sale: {{ grandTotal }}
+      </div>
+      <div>
+        <div v-for="item in shopSaleStockReportData" :key="item.variant2_Id">
+          <h2 class="text-lg font-bold mt-4">
+            {{ item.variant2_Name }} - COLOR
+          </h2>
+          <table class="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-2"></th>
+                <th
+                  v-for="variant in item.shopQty[0].list"
+                  :key="variant.variant1_Id"
+                  class="border border-gray-300 bg-gray-100 px-4 py-2"
+                >
+                  {{ variant.variant1_Name }}
+                </th>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                  Total Sale Qty.
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="shopQty in item.shopQty" :key="shopQty.shop">
+                <td class="border border-gray-300 px-4 py-2">
+                  {{ shopQty.shop }}
+                </td>
+                <td
+                  v-for="variant in shopQty.list"
+                  :key="variant.variant1_Id"
+                  class="border border-gray-300 px-4 py-2 text-center"
+                >
+                  {{ variant.stockQuantity }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                  {{ shopQty.totalSaleQuantity }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue';
 import { date, QSelect, useQuasar } from 'quasar';
-import { IArticleData } from 'src/interfaces';
+import {
+  IArticleData,
+  IShopQuantity,
+  IShopSaleStockReportData,
+} from 'src/interfaces';
 import { GetArticleList } from 'src/services';
 import { GetShopSaleStockReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
@@ -92,6 +142,8 @@ const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { year: 1 });
 const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 const productSelectInputRef = ref<QSelect | null>(null);
+const shopSaleStockReportData = ref<IShopSaleStockReportData[]>([]);
+let grandTotal = ref<number>(0);
 const filterSearch = ref<{
   productId: number | null;
   fromDate: string;
@@ -151,6 +203,7 @@ const handleResetFilter = () => {
     fromDate: '',
     toDate: '',
   };
+  grandTotal.value = 0;
 };
 
 const getSaleStockReport = async () => {
@@ -184,6 +237,18 @@ const getSaleStockReport = async () => {
       },
       apiController.value
     );
+    shopSaleStockReportData.value = res.data;
+
+    grandTotal.value = 0;
+    shopSaleStockReportData.value.forEach((item: IShopSaleStockReportData) => {
+      if (item && item.shopQty) {
+        item.shopQty.forEach((shpqty: IShopQuantity) => {
+          if (shpqty && shpqty.totalSaleQuantity) {
+            grandTotal.value += shpqty.totalSaleQuantity;
+          }
+        });
+      }
+    });
   } catch (e) {
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
