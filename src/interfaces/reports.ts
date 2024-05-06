@@ -15,6 +15,10 @@ export interface IOutStandingReportData {
 export interface IShopSaleStockReportData {
   variant2_Id: number;
   variant2_Name: string;
+  shopQty: IShopQuantity[];
+}
+
+export interface IShopQuantity {
   shop: string;
   totalSaleQuantity: number;
   list: IStockSaleByShopDetail[];
