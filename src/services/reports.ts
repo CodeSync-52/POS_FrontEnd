@@ -5,6 +5,8 @@ import {
   IHOArticleReportData,
   IHOStockReportData,
   IOutStandingReportData,
+  IShopStockReportData,
+  IShopSaleStockReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -209,10 +211,6 @@ export function wrapCsvValue(
   }
 
   formatted = formatted.split('"').join('""');
-  // Uncomment the next two lines to escape new lines
-  // formatted = formatted.split('\n').join('\\n');
-  // formatted = formatted.split('\r').join('\\r');
-
   return `"${formatted}"`;
 }
 export const GetShopStockReport = async (
@@ -229,9 +227,7 @@ export const GetShopStockReport = async (
   },
   controller?: AbortController
 ) => {
-  const res = await makeApiCall<
-    IGenericResponse<{ list: IHOStockReportData[] }>
-  >({
+  const res = await makeApiCall<IGenericResponse<IShopStockReportData[]>>({
     method: 'POST',
     url: 'api/report/shopstock',
     data: {
@@ -244,6 +240,38 @@ export const GetShopStockReport = async (
   });
   return res;
 };
+
+export const GetShopArticleQuantitySaleReport = async (
+  {
+    shopId,
+    categoryId,
+    productIds,
+    fromDate,
+    toDate,
+  }: {
+    shopId: number;
+    categoryId: number;
+    productIds: string;
+    fromDate: string;
+    toDate: string;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<IGenericResponse<IShopStockReportData[]>>({
+    method: 'POST',
+    url: 'api/report/shoparticlequantitysale',
+    data: {
+      shopId: shopId,
+      categoryId: categoryId,
+      productIds: productIds,
+      fromDate: fromDate,
+      toDate: toDate,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
+
 export const GetShopSaleStockReport = async (
   {
     toDate,
@@ -257,7 +285,7 @@ export const GetShopSaleStockReport = async (
   controller?: AbortController
 ) => {
   const res = await makeApiCall<
-    IGenericResponse<{ list: IHOStockReportData[] }>
+    IGenericResponse<{ list: IShopSaleStockReportData[] }>
   >({
     method: 'POST',
     url: 'api/report/saleandstockbyshop',
