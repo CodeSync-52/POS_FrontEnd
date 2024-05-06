@@ -81,6 +81,8 @@
           @click="handleResetFilter"
         />
       </div>
+
+      <div>Grand Total: {{ totalStock }}</div>
       <div class="container mx-auto mt-6">
         <div
           v-for="(item, itemIndex) in stockResponse"
@@ -88,11 +90,11 @@
           class="mb-8 flex gap-10 border p-6"
         >
           <div class="flex flex-col w-[10%]">
-            <div class="font-semibold">Article</div>
+            <div class="font-semibold"></div>
             <div>{{ item.article }}</div>
           </div>
           <div class="flex flex-col items-center mb-2 w-[20%]">
-            <div class="font-semibold">Image</div>
+            <div class="font-semibold"></div>
             <img
               :src="item.image"
               alt="Product Image"
@@ -102,10 +104,10 @@
 
           <div class="w-1/2">
             <div class="flex border ml-auto p-2">
-              <div class="w-24 font-semibold">Color</div>
+              <div class="w-24 font-semibold"></div>
               <template v-if="item.variant2List.length > 0">
                 <div class="relative">
-                  <div class="absolute -top-8 font-semibold">Size</div>
+                  <div class="absolute -top-8 font-semibold"></div>
                   <div class="flex">
                     <div
                       class="w-12 font-semibold"
@@ -126,7 +128,7 @@
               :key="variantIndex"
               class="flex items-center border ml-auto p-2"
             >
-              <div class="w-24">{{ variant.variant2_Name }}</div>
+              <div class="w-24 font-semibold">{{ variant.variant2_Name }}</div>
               <div class="flex">
                 <template
                   v-for="(v1, v1Index) in variant.variant1List"
@@ -163,6 +165,7 @@ const apiController = ref<AbortController | null>(null);
 const shopListRecords = ref<IShopResponse[]>([]);
 const options = ref<IShopResponse[]>([]);
 const stockResponse = ref<any>([]);
+let totalStock = ref<number>(0);
 onMounted(() => {
   getShopList();
 });
@@ -239,6 +242,7 @@ const getArticleList = async (productName?: string) => {
   isFetchingArticleList.value = false;
 };
 const getShopStock = async () => {
+  debugger;
   if (!filterSearch.value.shopId) {
     $q.notify({
       message: 'Please select a shop.',
@@ -260,7 +264,7 @@ const getShopStock = async () => {
       {
         shopId: filterSearch.value.shopId,
         categoryId: filterSearch.value.categoryId ?? 0,
-        productIds: filterSearch.value.ProductId.map(
+        productIds: filterSearch.value.ProductId?.map(
           (product) => product.productId
         ).join(','),
         excludeZeroStock: filterSearch.value.excludeZeroStock,
@@ -268,6 +272,18 @@ const getShopStock = async () => {
       apiController.value
     );
     stockResponse.value = res.data;
+    totalStock.value = 0;
+    stockResponse.value.forEach((item: any) => {
+      if (item && item.variant2List) {
+        item.variant2List.forEach((variant2: any) => {
+          if (variant2 && variant2.totalQuantity) {
+            totalStock.value += variant2.totalQuantity;
+          }
+        });
+      }
+    });
+
+    console.log(totalStock.value);
   } catch (e) {
     let message = 'Unexpected Error Occurred while fetching shop stock';
     if (isPosError(e)) {
