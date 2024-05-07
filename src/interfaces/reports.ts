@@ -39,6 +39,7 @@ export interface IHOStockReportData {
 export interface IShopStockReportData {
   article: string;
   image?: string | null;
+  imageDataUrl?: string | null;
   productId: number;
   variant2List: IVariant2Info[];
 }

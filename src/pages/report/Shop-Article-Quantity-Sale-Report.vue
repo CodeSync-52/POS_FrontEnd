@@ -412,9 +412,23 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
 
   data.forEach((item) => {
     // Add Article Name and Image
-    content.push({ text: 'Article: ' + item.article, bold: true });
+    const articleWithImage = {
+      columns: [
+        { width: '*', text: '' }, // Empty column for left alignment
+        {
+          width: 'auto',
+          stack: [
+            { text: 'Article: ' + item.article, bold: true, alignment: 'center' }, // Center align article text
+            item.imageDataUrl ? { image: item.imageDataUrl, fit: [70, 70], alignment: 'center' } : null, // Center align image
+          ],
+          alignment: 'center', // Center align the stack of article text and image
+        },
+        { width: '*', text: '' }, // Empty column for right alignment
+      ],
+    };
+    content.push(articleWithImage);
 
-    content.push({ text: '' });
+    content.push({ text: '\n' }); // Add some space
 
     // Construct the table
     const table = {
@@ -426,28 +440,29 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
         ],
         headerRows: 1,
         body: [],
-        style: 'tableStyle'
+        style: 'tableStyle',
       },
     };
 
-     // Construct the table header with style
-     const headerRow = getUniqueSizes(item.variant2List).map(variant => {
+    // Construct the table header with style
+    const headerRow: { text: string; style: string }[] = getUniqueSizes(
+      item.variant2List
+    ).map((variant: string) => {
       return { text: variant, style: 'tableHeader' };
     });
     headerRow.unshift({ text: '', style: 'tableHeader' }); // Add empty cell for first column
     headerRow.push({ text: 'Total', style: 'tableHeader' });
-    table.table.body.push(headerRow);
 
-
+    //assuming table.table.body is an array of arrays of objects
+    (table.table.body as { text: string; style: string }[][]).push(headerRow);
     // Construct the table body
     item.variant2List.forEach((variant) => {
       const row = [variant.variant2_Name];
-      let total = 0;
-      getUniqueSizes(item.variant2List).forEach((size) => {
+
+      getUniqueSizes(item.variant2List).forEach((size: string) => {
         const v1 = variant.variant1List.find((v) => v.variant1_Name === size);
         const quantity = v1 ? v1.quantity : 0;
         row.push({ text: quantity.toString(), alignment: 'center' });
-        total += quantity;
       });
       row.push({ text: variant.totalQuantity.toString(), alignment: 'center' }); // Add total for variant2
       table.table.body.push(row);
@@ -469,7 +484,7 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
       },
       subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
       tableStyle: { margin: [0, 5, 0, 15] }, // Table style
-      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' } // Header cell style
+      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' }, // Header cell style
     },
   };
 
