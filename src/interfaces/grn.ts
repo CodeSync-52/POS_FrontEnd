@@ -34,6 +34,8 @@ export interface IGrnRecord {
   quantity: number;
   grnStatus: string;
   addedDate: string;
+  totalWholeSalePrice:number;
+  totalRetailPrice:number;
 }
 export interface IGrnPreviewResponse extends IGrnRecord {
   grnDetails: IPreviewGrnDetail[];
