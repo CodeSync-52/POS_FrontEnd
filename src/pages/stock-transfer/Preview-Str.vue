@@ -192,9 +192,16 @@
       </div>
     </q-card-section>
     <div class="text-end flex justify-between text-[16px] px-4 mb-4 font-bold">
-      <div>Total Whole Sale Price: <span>{{ selectedGrnData.totalWholeSalePrice }}</span></div>
-      <div>Total Retail Price: <span>{{ selectedGrnData.totalRetailPrice }}</span></div>
-      <div>Total Qty: <span>{{ selectedGrnData.quantity }}</span></div>
+      <div>
+        Total Whole Sale Price:
+        <span>{{ selectedGrnData.totalWholeSalePrice }}</span>
+      </div>
+      <div>
+        Total Retail Price: <span>{{ selectedGrnData.totalRetailPrice }}</span>
+      </div>
+      <div>
+        Total Qty: <span>{{ selectedGrnData.quantity }}</span>
+      </div>
     </div>
     <q-card-actions align="right">
       <q-btn
