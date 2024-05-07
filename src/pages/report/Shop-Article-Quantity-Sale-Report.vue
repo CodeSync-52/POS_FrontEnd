@@ -4,6 +4,24 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">Article Sale Report</span>
+
+      <q-btn-dropdown
+        dropdown-icon="arrow_downward"
+        label="Download Report"
+        class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover text-white"
+      >
+        <q-list>
+          <q-item
+            clickable
+            @click="downloadPdf(articlquantitySaleResponse, grandTotal)"
+            v-close-popup
+          >
+            <q-item-section>
+              <q-item-label>Download in PDF</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -183,6 +201,7 @@ import { date, useQuasar } from 'quasar';
 import { GetShopArticleQuantitySaleReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref, onMounted } from 'vue';
+import pdfMake from 'pdfmake/build/pdfmake';
 const isLoading = ref(false);
 const $q = useQuasar();
 const isFetchingArticleList = ref(false);
@@ -381,5 +400,80 @@ const filterFn = (val: string, update: CallableFunction) => {
       v.name?.toLowerCase().includes(needle)
     );
   });
+};
+const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
+  const content = [];
+  // Add main heading for the title
+  content.push({ text: 'Article Sale Report', style: 'mainHeading' });
+  content.push({ text: '\n' }); // Add some space
+
+  // Add subheading for grand total
+  content.push({ text: 'Grand Total: ' + grandTotal, style: 'subHeading' });
+
+  data.forEach((item) => {
+    // Add Article Name and Image
+    content.push({ text: 'Article: ' + item.article, bold: true });
+
+    content.push({ text: '' });
+
+    // Construct the table
+    const table = {
+      table: {
+        widths: [
+          'auto',
+          ...getUniqueSizes(item.variant2List).map(() => '*'),
+          'auto',
+        ],
+        headerRows: 1,
+        body: [],
+        style: 'tableStyle'
+      },
+    };
+
+     // Construct the table header with style
+     const headerRow = getUniqueSizes(item.variant2List).map(variant => {
+      return { text: variant, style: 'tableHeader' };
+    });
+    headerRow.unshift({ text: '', style: 'tableHeader' }); // Add empty cell for first column
+    headerRow.push({ text: 'Total', style: 'tableHeader' });
+    table.table.body.push(headerRow);
+
+
+    // Construct the table body
+    item.variant2List.forEach((variant) => {
+      const row = [variant.variant2_Name];
+      let total = 0;
+      getUniqueSizes(item.variant2List).forEach((size) => {
+        const v1 = variant.variant1List.find((v) => v.variant1_Name === size);
+        const quantity = v1 ? v1.quantity : 0;
+        row.push({ text: quantity.toString(), alignment: 'center' });
+        total += quantity;
+      });
+      row.push({ text: variant.totalQuantity.toString(), alignment: 'center' }); // Add total for variant2
+      table.table.body.push(row);
+    });
+
+    // Add the table to content
+    content.push(table);
+    content.push({ text: '\n' }); // Add some space
+  });
+
+  const documentDefinition = {
+    content: content,
+    styles: {
+      mainHeading: {
+        fontSize: 20,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 10],
+      },
+      subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
+      tableStyle: { margin: [0, 5, 0, 15] }, // Table style
+      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' } // Header cell style
+    },
+  };
+
+  // Generate and download PDF
+  pdfMake.createPdf(documentDefinition).download('article_sale_report.pdf');
 };
 </script>
