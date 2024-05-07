@@ -34,6 +34,9 @@
         @click="addCategory"
         color="btn-primary"
       />
+      <q-dialog v-model="isCategoryModalVisible">
+        <article-category-modal @category-selected="handleSelectedCategory" />
+      </q-dialog>
       <q-select
         popup-content-class="!max-h-[200px]"
         class="min-w-[220px]"
@@ -147,10 +150,6 @@
           </div>
         </div>
       </div>
-
-      <q-dialog v-model="isCategoryModalVisible">
-        <article-category-modal @category-selected="handleSelectedCategory" />
-      </q-dialog>
     </div>
   </div>
 </template>
