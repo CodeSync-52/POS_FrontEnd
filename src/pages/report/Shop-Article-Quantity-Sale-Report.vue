@@ -418,8 +418,14 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
         {
           width: 'auto',
           stack: [
-            { text: 'Article: ' + item.article, bold: true, alignment: 'center' }, // Center align article text
-            item.imageDataUrl ? { image: item.imageDataUrl, fit: [70, 70], alignment: 'center' } : null, // Center align image
+            {
+              text: 'Article: ' + item.article,
+              bold: true,
+              alignment: 'center',
+            }, // Center align article text
+            item.imageDataUrl
+              ? { image: item.imageDataUrl, fit: [70, 70], alignment: 'center' }
+              : null, // Center align image
           ],
           alignment: 'center', // Center align the stack of article text and image
         },
