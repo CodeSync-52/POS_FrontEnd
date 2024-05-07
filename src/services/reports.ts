@@ -284,9 +284,7 @@ export const GetShopSaleStockReport = async (
   },
   controller?: AbortController
 ) => {
-  const res = await makeApiCall<
-    IGenericResponse<{ list: IShopSaleStockReportData[] }>
-  >({
+  const res = await makeApiCall<IGenericResponse<IShopSaleStockReportData[]>>({
     method: 'POST',
     url: 'api/report/saleandstockbyshop',
     data: {

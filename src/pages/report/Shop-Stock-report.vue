@@ -82,66 +82,72 @@
         />
       </div>
 
-      <div>Grand Total: {{ grandTotal }}</div>
       <div class="container mx-auto mt-6">
+        <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+          Grand Total: {{ grandTotal }}
+        </div>
+        <!-- Article and Image -->
         <div
           v-for="(item, itemIndex) in stockResponse"
           :key="itemIndex"
-          class="mb-8 flex gap-10 border p-6"
+          class="mb-8 border p-2"
         >
-          <div class="flex flex-col w-[10%]">
-            <div class="font-semibold"></div>
-            <div>{{ item.article }}</div>
-          </div>
-          <div class="flex flex-col items-center mb-2 w-[20%]">
-            <div class="font-semibold"></div>
-            <img
-              :src="item.image ?? ''"
-              alt="Product Image"
-              class="w-24 h-24 mt-2 mb-4 ml-4"
-            />
+          <div class="flex items-center gap-2">
+            <div class="flex flex-col">
+              <img
+                :src="item.image ?? ''"
+                alt="Product Image"
+                class="w-16 h-16 mt-2 mb-4"
+              />
+            </div>
+
+            <div class="text-bold">{{ item.article }}</div>
           </div>
 
-          <div class="w-1/2">
-            <div class="flex border ml-auto p-2">
-              <div class="w-24 font-semibold"></div>
-              <template v-if="item.variant2List.length > 0">
-                <div class="relative">
-                  <div class="absolute -top-8 font-semibold"></div>
-                  <div class="flex">
-                    <div
-                      class="w-12 font-semibold"
-                      v-for="(size, sizeIndex) in getUniqueSizes(
-                        item.variant2List
-                      )"
-                      :key="sizeIndex"
-                    >
-                      {{ size }}
-                    </div>
-                  </div>
-                </div>
-              </template>
-              <div class="font-semibold">Total</div>
-            </div>
-            <div
-              v-for="(variant, variantIndex) in item.variant2List"
-              :key="variantIndex"
-              class="flex items-center border ml-auto p-2"
-            >
-              <div class="w-24 font-semibold">{{ variant.variant2_Name }}</div>
-              <div class="flex">
-                <template
-                  v-for="(v1, v1Index) in variant.variant1List"
-                  :key="v1Index"
+          <!-- Table -->
+          <div class="flex flex-col mt-4">
+            <table class="w-full border-collapse border border-gray-300">
+              <thead>
+                <tr>
+                  <th class="border border-gray-300 bg-gray-200 p-2"></th>
+                  <th
+                    v-for="(size, sizeIndex) in getUniqueSizes(
+                      item.variant2List
+                    )"
+                    :key="sizeIndex"
+                    class="border border-gray-300 bg-gray-200 p-2"
+                  >
+                    {{ size }}
+                  </th>
+                  <th class="border border-gray-300 bg-gray-200 p-2">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(variant, variantIndex) in item.variant2List"
+                  :key="variantIndex"
+                  class="border border-gray-300"
                 >
-                  <div class="w-12">{{ v1.quantity }}</div>
-                </template>
-                <div class="w-12">{{ variant.totalQuantity }}</div>
-              </div>
-            </div>
+                  <td class="border border-gray-300 p-2 font-semibold">
+                    {{ variant.variant2_Name }}
+                  </td>
+                  <td
+                    v-for="(v1, v1Index) in variant.variant1List"
+                    :key="v1Index"
+                    class="border border-gray-300 p-2 text-center"
+                  >
+                    {{ v1.quantity }}
+                  </td>
+                  <td class="border border-gray-300 p-2 text-center">
+                    {{ variant.totalQuantity }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+
       <q-dialog v-model="isCategoryModalVisible">
         <article-category-modal @category-selected="handleSelectedCategory" />
       </q-dialog>
@@ -154,6 +160,7 @@ import {
   IArticleData,
   IShopResponse,
   IShopStockReportData,
+  IVariant2Info,
 } from 'src/interfaces';
 import { GetArticleList, GetShopList } from 'src/services';
 import { useQuasar } from 'quasar';
@@ -277,9 +284,9 @@ const getShopStock = async () => {
     );
     stockResponse.value = res.data;
     grandTotal.value = 0;
-    stockResponse.value.forEach((item: any) => {
+    stockResponse.value.forEach((item: IShopStockReportData) => {
       if (item && item.variant2List) {
-        item.variant2List.forEach((variant2: any) => {
+        item.variant2List.forEach((variant2: IVariant2Info) => {
           if (variant2 && variant2.totalQuantity) {
             grandTotal.value += variant2.totalQuantity;
           }
