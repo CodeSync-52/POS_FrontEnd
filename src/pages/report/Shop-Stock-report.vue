@@ -183,6 +183,7 @@ import { useQuasar } from 'quasar';
 import { GetShopStockReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref, onMounted } from 'vue';
+import pdfMake from 'pdfmake/build/pdfmake';
 const isLoading = ref(false);
 const $q = useQuasar();
 const isFetchingArticleList = ref(false);
