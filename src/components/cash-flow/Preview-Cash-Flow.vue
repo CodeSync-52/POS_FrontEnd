@@ -8,6 +8,7 @@
           flat
           unelevated
           dense
+          v-close-popup
           @click="ClosePreviewCashFlow()"
         />
       </div>
@@ -118,6 +119,7 @@
         color=""
         class="bg-btn-cancel hover:bg-btn-cancel-hover"
         unelevated
+        v-close-popup
         @click="ClosePreviewCashFlow()"
       />
     </q-card-actions>
