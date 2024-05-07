@@ -16,74 +16,42 @@
       <q-card-section>
         <div class="q-gutter-y-md">
           <div class="row q-col-gutter-md">
-            <div class="col-md-4 col-12 q-gutter-y-md">
-              <div>
-                <span class="text-base font-medium">Receiver</span>
-                <q-select
-                  autofocus
-                  dense
-                  color="btn-primary"
-                  outlined
-                  clearable
-                  map-options
-                  use-input
-                  popup-content-class="!max-h-[200px]"
-                  @filter="filterUser"
-                  option-label="fullName"
-                  option-value="userId"
-                  :options="receiverUserList"
-                  @update:model-value="
-                    handleShowOutstandingBalance($event, false)
-                  "
-                  v-model="addNewFlow.cashIn"
-                />
-              </div>
-              <div>
-                <span class="text-base font-medium"
-                  >Receiver Outstanding Balance</span
-                >
-                <q-input
-                  v-model="addNewFlow.cashInOutstandingBalance"
-                  readonly
-                  color="btn-primary"
-                  dense
-                  outlined
-                />
-              </div>
+            <div class="col-md-4 col-12">
+              <span class="text-base font-medium">Receiver</span>
+              <q-select
+                autofocus
+                dense
+                color="btn-primary"
+                outlined
+                map-options
+                use-input
+                popup-content-class="!max-h-[200px]"
+                @filter="filterUser"
+                option-label="fullName"
+                option-value="userId"
+                :options="receiverUserList"
+                @update:model-value="
+                  handleShowOutstandingBalance($event, false)
+                "
+                v-model="addNewFlow.cashIn"
+              />
             </div>
-            <div class="col-md-4 col-12 q-gutter-y-md">
-              <div>
-                <span class="text-base font-medium">Sender</span>
-                <q-select
-                  color="btn-primary"
-                  dense
-                  outlined
-                  clearable
-                  use-input
-                  popup-content-class="!max-h-[200px]"
-                  map-options
-                  @filter="filterUser"
-                  @update:model-value="
-                    handleShowOutstandingBalance($event, true)
-                  "
-                  option-label="fullName"
-                  option-value="userId"
-                  :options="receiverUserList"
-                  v-model="addNewFlow.cashOut"
-                />
-              </div>
-              <div>
-                <span class="text-base font-medium"
-                  >Sender Outstanding Balance</span
-                >
-                <q-input
-                  v-model="addNewFlow.cashOutOutstandingBalance"
-                  readonly
-                  dense
-                  outlined
-                  color="btn-primary"
-                />
-              </div>
+            <div class="col-md-4 col-12">
+              <span class="text-base font-medium">Sender</span>
+              <q-select
+                color="btn-primary"
+                dense
+                outlined
+                use-input
+                popup-content-class="!max-h-[200px]"
+                map-options
+                @filter="filterUser"
+                @update:model-value="handleShowOutstandingBalance($event, true)"
+                option-label="fullName"
+                option-value="userId"
+                :options="receiverUserList"
+                v-model="addNewFlow.cashOut"
+              />
             </div>
             <div class="col-md-4 col-12">
               <span class="text-base font-medium">Amount</span>
@@ -95,6 +63,32 @@
                 outlined
                 v-model="addNewFlow.amount"
                 @update:model-value="handleUpdateAmount($event)"
+              />
+            </div>
+          </div>
+          <div class="row q-col-gutter-md q-gutter-y-md">
+            <div class="col-md-4 col-12">
+              <span class="text-base font-medium"
+                >Receiver Outstanding Balance</span
+              >
+              <q-input
+                v-model="addNewFlow.cashInOutstandingBalance"
+                readonly
+                color="btn-primary"
+                dense
+                outlined
+              />
+            </div>
+            <div class="col-md-4 col-12">
+              <span class="text-base font-medium"
+                >Sender Outstanding Balance</span
+              >
+              <q-input
+                v-model="addNewFlow.cashOutOutstandingBalance"
+                readonly
+                dense
+                outlined
+                color="btn-primary"
               />
             </div>
           </div>
