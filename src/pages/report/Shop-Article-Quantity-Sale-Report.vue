@@ -34,6 +34,9 @@
         @click="addCategory"
         color="btn-primary"
       />
+      <q-dialog v-model="isCategoryModalVisible">
+        <article-category-modal @category-selected="handleSelectedCategory" />
+      </q-dialog>
       <q-select
         popup-content-class="!max-h-[200px]"
         class="min-w-[220px]"
@@ -99,7 +102,7 @@
         />
       </div>
 
-      <div class="container mx-auto mt-2">
+      <div id="shop-article-quantity-sale" class="container mx-auto mt-2">
         <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
           Grand Total: {{ grandTotal }}
         </div>
@@ -164,9 +167,6 @@
           </div>
         </div>
       </div>
-      <q-dialog v-model="isCategoryModalVisible">
-        <article-category-modal @category-selected="handleSelectedCategory" />
-      </q-dialog>
     </div>
   </div>
 </template>
