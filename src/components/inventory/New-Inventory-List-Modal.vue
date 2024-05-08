@@ -14,7 +14,60 @@
             icon="close"
         /></span>
       </div>
-      <div class="row q-col-gutter-md mb-4">
+
+      <div
+        v-if="selectedShopDetailRecords.length > 0"
+        class="row q-col-gutter-md mb-4"
+      >
+        <q-input
+          class="min-w-[200px] max-w-[200px]"
+          v-model="filteredData.size"
+          outlined
+          dense
+          label="Size"
+          color="btn-primary"
+          @change="filterSelectedShopDetailList"
+        />
+        <q-input
+          class="min-w-[200px] max-w-[200px]"
+          v-model="filteredData.color"
+          outlined
+          dense
+          label="Color"
+          color="btn-primary"
+          @change="filterSelectedShopDetailList"
+        />
+        <q-checkbox
+          v-model="filteredData.excludeZeroQuantity"
+          color="btn-primary"
+          label="Exclude Zero Quantity"
+          @change="filterSelectedShopDetailList"
+        />
+      </div>
+      <div class="row reverse q-col-gutter-md mb-4">
+        <div class="col-12 col-sm-6">
+          <div
+            class="flex justify-center md:justify-end w-full items-end h-full gap-2"
+          >
+            <!-- <q-btn
+              unelevated
+              :loading="isLoading"
+              color=""
+              class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
+              icon="search"
+              label="Search"
+              :disable="!filterSearch.ProductId"
+              @click="handleSearchArticles"
+            /> -->
+            <q-btn
+              unelevated
+              color=""
+              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+              label="Clear"
+              @click="handleRemoveInventoryFilter"
+            />
+          </div>
+        </div>
         <div class="col-12 col-sm-6">
           <div class="text-base mb-1"><span>Filter by Product</span></div>
           <q-select
@@ -45,58 +98,6 @@
             </template>
           </q-select>
         </div>
-        <div class="col-12 col-sm-6">
-          <div
-            class="flex justify-center md:justify-end w-full items-end h-full gap-2"
-          >
-            <!-- <q-btn
-              unelevated
-              :loading="isLoading"
-              color=""
-              class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
-              icon="search"
-              label="Search"
-              :disable="!filterSearch.ProductId"
-              @click="handleSearchArticles"
-            /> -->
-            <q-btn
-              unelevated
-              color=""
-              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-              label="Clear"
-              @click="handleRemoveInventoryFilter"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        v-if="selectedShopDetailRecords.length > 0"
-        class="row q-col-gutter-md mb-4"
-      >
-        <q-input
-          class="min-w-[200px] max-w-[200px]"
-          v-model="filteredData.size"
-          outlined
-          dense
-          label="Size"
-          color="btn-primary"
-          @change="filterSelectedShopDetailList"
-        />
-        <q-input
-          class="min-w-[200px] max-w-[200px]"
-          v-model="filteredData.color"
-          outlined
-          dense
-          label="Color"
-          color="btn-primary"
-          @change="filterSelectedShopDetailList"
-        />
-        <q-checkbox
-          v-model="filteredData.excludeZeroQuantity"
-          color="btn-primary"
-          label="Exclude Zero Quantity"
-          @change="filterSelectedShopDetailList"
-        />
       </div>
       <q-table
         :columns="InventoryListColumn"

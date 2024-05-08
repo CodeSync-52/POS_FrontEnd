@@ -16,6 +16,8 @@
         dense
         style="min-width: 200px"
         outlined
+        use-input
+        @filter="filterFn"
         v-model="filterSearch.customerGroup"
         :options="customerGroupList"
         map-options
@@ -265,5 +267,13 @@ const downloadCSVData = () => {
       icon: 'warning',
     });
   }
+};
+const filterFn = (val: string, update: CallableFunction) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    customerGroupList.value = customerGroupList.value.filter((v) =>
+      v.name?.toLowerCase().includes(needle)
+    );
+  });
 };
 </script>

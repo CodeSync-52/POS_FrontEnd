@@ -16,6 +16,8 @@
         dense
         style="min-width: 240px"
         outlined
+        use-input
+        @filter="filterFr"
         v-model="filterSearch.purchaseFromCustomerGroup"
         :options="customerGroupList"
         map-options
@@ -38,6 +40,7 @@
         outlined
         style="min-width: 200px; max-width: 210px"
         clearable
+        use-input
         @filter="filterFn"
         v-model="filterSearch.purchaseFromCustomer"
         @update:model-value="filterSearch.purchaseFromCustomer"
@@ -54,6 +57,8 @@
         style="min-width: 240px"
         outlined
         clearable
+        use-input
+        @filter="filterFr"
         v-model="filterSearch.saleToCustomerGroup"
         :options="customerGroupList"
         map-options
@@ -77,6 +82,7 @@
         outlined
         clearable
         style="min-width: 200px; max-width: 210px"
+        use-input
         @filter="filterFn"
         v-model="filterSearch.saleToCustomer"
         @update:model-value="filterSearch.saleToCustomer"
@@ -291,6 +297,14 @@ const filterFn = (val: string, update: CallableFunction) => {
     const needle = val.toLowerCase();
     options.value = UserList.value.filter((v) =>
       v.fullName?.toLowerCase().includes(needle)
+    );
+  });
+};
+const filterFr = (val: string, update: CallableFunction) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    customerGroupList.value = customerGroupList.value.filter((v) =>
+      v.name?.toLowerCase().includes(needle)
     );
   });
 };
