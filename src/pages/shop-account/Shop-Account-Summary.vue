@@ -108,6 +108,7 @@
           flat
           :rows="shopAccountSummary.salesExpenseSummary"
           :columns="shopExpenseTableColumn"
+          :rows-per-page-options="[0]"
           row-key="id"
         >
           <template v-slot:no-data>
@@ -125,6 +126,7 @@
           flat
           :rows="shopAccountSummary.inComingFromHO"
           :columns="incomingOutgoingToHoTableColumn"
+          :rows-per-page-options="[0]"
           row-key="id"
         >
           <template v-slot:no-data>
@@ -141,6 +143,7 @@
           flat
           :rows="shopAccountSummary.outgoingToHO"
           :columns="incomingOutgoingToHoTableColumn"
+          :rows-per-page-options="[0]"
           row-key="id"
         >
           <template v-slot:no-data>

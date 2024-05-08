@@ -5,6 +5,7 @@ import {
   IShopSaleExpenses,
   IBillStatusOptionList,
   ISaleInfo,
+  IOutgoingToHo,
 } from 'src/interfaces';
 import { Ref } from 'vue';
 export const buttons = [
@@ -159,6 +160,35 @@ export const shopSaleExpenseTableColumn: QTableColumn<IShopSaleExpenses>[] = [
     label: 'Expense',
     align: 'left',
     field: (row) => row.expenseName,
+  },
+  {
+    name: 'amount',
+    required: true,
+    label: 'Amount',
+    align: 'left',
+    field: (row) => row.amount,
+  },
+  {
+    name: 'comment',
+    required: true,
+    label: 'Comments',
+    align: 'left',
+    field: (row) => row.comment || '-',
+  },
+  {
+    name: 'action',
+    label: 'Action',
+    field: () => '',
+    align: 'left',
+  },
+];
+export const shopSaleOutgoingToHoTableColumn: QTableColumn<IOutgoingToHo>[] = [
+  {
+    name: 'userName',
+    required: true,
+    label: 'User Name',
+    align: 'left',
+    field: (row) => row.userName,
   },
   {
     name: 'amount',

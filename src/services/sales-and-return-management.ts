@@ -260,3 +260,27 @@ export const DiscardExpenseFromShopAccount = async ({
   });
   return res;
 };
+export const deleteRowFromShopAccountOutgoingToHo = async ({
+  shopAccountDetailId,
+}: {
+  shopAccountDetailId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/shopaccount/delete/returntoho',
+    method: 'PUT',
+    params: {
+      shopAccountDetailId,
+    },
+  });
+  return res;
+};
+export const closeShop = async ({ shopId }: { shopId: number }) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    url: 'api/shopaccount/close',
+    method: 'PUT',
+    params: {
+      shopId,
+    },
+  });
+  return res;
+};
