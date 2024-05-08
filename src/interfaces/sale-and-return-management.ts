@@ -55,6 +55,7 @@ export interface SaleSummaryResponse {
   totalReturnSaleAmount: number;
   lastClosingDate: string;
   createdDate: string;
+  outgoingToHO: IOutgoingToHo[];
   salesExpenseSummary: IShopSaleExpenses[];
 }
 export interface IShopSaleExpenses {
@@ -62,6 +63,14 @@ export interface IShopSaleExpenses {
   expenseName: string;
   amount: number;
   comment: string | null;
+  transactionDate: string;
+}
+export interface IOutgoingToHo {
+  shopAccountDetailId: number;
+  userId: number;
+  userName: string;
+  amount: number;
+  comment: string;
   transactionDate: string;
 }
 

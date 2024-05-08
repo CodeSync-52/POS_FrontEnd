@@ -2,7 +2,7 @@
   <q-card class="min-w-[400px]">
     <q-card-section>
       <div class="flex justify-between items-center mb-2">
-        <span class="text-lg font-medium">Close Shop</span>
+        <span class="text-lg font-medium">Outgoing To Ho</span>
         <q-btn
           class="font-medium"
           icon="close"
@@ -70,9 +70,8 @@
       />
       <q-btn
         flat
-        label="Close Shop"
+        label="Add Amount"
         color="white"
-        v-close-popup
         :disable="!returnAmount.user"
         :loading="isLoading"
         class="bg-btn-primary hover:bg-btn-primary-hover"
@@ -87,16 +86,16 @@ import { IUserResponse } from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores';
-import { useRouter } from 'vue-router';
-const router = useRouter();
 import { GetUsers, RetaurnCashToHO } from 'src/services';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
 const userList = ref<IUserResponse[]>([]);
+const emit = defineEmits<{ (event: 'confirm'): void }>();
 const confirmAction = async () => {
   isLoading.value = true;
   await handleCloseShop();
+  emit('confirm');
   isLoading.value = false;
 };
 onMounted(() => {
@@ -160,7 +159,6 @@ const handleCloseShop = async () => {
         message: res.message,
         color: 'green',
       });
-      router.go(-1);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
