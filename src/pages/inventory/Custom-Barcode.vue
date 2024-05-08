@@ -251,6 +251,7 @@
         :article-records="articleList"
         :current-data="selectedInventoryData"
         :pagination="pagination"
+        :exclude-zero-quantity="false"
         @filter-article-list="handleFilterArticle"
         @selected-data="handleSelectedData"
         @handle-pagination="handlePagination"
@@ -265,7 +266,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted, watch } from 'vue';
-import InventoryListModal from 'src/components/inventory/Barcode-List-Modal.vue';
+import InventoryListModal from 'src/components/inventory/Inventory-List-Modal.vue';
 import {
   IArticleData,
   IInventoryFilterSearch,
