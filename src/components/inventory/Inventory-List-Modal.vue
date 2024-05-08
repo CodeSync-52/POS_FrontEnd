@@ -189,6 +189,13 @@ const filterSearch = ref<IInventoryFilterSearch>({
   CategoryId: null,
   categoryName: null,
 });
+const props = withDefaults(defineProps<IProps>(), {
+  isFetchingRecords: false,
+  articleRecords: () => [],
+  inventoryList: () => [],
+  currentData: () => [],
+  excludeZeroQuantity: true,
+});
 const filteredInvDetailList = ref<IInventoryListResponse[]>([]);
 const filteredData = ref<{
   size: string;
@@ -197,7 +204,7 @@ const filteredData = ref<{
 }>({
   size: '',
   color: '',
-  excludeZeroQuantity: true,
+  excludeZeroQuantity: props.excludeZeroQuantity,
 });
 const totalAvailableQuantity = computed(() => {
   return filteredInvDetailList.value.reduce(
@@ -252,13 +259,9 @@ interface IProps {
   currentData: IInventoryListResponse[];
   inventoryList: IInventoryListResponse[];
   pagination: IPagination;
+  excludeZeroQuantity: boolean;
 }
-const props = withDefaults(defineProps<IProps>(), {
-  isFetchingRecords: false,
-  articleRecords: () => [],
-  inventoryList: () => [],
-  currentData: () => [],
-});
+
 const selectedShopRecords = ref<IInventoryListResponse[]>([
   ...props.currentData,
 ]);
