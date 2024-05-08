@@ -1,9 +1,11 @@
 <template>
   <div>
-    <div class="mb-4 row justify-between items-center"></div>
+    <div v-if="!isGenerateBarCode" class="text-lg font-medium mt-2 pl-4">
+      Add Custom Barcode
+    </div>
     <q-card flat>
       <q-card-section>
-        <div class="q-gutter-y-xs row gap-10">
+        <div v-if="!isGenerateBarCode" class="q-gutter-y-xs row gap-10">
           <div class="row gap-6 items-center">
             <span class="text-base">Add Inventory</span>
             <q-btn
@@ -15,23 +17,11 @@
               @click="isInventoryListModalVisible = true"
             />
           </div>
-          <outside-click-container @outside-click="handleOutsideClick">
-            <q-input
-              autofocus
-              ref="scannedLabelInput"
-              class="min-w-[200px] max-w-[200px]"
-              v-model="scannedLabel"
-              :loading="scannedLabelLoading"
-              outlined
-              dense
-              @keydown="dialoagClose"
-              label="Scan label"
-              color="btn-primary"
-            />
-          </outside-click-container>
         </div>
-
-        <div v-if="selectedInventoryData.length" class="py-4 q-gutter-y-md">
+        <div
+          v-if="!isGenerateBarCode && selectedInventoryData.length"
+          class="py-4 q-gutter-y-md"
+        >
           <q-table
             :rows="selectedInventoryData"
             hide-pagination
@@ -98,7 +88,7 @@
               </q-td>
             </template>
           </q-table>
-          <div @click="showTotalDetails" class="font-bold text-[16px] text-end">
+          <div class="font-bold text-[16px] text-end">
             Total:
             {{ grandTotal }}
           </div>
@@ -112,7 +102,132 @@
               class="bg-btn-primary hover:bg-btn-primary-hover"
               @click="handleSaveGrne"
             />
+            <q-btn
+              flat
+              label="Go Back"
+              color="signature"
+              v-close-popup
+              class="bg-btn-cancel hover:bg-btn-cancel-hover"
+              @click="router.go(-1)"
+            />
           </div>
+        </div>
+        <div class="column gap-3">
+          <div
+            v-if="isGenerateBarCode"
+            class="flex flex-col md:flex-row items-center justify-center md:justify-between"
+          >
+            <div class="flex items-center gap-1">
+              <span class="text-lg font-semibold">Printed Barcodes:</span>
+              <q-spinner
+                v-if="isPrintingBarcode"
+                size="2rem"
+                color="btn-primary"
+              />
+            </div>
+            <q-btn
+              :label="
+                showfirstBarcodePreview
+                  ? 'Show Second Preview '
+                  : 'Show First Preview'
+              "
+              :disable="isPrintingBarcode"
+              color="btn-primary"
+              unelevated
+              @click="handleToggleBarcodePreview"
+            />
+          </div>
+          <div
+            v-if="showBarcodes"
+            ref="printedDiv"
+            class="overflow-hidden h-[calc(100vh_-_224px)]"
+          >
+            <div
+              class="print:grid-cols-1 grid-parent grid md:grid-cols-2 lg:grid-cols-3 gap-2"
+            >
+              <div
+                v-for="(barcode, index) in modifyArray(totalDetails)"
+                :key="barcode.code"
+                class="mx-auto grid-item"
+              >
+                <q-card-section>
+                  <div
+                    class="grid grid-cols-1 h-[85px] gap-3 min-w-[210px] max-w-[210px]"
+                  >
+                    <div
+                      class="rounded-lg p-0.5 overflow-hidden shadow-[0px_0px_3px_1px_rgba(0,0,0,0.2)]"
+                    >
+                      <div
+                        :class="
+                          showfirstBarcodePreview
+                            ? 'firstBarcodeContainer grid grid-cols-[2fr_5fr] font-semibold'
+                            : 'secondBarcodeContainer flex flex-col font-semibold items-center'
+                        "
+                      >
+                        <div
+                          :class="
+                            showfirstBarcodePreview
+                              ? 'firstBarcodeLabel flex flex-col justify-center items-center '
+                              : 'secondBarcodeLabel flex justify-center'
+                          "
+                        >
+                          <div
+                            v-if="showfirstBarcodePreview"
+                            class="firstBarcodeLabel flex flex-col justify-center items-center"
+                          >
+                            <span
+                              v-for="(labelPiece, index) in barcode.code
+                                .split(',')[0]
+                                .split('-')"
+                              :key="labelPiece"
+                              class="font-semibold"
+                              :class="
+                                !showfirstBarcodePreview
+                                  ? index === 0
+                                    ? 'text-2xl'
+                                    : 'text-xl'
+                                  : index === 0
+                                  ? 'text-xl'
+                                  : 'text-lg'
+                              "
+                            >
+                              {{ labelPiece }}
+                            </span>
+                          </div>
+                        </div>
+                        <div
+                          :class="
+                            showfirstBarcodePreview
+                              ? 'min-w-[140px] max-w-[155px] '
+                              : 'min-w-[145px] max-w-[150px] barcode-container'
+                          "
+                        >
+                          <img
+                            :id="`barcode-image-${index}`"
+                            :class="`barcode-` + barcode.code"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+              </div>
+            </div>
+          </div>
+          <q-card-actions v-if="isGenerateBarCode" align="right">
+            <q-btn
+              label="Go Back"
+              unelevated
+              color="btn-cancel"
+              @click="goBack"
+            />
+            <q-btn
+              @click="printBarcodes"
+              label="Print Barcodes"
+              color="btn-primary"
+              unelevated
+            />
+          </q-card-actions>
         </div>
       </q-card-section>
     </q-card>
@@ -151,7 +266,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted, watch } from 'vue';
 import InventoryListModal from 'src/components/inventory/Barcode-List-Modal.vue';
-import OutsideClickContainer from 'src/components/common/Outside-Click-Container.vue';
 import {
   IArticleData,
   IInventoryFilterSearch,
@@ -160,17 +274,14 @@ import {
   IPagination,
   IInventoryListResponseWithDispatchQuantity,
 } from 'src/interfaces';
-import {
-  CreateGRN,
-  GetArticleList,
-  GetInventoryDetail,
-  GetShopList,
-} from 'src/services';
+import { GetArticleList, GetInventoryDetail, GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { selectedBarcodeTableColumn } from 'src/utils/grn';
 import { useAuthStore } from 'src/stores';
+import JsBarcode from 'jsbarcode';
 import { useRouter } from 'vue-router';
+const showBarcodes = ref(false);
 const selectedShop = ref<{
   fromShop: IShopResponse | null;
   toShop: IShopResponse | null;
@@ -191,22 +302,27 @@ const grandTotal = computed(() => {
 });
 const $q = useQuasar();
 const authStore = useAuthStore();
-const router = useRouter();
 const isInventoryListModalVisible = ref(false);
 const selectedShopDetailRecords = ref<IInventoryListResponse[]>([]);
 const isLoading = ref(false);
+const router = useRouter();
 const shopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
 const isSelectedShopDetailTableVisible = ref(false);
+const showfirstBarcodePreview = ref(true);
 const selectedPreviewImage = ref('');
+const isPrintingBarcode = ref(false);
 const isPreviewImageModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const isFetchingRecords = ref(false);
 const isFetchingArticleList = ref(false);
+const progressbar = ref<number[]>([]);
 const articleList = ref<IArticleData[]>([]);
+const isPrintBarcodeButtonVisible = ref(false);
 const scannedLabel = ref('');
 const scannedLabelInput = ref<null | HTMLDivElement>(null);
 const scannedLabelLoading = ref(false);
+const isGenerateBarCode = ref(false);
 const isSavingNewGrn = ref(false);
 const filterChanged = ref(false);
 const selectedInventoryData = ref<IInventoryListResponseWithDispatchQuantity[]>(
@@ -234,11 +350,10 @@ const filterSearch = ref<IInventoryFilterSearch>({
   categoryName: '',
   CategoryId: null,
 });
-const handleOutsideClick = () => {
-  window.addEventListener('keypress', handleKeyPress);
-};
+// const handleOutsideClick = () => {
+//   window.addEventListener('keypress', handleKeyPress);
+// };
 watch(selectedInventoryData, () => {
-  // Clear the scannedLabel whenever selectedInventoryData changes
   scannedLabel.value = '';
 });
 const totalDetails = computed(() => {
@@ -247,9 +362,118 @@ const totalDetails = computed(() => {
     quantity: item.dispatchQuantity,
   }));
 });
-const showTotalDetails = () => {
-  console.log(totalDetails.value, 'aaaaaaaaaaaaaa');
+const handleToggleBarcodePreview = () => {
+  showfirstBarcodePreview.value = !showfirstBarcodePreview.value;
+  setBarcodeProps();
 };
+function modifyArray(inputArray: { code: string; quantity: number }[]) {
+  const modifiedArray: { code: string; quantity: number }[] = [];
+  inputArray.forEach((item) => {
+    const { code, quantity } = item;
+
+    for (let i = 0; i < quantity; i++) {
+      modifiedArray.push({ code, quantity });
+    }
+  });
+
+  return modifiedArray;
+}
+const printedDiv = ref<null | HTMLDivElement>(null);
+const printBarcodes = () => {
+  let header_string =
+    '<html><head><title>' + document.title + '</title></head><body>';
+  let footer_string = '</body></html>';
+  let new_string = printedDiv.value?.innerHTML;
+  let printWindow = window.open('', '_blank');
+  if (printWindow) {
+    let stylesheets =
+      '<style>' +
+      '.grid-parent {font-family:Verdana}' +
+      '.grid-parent { .grid-container {display: grid !important; gap:1rem;grid-template-columns: auto; margin-left:auto;margin-right:auto} }' +
+      '.grid-item {page-break-after:always;width:280px;margin-top:0.3rem;margin-bottom:0.7rem; font-size:1.1rem;margin-left:auto;margin-right:auto;padding: 0.34rem;text-align: center; }' +
+      '.firstBarcodeLabel {display:flex;gap:0.5rem;flex-direction:column;font-weight:bold;font-size:1.5rem;align-items:center;justify-content:center;margin-left:0.3rem}' +
+      '.firstBarcodeContainer {display:flex;align-items:center;justify-content:center;}' +
+      '.barcode-container {margin-top:-0.3rem}' +
+      '</style>';
+    printWindow.document.write(
+      header_string + stylesheets + new_string + footer_string
+    );
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+  }
+  return false;
+};
+const goBack = () => {
+  router.push('/inventory');
+};
+const setBarcodeProps = (callback?: () => void) => {
+  const totalDetailsValue = totalDetails.value;
+  const modifiedArray = modifyArray(totalDetailsValue);
+  isPrintBarcodeButtonVisible.value = false;
+  isPrintingBarcode.value = true;
+  progressbar.value = [];
+  let index = 0;
+
+  const generateBarcode = async () => {
+    await (showBarcodes.value = true);
+    isGenerateBarCode.value = true;
+    if (index < modifiedArray.length) {
+      const barcode = modifiedArray[index];
+      showfirstBarcodePreview.value
+        ? JsBarcode(`#barcode-image-${index}`, barcode.code.split(',')[0], {
+            format: 'CODE128',
+            width: 1.25,
+            height: 55,
+            displayValue: true,
+            textPosition: 'top',
+            text: 'KIT Shoes',
+            textAlign: 'right',
+            fontOptions: 'bold',
+          })
+        : JsBarcode(`#barcode-image-${index}`, barcode.code.split(',')[0], {
+            format: 'CODE128',
+            width: 1.25,
+            height: 55,
+            displayValue: true,
+            textPosition: 'top',
+            text: barcode.code.split(',')[0],
+            fontOptions: 'bold',
+            fontSize: barcode.code.split(',')[0].length <= 12 ? 40 : 35,
+          });
+      progressbar.value = [(index + 1) / modifiedArray.length];
+
+      setTimeout(() => {
+        index++;
+        generateBarcode();
+      }, 0);
+    } else {
+      $q.notify({
+        message: 'Barcode Generation Completed',
+        type: 'positive',
+      });
+      if (callback) {
+        callback();
+      }
+      isPrintingBarcode.value = false;
+      isPrintBarcodeButtonVisible.value = false;
+    }
+  };
+  setTimeout(() => {
+    generateBarcode();
+  }, 0);
+};
+window.addEventListener('keydown', function (event) {
+  if (
+    isPrintBarcodeButtonVisible.value &&
+    event.ctrlKey &&
+    (event.key === 'p' || event.key === 'P')
+  ) {
+    event.preventDefault();
+    printBarcodes();
+  }
+});
+
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   getShopList();
@@ -345,11 +569,11 @@ const handleKeyDown = (e: KeyboardEvent) => {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
-const dialoagClose = (e: KeyboardEvent) => {
-  if (e.key === '+') {
-    window.removeEventListener('keypress', handleKeyPress);
-  }
-};
+// const dialoagClose = (e: KeyboardEvent) => {
+//   if (e.key === '+') {
+//     window.removeEventListener('keypress', handleKeyPress);
+//   }
+// };
 const handleUpdatedispatchQuantity = (
   newVal: string | number | null,
   selectedRecord: IInventoryListResponseWithDispatchQuantity
@@ -380,6 +604,7 @@ const handleSelectedInventoryFilters = (
   filterSearch.value.ProductId = selectedInventoryFilters.ProductId;
   inventoryDetailList().then(() => callback());
 };
+
 const handleRemoveInventoryFilter = async (
   selectedInventoryFilters: IInventoryFilterSearch,
   callback: () => void
@@ -392,6 +617,7 @@ const handleRemoveInventoryFilter = async (
     inventoryDetailList().then(() => callback());
   }
 };
+
 const handlePagination = (selectedPagination: IPagination) => {
   pagination.value = selectedPagination;
   inventoryDetailList();
@@ -417,7 +643,7 @@ const handleRemoveSelectedInventoryRecord = (
 
 const handleSaveGrne = async () => {
   const zeroQuantityRecords = selectedInventoryData.value.filter(
-    record => record.dispatchQuantity === 0
+    (record) => record.dispatchQuantity === 0
   );
 
   if (zeroQuantityRecords.length > 0) {
@@ -425,49 +651,11 @@ const handleSaveGrne = async () => {
       message: 'Quantity must be greater than 0.',
       type: 'negative',
     });
-    return;
-  } }
 
-// const handleSaveGrn = async () => {
-//   const selectedInventoryDataPayload = {
-//     fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
-//     toShopId: selectedShop.value.toShop?.shopId ?? -1,
-//     grnDetails: selectedInventoryData.value.map((record) => ({
-//       productId: record.productId,
-//       variantId_1: record.variantId_1,
-//       variantId_2: record.variantId_2,
-//       quantity: record.dispatchQuantity,
-//     })),
-//   };
-//   isSavingNewGrn.value = true;
-//   try {
-//     const res = await CreateGRN(selectedInventoryDataPayload);
-//     if (res.type === 'Success') {
-//       $q.notify({
-//         message: res.message,
-//         type: 'positive',
-//       });
-//     }
-//   } catch (e) {
-//     let message = 'Unexpected error occurred adding Grn';
-//     if (isPosError(e)) {
-//       message = e.message;
-//     }
-//     $q.notify({
-//       message,
-//       type: 'negative',
-//     });
-//   }
-//   isSavingNewGrn.value = false;
-//   router.push('/goods-receipt');
-// };
-// const isButtonDisable = computed(() => {
-//   const validations = [
-//     selectedInventoryData.value.some((record) => record.dispatchQuantity === 0),
-//     selectedShop.value.toShop?.shopId === undefined,
-//   ];
-//   return validations.some((validation) => validation);
-// });
+    return;
+  }
+  setBarcodeProps();
+};
 
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
