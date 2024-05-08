@@ -12,7 +12,7 @@
       />
       <div class="q-gutter-md flex flex-col md:flex-row">
         <q-btn
-          v-if="!rowColumnData.length"
+          v-if="rowColumnData.length"
           label="Custom Label"
           unelevated
           class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"

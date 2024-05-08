@@ -94,6 +94,42 @@ export const selectedGrnInventoryTableColumn: QTableColumn<IGrnDetailsWithId>[] 
       align: 'left',
     },
   ];
+
+export const selectedBarcodeTableColumn: QTableColumn<IGrnDetailsWithId>[] = [
+  {
+    name: 'productImage',
+    label: 'Image',
+    field: (row) => row.productImage,
+    align: 'left',
+  },
+  {
+    name: 'productName',
+    label: 'Article',
+    field: (row) => row.productName,
+    align: 'left',
+  },
+  {
+    name: 'productCode',
+    label: 'Product Code',
+    field: (row) => row.productCode?.split(',')[0] || '-',
+    align: 'left',
+  },
+
+  {
+    name: 'quantity',
+    label: 'Quantity',
+    field: (row) => row.quantity,
+    align: 'left',
+  },
+
+  {
+    name: 'action',
+    label: 'Action',
+    field: () => '',
+    align: 'left',
+  },
+];
+
 export const PreviewGrnTableColumn: QTableColumn<IPreviewGrnDetail>[] = [
   {
     name: 'productImage',
