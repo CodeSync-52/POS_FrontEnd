@@ -1,11 +1,11 @@
 <template>
   <div class="text-lg text-center font-medium mb-10">Dashboard</div>
-  <div class="flex gap-4 justify-center items-center flex-col md:flex-row">
+  <div class="flex gap-4 justify-center items-end flex-col md:flex-col">
     <q-btn
       unelevated
       color=""
       icon="receipt"
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      class="rounded-full xl:rounded-[8px] bg-btn-primary md:w-[200.16px] xl:w-[242.16px] h-[36px] xl:h-[46.28px] hover:bg-btn-primary-hover"
       label="Stock Receive"
       to="/receipt"
     />
@@ -14,7 +14,7 @@
       unelevated
       color=""
       icon="category"
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      class="rounded-full xl:rounded-[8px] bg-btn-primary md:w-[200.16px] xl:w-[242.16px] h-[36px] xl:h-[46.28px] hover:bg-btn-primary-hover"
       label="Article"
       to="/article"
     />
@@ -22,7 +22,7 @@
       unelevated
       icon="bar_chart"
       color=""
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      class="rounded-full xl:rounded-[8px] bg-btn-primary md:w-[200.16px] xl:w-[242.16px] h-[36px] xl:h-[46.28px] hover:bg-btn-primary-hover"
       label="Sale From HO"
       to="/sale"
     />
@@ -35,7 +35,7 @@
         EUserRoles.SuperAdmin.toLowerCase()
       "
       icon="attach_money"
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      class="rounded-full xl:rounded-[8px] bg-btn-primary md:w-[200.16px] xl:w-[242.16px] h-[36px] xl:h-[46.28px] hover:bg-btn-primary-hover"
       label="Expense"
       to="/expenses"
     />
@@ -44,7 +44,7 @@
       unelevated
       icon="inventory"
       color=""
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      class="rounded-full xl:rounded-[8px] bg-btn-primary md:w-[200.16px] xl:w-[242.16px] h-[36px] xl:h-[46.28px] hover:bg-btn-primary-hover"
       label="Inventory (GRN)"
       to="/inventory"
     />
@@ -53,7 +53,7 @@
       unelevated
       icon="local_shipping"
       color=""
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      class="rounded-full xl:rounded-[8px] bg-btn-primary md:w-[200.16px] xl:w-[242.16px] h-[36px] xl:h-[46.28px] hover:bg-btn-primary-hover"
       label="STR"
       to="/goods-receipt"
     />
@@ -66,7 +66,7 @@
       unelevated
       icon="settings"
       color=""
-      class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+      class="rounded-full xl:rounded-[8px] bg-btn-primary md:w-[200.16px] xl:w-[242.16px] h-[36px] xl:h-[46.28px] hover:bg-btn-primary-hover"
       label="Settings"
       to="/setting"
     />
