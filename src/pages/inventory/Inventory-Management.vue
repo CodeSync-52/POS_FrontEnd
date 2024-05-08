@@ -8,6 +8,15 @@
         class="flex flex-col items-center justify-center md:flex-row q-gutter-sm"
       >
         <q-btn
+          label="Add Custom Barcode"
+          icon="add"
+          unelevated
+          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
+          color=""
+          to="/custom-barcode"
+        />
+
+        <!-- <q-btn
           v-if="
             (authStore.checkUserHasPermission(
               EUserModules.InventoryManagement,
@@ -24,7 +33,7 @@
           class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
           color=""
           to="/inventory/add-custom"
-        />
+        /> -->
         <q-btn
           v-if="
             (authStore.checkUserHasPermission(
