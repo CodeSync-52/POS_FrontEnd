@@ -140,7 +140,7 @@
           <div
             v-if="showBarcodes"
             ref="printedDiv"
-            class="overflow-hidden h-[calc(100vh_-_224px)]"
+            class="overflow-auto h-[calc(100vh_-_224px)]"
           >
             <div
               class="print:grid-cols-1 grid-parent grid md:grid-cols-2 lg:grid-cols-3 gap-2"
