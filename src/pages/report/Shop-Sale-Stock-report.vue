@@ -4,6 +4,23 @@
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
     >
       <span class="text-lg font-medium">Shop Sale Stock Report</span>
+      <q-btn-dropdown
+        dropdown-icon="arrow_downward"
+        label="Download Report"
+        class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover text-white"
+      >
+        <q-list>
+          <q-item
+            clickable
+            @click="downloadPdf(shopSaleStockReportData, grandTotal)"
+            v-close-popup
+          >
+            <q-item-section>
+              <q-item-label>Download in PDF</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
@@ -72,7 +89,7 @@
         />
       </div>
     </div>
-    <div>
+    <div class="container mx-auto mt-2">
       <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
         Grand Total Sale: {{ grandTotal }}
       </div>
@@ -132,6 +149,7 @@ import {
 import { GetArticleList } from 'src/services';
 import { GetShopSaleStockReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
+import pdfMake from 'pdfmake/build/pdfmake';
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const $q = useQuasar();
@@ -261,5 +279,63 @@ const getSaleStockReport = async () => {
     });
   }
   isLoading.value = false;
+};
+const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
+  const content = [
+    { text: 'Shop Sale Stock Report', style: 'mainHeading' },
+    { text: `Grand Total Sale: ${grandTotal}`, style: 'subHeading' },
+    { text: '' }, // Add some space
+    ...data.flatMap((item: IShopSaleStockReportData) => {
+      const itemContent = [
+        { text: `${item.variant2_Name} - COLOR\n`, style: 'subheader' },
+        {
+          table: {
+            widths: ['auto', ...item.shopQty[0].list.map(() => 'auto'), 'auto'],
+            style: 'tableStyle',
+            body: [
+              [
+                { text: 'Shop', style: 'tableHeader' },
+                ...item.shopQty[0].list.map((variant) => ({
+                  text: variant.variant1_Name,
+                  style: 'tableHeader',
+                })),
+                { text: 'Total Sale Qty.', style: 'tableHeader' },
+              ],
+              ...item.shopQty.map((shopQty: IShopQuantity) => [
+                { text: shopQty.shop, alignment: 'center' }, // Align shop name to the center
+                ...shopQty.list.map((variant) => ({
+                  text: variant.stockQuantity.toString(),
+                  alignment: 'center',
+                })),
+                {
+                  text: shopQty.totalSaleQuantity.toString(),
+                  alignment: 'center',
+                }, // Align total sale quantity to the center
+              ]),
+            ],
+          },
+        },
+      ];
+      return itemContent;
+    }),
+  ];
+
+  const documentDefinition = {
+    content: content,
+    styles: {
+      mainHeading: {
+        fontSize: 20,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 10],
+      },
+      subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
+      subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
+      tableStyle: { margin: [0, 5, 0, 15], alignment: 'center' }, // Align table content to the center
+      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' }, // Header cell style
+    },
+  };
+  // Generate and download PDF
+  pdfMake.createPdf(documentDefinition).download('shop_sale_stock_report.pdf');
 };
 </script>
