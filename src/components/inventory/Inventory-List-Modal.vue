@@ -16,63 +16,7 @@
             icon="close"
         /></span>
       </div>
-      <div class="row q-col-gutter-md mb-4">
-        <div class="col-12 col-sm-6">
-          <div class="text-base mb-1"><span>Filter by Product</span></div>
-          <q-select
-            popup-content-class="!max-h-[200px]"
-            class="min-w-[220px]"
-            ref="productSelectInputRef"
-            @popup-hide="handlePopupShow"
-            dense
-            autofocus
-            use-input
-            map-options
-            clearable
-            outlined
-            @filter="filterProduct"
-            :options="articleList"
-            :loading="isFetchingArticle"
-            v-model="filterSearch.ProductId"
-            @update:model-value="filterSearch.ProductId = $event?.productId"
-            label="Select Product"
-            color="btn-primary"
-            option-label="name"
-            option-value="productId"
-            ><template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey"> No results </q-item-section>
-              </q-item>
-            </template></q-select
-          >
-        </div>
-        <div class="col-12 col-sm-6">
-          <div
-            class="flex justify-center md:justify-end w-full items-end h-full gap-2"
-          >
-            <!-- <q-btn
-              unelevated
-              :loading="isLoading"
-              color=""
-              class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
-              icon="search"
-              label="Search"
-              :disable="!filterSearch.ProductId"
-              @click="handleSelectedFilters"
-            /> -->
-            <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
-              Total Qty. : {{ totalAvailableQuantity }}
-            </div>
-            <q-btn
-              unelevated
-              color=""
-              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-              label="Clear"
-              @click="handleRemoveInventoryFilter"
-            />
-          </div>
-        </div>
-      </div>
+
       <div
         v-if="selectedShopDetailList.length > 0"
         class="row q-col-gutter-md mb-4"
@@ -101,6 +45,62 @@
           label="Exclude Zero Quantity"
           @change="filterSelectedShopDetailList"
         />
+      </div>
+      <div class="row reverse q-col-gutter-md mb-4">
+        <div class="col-12 col-sm-6">
+          <div
+            class="flex justify-center md:justify-end w-full items-end h-full gap-2"
+          >
+            <!-- <q-btn
+              unelevated
+              :loading="isLoading"
+              color=""
+              class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
+              icon="search"
+              label="Search"
+              :disable="!filterSearch.ProductId"
+              @click="handleSelectedFilters"
+            /> -->
+            <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+              Total Qty. : {{ totalAvailableQuantity }}
+            </div>
+            <q-btn
+              unelevated
+              color=""
+              class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
+              label="Clear"
+              @click="handleRemoveInventoryFilter"
+            />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="text-base mb-1"><span>Filter by Product</span></div>
+          <q-select
+            popup-content-class="!max-h-[200px]"
+            class="min-w-[220px]"
+            ref="productSelectInputRef"
+            @popup-hide="handlePopupShow"
+            dense
+            autofocus
+            use-input
+            map-options
+            outlined
+            @filter="filterProduct"
+            :options="articleList"
+            :loading="isFetchingArticle"
+            v-model="filterSearch.ProductId"
+            @update:model-value="filterSearch.ProductId = $event?.productId"
+            label="Select Product"
+            color="btn-primary"
+            option-label="name"
+            option-value="productId"
+            ><template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey"> No results </q-item-section>
+              </q-item>
+            </template></q-select
+          >
+        </div>
       </div>
       <q-table
         :columns="InventoryListColumn"
