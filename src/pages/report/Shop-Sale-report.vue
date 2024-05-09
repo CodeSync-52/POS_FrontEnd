@@ -180,7 +180,7 @@ const searchShopSaleReport = async () => {
       reporttList.value = (res.data as { list: [] }).list;
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred Add Cash Flow';
+    let message = 'Unexpected Error Occurred select shop';
     if (isPosError(e)) {
       message = e.message;
     }
