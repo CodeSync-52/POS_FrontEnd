@@ -77,6 +77,7 @@
       align="left"
       :columns="shopsaleReportColumn"
       row-key="id"
+      :rows-per-page-options="[0]"
       @request="searchShopSaleReport()"
     >
       <template v-slot:body-cell-action="props">
@@ -235,11 +236,11 @@ async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
     '',
     '',
     {
-      text: 'Total Net Amount',
+      text: 'Total',
       margin: [0, 5],
       bold: true,
     },
-    { text: `${array[array.length - 1].netAmount}`, bold: true, margin: 5 },
+    { text: grandTotal.value.toString(), bold: true, margin: 5 },
   ];
 
   array.forEach((item: IDateWiseShopReportData) => {
