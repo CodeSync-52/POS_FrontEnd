@@ -5,6 +5,13 @@ export interface IAccountReportData {
   credit: number | null;
   balance: number;
 }
+export interface IDateWiseShopReportData {
+  transactionDate: string;
+  shop: string;
+  totalAmount: number;
+  discount: number;
+  netAmount: number;
+}
 
 export interface IOutStandingReportData {
   user: string;
