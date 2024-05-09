@@ -270,7 +270,7 @@ onMounted(async () => {
   getArticleList();
   await getShopList();
 
-  filterSearch.value.ShopId!.push(...ShopData.value);
+  filterSearch.value.ShopId?.push(...ShopData.value);
 });
 const pagination = ref({
   sortBy: 'desc',
@@ -356,7 +356,10 @@ const getInventoryList = async (data?: {
     apiController.value = new AbortController();
     const res = await GetInventoryDetail(
       {
-        ShopId: filterSearch.value.ShopId!.map((shop) => shop.shopId).join(','),
+        // ShopId: filterSearch.value.ShopId?.map((shop) => shop.shopId).join(','),
+        ShopId: filterSearch.value.ShopId
+          ? filterSearch.value.ShopId.map((shop) => shop.shopId).join(',')
+          : null,
         PageNumber: pagination.value.page,
         PageSize: rowsPerPage,
         filterSearch: filterSearch.value,

@@ -100,9 +100,15 @@
       </template>
     </q-table>
   </div>
+  <div
+    v-if="reporttList.length > 0"
+    class="flex justify-end text-[16px] font-bold text-btn-primary pb-1 pr-4"
+  >
+    Grand Total: {{ grandTotal }}
+  </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import {
   IShopResponse,
   EUserRoles,
@@ -180,7 +186,7 @@ const searchShopSaleReport = async () => {
       reporttList.value = (res.data as { list: [] }).list;
     }
   } catch (e) {
-    let message = 'Unexpected Error Occurred select shop';
+    let message = 'Please select shop and date';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -191,6 +197,13 @@ const searchShopSaleReport = async () => {
     });
   }
 };
+const grandTotal = computed(() => {
+  let total = 0;
+  reporttList.value.forEach((item) => {
+    total += item.netAmount;
+  });
+  return total;
+});
 const handleResetFilter = () => {
   if (
     authStore.loggedInUser?.rolePermissions.roleName ===
