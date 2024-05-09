@@ -2,6 +2,7 @@ import { QTableColumn } from 'quasar';
 import moment from 'moment';
 import {
   IAccountReportData,
+  IDateWiseShopReportData,
   IHOArticleReportData,
   IHOSaleDetailReportData,
   IHOStockReportData,
@@ -43,6 +44,44 @@ export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
     label: 'Balance',
     align: 'left',
     field: (row) => row.balance ?? '-',
+  },
+];
+
+export const shopsaleReportColumn: QTableColumn<IDateWiseShopReportData>[] = [
+  {
+    name: 'transactionDate',
+    required: true,
+    label: 'Date',
+    align: 'left',
+    field: (row) => moment(row.transactionDate).format('DD-MM-YYYY'),
+  },
+  {
+    name: 'shop',
+    required: true,
+    label: 'Shop',
+    align: 'left',
+    field: (row) => row.shop,
+  },
+  {
+    name: 'totalAmount',
+    required: true,
+    label: 'Total Amount',
+    align: 'left',
+    field: (row) => row.totalAmount ?? '-',
+  },
+  {
+    name: 'discount',
+    required: true,
+    label: 'Disc',
+    align: 'left',
+    field: (row) => row.discount ?? '-',
+  },
+  {
+    name: 'netAmount',
+    required: true,
+    label: 'Net Amount',
+    align: 'left',
+    field: (row) => row.netAmount ?? '-',
   },
 ];
 

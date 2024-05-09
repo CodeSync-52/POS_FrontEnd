@@ -35,7 +35,26 @@ export const GetAccountReport = async (
   });
   return res;
 };
-
+export const GetDateWiseShopSaleReport = async ({
+  shopIds,
+  fromDate,
+  toDate,
+}: {
+  shopIds: string | number[] | null;
+  fromDate: string;
+  toDate: string;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/shopsale',
+    data: {
+      shopIds,
+      fromDate,
+      toDate,
+    },
+  });
+  return res;
+};
 export const GetUserOutstandingReport = async (
   {
     customerGroupId,

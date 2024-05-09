@@ -15,25 +15,6 @@
           color=""
           to="/custom-barcode"
         />
-
-        <!-- <q-btn
-          v-if="
-            (authStore.checkUserHasPermission(
-              EUserModules.InventoryManagement,
-              EActionPermissions.Create
-            ) &&
-              authStore.loggedInUser?.rolePermissions.roleName ===
-                EUserRoles.SuperAdmin.toLowerCase()) ||
-            authStore.loggedInUser?.rolePermissions.roleName ===
-              EUserRoles.Admin.toLowerCase()
-          "
-          label="Add Custom Barcode"
-          icon="add"
-          unelevated
-          class="rounded-[4px] bg-btn-primary hover:bg-btn-secondary"
-          color=""
-          to="/inventory/add-custom"
-        /> -->
         <q-btn
           v-if="
             (authStore.checkUserHasPermission(
@@ -52,10 +33,7 @@
           color=""
           to="/inventory/add-new"
         />
-        <!-- <download-pdf-excel
-          @downloadCSVData="downloadCSVData"
-          @downloadPdfData="downloadPdfData"
-        /> -->
+
         <q-btn
           label="Download in Excel"
           unelevated
@@ -86,7 +64,6 @@
         color="btn-primary"
         label="Product Code"
       />
-      <!-- @update:model-value="filterSearch.ShopId = $event.shopId" -->
       <q-select
         popup-content-class="!max-h-[200px]"
         class="max-w-[220px] min-w-[220px]"
@@ -153,13 +130,6 @@
           label="Search"
           @click="getInventoryList()"
         />
-        <!-- <q-btn
-          unelevated
-          color=""
-          class="rounded-[4px] h-2 bg-btn-primary hover:bg-btn-primary-hover"
-          label="Clear"
-          @click="resetFilter"
-        /> -->
       </div>
     </div>
     <div class="py-4">
@@ -259,7 +229,6 @@ import {
   EUserModules,
   EUserRoles,
   IArticleData,
-  // IInventoryFilterSearch,
   IInventoryListResponse,
   IShopResponse,
   getRoleModuleDisplayName,
@@ -292,7 +261,6 @@ const filterSearch = ref<IInventoryFilterSearchWithShopId>({
   ProductId: null,
   ProductCode: null,
   ShopId: [],
-  // authStore0.loggedInUser?.userShopInfoDTO.shopId ?? -1,
   keyword: null,
   categoryName: '',
   CategoryId: null,

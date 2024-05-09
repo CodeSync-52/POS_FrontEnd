@@ -72,6 +72,8 @@
                         ? 'Shop Sale Stock Report'
                         : subLinks.path === '/shop-article-quantity-sale-report'
                         ? 'Article Sale Report'
+                        : subLinks.path === '/shop-sale-report'
+                        ? 'Shop Sale Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -244,6 +246,10 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/shop-article-quantity-sale-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/shop-sale-report',
       },
     ],
   },
