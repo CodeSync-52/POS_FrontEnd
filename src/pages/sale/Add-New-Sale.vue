@@ -594,7 +594,7 @@ const addNewSale = ref<IAddNewWholeSale>({
   productList: [],
   comments: '',
 });
-const selectedUserDiscount = ref<number>(0); // Initialize selectedUserDiscount with a default value of 0
+const selectedUserDiscount = ref<number>(0);
 watch(addNewSale.value, (newVal: IAddNewWholeSale) => {
   const selectedUser = UserList.value.find(
     (row) => newVal.userId === row.userId

@@ -284,7 +284,7 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
   const content = [
     { text: 'Shop Sale Stock Report', style: 'mainHeading' },
     { text: `Grand Total Sale: ${grandTotal}`, style: 'subHeading' },
-    { text: '' }, // Add some space
+    { text: '' },
     ...data.flatMap((item: IShopSaleStockReportData) => {
       const itemContent = [
         { text: `${item.variant2_Name} - COLOR\n`, style: 'subheader' },
@@ -302,7 +302,7 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
                 { text: 'Total Sale Qty.', style: 'tableHeader' },
               ],
               ...item.shopQty.map((shopQty: IShopQuantity) => [
-                { text: shopQty.shop, alignment: 'center' }, // Align shop name to the center
+                { text: shopQty.shop, alignment: 'center' },
                 ...shopQty.list.map((variant) => ({
                   text: variant.stockQuantity.toString(),
                   alignment: 'center',
@@ -310,7 +310,7 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
                 {
                   text: shopQty.totalSaleQuantity.toString(),
                   alignment: 'center',
-                }, // Align total sale quantity to the center
+                },
               ]),
             ],
           },
@@ -331,11 +331,10 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
       },
       subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
       subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
-      tableStyle: { margin: [0, 5, 0, 15], alignment: 'center' }, // Align table content to the center
-      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' }, // Header cell style
+      tableStyle: { margin: [0, 5, 0, 15], alignment: 'center' },
+      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' },
     },
   };
-  // Generate and download PDF
   pdfMake.createPdf(documentDefinition).download('shop_sale_stock_report.pdf');
 };
 </script>

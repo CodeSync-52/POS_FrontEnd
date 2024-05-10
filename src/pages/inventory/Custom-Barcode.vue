@@ -351,9 +351,6 @@ const filterSearch = ref<IInventoryFilterSearch>({
   categoryName: '',
   CategoryId: null,
 });
-// const handleOutsideClick = () => {
-//   window.addEventListener('keypress', handleKeyPress);
-// };
 watch(selectedInventoryData, () => {
   scannedLabel.value = '';
 });
@@ -570,11 +567,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
     window.removeEventListener('keypress', handleKeyPress);
   }
 };
-// const dialoagClose = (e: KeyboardEvent) => {
-//   if (e.key === '+') {
-//     window.removeEventListener('keypress', handleKeyPress);
-//   }
-// };
 const handleUpdatedispatchQuantity = (
   newVal: string | number | null,
   selectedRecord: IInventoryListResponseWithDispatchQuantity

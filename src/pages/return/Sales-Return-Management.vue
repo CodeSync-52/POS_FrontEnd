@@ -609,7 +609,6 @@ const shopSale = ref<{
 });
 
 watch(selectedInventoryData, () => {
-  // Clear the scannedLabel whenever selectedInventoryData changes
   scannedLabel.value = '';
 });
 

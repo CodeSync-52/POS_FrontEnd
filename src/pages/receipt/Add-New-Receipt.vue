@@ -579,7 +579,6 @@ const updateReceiptComment = async () => {
 };
 
 const isEdit = ref(false);
-// const receiptComment = ref('');
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const handleFilterRows = (filterChanged: boolean) => {

@@ -356,7 +356,6 @@ const getInventoryList = async (data?: {
     apiController.value = new AbortController();
     const res = await GetInventoryDetail(
       {
-        // ShopId: filterSearch.value.ShopId?.map((shop) => shop.shopId).join(','),
         ShopId: filterSearch.value.ShopId
           ? filterSearch.value.ShopId.map((shop) => shop.shopId).join(',')
           : null,

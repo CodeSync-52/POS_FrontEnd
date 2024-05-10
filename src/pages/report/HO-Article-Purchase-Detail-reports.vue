@@ -149,7 +149,6 @@ const handleFilterArticles = (value: any, update: CallableFunction) => {
   });
 };
 const handlePopupShow = () => {
-  // When the popup opens, blur the input
   if (productSelectInputRef.value) {
     productSelectInputRef.value.blur();
   }

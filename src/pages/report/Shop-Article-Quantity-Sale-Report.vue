@@ -330,7 +330,7 @@ const getArticleQuantitySale = async () => {
       icon: 'error',
       color: 'red',
     });
-    return; // Stop further execution of the function
+    return;
   }
 
   if (!filterSearch.value.categoryId) {
@@ -339,7 +339,7 @@ const getArticleQuantitySale = async () => {
       icon: 'error',
       color: 'red',
     });
-    return; // Stop further execution of the function
+    return;
   }
 
   if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
@@ -348,7 +348,7 @@ const getArticleQuantitySale = async () => {
       icon: 'error',
       color: 'red',
     });
-    return; // Stop further execution of the function
+    return;
   }
 
   if (isLoading.value) return;
@@ -442,21 +442,14 @@ const filterFn = (val: string, update: CallableFunction) => {
 
 const download = async (data: IShopStockReportData[], grandTotal: number) => {
   isLoader.value = true;
-
-  // Iterate over the data array
   for (const item of data) {
-    // If the 'image' URL exists
     if (item.image) {
       try {
-        // Fetch the image from the URL
         const response = await fetch(item.image, { mode: 'cors' });
-        // Convert the image to a Blob
         const blob = await response.blob();
-        // Convert the Blob to a data URL
         const reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
-          // Set the imageDataUrl property with the data URL
           item.imageDataUrl = reader.result as string;
         };
       } catch (error) {
@@ -464,26 +457,20 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
       }
     }
   }
-
-  // Call the downloadPdf method with the modified data and grandTotal
   downloadPdf(data, grandTotal);
   isLoader.value = false;
 };
 
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
   const content = [];
-  // Add main heading for the title
   content.push({ text: 'Article Sale Report', style: 'mainHeading' });
-  content.push({ text: '\n' }); // Add some space
-
-  // Add subheading for grand total
+  content.push({ text: '\n' });
   content.push({ text: 'Grand Total: ' + grandTotal, style: 'subHeading' });
 
   data.forEach((item) => {
-    // Add Article Name and Image
     const articleWithImage = {
       columns: [
-        { width: '*', text: '' }, // Empty column for left alignment
+        { width: '*', text: '' },
         {
           width: 'auto',
           stack: [
@@ -491,21 +478,19 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
               text: 'Article: ' + item.article + ' Total: ' + item.grandTotal,
               bold: true,
               alignment: 'center',
-            }, // Center align article text
+            },
             item.imageDataUrl
               ? { image: item.imageDataUrl, fit: [70, 70], alignment: 'center' }
-              : null, // Center align image
+              : null,
           ],
-          alignment: 'center', // Center align the stack of article text and image
+          alignment: 'center',
         },
-        { width: '*', text: '' }, // Empty column for right alignment
+        { width: '*', text: '' },
       ],
     };
     content.push(articleWithImage);
 
-    content.push({ text: '\n' }); // Add some space
-
-    // Construct the table
+    content.push({ text: '\n' });
     const table = {
       table: {
         widths: [
@@ -518,19 +503,14 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
         style: 'tableStyle',
       },
     };
-
-    // Construct the table header with style
     const headerRow: { text: string; style: string }[] = getUniqueSizes(
       item.variant2List
     ).map((variant: string) => {
       return { text: variant, style: 'tableHeader' };
     });
-    headerRow.unshift({ text: '', style: 'tableHeader' }); // Add empty cell for first column
+    headerRow.unshift({ text: '', style: 'tableHeader' });
     headerRow.push({ text: 'Total', style: 'tableHeader' });
-
-    //assuming table.table.body is an array of arrays of objects
     (table.table.body as { text: string; style: string }[][]).push(headerRow);
-    // Construct the table body
     item.variant2List.forEach((variant) => {
       const row = [variant.variant2_Name];
 
@@ -539,15 +519,12 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
         const quantity = v1 ? v1.quantity : 0;
         row.push({ text: quantity.toString(), alignment: 'center' });
       });
-      row.push({ text: variant.totalQuantity.toString(), alignment: 'center' }); // Add total for variant2
+      row.push({ text: variant.totalQuantity.toString(), alignment: 'center' });
       table.table.body.push(row);
     });
-
-    // Add the table to content
     content.push(table);
-    content.push({ text: '\n' }); // Add some space
+    content.push({ text: '\n' });
   });
-
   const documentDefinition = {
     content: content,
     styles: {
@@ -558,12 +535,10 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
         margin: [0, 0, 0, 10],
       },
       subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
-      tableStyle: { margin: [0, 5, 0, 15] }, // Table style
-      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' }, // Header cell style
+      tableStyle: { margin: [0, 5, 0, 15] },
+      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' },
     },
   };
-
-  // Generate and download PDF
   pdfMake.createPdf(documentDefinition).download('article_sale_report.pdf');
 };
 </script>
