@@ -68,9 +68,14 @@
       />
     </div>
   </div>
+  <div
+    v-if="reporttList.length > 0"
+    class="text-[24px] font-bold text-btn-primary pb-1 pr-4"
+  >
+    Grand Total: {{ grandTotal }}
+  </div>
   <div class="py-4">
     <q-table
-      
       :loading="isLoading"
       tabindex="0"
       :rows="reporttList"
@@ -80,7 +85,6 @@
       :rows-per-page-options="[0]"
       @request="searchShopSaleReport()"
       :pagination="{ rowsPerPage: 0 }"
-      :rows-per-page-options="[0]"
     >
       <template v-slot:body-cell-action="props">
         <q-td :props="props">
@@ -106,12 +110,6 @@
         </div>
       </template>
     </q-table>
-  </div>
-  <div
-    v-if="reporttList.length > 0"
-    class="flex justify-end text-[16px] font-bold text-btn-primary pb-1 pr-4"
-  >
-    Grand Total: {{ grandTotal }}
   </div>
 </template>
 <script setup lang="ts">

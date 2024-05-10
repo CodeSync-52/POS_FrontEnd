@@ -48,6 +48,7 @@ export interface IShopStockReportData {
   image?: string | null;
   imageDataUrl?: string | null;
   productId: number;
+  grandTotal: number;
   variant2List: IVariant2Info[];
 }
 
