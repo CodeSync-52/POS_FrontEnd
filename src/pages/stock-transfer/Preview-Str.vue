@@ -108,13 +108,7 @@
                 v-for="(secondVariant, i) in uniqueVariantNames2(product.data)"
                 :key="i"
               >
-                <tr
-                  v-if="
-                    !limitedRecord(product.data, secondVariant).every(
-                      (data) => data.quantity === 0
-                    )
-                  "
-                >
+                <tr>
                   <td class="text-left font-semibold">
                     {{ secondVariant }}
                   </td>
