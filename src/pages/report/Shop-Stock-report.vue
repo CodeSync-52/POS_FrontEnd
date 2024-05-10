@@ -12,7 +12,7 @@
         <q-list>
           <q-item
             clickable
-            @click="downloadPdf(stockResponse, grandTotal)"
+            @click="download(stockResponse, grandTotal)"
             v-close-popup
           >
             <q-item-section>
@@ -303,6 +303,15 @@ const getShopStock = async () => {
     return; // Stop further execution of the function
   }
 
+  if (!filterSearch.value.categoryId) {
+    $q.notify({
+      message: 'Please select a category.',
+      icon: 'error',
+      color: 'red',
+    });
+    return; // Stop further execution of the function
+  }
+
   if (isLoading.value) return;
   isLoading.value = true;
   try {
@@ -390,6 +399,33 @@ const filterFn = (val: string, update: CallableFunction) => {
     );
   });
 };
+const download = async (data: IShopStockReportData[], grandTotal: number) => {
+  // Iterate over the data array
+  for (const item of data) {
+    // If the 'image' URL exists
+    if (item.image) {
+      try {
+        // Fetch the image from the URL
+        const response = await fetch(item.image, { mode: 'cors' });
+        // Convert the image to a Blob
+        const blob = await response.blob();
+        // Convert the Blob to a data URL
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          // Set the imageDataUrl property with the data URL
+          item.imageDataUrl = reader.result as string;
+        };
+      } catch (error) {
+        console.error(`Error fetching image from URL ${item.image}: ${error}`);
+      }
+    }
+  }
+
+  // Call the downloadPdf method with the modified data and grandTotal
+  downloadPdf(data, grandTotal);
+};
+
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
   const content = [];
   // Add main heading for the title
@@ -413,7 +449,7 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
               alignment: 'center',
             }, // Center align article text
             item.imageDataUrl
-              ? { image: item.imageDataUrl, fit: [70, 70], alignment: 'center' }
+              ? { image: item.imageDataUrl, fit: [60, 60], alignment: 'center' }
               : null, // Center align image
           ],
           alignment: 'center', // Center align the stack of article text and image

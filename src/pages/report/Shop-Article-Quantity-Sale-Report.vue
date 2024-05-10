@@ -13,7 +13,7 @@
         <q-list>
           <q-item
             clickable
-            @click="downloadPdf(articlquantitySaleResponse, grandTotal)"
+            @click="download(articlquantitySaleResponse, grandTotal)"
             v-close-popup
           >
             <q-item-section>
@@ -329,6 +329,15 @@ const getArticleQuantitySale = async () => {
     return; // Stop further execution of the function
   }
 
+  if (!filterSearch.value.categoryId) {
+    $q.notify({
+      message: 'Please select a category.',
+      icon: 'error',
+      color: 'red',
+    });
+    return; // Stop further execution of the function
+  }
+
   if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
     $q.notify({
       message: 'Please select date range.',
@@ -426,6 +435,34 @@ const filterFn = (val: string, update: CallableFunction) => {
     );
   });
 };
+
+const download = async (data: IShopStockReportData[], grandTotal: number) => {
+  // Iterate over the data array
+  for (const item of data) {
+    // If the 'image' URL exists
+    if (item.image) {
+      try {
+        // Fetch the image from the URL
+        const response = await fetch(item.image, { mode: 'cors' });
+        // Convert the image to a Blob
+        const blob = await response.blob();
+        // Convert the Blob to a data URL
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          // Set the imageDataUrl property with the data URL
+          item.imageDataUrl = reader.result as string;
+        };
+      } catch (error) {
+        console.error(`Error fetching image from URL ${item.image}: ${error}`);
+      }
+    }
+  }
+
+  // Call the downloadPdf method with the modified data and grandTotal
+  downloadPdf(data, grandTotal);
+};
+
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
   const content = [];
   // Add main heading for the title
