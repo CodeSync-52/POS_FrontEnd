@@ -238,11 +238,13 @@ export const GetShopStockReport = async (
     categoryId,
     productIds,
     excludeZeroStock,
+    sortByArticle,
   }: {
     shopId: number;
     categoryId: number;
     productIds: string;
     excludeZeroStock: boolean;
+    sortByArticle: boolean;
   },
   controller?: AbortController
 ) => {
@@ -254,6 +256,7 @@ export const GetShopStockReport = async (
       categoryId: categoryId,
       productIds: productIds,
       excludeZeroStock: excludeZeroStock,
+      sortByArticle,
     },
     signal: controller?.signal,
   });
@@ -267,12 +270,14 @@ export const GetShopArticleQuantitySaleReport = async (
     productIds,
     fromDate,
     toDate,
+    sortByArticle,
   }: {
     shopId: number;
     categoryId: number;
     productIds: string;
     fromDate: string;
     toDate: string;
+    sortByArticle: boolean;
   },
   controller?: AbortController
 ) => {
@@ -285,6 +290,7 @@ export const GetShopArticleQuantitySaleReport = async (
       productIds: productIds,
       fromDate: fromDate,
       toDate: toDate,
+      sortByArticle,
     },
     signal: controller?.signal,
   });

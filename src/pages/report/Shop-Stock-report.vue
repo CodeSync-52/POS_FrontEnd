@@ -12,7 +12,7 @@
         <q-list>
           <q-item
             clickable
-            @click="downloadPdf(stockResponse, grandTotal)"
+            @click="download(stockResponse, grandTotal)"
             v-close-popup
           >
             <q-item-section>
@@ -78,6 +78,20 @@
           </q-item>
         </template>
       </q-select>
+      <div class="q-gutter-sm">
+        <q-radio
+          v-model="filterSearch.sortByArticle"
+          color="btn-primary"
+          val="false"
+          label="Sort by Qty"
+        />
+        <q-radio
+          v-model="filterSearch.sortByArticle"
+          color="btn-primary"
+          val="true"
+          label="Sort by article"
+        />
+      </div>
       <q-checkbox
         v-model="filterSearch.excludeZeroStock"
         color="btn-primary"
@@ -103,7 +117,7 @@
       </div>
 
       <div class="container mx-auto mt-6">
-        <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+        <div class="text-[24px] font-bold text-btn-primary pb-1 pr-4">
           Grand Total: {{ grandTotal }}
         </div>
         <!-- Article and Image -->
@@ -112,18 +126,24 @@
           :key="itemIndex"
           class="mb-8 border p-2"
         >
-          <div class="flex items-center gap-2">
-            <div class="flex flex-col">
-              <img
-                :src="item.image ?? ''"
-                alt="Product Image"
-                class="w-16 h-16 mt-2 mb-4"
-              />
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="flex flex-col">
+                <img
+                  :src="item.image ?? ''"
+                  alt="Product Image"
+                  class="w-16 h-16 mt-2 mb-4"
+                />
+              </div>
+
+              <div class="text-bold">{{ item.article }}</div>
             </div>
-
-            <div class="text-bold">{{ item.article }}</div>
+            <div>
+              <div class="text-bold text-[24px] flex justify-end">
+                Total: {{ item.grandTotal }}
+              </div>
+            </div>
           </div>
-
           <!-- Table -->
           <div class="flex flex-col mt-4">
             <table class="w-full border-collapse border border-gray-300">
@@ -214,11 +234,13 @@ const filterSearch = ref<{
   shopId: number | null;
   excludeZeroStock: boolean;
   ProductId: IArticleData[];
+  sortByArticle: string;
 }>({
   categoryId: null,
   shopId: null,
   categoryName: '',
   excludeZeroStock: true,
+  sortByArticle: 'true',
   ProductId: [],
 });
 const handleFilterArticles = (value: any, update: CallableFunction) => {
@@ -235,6 +257,7 @@ const handleResetFilter = () => {
     shopId: null,
     categoryId: null,
     excludeZeroStock: true,
+    sortByArticle: 'true',
     ProductId: [],
   };
   stockResponse.value = [];
@@ -280,6 +303,15 @@ const getShopStock = async () => {
     return; // Stop further execution of the function
   }
 
+  if (!filterSearch.value.categoryId) {
+    $q.notify({
+      message: 'Please select a category.',
+      icon: 'error',
+      color: 'red',
+    });
+    return; // Stop further execution of the function
+  }
+
   if (isLoading.value) return;
   isLoading.value = true;
   try {
@@ -296,6 +328,8 @@ const getShopStock = async () => {
           (product) => product.productId
         ).join(','),
         excludeZeroStock: filterSearch.value.excludeZeroStock,
+        sortByArticle:
+          filterSearch.value.sortByArticle === 'true' ? true : false,
       },
       apiController.value
     );
@@ -365,6 +399,33 @@ const filterFn = (val: string, update: CallableFunction) => {
     );
   });
 };
+const download = async (data: IShopStockReportData[], grandTotal: number) => {
+  // Iterate over the data array
+  for (const item of data) {
+    // If the 'image' URL exists
+    if (item.image) {
+      try {
+        // Fetch the image from the URL
+        const response = await fetch(item.image, { mode: 'cors' });
+        // Convert the image to a Blob
+        const blob = await response.blob();
+        // Convert the Blob to a data URL
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          // Set the imageDataUrl property with the data URL
+          item.imageDataUrl = reader.result as string;
+        };
+      } catch (error) {
+        console.error(`Error fetching image from URL ${item.image}: ${error}`);
+      }
+    }
+  }
+
+  // Call the downloadPdf method with the modified data and grandTotal
+  downloadPdf(data, grandTotal);
+};
+
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
   const content = [];
   // Add main heading for the title
@@ -383,12 +444,12 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
           width: 'auto',
           stack: [
             {
-              text: 'Article: ' + item.article,
+              text: 'Article: ' + item.article + ' Total: ' + item.grandTotal,
               bold: true,
               alignment: 'center',
             }, // Center align article text
             item.imageDataUrl
-              ? { image: item.imageDataUrl, fit: [70, 70], alignment: 'center' }
+              ? { image: item.imageDataUrl, fit: [60, 60], alignment: 'center' }
               : null, // Center align image
           ],
           alignment: 'center', // Center align the stack of article text and image
