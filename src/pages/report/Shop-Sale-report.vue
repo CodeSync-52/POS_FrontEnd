@@ -66,7 +66,7 @@
   </div>
   <div class="py-4">
     <q-table
-      class="max-h-[39.5vh] lg:max-h-[55vh] 3xl:max-h-[65vh]"
+      
       :loading="isLoading"
       tabindex="0"
       :rows="reporttList"
@@ -74,6 +74,8 @@
       :columns="shopsaleReportColumn"
       row-key="id"
       @request="searchShopSaleReport()"
+      :pagination="{ rowsPerPage: 0 }"
+      :rows-per-page-options="[0]"
     >
       <template v-slot:body-cell-action="props">
         <q-td :props="props">

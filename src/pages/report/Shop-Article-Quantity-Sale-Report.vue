@@ -100,7 +100,20 @@
         color="btn-primary"
         dense
       />
-
+      <div class="q-gutter-sm">
+        <q-radio
+          v-model="filterSearch.sortByQty"
+          color="btn-primary"
+          val="true"
+          label="Sort by Qty"
+        />
+        <q-radio
+          v-model="filterSearch.sortByQty"
+          color="btn-primary"
+          val="false"
+          label="Sort by article"
+        />
+      </div>
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           :loading="isLoading"
@@ -237,6 +250,7 @@ const filterSearch = ref<{
   shopId: number | null;
   fromDate: string;
   toDate: string;
+  sortByQty: string;
   ProductId: IArticleData[];
 }>({
   categoryId: null,
@@ -244,6 +258,7 @@ const filterSearch = ref<{
   categoryName: '',
   fromDate: formattedFromDate,
   toDate: formattedToDate,
+  sortByQty: 'true',
   ProductId: [],
 });
 const handleFilterArticles = (value: any, update: CallableFunction) => {
@@ -261,6 +276,7 @@ const handleResetFilter = () => {
     categoryId: null,
     fromDate: '',
     toDate: '',
+    sortByQty: 'true',
     ProductId: [],
   };
   articlquantitySaleResponse.value = [];
@@ -331,6 +347,7 @@ const getArticleQuantitySale = async () => {
           (product) => product.productId
         ).join(','),
         fromDate: filterSearch.value.fromDate,
+        sortByQty: filterSearch.value.sortByQty === 'true' ? true : false,
         toDate: filterSearch.value.toDate,
       },
       apiController.value

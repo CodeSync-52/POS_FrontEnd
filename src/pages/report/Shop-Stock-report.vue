@@ -78,6 +78,20 @@
           </q-item>
         </template>
       </q-select>
+      <div class="q-gutter-sm">
+        <q-radio
+          v-model="filterSearch.sortByQty"
+          color="btn-primary"
+          val="true"
+          label="Sort by Qty"
+        />
+        <q-radio
+          v-model="filterSearch.sortByQty"
+          color="btn-primary"
+          val="false"
+          label="Sort by article"
+        />
+      </div>
       <q-checkbox
         v-model="filterSearch.excludeZeroStock"
         color="btn-primary"
@@ -214,11 +228,13 @@ const filterSearch = ref<{
   shopId: number | null;
   excludeZeroStock: boolean;
   ProductId: IArticleData[];
+  sortByQty: string;
 }>({
   categoryId: null,
   shopId: null,
   categoryName: '',
   excludeZeroStock: true,
+  sortByQty: 'true',
   ProductId: [],
 });
 const handleFilterArticles = (value: any, update: CallableFunction) => {
@@ -235,6 +251,7 @@ const handleResetFilter = () => {
     shopId: null,
     categoryId: null,
     excludeZeroStock: true,
+    sortByQty: 'true',
     ProductId: [],
   };
   stockResponse.value = [];
@@ -296,6 +313,7 @@ const getShopStock = async () => {
           (product) => product.productId
         ).join(','),
         excludeZeroStock: filterSearch.value.excludeZeroStock,
+        sortByQty: filterSearch.value.sortByQty === 'true' ? true : false,
       },
       apiController.value
     );
