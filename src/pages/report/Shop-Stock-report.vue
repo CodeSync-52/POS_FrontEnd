@@ -78,6 +78,20 @@
           </q-item>
         </template>
       </q-select>
+      <div class="q-gutter-sm">
+        <q-radio
+          v-model="filterSearch.sortByArticle"
+          color="btn-primary"
+          val="false"
+          label="Sort by Qty"
+        />
+        <q-radio
+          v-model="filterSearch.sortByArticle"
+          color="btn-primary"
+          val="true"
+          label="Sort by article"
+        />
+      </div>
       <q-checkbox
         v-model="filterSearch.excludeZeroStock"
         color="btn-primary"
@@ -103,7 +117,7 @@
       </div>
 
       <div class="container mx-auto mt-6">
-        <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+        <div class="text-[24px] font-bold text-btn-primary pb-1 pr-4">
           Grand Total: {{ grandTotal }}
         </div>
         <!-- Article and Image -->
@@ -112,18 +126,24 @@
           :key="itemIndex"
           class="mb-8 border p-2"
         >
-          <div class="flex items-center gap-2">
-            <div class="flex flex-col">
-              <img
-                :src="item.image ?? ''"
-                alt="Product Image"
-                class="w-16 h-16 mt-2 mb-4"
-              />
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="flex flex-col">
+                <img
+                  :src="item.image ?? ''"
+                  alt="Product Image"
+                  class="w-16 h-16 mt-2 mb-4"
+                />
+              </div>
+
+              <div class="text-bold">{{ item.article }}</div>
             </div>
-
-            <div class="text-bold">{{ item.article }}</div>
+            <div>
+              <div class="text-bold text-[24px] flex justify-end">
+                Total: {{ item.grandTotal }}
+              </div>
+            </div>
           </div>
-
           <!-- Table -->
           <div class="flex flex-col mt-4">
             <table class="w-full border-collapse border border-gray-300">
@@ -214,11 +234,13 @@ const filterSearch = ref<{
   shopId: number | null;
   excludeZeroStock: boolean;
   ProductId: IArticleData[];
+  sortByArticle: string;
 }>({
   categoryId: null,
   shopId: null,
   categoryName: '',
   excludeZeroStock: true,
+  sortByArticle: 'true',
   ProductId: [],
 });
 const handleFilterArticles = (value: any, update: CallableFunction) => {
@@ -235,6 +257,7 @@ const handleResetFilter = () => {
     shopId: null,
     categoryId: null,
     excludeZeroStock: true,
+    sortByArticle: 'true',
     ProductId: [],
   };
   stockResponse.value = [];
@@ -296,6 +319,8 @@ const getShopStock = async () => {
           (product) => product.productId
         ).join(','),
         excludeZeroStock: filterSearch.value.excludeZeroStock,
+        sortByArticle:
+          filterSearch.value.sortByArticle === 'true' ? true : false,
       },
       apiController.value
     );
@@ -383,7 +408,7 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
           width: 'auto',
           stack: [
             {
-              text: 'Article: ' + item.article,
+              text: 'Article: ' + item.article + ' Total: ' + item.grandTotal,
               bold: true,
               alignment: 'center',
             }, // Center align article text

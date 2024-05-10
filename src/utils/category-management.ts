@@ -8,6 +8,6 @@ export const categoryTreeColumn: QTableColumn<IArticleCategory>[] = [
     required: true,
     field: (row) => row.name,
     align: 'left',
-    sortable: true,
+    sortable: false,
   },
 ];

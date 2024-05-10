@@ -82,6 +82,7 @@ export const shopsaleReportColumn: QTableColumn<IDateWiseShopReportData>[] = [
     label: 'Net Amount',
     align: 'left',
     field: (row) => row.netAmount ?? '-',
+    sortable: true,
   },
 ];
 

@@ -90,7 +90,7 @@
       </div>
     </div>
     <div class="container mx-auto mt-2">
-      <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+      <div class="text-[24px] font-bold text-btn-primary pb-1 pr-4">
         Grand Total Sale: {{ grandTotal }}
       </div>
       <div>

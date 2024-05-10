@@ -68,6 +68,14 @@
         />
       </div>
     </div>
+    <div
+      v-if="reportData.length > 0"
+      class="flex px-4 text-[24px] font-bold text-btn-primary"
+    >
+      <span> Closing: </span>
+      <span> {{ reportData[reportData.length - 1]?.balance }}</span>
+    </div>
+
     <div class="py-4">
       <q-table
         :loading="isLoading"
@@ -85,13 +93,6 @@
           </div>
         </template>
       </q-table>
-    </div>
-    <div
-      v-if="reportData.length > 0"
-      class="flex flex-end w-full justify-end px-4 gap-2 text-lg font-medium"
-    >
-      <span> Closing: </span>
-      <span> {{ reportData[reportData.length - 1]?.balance }}</span>
     </div>
   </div>
 </template>

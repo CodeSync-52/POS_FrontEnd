@@ -100,7 +100,20 @@
         color="btn-primary"
         dense
       />
-
+      <div class="q-gutter-sm">
+        <q-radio
+          v-model="filterSearch.sortByArticle"
+          color="btn-primary"
+          val="false"
+          label="Sort by Qty"
+        />
+        <q-radio
+          v-model="filterSearch.sortByArticle"
+          color="btn-primary"
+          val="true"
+          label="Sort by article"
+        />
+      </div>
       <div class="flex lg:justify-end sm:justify-start items-end h-full gap-2">
         <q-btn
           :loading="isLoading"
@@ -121,7 +134,7 @@
       </div>
 
       <div id="shop-article-quantity-sale" class="container mx-auto mt-2">
-        <div class="text-[16px] font-bold text-btn-primary pb-1 pr-4">
+        <div class="text-[24px] font-bold text-btn-primary pb-1 pr-4">
           Grand Total: {{ grandTotal }}
         </div>
         <!-- Article and Image -->
@@ -130,16 +143,23 @@
           :key="itemIndex"
           class="mb-8 border p-2"
         >
-          <div class="flex items-center gap-2">
-            <div class="flex flex-col">
-              <img
-                :src="item.image ?? ''"
-                alt="Product Image"
-                class="w-16 h-16 mt-2 mb-4"
-              />
-            </div>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="flex flex-col">
+                <img
+                  :src="item.image ?? ''"
+                  alt="Product Image"
+                  class="w-16 h-16 mt-2 mb-4"
+                />
+              </div>
 
-            <div class="text-bold">{{ item.article }}</div>
+              <div class="text-bold">{{ item.article }}</div>
+            </div>
+            <div>
+              <div class="text-bold text-[24px] flex justify-end">
+                Total: {{ item.grandTotal }}
+              </div>
+            </div>
           </div>
 
           <!-- Table -->
@@ -237,6 +257,7 @@ const filterSearch = ref<{
   shopId: number | null;
   fromDate: string;
   toDate: string;
+  sortByArticle: string;
   ProductId: IArticleData[];
 }>({
   categoryId: null,
@@ -244,6 +265,7 @@ const filterSearch = ref<{
   categoryName: '',
   fromDate: formattedFromDate,
   toDate: formattedToDate,
+  sortByArticle: 'true',
   ProductId: [],
 });
 const handleFilterArticles = (value: any, update: CallableFunction) => {
@@ -261,6 +283,7 @@ const handleResetFilter = () => {
     categoryId: null,
     fromDate: '',
     toDate: '',
+    sortByArticle: 'true',
     ProductId: [],
   };
   articlquantitySaleResponse.value = [];
@@ -331,6 +354,8 @@ const getArticleQuantitySale = async () => {
           (product) => product.productId
         ).join(','),
         fromDate: filterSearch.value.fromDate,
+        sortByArticle:
+          filterSearch.value.sortByArticle === 'true' ? true : false,
         toDate: filterSearch.value.toDate,
       },
       apiController.value
@@ -419,7 +444,7 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
           width: 'auto',
           stack: [
             {
-              text: 'Article: ' + item.article,
+              text: 'Article: ' + item.article + ' Total: ' + item.grandTotal,
               bold: true,
               alignment: 'center',
             }, // Center align article text
