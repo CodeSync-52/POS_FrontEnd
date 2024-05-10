@@ -405,6 +405,7 @@ const filterFn = (val: string, update: CallableFunction) => {
   });
 };
 const download = async (data: IShopStockReportData[], grandTotal: number) => {
+  isLoader.value = true;
   // Iterate over the data array
   for (const item of data) {
     // If the 'image' URL exists
@@ -429,13 +430,13 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
 
   // Call the downloadPdf method with the modified data and grandTotal
   downloadPdf(data, grandTotal);
+  isLoader.value = false;
 };
 
 const downloadPdf = async (
   data: IShopStockReportData[],
   grandTotal: number
 ) => {
-  isLoader.value = true;
   const content = [];
   // Add main heading for the title
   content.push({ text: 'Shop Stock Report', style: 'mainHeading' });
@@ -530,6 +531,5 @@ const downloadPdf = async (
 
   // Generate and download PDF
   pdfMake.createPdf(documentDefinition).download('shop_stock_report.pdf');
-  isLoader.value = false;
 };
 </script>
