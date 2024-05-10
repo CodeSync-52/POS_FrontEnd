@@ -223,8 +223,12 @@ const handleResetFilter = () => {
   ) {
     selectedShop.value = [];
     reporttList.value = [];
+    filterSearch.value.fromDate = '';
+    filterSearch.value.toDate = '';
   } else {
     reporttList.value = [];
+    filterSearch.value.fromDate = '';
+    filterSearch.value.toDate = '';
   }
 };
 async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
