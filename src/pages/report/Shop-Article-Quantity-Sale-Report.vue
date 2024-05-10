@@ -206,6 +206,10 @@
         </div>
       </div>
     </div>
+    <q-dialog v-model="isLoader" persistent>
+      <q-spinner-ios size="78px" color="btn-primary" />
+      <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+    </q-dialog>
   </div>
 </template>
 <script setup lang="ts">
@@ -230,8 +234,8 @@ const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const shopListRecords = ref<IShopResponse[]>([]);
 const options = ref<IShopResponse[]>([]);
+const isLoader = ref(false);
 const articlquantitySaleResponse = ref<IShopStockReportData[]>([]);
-
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { year: 1 });
@@ -464,6 +468,7 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
 };
 
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
+  isLoader.value = true;
   const content = [];
   // Add main heading for the title
   content.push({ text: 'Article Sale Report', style: 'mainHeading' });
@@ -558,5 +563,6 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
 
   // Generate and download PDF
   pdfMake.createPdf(documentDefinition).download('article_sale_report.pdf');
+  isLoader.value = false;
 };
 </script>
