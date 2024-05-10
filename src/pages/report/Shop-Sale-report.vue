@@ -3,6 +3,10 @@
     class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
   >
     <span class="text-xl font-medium">Date Wise Shop Sale Report</span>
+    <download-pdf-excel
+      @downloadPdfData="downloadPdfData"
+      @downloadCSVData="downloadCSVData"
+    />
   </div>
   <div
     class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
@@ -73,6 +77,7 @@
       align="left"
       :columns="shopsaleReportColumn"
       row-key="id"
+      :rows-per-page-options="[0]"
       @request="searchShopSaleReport()"
       :pagination="{ rowsPerPage: 0 }"
       :rows-per-page-options="[0]"
@@ -117,13 +122,16 @@ import {
   IDateWiseShopReportData,
 } from 'src/interfaces';
 import { GetShopList } from 'src/services';
-import { isPosError } from 'src/utils';
+import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { shopsaleReportColumn } from 'src/utils/reports';
-import { useQuasar } from 'quasar';
+import { useQuasar, exportFile } from 'quasar';
 import { useRouter } from 'vue-router';
 import { date } from 'quasar';
-import { GetDateWiseShopSaleReport } from 'src/services/reports';
+import moment from 'moment';
+import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
+import { processTableItems } from 'src/utils/process-table-items';
+import { GetDateWiseShopSaleReport, wrapCsvValue } from 'src/services/reports';
 const $q = useQuasar();
 const router = useRouter();
 const authStore = useAuthStore();
@@ -132,6 +140,7 @@ const timeStamp = Date.now();
 const reporttList = ref<IDateWiseShopReportData[]>([]);
 const isFetchingShopList = ref(false);
 const shopData = ref<IShopResponse[]>([]);
+const tableItems = ref<ITableItems[][]>([]);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past7Date = date.subtractFromDate(timeStamp, { date: 7 });
 const formattedFromDate = date.formatDate(past7Date, 'YYYY-MM-DD');
@@ -180,12 +189,15 @@ const getShopList = async () => {
 const searchShopSaleReport = async () => {
   try {
     const res = await GetDateWiseShopSaleReport({
-      shopIds: selectedShop.value!.map((shop) => shop.shopId).join(','),
+      shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
     });
     if (res.data) {
       reporttList.value = (res.data as { list: [] }).list;
+      tableItems.value = await convertArrayToPdfData(
+        (res.data as { list: [] }).list
+      );
     }
   } catch (e) {
     let message = 'Please select shop and date';
@@ -215,6 +227,98 @@ const handleResetFilter = () => {
     reporttList.value = [];
   } else {
     reporttList.value = [];
+  }
+};
+async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
+  const tableStuff = [];
+  const headerRow = ['Date', 'Shop', 'Total Amount', 'Disc', 'Net Amount'];
+  tableStuff.push(headerRow);
+  const footerRow = [
+    '',
+    '',
+    '',
+    {
+      text: 'Total',
+      margin: [0, 5],
+      bold: true,
+    },
+    { text: grandTotal.value.toString(), bold: true, margin: 5 },
+  ];
+
+  array.forEach((item: IDateWiseShopReportData) => {
+    const row = [
+      { text: moment(item.transactionDate).format('DD/MM/YYYY') },
+      { text: item.shop },
+      { text: item.totalAmount },
+      { text: item.discount },
+      { text: item.netAmount },
+    ];
+    tableStuff.push(row);
+  });
+  tableStuff.push(footerRow);
+  return tableStuff;
+}
+async function downloadPdfData() {
+  const headers: IPdfHeaders[] = [
+    {
+      heading: 'Shop Name',
+      content: selectedShop.value?.map((shop) => shop.name).join(','),
+    },
+    {
+      heading: 'From Date',
+      content: moment(filterSearch?.value?.fromDate).format('DD/MM/YYYY'),
+    },
+    {
+      heading: 'End Date',
+      content: moment(filterSearch?.value?.toDate).format('DD/MM/YYYY'),
+    },
+  ];
+  const myFileName = `Shop-Sale-report-${moment(
+    filterSearch?.value?.fromDate
+  ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.toDate).format(
+    'DD/MM/YYYY'
+  )}.pdf`;
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    pdfHeaders: headers,
+    title: '',
+  });
+}
+const downloadCSVData = () => {
+  const content = [shopsaleReportColumn.map((col) => wrapCsvValue(col.label))]
+    .concat(
+      reporttList.value.map((row: any) =>
+        shopsaleReportColumn
+          .map((col) =>
+            wrapCsvValue(
+              typeof col.field === 'function'
+                ? col.field(row)
+                : row[col.field === void 0 ? col.name : col.field],
+              col.format,
+              row
+            )
+          )
+          .join(',')
+      )
+    )
+    .join('\r\n');
+  const status = exportFile(
+    `Account-Reports-${moment(filterSearch?.value?.fromDate).format(
+      'DD/MM/YYYY'
+    )}-${moment(filterSearch?.value?.toDate).format('DD/MM/YYYY')}.csv`,
+    content,
+    'text/csv'
+  );
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning',
+    });
   }
 };
 </script>
