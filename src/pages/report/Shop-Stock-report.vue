@@ -188,6 +188,10 @@
         </div>
       </div>
     </div>
+    <q-dialog v-model="isLoader" persistent>
+      <q-spinner-ios size="78px" color="btn-primary" />
+      <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+    </q-dialog>
   </div>
 </template>
 <script setup lang="ts">
@@ -205,6 +209,7 @@ import { isPosError } from 'src/utils';
 import { ref, onMounted } from 'vue';
 import pdfMake from 'pdfmake/build/pdfmake';
 const isLoading = ref(false);
+const isLoader = ref(false);
 const $q = useQuasar();
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
@@ -426,7 +431,11 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
   downloadPdf(data, grandTotal);
 };
 
-const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
+const downloadPdf = async (
+  data: IShopStockReportData[],
+  grandTotal: number
+) => {
+  isLoader.value = true;
   const content = [];
   // Add main heading for the title
   content.push({ text: 'Shop Stock Report', style: 'mainHeading' });
@@ -521,5 +530,6 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
 
   // Generate and download PDF
   pdfMake.createPdf(documentDefinition).download('shop_stock_report.pdf');
+  isLoader.value = false;
 };
 </script>
