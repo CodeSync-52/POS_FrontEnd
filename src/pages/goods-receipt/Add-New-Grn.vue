@@ -304,7 +304,6 @@ const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
 watch(selectedInventoryData, () => {
-  // Clear the scannedLabel whenever selectedInventoryData changes
   scannedLabel.value = '';
 });
 onMounted(() => {
