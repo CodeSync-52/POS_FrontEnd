@@ -455,70 +455,73 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
   const content = [];
 
-// Table header
-const header = [
-  { text: 'Article', style: 'tableHeader' },
-  { text: 'Image', style: 'tableHeader', alignment: 'center' },
-  { text: 'Retail Price', style: 'tableHeader' },
-  { text: 'Total', style: 'tableHeader', alignment: 'right' }
-];
-content.push(header);
-
-// Add data rows
-data.forEach((item) => {
-  const rowData = [
-    { text: item.article, fontSize: 10 },
-    // Check if imageDataUrl exists
-    item.imageDataUrl ?
-      {
-        image: item.imageDataUrl,
-        fit: [70, 70],
-        alignment: 'center'
-      }
-    : { text: '', fontSize: 10 }, // Add empty cell if imageDataUrl is null
-    { text: item.retailPrice.toString(), fontSize: 10 },
-    { text: item.grandTotal.toString(), alignment: 'right', fontSize: 10 }
+  // Table header
+  const header = [
+    { text: 'Article', style: 'tableHeader' },
+    { text: 'Image', style: 'tableHeader', alignment: 'center' },
+    { text: 'Retail Price', style: 'tableHeader' },
+    { text: 'Total', style: 'tableHeader', alignment: 'right' },
   ];
-  content.push(rowData);
-});
+  content.push(header);
 
-// Document definition
-const documentDefinition = {
-  content: [
-    { text: 'Article Sale Report', style: 'mainHeading' },
-    { text: '\n' },
-    { text: 'Grand Total: ' + grandTotal, style: 'subHeading' },
-    { text: '\n\n' }, // Add space between header and table
-    {
-      table: {
-        headerRows: 1,
-        widths: ['auto', 'auto', 'auto', 'auto'],
-        body: content,
-        style: 'tableStyle'
-      }
-    }
-  ],
-  styles: {
-    mainHeading: {
-      fontSize: 20,
-      bold: true,
-      alignment: 'center',
-      margin: [0, 0, 0, 10]
+  // Add data rows
+  data.forEach((item) => {
+    const rowData = [
+      { text: item.article, fontSize: 10 },
+      // Check if imageDataUrl exists
+      item.imageDataUrl
+        ? {
+            image: item.imageDataUrl,
+            fit: [70, 70],
+            alignment: 'center',
+          }
+        : { text: '', fontSize: 10 }, // Add empty cell if imageDataUrl is null
+      { text: item.retailPrice.toString(), fontSize: 10 },
+      { text: item.grandTotal.toString(), alignment: 'right', fontSize: 10 },
+    ];
+    content.push(rowData);
+  });
+
+  // Document definition
+  const documentDefinition = {
+    content: [
+      { text: 'Article Sale Report', style: 'mainHeading' },
+      { text: '\n' },
+      { text: 'Grand Total: ' + grandTotal, style: 'subHeading' },
+      { text: '\n\n' }, // Add space between header and table
+      {
+        table: {
+          headerRows: 1,
+          widths: ['auto', 'auto', 'auto', 'auto'],
+          body: content,
+          style: 'tableStyle',
+        },
+      },
+    ],
+    styles: {
+      mainHeading: {
+        fontSize: 20,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 10],
+      },
+      subHeading: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 0, 0, 10],
+      },
+      tableHeader: {
+        fontSize: 10,
+        bold: true,
+        fillColor: '#CCCCCC',
+        alignment: 'center',
+      },
+      tableStyle: {
+        fontSize: 10,
+      },
     },
-    subHeading: {
-      fontSize: 16,
-      bold: true,
-      margin: [0, 0, 0, 10]
-    },
-    tableHeader: {fontSize: 10, bold: true, fillColor: '#CCCCCC', alignment: 'center' },
-    tableStyle: {
-      fontSize: 10
-    }
-  }
+  };
+
+  pdfMake.createPdf(documentDefinition).download('article_sale_report.pdf');
 };
-
-pdfMake.createPdf(documentDefinition).download('article_sale_report.pdf');
-};
-
-
 </script>

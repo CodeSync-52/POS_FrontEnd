@@ -425,28 +425,40 @@ const downloadPdf = async (
 
   data.forEach((item) => {
     const tableBody = [];
-    const headerRow = ['Article (Total)', 'Color' , ...getUniqueSizes(item.variant2List), 'Total'];
-    tableBody.push(headerRow.map(header => ({ text: header, style: 'tableHeader' })));
+    const headerRow = [
+      'Article (Total)',
+      'Color',
+      ...getUniqueSizes(item.variant2List),
+      'Total',
+    ];
+    tableBody.push(
+      headerRow.map((header) => ({ text: header, style: 'tableHeader' }))
+    );
 
     let isFirstRow = true;
     item.variant2List.forEach((variant, index) => {
       const row = [
-            {
-                text: isFirstRow ? item.article + ' (' + item.grandTotal + ')' : '',
-                rowSpan: isFirstRow ? item.variant2List.length : undefined,
-                style: isFirstRow ? 'tableCellCentered' : 'tableCell',
-            },
-            {text: variant.variant2_Name, style: 'tableCell'}
-        ];
+        {
+          text: isFirstRow ? item.article + ' (' + item.grandTotal + ')' : '',
+          rowSpan: isFirstRow ? item.variant2List.length : undefined,
+          style: isFirstRow ? 'tableCellCentered' : 'tableCell',
+        },
+        { text: variant.variant2_Name, style: 'tableCell' },
+      ];
       getUniqueSizes(item.variant2List).forEach((size: string) => {
         const v1 = variant.variant1List.find((v) => v.variant1_Name === size);
         const quantity = v1 ? v1.quantity : 0;
-        row.push({ text: quantity.toString(), alignment: 'center' , style: 'tableCell' });
+        row.push({
+          text: quantity.toString(),
+          style: 'tableCell',
+        });
       });
-      row.push({ text: variant.totalQuantity.toString(), alignment: 'center' , style: 'tableCell' });
+      row.push({
+        text: variant.totalQuantity.toString(),
+        style: 'tableCell',
+      });
       tableBody.push(row);
       isFirstRow = false; // Set the flag to false after processing the first row of the group
-
     });
 
     const table = {
@@ -466,19 +478,23 @@ const downloadPdf = async (
     content: content,
     styles: {
       subHeading: { fontSize: 15, bold: true, margin: [0, 10, 0, 5] },
-      tableStyle: {fontSize: 10, margin: [0, 5, 0, 15] },
-      tableHeader: {fontSize: 10, bold: true, fillColor: '#CCCCCC', alignment: 'center' },
-      tableCell: {fontSize: 10},
+      tableStyle: { fontSize: 10, margin: [0, 5, 0, 15] },
+      tableHeader: {
+        fontSize: 10,
+        bold: true,
+        fillColor: '#CCCCCC',
+        alignment: 'center',
+      },
+      tableCell: { fontSize: 10 , allignment: 'center'},
       tableCellCentered: {
         fontSize: 10,
-            alignment: 'center',
-            verticalAlignment: 'middle',
-        },
+        alignment: 'center',
+        verticalAlignment: 'middle',
+      },
     },
   };
 
   const pdfDoc = pdfMake.createPdf(documentDefinition);
   pdfDoc.download('shop_stock_report.pdf');
 };
-
 </script>
