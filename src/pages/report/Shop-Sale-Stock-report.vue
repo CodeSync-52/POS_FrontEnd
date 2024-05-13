@@ -114,6 +114,9 @@
                   {{ variant.variant1_Name }}
                 </th>
                 <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                  Total Stock Qty.
+                </th>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
                   Total Sale Qty.
                 </th>
               </tr>
@@ -129,6 +132,9 @@
                   class="border border-gray-300 px-4 py-2 text-center"
                 >
                   {{ variant.stockQuantity }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                  {{ shopQty.totalStockQuantity }}
                 </td>
                 <td class="border border-gray-300 px-4 py-2 text-center">
                   {{ shopQty.totalSaleQuantity }}
@@ -303,6 +309,7 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
                   text: variant.variant1_Name,
                   style: 'tableHeader',
                 })),
+                { text: 'Total Stock Qty.', style: 'tableHeader' },
                 { text: 'Total Sale Qty.', style: 'tableHeader' },
               ],
               ...item.shopQty.map((shopQty: IShopQuantity) => [
@@ -311,6 +318,10 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
                   text: variant.stockQuantity.toString(),
                   alignment: 'center',
                 })),
+                {
+                  text: shopQty.totalStockQuantity.toString(),
+                  alignment: 'center',
+                },
                 {
                   text: shopQty.totalSaleQuantity.toString(),
                   alignment: 'center',

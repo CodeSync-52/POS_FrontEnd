@@ -32,6 +32,7 @@ export interface IShopSaleStockReportData {
 export interface IShopQuantity {
   shop: string;
   totalSaleQuantity: number;
+  totalStockQuantity: number;
   list: IStockSaleByShopDetail[];
 }
 

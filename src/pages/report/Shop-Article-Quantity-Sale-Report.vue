@@ -452,73 +452,52 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
   downloadPdf(data, grandTotal);
   isLoader.value = false;
 };
-
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
   const content = [];
-  content.push({ text: 'Article Sale Report', style: 'mainHeading' });
-  content.push({ text: '\n' });
-  content.push({ text: 'Grand Total: ' + grandTotal, style: 'subHeading' });
 
+  // Table header
+  const header = [
+    { text: 'Article', style: 'tableHeader' },
+    { text: 'Image', style: 'tableHeader', alignment: 'center' },
+    { text: 'Retail Price', style: 'tableHeader' },
+    { text: 'Total', style: 'tableHeader', alignment: 'right' },
+  ];
+  content.push(header);
+
+  // Add data rows
   data.forEach((item) => {
-    const articleWithImage = {
-      columns: [
-        { width: '*', text: '' },
-        {
-          width: 'auto',
-          stack: [
-            {
-              text: 'Article: ' + item.article + ' Total: ' + item.grandTotal,
-              bold: true,
-              alignment: 'center',
-            },
-            item.imageDataUrl
-              ? { image: item.imageDataUrl, fit: [70, 70], alignment: 'center' }
-              : null,
-          ],
-          alignment: 'center',
-        },
-        { width: '*', text: '' },
-      ],
-    };
-    content.push(articleWithImage);
-
-    content.push({ text: '\n' });
-    const table = {
-      table: {
-        widths: [
-          'auto',
-          ...getUniqueSizes(item.variant2List).map(() => '*'),
-          'auto',
-        ],
-        headerRows: 1,
-        body: [],
-        style: 'tableStyle',
-      },
-    };
-    const headerRow: { text: string; style: string }[] = getUniqueSizes(
-      item.variant2List
-    ).map((variant: string) => {
-      return { text: variant, style: 'tableHeader' };
-    });
-    headerRow.unshift({ text: '', style: 'tableHeader' });
-    headerRow.push({ text: 'Total', style: 'tableHeader' });
-    (table.table.body as { text: string; style: string }[][]).push(headerRow);
-    item.variant2List.forEach((variant) => {
-      const row = [variant.variant2_Name];
-
-      getUniqueSizes(item.variant2List).forEach((size: string) => {
-        const v1 = variant.variant1List.find((v) => v.variant1_Name === size);
-        const quantity = v1 ? v1.quantity : 0;
-        row.push({ text: quantity.toString(), alignment: 'center' });
-      });
-      row.push({ text: variant.totalQuantity.toString(), alignment: 'center' });
-      table.table.body.push(row);
-    });
-    content.push(table);
-    content.push({ text: '\n' });
+    const rowData = [
+      { text: item.article, fontSize: 10 },
+      // Check if imageDataUrl exists
+      item.imageDataUrl
+        ? {
+            image: item.imageDataUrl,
+            fit: [70, 70],
+            alignment: 'center',
+          }
+        : { text: '', fontSize: 10 }, // Add empty cell if imageDataUrl is null
+      { text: item.retailPrice.toString(), fontSize: 10 },
+      { text: item.grandTotal.toString(), alignment: 'right', fontSize: 10 },
+    ];
+    content.push(rowData);
   });
+
+  // Document definition
   const documentDefinition = {
-    content: content,
+    content: [
+      { text: 'Article Sale Report', style: 'mainHeading' },
+      { text: '\n' },
+      { text: 'Grand Total: ' + grandTotal, style: 'subHeading' },
+      { text: '\n\n' }, // Add space between header and table
+      {
+        table: {
+          headerRows: 1,
+          widths: ['auto', 'auto', 'auto', 'auto'],
+          body: content,
+          style: 'tableStyle',
+        },
+      },
+    ],
     styles: {
       mainHeading: {
         fontSize: 20,
@@ -526,11 +505,23 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
         alignment: 'center',
         margin: [0, 0, 0, 10],
       },
-      subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
-      tableStyle: { margin: [0, 5, 0, 15] },
-      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' },
+      subHeading: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 0, 0, 10],
+      },
+      tableHeader: {
+        fontSize: 10,
+        bold: true,
+        fillColor: '#CCCCCC',
+        alignment: 'center',
+      },
+      tableStyle: {
+        fontSize: 10,
+      },
     },
   };
+
   pdfMake.createPdf(documentDefinition).download('article_sale_report.pdf');
 };
 </script>
