@@ -39,6 +39,13 @@ export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
     field: (row) => row.credit ?? '-',
   },
   {
+    name: 'comment',
+    required: true,
+    label: 'Comments',
+    align: 'left',
+    field: (row) => row.comments ?? '-',
+  },
+  {
     name: 'balance',
     required: true,
     label: 'Balance',
@@ -68,6 +75,13 @@ export const shopsaleReportColumn: QTableColumn<IDateWiseShopReportData>[] = [
     label: 'Total Amount',
     align: 'left',
     field: (row) => row.totalAmount ?? '-',
+  },
+  {
+    name: 'totalQuantity',
+    required: true,
+    label: 'Total Quantity',
+    align: 'left',
+    field: (row) => row.quantity ?? '-',
   },
   {
     name: 'discount',

@@ -154,6 +154,8 @@
               </div>
 
               <div class="text-bold">{{ item.article }}</div>
+
+              <div class="text-bold">Retail Price: {{ item.retailPrice }}</div>
             </div>
             <div>
               <div class="text-bold text-[24px] flex justify-end">
@@ -238,7 +240,7 @@ const isLoader = ref(false);
 const articlquantitySaleResponse = ref<IShopStockReportData[]>([]);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past30Date = date.subtractFromDate(timeStamp, { year: 1 });
+const past30Date = date.subtractFromDate(timeStamp, { days: 30 });
 const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 let grandTotal = ref<number>(0);
 onMounted(() => {
@@ -332,16 +334,6 @@ const getArticleQuantitySale = async () => {
     });
     return;
   }
-
-  if (!filterSearch.value.categoryId) {
-    $q.notify({
-      message: 'Please select a category.',
-      icon: 'error',
-      color: 'red',
-    });
-    return;
-  }
-
   if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
     $q.notify({
       message: 'Please select date range.',

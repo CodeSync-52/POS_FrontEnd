@@ -95,9 +95,13 @@
       </div>
       <div>
         <div v-for="item in shopSaleStockReportData" :key="item.variant2_Id">
-          <h2 class="text-lg font-bold mt-4">
-            {{ item.variant2_Name }} - COLOR
-          </h2>
+          <div
+            class="text-lg font-bold my-4 flex justify-between flex-col md:flex-row"
+          >
+            <span> {{ item.variant2_Name }} - COLOR </span>
+            <span>Stock Qty ({{ item.totalStockQuantity }})</span>
+            <span>Sale Quantity ({{ item.totalSaleQuantity }})</span>
+          </div>
           <table class="w-full border-collapse border border-gray-300">
             <thead>
               <tr>

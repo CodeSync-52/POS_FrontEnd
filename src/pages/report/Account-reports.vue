@@ -241,10 +241,12 @@ async function convertArrayToPdfData(array: IAccountReportData[]) {
     'Transaction Detail',
     'Debit (Out)',
     'Credit (In)',
+    'Comments',
     'Balance',
   ];
   tableStuff.push(headerRow);
   const footerRow = [
+    '',
     '',
     '',
     '',
@@ -262,6 +264,7 @@ async function convertArrayToPdfData(array: IAccountReportData[]) {
       { text: item.transactionDetail },
       { text: item.debit },
       { text: item.credit },
+      { text: item.comments },
       { text: item.balance },
     ];
     tableStuff.push(row);

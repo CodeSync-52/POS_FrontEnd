@@ -186,8 +186,8 @@ const filterSearch = ref<{
   categoryId: null,
   categoryName: '',
   sortByStock: 'false',
-  includeZeroStock: true,
-  showOnlyZeroStock: true,
+  includeZeroStock: false,
+  showOnlyZeroStock: false,
   ProductId: [],
 });
 
