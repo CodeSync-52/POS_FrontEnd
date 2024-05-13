@@ -416,70 +416,48 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
   downloadPdf(data, grandTotal);
   isLoader.value = false;
 };
-
 const downloadPdf = async (
   data: IShopStockReportData[],
   grandTotal: number
 ) => {
   const content = [];
-  content.push({ text: 'Shop Stock Report', style: 'mainHeading' });
-  content.push({ text: '\n' });
   content.push({ text: 'Grand Total: ' + grandTotal, style: 'subHeading' });
 
   data.forEach((item) => {
-    const articleWithImage = {
-      columns: [
-        { width: '*', text: '' },
-        {
-          width: 'auto',
-          stack: [
-            {
-              text: 'Article: ' + item.article + ' Total: ' + item.grandTotal,
-              bold: true,
-              alignment: 'center',
-            },
-            item.imageDataUrl
-              ? { image: item.imageDataUrl, fit: [60, 60], alignment: 'center' }
-              : null,
-          ],
-          alignment: 'center',
-        },
-        { width: '*', text: '' },
-      ],
-    };
-    content.push(articleWithImage);
+    const tableBody = [];
+    const headerRow = ['Article (Total)', 'Color' , ...getUniqueSizes(item.variant2List), 'Total'];
+    tableBody.push(headerRow.map(header => ({ text: header, style: 'tableHeader' })));
 
-    content.push({ text: '\n' });
-    const table = {
-      table: {
-        widths: [
-          'auto',
-          ...getUniqueSizes(item.variant2List).map(() => '*'),
-          'auto',
-        ],
-        headerRows: 1,
-        body: [],
-        style: 'tableStyle',
-      },
-    };
-    const headerRow: { text: string; style: string }[] = getUniqueSizes(
-      item.variant2List
-    ).map((variant: string) => {
-      return { text: variant, style: 'tableHeader' };
-    });
-    headerRow.unshift({ text: '', style: 'tableHeader' });
-    headerRow.push({ text: 'Total', style: 'tableHeader' });
-    (table.table.body as { text: string; style: string }[][]).push(headerRow);
-    item.variant2List.forEach((variant) => {
-      const row = [variant.variant2_Name];
+    let isFirstRow = true;
+    item.variant2List.forEach((variant, index) => {
+      const row = [
+            {
+                text: isFirstRow ? item.article + ' (' + item.grandTotal + ')' : '',
+                rowSpan: isFirstRow ? item.variant2List.length : undefined,
+                style: isFirstRow ? 'tableCellCentered' : 'tableCell',
+            },
+            {text: variant.variant2_Name, style: 'tableCell'}
+        ];
       getUniqueSizes(item.variant2List).forEach((size: string) => {
         const v1 = variant.variant1List.find((v) => v.variant1_Name === size);
         const quantity = v1 ? v1.quantity : 0;
-        row.push({ text: quantity.toString(), alignment: 'center' });
+        row.push({ text: quantity.toString(), alignment: 'center' , style: 'tableCell' });
       });
-      row.push({ text: variant.totalQuantity.toString(), alignment: 'center' });
-      table.table.body.push(row);
+      row.push({ text: variant.totalQuantity.toString(), alignment: 'center' , style: 'tableCell' });
+      tableBody.push(row);
+      isFirstRow = false; // Set the flag to false after processing the first row of the group
+
     });
+
+    const table = {
+      table: {
+        widths: Array(headerRow.length).fill('*'),
+        headerRows: 1,
+        body: tableBody,
+        style: 'tableStyle',
+      },
+    };
+
     content.push(table);
     content.push({ text: '\n' });
   });
@@ -487,17 +465,20 @@ const downloadPdf = async (
   const documentDefinition = {
     content: content,
     styles: {
-      mainHeading: {
-        fontSize: 20,
-        bold: true,
-        alignment: 'center',
-        margin: [0, 0, 0, 10],
-      },
-      subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
-      tableStyle: { margin: [0, 5, 0, 15] },
-      tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' },
+      subHeading: { fontSize: 15, bold: true, margin: [0, 10, 0, 5] },
+      tableStyle: {fontSize: 10, margin: [0, 5, 0, 15] },
+      tableHeader: {fontSize: 10, bold: true, fillColor: '#CCCCCC', alignment: 'center' },
+      tableCell: {fontSize: 10},
+      tableCellCentered: {
+        fontSize: 10,
+            alignment: 'center',
+            verticalAlignment: 'middle',
+        },
     },
   };
-  pdfMake.createPdf(documentDefinition).download('shop_stock_report.pdf');
+
+  const pdfDoc = pdfMake.createPdf(documentDefinition);
+  pdfDoc.download('shop_stock_report.pdf');
 };
+
 </script>
