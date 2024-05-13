@@ -485,7 +485,7 @@ const downloadPdf = async (
         fillColor: '#CCCCCC',
         alignment: 'center',
       },
-      tableCell: { fontSize: 10 , allignment: 'center'},
+      tableCell: { fontSize: 10, allignment: 'center' },
       tableCellCentered: {
         fontSize: 10,
         alignment: 'center',
