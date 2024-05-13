@@ -186,11 +186,21 @@
       </div>
     </q-card-section>
     <div class="text-end flex justify-between text-[16px] px-4 mb-4 font-bold">
-      <div>
+      <div
+        v-if="
+          authStore.loggedInUser?.rolePermissions.roleName ===
+          EUserRoles.SuperAdmin.toLowerCase()
+        "
+      >
         Total Whole Sale Price:
         <span>{{ selectedGrnData.totalWholeSalePrice }}</span>
       </div>
-      <div>
+      <div
+        v-if="
+          authStore.loggedInUser?.rolePermissions.roleName ===
+          EUserRoles.SuperAdmin.toLowerCase()
+        "
+      >
         Total Retail Price: <span>{{ selectedGrnData.totalRetailPrice }}</span>
       </div>
       <div>
