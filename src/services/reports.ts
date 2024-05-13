@@ -234,13 +234,13 @@ export function wrapCsvValue(
 }
 export const GetShopStockReport = async (
   {
-    shopId,
+    shopIds,
     categoryId,
     productIds,
     excludeZeroStock,
     sortByArticle,
   }: {
-    shopId: number;
+    shopIds: string | number[] | null;
     categoryId: number;
     productIds: string;
     excludeZeroStock: boolean;
@@ -252,7 +252,7 @@ export const GetShopStockReport = async (
     method: 'POST',
     url: 'api/report/shopstock',
     data: {
-      shopId: shopId,
+      shopIds: shopIds,
       categoryId: categoryId,
       productIds: productIds,
       excludeZeroStock: excludeZeroStock,

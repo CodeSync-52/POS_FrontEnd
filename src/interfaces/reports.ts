@@ -3,12 +3,14 @@ export interface IAccountReportData {
   transactionDetail: string;
   debit: number | null;
   credit: number | null;
+  comments: string | null;
   balance: number;
 }
 export interface IDateWiseShopReportData {
   transactionDate: string;
   shop: string;
   totalAmount: number;
+  quantity: number;
   discount: number;
   netAmount: number;
 }
@@ -22,6 +24,8 @@ export interface IOutStandingReportData {
 export interface IShopSaleStockReportData {
   variant2_Id: number;
   variant2_Name: string;
+  totalStockQuantity: number;
+  totalSaleQuantity: number;
   shopQty: IShopQuantity[];
 }
 
@@ -48,6 +52,7 @@ export interface IShopStockReportData {
   image?: string | null;
   imageDataUrl?: string | null;
   productId: number;
+  retailPrice: number;
   grandTotal: number;
   variant2List: IVariant2Info[];
 }

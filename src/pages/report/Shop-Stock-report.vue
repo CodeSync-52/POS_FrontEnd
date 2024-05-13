@@ -27,19 +27,20 @@
     >
       <q-select
         dense
+        style="min-width: 200px"
         outlined
-        style="min-width: 200px; max-width: 200px"
-        use-input
-        @filter="filterFn"
-        v-model="filterSearch.shopId"
-        @update:model-value="filterSearch.shopId = $event.shopId"
-        :options="options"
         map-options
-        option-value="shopId"
+        @filter="filterFn"
+        use-input
+        :options="shopListRecords"
+        v-model="selectedShop"
         popup-content-class="!max-h-[200px]"
-        option-label="name"
         label="Select Shop"
         color="btn-primary"
+        multiple
+        clearable
+        option-label="name"
+        option-value="shopId"
       />
       <q-input
         maxlength="250"
@@ -216,7 +217,7 @@ const articleList = ref<IArticleData[]>([]);
 const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const shopListRecords = ref<IShopResponse[]>([]);
-const options = ref<IShopResponse[]>([]);
+const selectedShop = ref<IShopResponse[]>([]);
 const stockResponse = ref<IShopStockReportData[]>([]);
 let grandTotal = ref<number>(0);
 onMounted(() => {
@@ -236,13 +237,13 @@ const handleSelectedCategory = (selectedCategory: {
 const filterSearch = ref<{
   categoryId: number | null;
   categoryName: string;
-  shopId: number | null;
+  shopIds: [];
   excludeZeroStock: boolean;
   ProductId: IArticleData[];
   sortByArticle: string;
 }>({
   categoryId: null,
-  shopId: null,
+  shopIds: [],
   categoryName: '',
   excludeZeroStock: true,
   sortByArticle: 'true',
@@ -259,7 +260,7 @@ const handleResetFilter = () => {
   }
   filterSearch.value = {
     categoryName: '',
-    shopId: null,
+    shopIds: [],
     categoryId: null,
     excludeZeroStock: true,
     sortByArticle: 'true',
@@ -299,7 +300,7 @@ const getArticleList = async (productName?: string) => {
   isFetchingArticleList.value = false;
 };
 const getShopStock = async () => {
-  if (!filterSearch.value.shopId) {
+  if (!filterSearch.value.shopIds) {
     $q.notify({
       message: 'Please select a shop.',
       icon: 'error',
@@ -307,16 +308,6 @@ const getShopStock = async () => {
     });
     return;
   }
-
-  if (!filterSearch.value.categoryId) {
-    $q.notify({
-      message: 'Please select a category.',
-      icon: 'error',
-      color: 'red',
-    });
-    return;
-  }
-
   if (isLoading.value) return;
   isLoading.value = true;
   try {
@@ -327,7 +318,7 @@ const getShopStock = async () => {
     apiController.value = new AbortController();
     const res = await GetShopStockReport(
       {
-        shopId: filterSearch.value.shopId,
+        shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
         categoryId: filterSearch.value.categoryId ?? 0,
         productIds: filterSearch.value.ProductId?.map(
           (product) => product.productId
@@ -399,7 +390,7 @@ const getShopList = async () => {
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
-    options.value = shopListRecords.value.filter((v) =>
+    shopListRecords.value = shopListRecords.value.filter((v) =>
       v.name?.toLowerCase().includes(needle)
     );
   });

@@ -233,9 +233,17 @@ const handleResetFilter = () => {
 };
 async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
   const tableStuff = [];
-  const headerRow = ['Date', 'Shop', 'Total Amount', 'Disc', 'Net Amount'];
+  const headerRow = [
+    'Date',
+    'Shop',
+    'Total Amount',
+    'Total Quantity',
+    'Disc',
+    'Net Amount',
+  ];
   tableStuff.push(headerRow);
   const footerRow = [
+    '',
     '',
     '',
     '',
@@ -252,6 +260,7 @@ async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
       { text: moment(item.transactionDate).format('DD/MM/YYYY') },
       { text: item.shop },
       { text: item.totalAmount },
+      { text: item.quantity },
       { text: item.discount },
       { text: item.netAmount },
     ];
