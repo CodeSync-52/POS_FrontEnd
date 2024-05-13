@@ -341,6 +341,41 @@ const getInventoryList = async (data?: {
 }) => {
   if (isLoading.value) return;
   isLoading.value = true;
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName ===
+    EUserRoles.ShopManager.toLowerCase()
+  ) {
+    if (
+      filterSearch.value.ShopId?.length !== undefined &&
+      filterSearch.value.ShopId.length > 1 &&
+      !filterSearch.value.ProductCode
+    ) {
+      isLoading.value = false;
+      $q.notify({
+        message: 'Please Select product code.',
+        icon: 'error',
+        color: 'red',
+      });
+      return;
+    } else {
+      if (
+        filterSearch.value.ShopId?.length === 1 &&
+        !filterSearch.value.ProductCode &&
+        !filterSearch.value.ShopId.some(
+          (shop) =>
+            shop.shopId === authStore.loggedInUser?.userShopInfoDTO.shopId
+        )
+      ) {
+        isLoading.value = false;
+        $q.notify({
+          message: 'Please Select product code.',
+          icon: 'error',
+          color: 'red',
+        });
+        return;
+      }
+    }
+  }
   if (data) {
     pagination.value = { ...pagination.value, ...data.pagination };
   }
