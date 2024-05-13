@@ -757,7 +757,7 @@ const handleOutsideClick = () => {
   window.addEventListener('keypress', handleKeyPress);
 };
 const handleKeyPress = async (e: KeyboardEvent) => {
-  if (e.key === '+') {
+  if (e.key === 'o' || e.key === 'O') {
     isInventoryListModalVisible.value = true;
   } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
     const target = e.target as HTMLInputElement;

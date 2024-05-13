@@ -497,7 +497,7 @@ const handlePrintReceipt = () => {
   printReceipt(ReceiptToPrint);
 };
 const handleKeyPress = async (e: KeyboardEvent) => {
-  if (e.key === '+') {
+  if (e.key === 'o' || e.key === 'O') {
     isInventoryListModalVisible.value = true;
   }
 };
