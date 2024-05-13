@@ -276,6 +276,7 @@ onMounted(async () => {
   isFetchingArticleList.value = props.isFetchingArticle;
   InventoryPagination.value = props.pagination;
   isLoading.value = props.isFetchingRecords;
+  window.addEventListener('keydown', handleActionKeys);
 });
 onUpdated(async () => {
   articleList.value = props.articleRecords;
@@ -317,6 +318,14 @@ const handleRemoveInventoryFilter = () => {
   selectedShopRecords.value = [];
   isLoading.value = false;
   emit('clear-filter');
+};
+const handleActionKeys = (e: KeyboardEvent) => {
+  if (e.ctrlKey) {
+    e.preventDefault();
+    if (e.key === 's' || e.key === 'S') {
+      handleSaveSelectedInventory();
+    }
+  }
 };
 const filterProduct = (val: string, update: CallableFunction) => {
   update(() => {

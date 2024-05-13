@@ -169,7 +169,7 @@ import { GetArticleList, GetInventoryDetail } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import { isPosError } from 'src/utils';
 import { InventoryListColumn } from 'src/utils/inventory';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { QSelect } from 'quasar';
 const productSelectInputRef = ref<QSelect | null>(null);
 const $q = useQuasar();
@@ -199,6 +199,9 @@ const filterSearch = ref<IInventoryFilterSearch>({
   CategoryId: null,
   categoryName: '',
 });
+onMounted(async () => {
+  window.addEventListener('keydown', handleActionKeys);
+});
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
     selectedPreviewImage.value = selectedImage;
@@ -223,6 +226,14 @@ const handlePopupShow = () => {
   if (productSelectInputRef.value) {
     if (filterSearch.value.ProductId !== null) {
       handleSearchArticles();
+    }
+  }
+};
+const handleActionKeys = (e: KeyboardEvent) => {
+  if (e.ctrlKey) {
+    e.preventDefault();
+    if (e.key === 's' || e.key === 'S') {
+      handleSaveSelectedInventory();
     }
   }
 };
