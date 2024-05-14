@@ -144,6 +144,10 @@
     <q-dialog v-model="isCategoryModalVisible">
       <article-category-modal @category-selected="handleSelectedCategory" />
     </q-dialog>
+    <q-dialog v-model="isLoader" persistent>
+      <q-spinner-ios size="78px" color="btn-primary" />
+      <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+    </q-dialog>
   </div>
 </template>
 
@@ -163,6 +167,7 @@ import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { processTableItems } from 'src/utils/process-table-items';
 import { HOStockReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
+const isLoader = ref(false);
 const isLoading = ref(false);
 const apiController = ref<AbortController | null>(null);
 const tableItems = ref<ITableItems[][]>([]);
@@ -385,6 +390,7 @@ async function convertArrayToPdfData(array: IHOStockReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
+  isLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: 'User',
@@ -412,6 +418,7 @@ async function downloadPdfData() {
     pdfHeaders: headers,
     title: '',
   });
+  isLoader.value = false;
 }
 
 const downloadCSVData = () => {

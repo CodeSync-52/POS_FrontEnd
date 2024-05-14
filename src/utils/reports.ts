@@ -7,6 +7,7 @@ import {
   IHOSaleDetailReportData,
   IHOStockReportData,
   IOutStandingReportData,
+  IVendorSaleStockReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -99,7 +100,65 @@ export const shopsaleReportColumn: QTableColumn<IDateWiseShopReportData>[] = [
     sortable: true,
   },
 ];
-
+export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportData>[] =
+  [
+    {
+      name: 'article',
+      required: true,
+      label: 'Article',
+      align: 'left',
+      field: (row) => row.article ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'image',
+      required: true,
+      label: 'Img',
+      align: 'left',
+      field: (row) => row.image ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'lastPurchasePrice',
+      required: true,
+      label: 'Last Purchase Price',
+      align: 'left',
+      field: (row) => row.lastPurchasePrice ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'hoStock',
+      required: true,
+      label: 'Ho Master Stock',
+      align: 'left',
+      field: (row) => row.hoStock ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'shopStock',
+      required: true,
+      label: 'Shop Total Stock',
+      align: 'left',
+      field: (row) => row.shopStock ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'shopSaleQty',
+      required: true,
+      label: 'Total Shop Sale',
+      align: 'left',
+      field: (row) => row.shopSaleQty ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'hoSaleQty',
+      required: true,
+      label: 'Total WholeSale',
+      align: 'left',
+      field: (row) => row.hoSaleQty ?? '-',
+      sortable: true,
+    },
+  ];
 export const outStandingReportColumn: QTableColumn<IOutStandingReportData>[] = [
   {
     name: 'user',
