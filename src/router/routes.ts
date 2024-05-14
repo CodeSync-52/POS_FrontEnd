@@ -323,6 +323,13 @@ export const routeList = [
     },
   },
   {
+    path: '/daily-sale-report',
+    component: () => import('src/pages/report/Daily-Sale-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {
