@@ -14,6 +14,16 @@ export interface IDateWiseShopReportData {
   discount: number;
   netAmount: number;
 }
+export interface IVendorSaleStockReportData {
+  productId: number;
+  article: string;
+  image: string;
+  lastPurchasePrice: number;
+  hoStock: number;
+  shopStock: number;
+  hoSaleQty: number;
+  shopSaleQty: number;
+}
 
 export interface IOutStandingReportData {
   user: string;
