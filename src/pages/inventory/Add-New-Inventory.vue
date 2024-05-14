@@ -898,7 +898,26 @@ const setBarcodeProps = (callback?: () => void) => {
   }, 0);
 };
 function modifyArray(inputArray: { productCode: string; quantity: number }[]) {
+  // Sort inputArray based on productCode
+  inputArray.sort((a, b) => {
+    // Split productCode into parts: article, color, size
+    const [articleA, colorA, sizeA] = a.productCode.split('-');
+    const [articleB, colorB, sizeB] = b.productCode.split('-');
+
+    // Compare article first
+    if (articleA !== articleB) {
+      return articleA.localeCompare(articleB);
+    }
+    // Then compare color
+    if (colorA !== colorB) {
+      return colorA.localeCompare(colorB);
+    }
+    // Finally, compare size
+    return parseInt(sizeA) - parseInt(sizeB);
+  });
+
   const modifiedArray: { productCode: string }[] = [];
+
   inputArray.forEach((item) => {
     const { productCode, quantity } = item;
 
@@ -909,6 +928,7 @@ function modifyArray(inputArray: { productCode: string; quantity: number }[]) {
 
   return modifiedArray;
 }
+
 const handlePreviewGrn = async () => {
   try {
     const res = await GetGRNDetail(selectedId.value);
