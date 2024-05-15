@@ -18,10 +18,8 @@
       map-options
       :options="shopData"
       :disable="
-        authStore.loggedInUser?.rolePermissions.roleName !==
-          EUserRoles.SuperAdmin.toLowerCase() ||
-        authStore.loggedInUser?.rolePermissions.roleName !==
-          EUserRoles.Admin.toLowerCase()
+        authStore.loggedInUser?.rolePermissions.roleName ===
+        EUserRoles.ShopManager.toLowerCase()
       "
       v-model="selectedShop"
       popup-content-class="!max-h-[200px]"
@@ -187,6 +185,24 @@ const getShopList = async () => {
   }
 };
 const searchShopSaleReport = async () => {
+  isLoading.value = true;
+  if (!filterSearch.value.shopIds) {
+    isLoading.value = false;
+    $q.notify({
+      message: 'Please Select Shop',
+      icon: 'error',
+      color: 'red',
+    });
+    return;
+  } else if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
+    isLoading.value = false;
+    $q.notify({
+      message: 'Please Select From and To Date',
+      icon: 'error',
+      color: 'red',
+    });
+    return;
+  }
   try {
     const res = await GetDateWiseShopSaleReport({
       shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
@@ -210,6 +226,7 @@ const searchShopSaleReport = async () => {
       icon: 'error',
     });
   }
+  isLoading.value = false;
 };
 const grandTotal = computed(() => {
   let total = 0;
@@ -220,8 +237,8 @@ const grandTotal = computed(() => {
 });
 const handleResetFilter = () => {
   if (
-    authStore.loggedInUser?.rolePermissions.roleName ===
-    EUserRoles.SuperAdmin.toLowerCase()
+    authStore.loggedInUser?.rolePermissions.roleName !==
+    EUserRoles.ShopManager.toLowerCase()
   ) {
     selectedShop.value = [];
     reporttList.value = [];
