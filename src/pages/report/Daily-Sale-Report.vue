@@ -2,7 +2,7 @@
   <div
     class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
   >
-    <span class="text-xl font-medium">Vendor Sale Stock Report</span>
+    <span class="text-xl font-medium">Daily Sale Report</span>
     <download-pdf-excel
       @downloadPdfData="downloadPdfData"
       @downloadCSVData="downloadCSVData"
@@ -16,17 +16,30 @@
       style="min-width: 200px"
       outlined
       map-options
-      @filter="filterFn"
-      :loading="isLoading"
-      :options="userList"
-      v-model="filterSearch.user"
+      :options="shopData"
+      v-model="selectedShop"
       popup-content-class="!max-h-[200px]"
-      label="Select User"
+      label="Select Shop"
       color="btn-primary"
+      multiple
       clearable
-      option-label="fullName"
-      option-value="userId"
+      option-label="name"
+      option-value="shopId"
     />
+    <q-select
+      dense
+      style="min-width: 200px"
+      outlined
+      v-model="filterSearch.showOnlyDiscount"
+      :options="IShowOnlyDiscountOptionList"
+      map-options
+      popup-content-class="!max-h-[200px]"
+      label="Show Only Disc"
+      option-label="name"
+      option-value="statusId"
+      color="btn-primary"
+    >
+    </q-select>
     <q-input
       v-model="filterSearch.fromDate"
       :max="filterSearch.toDate"
@@ -54,7 +67,7 @@
         class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
         icon="search"
         label="Search"
-        @click="searchVendorSaleStockReport()"
+        @click="searchDailySaleReport()"
       />
       <q-btn
         unelevated
@@ -71,11 +84,12 @@
       tabindex="0"
       :rows="reportList"
       align="left"
-      :columns="vendorsalestockReportColumn"
+      :columns="dailySaleReportColumn"
       row-key="id"
       :rows-per-page-options="[0]"
-      @request="searchVendorSaleStockReport()"
+      @request="searchDailySaleReport()"
       :pagination="{ rowsPerPage: 0 }"
+      :hide-bottom="reportList.length > 0"
     >
       <template v-slot:body-cell-image="props">
         <q-td :props="props">
@@ -97,6 +111,23 @@
           <span class="text-md font-medium"> No data available. </span>
         </div>
       </template>
+      <template v-if="reportList.length" v-slot:bottom-row>
+        <q-tr class="sticky bottom-0 bg-white">
+          <q-td colspan="2" class="text-bold"> Total </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('quantity') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('retailPrice') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('discount') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('netAmount') }}
+          </q-td>
+        </q-tr>
+      </template>
     </q-table>
   </div>
   <q-dialog v-model="isLoader" persistent>
@@ -106,53 +137,60 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { IUserResponse, IVendorSaleStockReportData } from 'src/interfaces';
-import { GetUsers } from 'src/services';
+import {
+  IDailySaleReportData,
+  IShopResponse,
+  EUserRoles,
+} from 'src/interfaces';
+import { GetShopList } from 'src/services';
 import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
-import { vendorsalestockReportColumn } from 'src/utils/reports';
+import {
+  dailySaleReportColumn,
+  IShowOnlyDiscountOptionList,
+} from 'src/utils/reports';
+import { useAuthStore } from 'src/stores';
 import { useQuasar, exportFile } from 'quasar';
 import { date } from 'quasar';
 import moment from 'moment';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
-import { GetVendorSaleStockReport, wrapCsvValue } from 'src/services/reports';
+import { GetDailySaleReport, wrapCsvValue } from 'src/services/reports';
+const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
 const isLoader = ref(false);
+const isFetchingShopList = ref(false);
 const timeStamp = Date.now();
-const reportList = ref<IVendorSaleStockReportData[]>([]);
+const reportList = ref<IDailySaleReportData[]>([]);
+const selectedShop = ref<IShopResponse[]>([]);
+const shopData = ref<IShopResponse[]>([]);
 const tableItems = ref<ITableItems[][]>([]);
-const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past2Months = date.subtractFromDate(timeStamp, { month: 2 });
-const formattedFromDate = date.formatDate(past2Months, 'YYYY-MM-DD');
-const userList = ref<IUserResponse[]>([]);
+const past1Day = date.subtractFromDate(timeStamp, { day: 0 });
+const next1Day = date.subtractFromDate(timeStamp, { day: -1 });
+const formattedToDate = date.formatDate(next1Day, 'YYYY-MM-DD');
+const formattedFromDate = date.formatDate(past1Day, 'YYYY-MM-DD');
 const filterSearch = ref<{
-  user: IUserResponse | null;
   fromDate: string;
   toDate: string;
+  showOnlyDiscount: number;
 }>({
-  user: null,
   fromDate: formattedFromDate,
   toDate: formattedToDate,
+  showOnlyDiscount: -1,
 });
 
 onMounted(async () => {
-  await getUserList();
+  await getShopList();
 });
-const getUserList = async () => {
-  isLoading.value = true;
+const getShopList = async () => {
+  isFetchingShopList.value = true;
   try {
-    const res = await GetUsers({
-      pageNumber: 1,
-      pageSize: 5000,
+    const response = await GetShopList({
+      PageNumber: 1,
+      PageSize: 25,
     });
-    if (res.data) {
-      userList.value = res.data.items.filter(
-        (user) =>
-          user.status === 'Active' &&
-          user.roleName === 'Customer' &&
-          user.customerGroup === 'Shoe Makers'
-      );
+    if (response.data) {
+      shopData.value = response.data.items;
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
@@ -163,24 +201,46 @@ const getUserList = async () => {
       message,
       type: 'negative',
     });
+  } finally {
+    isFetchingShopList.value = false;
   }
-  isLoading.value = false;
 };
-const filterFn = (val: string, update: CallableFunction) => {
-  update(() => {
-    const needle = val.toLowerCase();
-    userList.value = userList.value.filter((v) =>
-      v.fullName?.toLowerCase().includes(needle)
-    );
-  });
-};
-const searchVendorSaleStockReport = async () => {
+const searchDailySaleReport = async () => {
   isLoading.value = true;
+  const selectedShopIds = selectedShop.value.map((shop) => shop.shopId);
+
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName ===
+    EUserRoles.ShopManager.toLowerCase()
+  ) {
+    if (selectedShopIds.length > 1) {
+      isLoading.value = false;
+      $q.notify({
+        message:
+          'You are not allowed to select multiple shops. Please select your own shop.',
+        icon: 'error',
+        color: 'red',
+      });
+      return;
+    } else if (
+      selectedShopIds.length === 1 &&
+      selectedShopIds[0] !== authStore.loggedInUser?.userShopInfoDTO.shopId
+    ) {
+      isLoading.value = false;
+      $q.notify({
+        message: 'Please select your own shop.',
+        icon: 'error',
+        color: 'red',
+      });
+      return;
+    }
+  }
   try {
-    const res = await GetVendorSaleStockReport({
+    const res = await GetDailySaleReport({
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
-      userId: filterSearch.value.user?.userId ?? -1,
+      showOnlyDiscount: filterSearch.value.showOnlyDiscount,
+      shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
     });
     if (res?.data) {
       reportList.value = res?.data.list;
@@ -201,10 +261,11 @@ const searchVendorSaleStockReport = async () => {
 };
 const handleResetFilter = () => {
   filterSearch.value = {
-    user: null,
+    showOnlyDiscount: -1,
     fromDate: '',
     toDate: '',
   };
+  selectedShop.value = [];
   reportList.value = [];
 };
 const convertToBase64 = (file: File): Promise<string> => {
@@ -229,7 +290,7 @@ const convertToBase64 = (file: File): Promise<string> => {
   });
 };
 const defaultImage = ref<string | null>(null);
-async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
+async function convertArrayToPdfData(array: IDailySaleReportData[]) {
   if (!defaultImage.value) {
     defaultImage.value = await fetch('/assets/default-image.png')
       .then((res) => res.blob())
@@ -242,15 +303,33 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
   const headerRow = [
     'Article',
     'Image',
-    'Last Purchase Price',
-    'Ho Master Stock',
-    'Shop Total Stock',
-    'Total Shop Sale',
-    'Total WholeSale',
+    'Quantity',
+    'Retail Price',
+    'Discount',
+    'Net Amount',
   ];
   tableStuff.push(headerRow);
-
-  array.forEach((item: IVendorSaleStockReportData) => {
+  const footerRow = [
+    {
+      text: 'Total',
+      margin: [0, 5],
+      bold: true,
+    },
+    '',
+    { text: calculateTotal('quantity').toString(), bold: true, margin: [0, 5] },
+    {
+      text: calculateTotal('retailPrice').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    { text: calculateTotal('discount').toString(), bold: true, margin: [0, 5] },
+    {
+      text: calculateTotal('netAmount').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+  ];
+  array.forEach((item: IDailySaleReportData) => {
     const row = [
       { text: item.article },
       {
@@ -258,22 +337,22 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
         width: 50,
         height: 50,
       },
-      { text: item.lastPurchasePrice },
-      { text: item.hoStock },
-      { text: item.shopStock },
-      { text: item.shopSaleQty },
-      { text: item.hoSaleQty },
+      { text: item.quantity },
+      { text: item.retailPrice },
+      { text: item.discount },
+      { text: item.netAmount },
     ];
     tableStuff.push(row);
   });
+  tableStuff.push(footerRow);
   return tableStuff;
 }
 async function downloadPdfData() {
   isLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
-      heading: 'User',
-      content: filterSearch.value.user?.fullName,
+      heading: 'Shop Name',
+      content: selectedShop.value?.map((shop) => shop.name).join(','),
     },
     {
       heading: 'From Date',
@@ -284,7 +363,7 @@ async function downloadPdfData() {
       content: moment(filterSearch?.value?.toDate).format('DD/MM/YYYY'),
     },
   ];
-  const myFileName = `Vendor-Sale-Stock-Report-${moment(
+  const myFileName = `Daily-Sale-Report-${moment(
     filterSearch?.value?.fromDate
   ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.toDate).format(
     'DD/MM/YYYY'
@@ -302,7 +381,7 @@ async function downloadPdfData() {
 }
 
 const downloadCSVData = () => {
-  const selectedColumnsData = vendorsalestockReportColumn.filter(
+  const selectedColumnsData = dailySaleReportColumn.filter(
     (col) => col.name !== 'image'
   );
   const content = [selectedColumnsData.map((col) => wrapCsvValue(col.label))]
@@ -338,5 +417,11 @@ const downloadCSVData = () => {
       icon: 'warning',
     });
   }
+};
+const calculateTotal = (columnName: keyof (typeof reportList.value)[0]) => {
+  return reportList.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>

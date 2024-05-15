@@ -8,6 +8,7 @@ import {
   IShopStockReportData,
   IShopSaleStockReportData,
   IVendorSaleStockReportData,
+  IDailySaleReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -74,6 +75,31 @@ export const GetVendorSaleStockReport = async ({
       fromDate,
       toDate,
       userId,
+    },
+  });
+  return res;
+};
+export const GetDailySaleReport = async ({
+  fromDate,
+  toDate,
+  shopIds,
+  showOnlyDiscount,
+}: {
+  fromDate: string;
+  toDate: string;
+  shopIds: string | number[] | null;
+  showOnlyDiscount: number;
+}) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IDailySaleReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/dailysale',
+    data: {
+      fromDate,
+      toDate,
+      shopIds,
+      showOnlyDiscount,
     },
   });
   return res;

@@ -8,6 +8,8 @@ import {
   IHOStockReportData,
   IOutStandingReportData,
   IVendorSaleStockReportData,
+  IShowOnlyDiscount,
+  IDailySaleReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -159,6 +161,56 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       sortable: true,
     },
   ];
+export const dailySaleReportColumn: QTableColumn<IDailySaleReportData>[] = [
+  {
+    name: 'article',
+    required: true,
+    label: 'Article',
+    align: 'left',
+    field: (row) => row.article ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'image',
+    required: true,
+    label: 'Image',
+    align: 'left',
+    field: (row) => row.image ?? '-',
+    sortable: false,
+  },
+  {
+    name: 'quantity',
+    required: true,
+    label: 'Quantity',
+    align: 'left',
+    field: (row) => row.quantity ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'retailPrice',
+    required: true,
+    label: 'Retail Price',
+    align: 'left',
+    field: (row) => row.retailPrice ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'discount',
+    required: true,
+    label: 'Discount',
+    align: 'left',
+    field: (row) => row.discount ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'netAmount',
+    required: true,
+    label: 'Net Amount',
+    align: 'left',
+    field: (row) => row.netAmount ?? '-',
+    sortable: true,
+  },
+];
 export const outStandingReportColumn: QTableColumn<IOutStandingReportData>[] = [
   {
     name: 'user',
@@ -269,3 +321,8 @@ export const HOArticleSaleDetailReportColumn: QTableColumn<IHOSaleDetailReportDa
       field: (row) => row.amount ?? '-',
     },
   ];
+export const IShowOnlyDiscountOptionList: IShowOnlyDiscount[] = [
+  { name: 'All', statusId: -1 },
+  { name: 'True', statusId: 1 },
+  { name: 'false', statusId: 0 },
+];

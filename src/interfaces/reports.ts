@@ -24,7 +24,18 @@ export interface IVendorSaleStockReportData {
   hoSaleQty: number;
   shopSaleQty: number;
 }
-
+export interface IDailySaleReportData {
+  article: string;
+  image: string;
+  retailPrice: number;
+  quantity: number;
+  discount: number;
+  netAmount: number;
+}
+export interface IShowOnlyDiscount {
+  name: string;
+  statusId: number;
+}
 export interface IOutStandingReportData {
   user: string;
   balance: number | null;
