@@ -2,11 +2,53 @@
   <div
     class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
   >
-    <span class="text-xl font-medium">Daily Sale Report</span>
+    <span class="text-xl font-medium">Slow Article Sale Report</span>
     <download-pdf-excel
       @downloadPdfData="downloadPdfData"
       @downloadCSVData="downloadCSVData"
     />
+  </div>
+  <div
+    class="row flex lg:justify-evenly sm:justify-center items-center min-h-[3.5rem] gap-4"
+  >
+    <div class="flex items-center gap-2 font-[500] text-base">
+      <span>Stock More Than</span>
+      <q-input
+        v-model="filterSearch.stockQuantity"
+        type="number"
+        style="max-width: 70px"
+        outlined
+        dense
+        color="btn-primary"
+      />
+      <span>Quantity</span>
+    </div>
+    <div class="flex items-center gap-2 font-[500] text-base">
+      <span>Article Meaningful Inv Creation Date Greater Than</span>
+      <q-input
+        v-model="filterSearch.meaningfulInvGreaterThanDays"
+        type="number"
+        style="max-width: 70px"
+        outlined
+        dense
+        color="btn-primary"
+      />
+      <span>Days</span>
+    </div>
+    <div class="flex items-center gap-2 font-[500] text-base">
+      <span>Sale Less Than</span>
+      <q-input
+        v-model="filterSearch.saleLessThanPercentage"
+        max="100"
+        type="number"
+        style="max-width: 70px"
+        outlined
+        dense
+        color="btn-primary"
+        @update:model-value="handleUpdatedispatchQuantity($event)"
+      />
+      <span>%</span>
+    </div>
   </div>
   <div
     class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
@@ -30,20 +72,6 @@
       option-label="name"
       option-value="shopId"
     />
-    <q-select
-      dense
-      style="min-width: 200px"
-      outlined
-      v-model="filterSearch.showOnlyDiscount"
-      :options="IShowOnlyDiscountOptionList"
-      map-options
-      popup-content-class="!max-h-[200px]"
-      label="Show Only Disc"
-      option-label="name"
-      option-value="statusId"
-      color="btn-primary"
-    >
-    </q-select>
     <q-input
       v-model="filterSearch.fromDate"
       :max="filterSearch.toDate"
@@ -71,7 +99,7 @@
         class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
         icon="search"
         label="Search"
-        @click="searchDailySaleReport()"
+        @click="searchSlowArticleSaleReport()"
       />
       <q-btn
         unelevated
@@ -88,12 +116,11 @@
       tabindex="0"
       :rows="reportList"
       align="left"
-      :columns="dailySaleReportColumn"
+      :columns="slowArticleSaleReportColumn"
       row-key="id"
       :rows-per-page-options="[0]"
-      @request="searchDailySaleReport()"
+      @request="searchSlowArticleSaleReport()"
       :pagination="{ rowsPerPage: 0 }"
-      :hide-bottom="reportList.length > 0"
     >
       <template v-slot:body-cell-image="props">
         <q-td :props="props">
@@ -115,23 +142,6 @@
           <span class="text-md font-medium"> No data available. </span>
         </div>
       </template>
-      <template v-if="reportList.length" v-slot:bottom-row>
-        <q-tr class="sticky bottom-0 bg-white">
-          <q-td colspan="2" class="text-bold"> Total </q-td>
-          <q-td colspan="1" class="text-bold">
-            {{ calculateTotal('quantity') }}
-          </q-td>
-          <q-td colspan="1" class="text-bold">
-            {{ calculateTotal('retailPrice') }}
-          </q-td>
-          <q-td colspan="1" class="text-bold">
-            {{ calculateTotal('discount') }}
-          </q-td>
-          <q-td colspan="1" class="text-bold">
-            {{ calculateTotal('netAmount') }}
-          </q-td>
-        </q-tr>
-      </template>
     </q-table>
   </div>
   <q-dialog v-model="isLoader" persistent>
@@ -142,47 +152,46 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import {
-  IDailySaleReportData,
+  ISlowArticleSaleReportData,
   IShopResponse,
   EUserRoles,
 } from 'src/interfaces';
 import { GetShopList } from 'src/services';
 import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
-import {
-  dailySaleReportColumn,
-  IShowOnlyDiscountOptionList,
-} from 'src/utils/reports';
+import { slowArticleSaleReportColumn } from 'src/utils/reports';
 import { useAuthStore } from 'src/stores';
 import { useQuasar, exportFile } from 'quasar';
 import { date } from 'quasar';
 import moment from 'moment';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
-import { GetDailySaleReport, wrapCsvValue } from 'src/services/reports';
+import { GetSlowArticleSaleReport, wrapCsvValue } from 'src/services/reports';
 const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
 const isLoader = ref(false);
 const isFetchingShopList = ref(false);
 const timeStamp = Date.now();
-const reportList = ref<IDailySaleReportData[]>([]);
+const reportList = ref<ISlowArticleSaleReportData[]>([]);
 const selectedShop = ref<IShopResponse[]>([]);
 const shopData = ref<IShopResponse[]>([]);
 const tableItems = ref<ITableItems[][]>([]);
-const past1Day = date.subtractFromDate(timeStamp, { day: 0 });
-const next1Day = date.subtractFromDate(timeStamp, { day: -1 });
-const formattedToDate = date.formatDate(next1Day, 'YYYY-MM-DD');
-const formattedFromDate = date.formatDate(past1Day, 'YYYY-MM-DD');
+const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
+const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
 const filterSearch = ref<{
   fromDate: string;
   toDate: string;
-  showOnlyDiscount: number;
+  saleLessThanPercentage: number;
+  meaningfulInvGreaterThanDays: number;
+  stockQuantity: number;
 }>({
   fromDate: formattedFromDate,
   toDate: formattedToDate,
-  showOnlyDiscount: -1,
+  saleLessThanPercentage: 0,
+  meaningfulInvGreaterThanDays: 0,
+  stockQuantity: 0,
 });
-
 onMounted(async () => {
   await getShopList();
   const defaultShop = shopData.value.find(
@@ -214,31 +223,50 @@ const getShopList = async () => {
     isFetchingShopList.value = false;
   }
 };
-const searchDailySaleReport = async () => {
-  isLoading.value = true;
-  if (!selectedShop.value?.map((shop) => shop.shopId).join(',')) {
-    isLoading.value = false;
+const handleUpdatedispatchQuantity = (newVal: string | number | null) => {
+  if (typeof newVal === 'string' || typeof newVal === 'number') {
+    let val = Number(newVal);
+    if (isNaN(val) || val < 0) {
+      val = 0;
+      $q.notify({
+        message: 'Percentage cannot be less than 0!',
+        color: 'red',
+        icon: 'warning',
+      });
+    } else if (val > 100) {
+      val = 100;
+      $q.notify({
+        message: 'Percentage cannot be greater than 100!',
+        color: 'red',
+        icon: 'warning',
+      });
+    }
+    filterSearch.value.saleLessThanPercentage = val;
+  }
+};
+const searchSlowArticleSaleReport = async () => {
+  const filters = Object.values(filterSearch.value);
+  if (
+    filters.some((filter) => !filter) ||
+    !selectedShop.value?.map((shop) => shop.shopId).join(',')
+  ) {
     $q.notify({
-      message: 'Please Select Shop',
-      icon: 'error',
+      message: 'All filters are required.',
       color: 'red',
-    });
-    return;
-  } else if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
-    isLoading.value = false;
-    $q.notify({
-      message: 'Please Select From and To Date',
-      icon: 'error',
-      color: 'red',
+      icon: 'warning',
     });
     return;
   }
+  isLoading.value = true;
   try {
-    const res = await GetDailySaleReport({
+    const res = await GetSlowArticleSaleReport({
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
-      showOnlyDiscount: filterSearch.value.showOnlyDiscount,
       shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
+      stockQuantity: filterSearch.value.stockQuantity,
+      meaningfulInvGreaterThanDays:
+        filterSearch.value.meaningfulInvGreaterThanDays,
+      saleLessThanPercentage: filterSearch.value.saleLessThanPercentage,
     });
     if (res?.data) {
       reportList.value = res?.data.list;
@@ -258,18 +286,19 @@ const searchDailySaleReport = async () => {
   isLoading.value = false;
 };
 const handleResetFilter = () => {
+  filterSearch.value = {
+    fromDate: '',
+    toDate: '',
+    saleLessThanPercentage: 0,
+    meaningfulInvGreaterThanDays: 0,
+    stockQuantity: 0,
+  };
+  reportList.value = [];
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
     EUserRoles.ShopManager.toLowerCase()
   ) {
     selectedShop.value = [];
-    reportList.value = [];
-    filterSearch.value.fromDate = '';
-    filterSearch.value.toDate = '';
-  } else {
-    reportList.value = [];
-    filterSearch.value.fromDate = '';
-    filterSearch.value.toDate = '';
   }
 };
 const convertToBase64 = (file: File): Promise<string> => {
@@ -294,7 +323,7 @@ const convertToBase64 = (file: File): Promise<string> => {
   });
 };
 const defaultImage = ref<string | null>(null);
-async function convertArrayToPdfData(array: IDailySaleReportData[]) {
+async function convertArrayToPdfData(array: ISlowArticleSaleReportData[]) {
   if (!defaultImage.value) {
     defaultImage.value = await fetch('/assets/default-image.png')
       .then((res) => res.blob())
@@ -307,33 +336,13 @@ async function convertArrayToPdfData(array: IDailySaleReportData[]) {
   const headerRow = [
     'Article',
     'Image',
-    'Quantity',
     'Retail Price',
-    'Discount',
-    'Net Amount',
+    'Total Stock',
+    'Sale Qty',
+    'Sale %',
   ];
   tableStuff.push(headerRow);
-  const footerRow = [
-    {
-      text: 'Total',
-      margin: [0, 5],
-      bold: true,
-    },
-    '',
-    { text: calculateTotal('quantity').toString(), bold: true, margin: [0, 5] },
-    {
-      text: calculateTotal('retailPrice').toString(),
-      bold: true,
-      margin: [0, 5],
-    },
-    { text: calculateTotal('discount').toString(), bold: true, margin: [0, 5] },
-    {
-      text: calculateTotal('netAmount').toString(),
-      bold: true,
-      margin: [0, 5],
-    },
-  ];
-  array.forEach((item: IDailySaleReportData) => {
+  array.forEach((item: ISlowArticleSaleReportData) => {
     const row = [
       { text: item.article },
       {
@@ -341,23 +350,18 @@ async function convertArrayToPdfData(array: IDailySaleReportData[]) {
         width: 50,
         height: 50,
       },
-      { text: item.quantity },
       { text: item.retailPrice },
-      { text: item.discount },
-      { text: item.netAmount },
+      { text: item.totalStock },
+      { text: item.saleQuantity },
+      { text: item.salePercentage },
     ];
     tableStuff.push(row);
   });
-  tableStuff.push(footerRow);
   return tableStuff;
 }
 async function downloadPdfData() {
   isLoader.value = true;
   const headers: IPdfHeaders[] = [
-    {
-      heading: 'Shop Name',
-      content: selectedShop.value?.map((shop) => shop.name).join(','),
-    },
     {
       heading: 'From Date',
       content: moment(filterSearch?.value?.fromDate).format('DD/MM/YYYY'),
@@ -366,8 +370,24 @@ async function downloadPdfData() {
       heading: 'To Date',
       content: moment(filterSearch?.value?.toDate).format('DD/MM/YYYY'),
     },
+    {
+      heading: 'Shop Name',
+      content: selectedShop.value?.map((shop) => shop.name).join(','),
+    },
+    {
+      heading: 'Stock More Than',
+      content: `${filterSearch.value.stockQuantity} Quantity`,
+    },
+    {
+      heading: 'Article Meaningful Inv Greater Than',
+      content: `${filterSearch.value.meaningfulInvGreaterThanDays} Days`,
+    },
+    {
+      heading: 'Sale Less Than',
+      content: `${filterSearch.value.meaningfulInvGreaterThanDays} %`,
+    },
   ];
-  const myFileName = `Daily-Sale-Report-${moment(
+  const myFileName = `Slow-Article-Sale-Report-${moment(
     filterSearch?.value?.fromDate
   ).format('DD/MM/YYYY')}-${moment(filterSearch?.value?.toDate).format(
     'DD/MM/YYYY'
@@ -385,7 +405,7 @@ async function downloadPdfData() {
 }
 
 const downloadCSVData = () => {
-  const selectedColumnsData = dailySaleReportColumn.filter(
+  const selectedColumnsData = slowArticleSaleReportColumn.filter(
     (col) => col.name !== 'image'
   );
   const content = [selectedColumnsData.map((col) => wrapCsvValue(col.label))]
@@ -407,7 +427,7 @@ const downloadCSVData = () => {
     .join('\r\n');
 
   const status = exportFile(
-    `Daily-Sale-Report-${moment(filterSearch?.value?.fromDate).format(
+    `Slow-Article-Sale-Report-${moment(filterSearch?.value?.fromDate).format(
       'DD/MM/YYYY'
     )}-${moment(filterSearch?.value?.toDate).format('DD/MM/YYYY')}.csv`,
     content,
@@ -421,11 +441,5 @@ const downloadCSVData = () => {
       icon: 'warning',
     });
   }
-};
-const calculateTotal = (columnName: keyof (typeof reportList.value)[0]) => {
-  return reportList.value.reduce(
-    (total, row) => total + Number(row[columnName]),
-    0
-  );
 };
 </script>

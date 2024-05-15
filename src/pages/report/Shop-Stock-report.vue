@@ -34,6 +34,10 @@
         use-input
         :options="shopListRecords"
         v-model="selectedShop"
+        :disable="
+          authStore.loggedInUser?.rolePermissions.roleName ===
+          EUserRoles.ShopManager.toLowerCase()
+        "
         popup-content-class="!max-h-[200px]"
         label="Select Shop"
         color="btn-primary"
@@ -202,13 +206,16 @@ import {
   IShopResponse,
   IShopStockReportData,
   IVariant2Info,
+  EUserRoles,
 } from 'src/interfaces';
 import { GetArticleList, GetShopList } from 'src/services';
+import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
 import { GetShopStockReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref, onMounted } from 'vue';
 import pdfMake from 'pdfmake/build/pdfmake';
+const authStore = useAuthStore();
 const isLoading = ref(false);
 const isLoader = ref(false);
 const $q = useQuasar();
@@ -220,8 +227,13 @@ const shopListRecords = ref<IShopResponse[]>([]);
 const selectedShop = ref<IShopResponse[]>([]);
 const stockResponse = ref<IShopStockReportData[]>([]);
 let grandTotal = ref<number>(0);
-onMounted(() => {
-  getShopList();
+onMounted(async () => {
+  await getShopList();
+  const defaultShop = shopListRecords.value.find(
+    (shop) =>
+      shop.shopId === (authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1)
+  );
+  selectedShop.value = defaultShop ? [defaultShop] : [];
 });
 const addCategory = () => {
   isCategoryModalVisible.value = true;

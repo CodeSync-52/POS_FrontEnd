@@ -337,7 +337,7 @@ const downloadCSVData = () => {
     )
     .join('\r\n');
   const status = exportFile(
-    `Account-Reports-${moment(filterSearch?.value?.fromDate).format(
+    `Shop-Sale-report-${moment(filterSearch?.value?.fromDate).format(
       'DD/MM/YYYY'
     )}-${moment(filterSearch?.value?.toDate).format('DD/MM/YYYY')}.csv`,
     content,

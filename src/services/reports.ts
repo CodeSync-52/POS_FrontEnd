@@ -9,6 +9,7 @@ import {
   IShopSaleStockReportData,
   IVendorSaleStockReportData,
   IDailySaleReportData,
+  ISlowArticleSaleReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -100,6 +101,37 @@ export const GetDailySaleReport = async ({
       toDate,
       shopIds,
       showOnlyDiscount,
+    },
+  });
+  return res;
+};
+export const GetSlowArticleSaleReport = async ({
+  fromDate,
+  toDate,
+  shopIds,
+  stockQuantity,
+  meaningfulInvGreaterThanDays,
+  saleLessThanPercentage,
+}: {
+  fromDate: string;
+  toDate: string;
+  shopIds: string | number[] | null;
+  stockQuantity: number;
+  meaningfulInvGreaterThanDays: number;
+  saleLessThanPercentage: number;
+}) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: ISlowArticleSaleReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/slowarticlesale',
+    data: {
+      fromDate,
+      toDate,
+      shopIds,
+      stockQuantity,
+      meaningfulInvGreaterThanDays,
+      saleLessThanPercentage,
     },
   });
   return res;

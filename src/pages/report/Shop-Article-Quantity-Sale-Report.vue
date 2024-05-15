@@ -34,7 +34,11 @@
         @filter="filterFn"
         v-model="filterSearch.shopId"
         @update:model-value="filterSearch.shopId = $event.shopId"
-        :options="options"
+        :options="shopListRecords"
+        :disable="
+          authStore.loggedInUser?.rolePermissions.roleName ===
+          EUserRoles.ShopManager.toLowerCase()
+        "
         map-options
         option-value="shopId"
         popup-content-class="!max-h-[200px]"
@@ -221,21 +225,23 @@ import {
   IShopResponse,
   IShopStockReportData,
   IVariant2Info,
+  EUserRoles,
 } from 'src/interfaces';
 import { GetArticleList, GetShopList } from 'src/services';
 import { date, useQuasar } from 'quasar';
+import { useAuthStore } from 'src/stores';
 import { GetShopArticleQuantitySaleReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref, onMounted } from 'vue';
 import pdfMake from 'pdfmake/build/pdfmake';
 const isLoading = ref(false);
 const $q = useQuasar();
+const authStore = useAuthStore();
 const isFetchingArticleList = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const shopListRecords = ref<IShopResponse[]>([]);
-const options = ref<IShopResponse[]>([]);
 const isLoader = ref(false);
 const articlquantitySaleResponse = ref<IShopStockReportData[]>([]);
 const timeStamp = Date.now();
@@ -243,8 +249,15 @@ const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { days: 30 });
 const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 let grandTotal = ref<number>(0);
-onMounted(() => {
-  getShopList();
+onMounted(async () => {
+  await getShopList();
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName ===
+    EUserRoles.ShopManager.toLowerCase()
+  ) {
+    filterSearch.value.shopId =
+      authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
+  }
 });
 const addCategory = () => {
   isCategoryModalVisible.value = true;
@@ -426,7 +439,7 @@ const getShopList = async () => {
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
-    options.value = shopListRecords.value.filter((v) =>
+    shopListRecords.value = shopListRecords.value.filter((v) =>
       v.name?.toLowerCase().includes(needle)
     );
   });
