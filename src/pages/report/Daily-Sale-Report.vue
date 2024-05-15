@@ -18,6 +18,10 @@
       map-options
       :options="shopData"
       v-model="selectedShop"
+      :disable="
+        authStore.loggedInUser?.rolePermissions.roleName ===
+        EUserRoles.ShopManager.toLowerCase()
+      "
       popup-content-class="!max-h-[200px]"
       label="Select Shop"
       color="btn-primary"
@@ -181,6 +185,11 @@ const filterSearch = ref<{
 
 onMounted(async () => {
   await getShopList();
+  const defaultShop = shopData.value.find(
+    (shop) =>
+      shop.shopId === (authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1)
+  );
+  selectedShop.value = defaultShop ? [defaultShop] : [];
 });
 const getShopList = async () => {
   isFetchingShopList.value = true;
@@ -207,33 +216,22 @@ const getShopList = async () => {
 };
 const searchDailySaleReport = async () => {
   isLoading.value = true;
-  const selectedShopIds = selectedShop.value.map((shop) => shop.shopId);
-
-  if (
-    authStore.loggedInUser?.rolePermissions.roleName ===
-    EUserRoles.ShopManager.toLowerCase()
-  ) {
-    if (selectedShopIds.length > 1) {
-      isLoading.value = false;
-      $q.notify({
-        message:
-          'You are not allowed to select multiple shops. Please select your own shop.',
-        icon: 'error',
-        color: 'red',
-      });
-      return;
-    } else if (
-      selectedShopIds.length === 1 &&
-      selectedShopIds[0] !== authStore.loggedInUser?.userShopInfoDTO.shopId
-    ) {
-      isLoading.value = false;
-      $q.notify({
-        message: 'Please select your own shop.',
-        icon: 'error',
-        color: 'red',
-      });
-      return;
-    }
+  if (!selectedShop.value?.map((shop) => shop.shopId).join(',')) {
+    isLoading.value = false;
+    $q.notify({
+      message: 'Please Select Shop',
+      icon: 'error',
+      color: 'red',
+    });
+    return;
+  } else if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
+    isLoading.value = false;
+    $q.notify({
+      message: 'Please Select From and To Date',
+      icon: 'error',
+      color: 'red',
+    });
+    return;
   }
   try {
     const res = await GetDailySaleReport({
@@ -260,13 +258,19 @@ const searchDailySaleReport = async () => {
   isLoading.value = false;
 };
 const handleResetFilter = () => {
-  filterSearch.value = {
-    showOnlyDiscount: -1,
-    fromDate: '',
-    toDate: '',
-  };
-  selectedShop.value = [];
-  reportList.value = [];
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName !==
+    EUserRoles.ShopManager.toLowerCase()
+  ) {
+    selectedShop.value = [];
+    reportList.value = [];
+    filterSearch.value.fromDate = '';
+    filterSearch.value.toDate = '';
+  } else {
+    reportList.value = [];
+    filterSearch.value.fromDate = '';
+    filterSearch.value.toDate = '';
+  }
 };
 const convertToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {

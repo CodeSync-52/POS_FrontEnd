@@ -176,6 +176,23 @@ const filterFn = (val: string, update: CallableFunction) => {
 };
 const searchVendorSaleStockReport = async () => {
   isLoading.value = true;
+  if (!filterSearch.value.user) {
+    isLoading.value = false;
+    $q.notify({
+      message: 'Please Select User',
+      icon: 'error',
+      color: 'red',
+    });
+    return;
+  } else if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
+    isLoading.value = false;
+    $q.notify({
+      message: 'Please Select From and To Date',
+      icon: 'error',
+      color: 'red',
+    });
+    return;
+  }
   try {
     const res = await GetVendorSaleStockReport({
       fromDate: filterSearch.value.fromDate,
