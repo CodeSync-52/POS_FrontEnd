@@ -187,7 +187,7 @@ const searchVendorSaleStockReport = async () => {
       tableItems.value = await convertArrayToPdfData(res?.data.list);
     }
   } catch (e) {
-    let message = 'Please select shop and date';
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
       message = e.message;
     }

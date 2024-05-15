@@ -137,19 +137,25 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { IDailySaleReportData, IShopResponse } from 'src/interfaces';
+import {
+  IDailySaleReportData,
+  IShopResponse,
+  EUserRoles,
+} from 'src/interfaces';
 import { GetShopList } from 'src/services';
 import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import {
   dailySaleReportColumn,
   IShowOnlyDiscountOptionList,
 } from 'src/utils/reports';
+import { useAuthStore } from 'src/stores';
 import { useQuasar, exportFile } from 'quasar';
 import { date } from 'quasar';
 import moment from 'moment';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { GetDailySaleReport, wrapCsvValue } from 'src/services/reports';
+const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
 const isLoader = ref(false);
@@ -166,12 +172,10 @@ const formattedFromDate = date.formatDate(past1Day, 'YYYY-MM-DD');
 const filterSearch = ref<{
   fromDate: string;
   toDate: string;
-  shopIds: [];
   showOnlyDiscount: number;
 }>({
   fromDate: formattedFromDate,
   toDate: formattedToDate,
-  shopIds: [],
   showOnlyDiscount: -1,
 });
 
@@ -203,6 +207,34 @@ const getShopList = async () => {
 };
 const searchDailySaleReport = async () => {
   isLoading.value = true;
+  const selectedShopIds = selectedShop.value.map((shop) => shop.shopId);
+
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName ===
+    EUserRoles.ShopManager.toLowerCase()
+  ) {
+    if (selectedShopIds.length > 1) {
+      isLoading.value = false;
+      $q.notify({
+        message:
+          'You are not allowed to select multiple shops. Please select your own shop.',
+        icon: 'error',
+        color: 'red',
+      });
+      return;
+    } else if (
+      selectedShopIds.length === 1 &&
+      selectedShopIds[0] !== authStore.loggedInUser?.userShopInfoDTO.shopId
+    ) {
+      isLoading.value = false;
+      $q.notify({
+        message: 'Please select your own shop.',
+        icon: 'error',
+        color: 'red',
+      });
+      return;
+    }
+  }
   try {
     const res = await GetDailySaleReport({
       fromDate: filterSearch.value.fromDate,
@@ -215,7 +247,7 @@ const searchDailySaleReport = async () => {
       tableItems.value = await convertArrayToPdfData(res?.data.list);
     }
   } catch (e) {
-    let message = 'Please select shop and date';
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
       message = e.message;
     }
@@ -232,7 +264,6 @@ const handleResetFilter = () => {
     showOnlyDiscount: -1,
     fromDate: '',
     toDate: '',
-    shopIds: [],
   };
   selectedShop.value = [];
   reportList.value = [];
@@ -278,7 +309,26 @@ async function convertArrayToPdfData(array: IDailySaleReportData[]) {
     'Net Amount',
   ];
   tableStuff.push(headerRow);
-
+  const footerRow = [
+    {
+      text: 'Total',
+      margin: [0, 5],
+      bold: true,
+    },
+    '',
+    { text: calculateTotal('quantity').toString(), bold: true, margin: [0, 5] },
+    {
+      text: calculateTotal('retailPrice').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    { text: calculateTotal('discount').toString(), bold: true, margin: [0, 5] },
+    {
+      text: calculateTotal('netAmount').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+  ];
   array.forEach((item: IDailySaleReportData) => {
     const row = [
       { text: item.article },
@@ -294,6 +344,7 @@ async function convertArrayToPdfData(array: IDailySaleReportData[]) {
     ];
     tableStuff.push(row);
   });
+  tableStuff.push(footerRow);
   return tableStuff;
 }
 async function downloadPdfData() {

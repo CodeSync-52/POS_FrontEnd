@@ -19,7 +19,9 @@
       :options="shopData"
       :disable="
         authStore.loggedInUser?.rolePermissions.roleName !==
-        EUserRoles.SuperAdmin.toLowerCase()
+          EUserRoles.SuperAdmin.toLowerCase() ||
+        authStore.loggedInUser?.rolePermissions.roleName !==
+          EUserRoles.Admin.toLowerCase()
       "
       v-model="selectedShop"
       popup-content-class="!max-h-[200px]"
@@ -198,7 +200,7 @@ const searchShopSaleReport = async () => {
       );
     }
   } catch (e) {
-    let message = 'Please select shop and date';
+    let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
       message = e.message;
     }
