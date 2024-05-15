@@ -32,6 +32,15 @@ export interface IDailySaleReportData {
   discount: number;
   netAmount: number;
 }
+export interface ISlowArticleSaleReportData {
+  article: string;
+  image: string;
+  productId: number;
+  retailPrice: number;
+  salePercentage: number;
+  saleQuantity: number;
+  totalStock: number;
+}
 export interface IShowOnlyDiscount {
   name: string;
   statusId: number;

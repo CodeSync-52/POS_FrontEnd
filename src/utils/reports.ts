@@ -10,6 +10,7 @@ import {
   IVendorSaleStockReportData,
   IShowOnlyDiscount,
   IDailySaleReportData,
+  ISlowArticleSaleReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -211,6 +212,57 @@ export const dailySaleReportColumn: QTableColumn<IDailySaleReportData>[] = [
     sortable: true,
   },
 ];
+export const slowArticleSaleReportColumn: QTableColumn<ISlowArticleSaleReportData>[] =
+  [
+    {
+      name: 'article',
+      required: true,
+      label: 'Article',
+      align: 'left',
+      field: (row) => row.article ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'image',
+      required: true,
+      label: 'Image',
+      align: 'left',
+      field: (row) => row.image ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'retailPrice',
+      required: true,
+      label: 'Retail Price',
+      align: 'left',
+      field: (row) => row.retailPrice ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'totalStock',
+      required: true,
+      label: 'Total Stock',
+      align: 'left',
+      field: (row) => row.totalStock ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'saleQuantity',
+      required: true,
+      label: 'Sale Qty',
+      align: 'left',
+      field: (row) => row.saleQuantity ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'salePercentage',
+      required: true,
+      label: 'Sale %',
+      align: 'left',
+      field: (row) => row.salePercentage ?? '-',
+      sortable: true,
+    },
+  ];
 export const outStandingReportColumn: QTableColumn<IOutStandingReportData>[] = [
   {
     name: 'user',
