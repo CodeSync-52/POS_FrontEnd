@@ -71,7 +71,7 @@
     </div>
   </div>
   <div
-    v-if="reporttList.length > 0"
+    v-if="reportList.length > 0"
     class="text-[24px] font-bold text-btn-primary pb-1 pr-4"
   >
     Grand Total: {{ grandTotal }}
@@ -80,36 +80,37 @@
     <q-table
       :loading="isLoading"
       tabindex="0"
-      :rows="reporttList"
+      :rows="reportList"
       align="left"
       :columns="shopsaleReportColumn"
       row-key="id"
       :rows-per-page-options="[0]"
       @request="searchShopSaleReport()"
       :pagination="{ rowsPerPage: 0 }"
+      :hide-bottom="reportList.length > 0"
     >
-      <template v-slot:body-cell-action="props">
-        <q-td :props="props">
-          <q-btn
-            flat
-            unelevated
-            dense
-            size="sm"
-            icon="visibility"
-            color="green"
-            @click="router.push(`/shop-account/${props.row.shopAccountId}`)"
-          >
-            <q-tooltip class="bg-green" :offset="[10, 10]">
-              Preview Bill
-            </q-tooltip>
-          </q-btn>
-        </q-td>
-      </template>
       <template v-slot:no-data>
         <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
           <q-icon name="warning" size="xs" />
           <span class="text-md font-medium"> No data available. </span>
         </div>
+      </template>
+      <template v-if="reportList.length" v-slot:bottom-row>
+        <q-tr class="sticky bottom-0 bg-white">
+          <q-td colspan="2" class="text-bold"> Total </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('totalAmount') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('quantity') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('discount') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('netAmount') }}
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
   </div>
@@ -126,18 +127,16 @@ import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { shopsaleReportColumn } from 'src/utils/reports';
 import { useQuasar, exportFile } from 'quasar';
-import { useRouter } from 'vue-router';
 import { date } from 'quasar';
 import moment from 'moment';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { GetDateWiseShopSaleReport, wrapCsvValue } from 'src/services/reports';
 const $q = useQuasar();
-const router = useRouter();
 const authStore = useAuthStore();
 const isLoading = ref(false);
 const timeStamp = Date.now();
-const reporttList = ref<IDateWiseShopReportData[]>([]);
+const reportList = ref<IDateWiseShopReportData[]>([]);
 const isFetchingShopList = ref(false);
 const shopData = ref<IShopResponse[]>([]);
 const tableItems = ref<ITableItems[][]>([]);
@@ -212,7 +211,7 @@ const searchShopSaleReport = async () => {
       toDate: filterSearch.value.toDate,
     });
     if (res.data) {
-      reporttList.value = (res.data as { list: [] }).list;
+      reportList.value = (res.data as { list: [] }).list;
       tableItems.value = await convertArrayToPdfData(
         (res.data as { list: [] }).list
       );
@@ -232,7 +231,7 @@ const searchShopSaleReport = async () => {
 };
 const grandTotal = computed(() => {
   let total = 0;
-  reporttList.value.forEach((item) => {
+  reportList.value.forEach((item) => {
     total += item.netAmount;
   });
   return total;
@@ -240,14 +239,16 @@ const grandTotal = computed(() => {
 const handleResetFilter = () => {
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
-    EUserRoles.ShopManager.toLowerCase()
+      EUserRoles.ShopManager.toLowerCase() ||
+    authStore.loggedInUser?.rolePermissions.roleName !==
+      EUserRoles.ShopOfficer.toLowerCase()
   ) {
     selectedShop.value = [];
-    reporttList.value = [];
+    reportList.value = [];
     filterSearch.value.fromDate = '';
     filterSearch.value.toDate = '';
   } else {
-    reporttList.value = [];
+    reportList.value = [];
     filterSearch.value.fromDate = '';
     filterSearch.value.toDate = '';
   }
@@ -264,18 +265,29 @@ async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
   ];
   tableStuff.push(headerRow);
   const footerRow = [
-    '',
-    '',
-    '',
-    '',
     {
       text: 'Total',
       margin: [0, 5],
       bold: true,
     },
-    { text: grandTotal.value.toString(), bold: true, margin: 5 },
+    '',
+    {
+      text: calculateTotal('totalAmount').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    {
+      text: calculateTotal('quantity').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    { text: calculateTotal('discount').toString(), bold: true, margin: [0, 5] },
+    {
+      text: calculateTotal('netAmount').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
   ];
-
   array.forEach((item: IDateWiseShopReportData) => {
     const row = [
       { text: moment(item.transactionDate).format('DD/MM/YYYY') },
@@ -293,8 +305,12 @@ async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
 async function downloadPdfData() {
   const headers: IPdfHeaders[] = [
     {
-      heading: 'Shop Name',
-      content: selectedShop.value?.map((shop) => shop.name).join(','),
+      heading: '',
+      content: '',
+    },
+    {
+      heading: '',
+      content: '',
     },
     {
       heading: 'From Date',
@@ -303,6 +319,14 @@ async function downloadPdfData() {
     {
       heading: 'End Date',
       content: moment(filterSearch?.value?.toDate).format('DD/MM/YYYY'),
+    },
+    {
+      heading: 'Shop Name',
+      content: selectedShop.value?.map((shop) => shop.name).join(','),
+    },
+    {
+      heading: 'Grand Total',
+      content: grandTotal.value,
     },
   ];
   const myFileName = `Shop-Sale-report-${moment(
@@ -317,13 +341,13 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'Date Wise Shop Sale Report',
   });
 }
 const downloadCSVData = () => {
   const content = [shopsaleReportColumn.map((col) => wrapCsvValue(col.label))]
     .concat(
-      reporttList.value.map((row: any) =>
+      reportList.value.map((row: any) =>
         shopsaleReportColumn
           .map((col) =>
             wrapCsvValue(
@@ -352,5 +376,11 @@ const downloadCSVData = () => {
       icon: 'warning',
     });
   }
+};
+const calculateTotal = (columnName: keyof (typeof reportList.value)[0]) => {
+  return reportList.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>

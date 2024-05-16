@@ -262,7 +262,9 @@ const searchDailySaleReport = async () => {
 const handleResetFilter = () => {
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
-    EUserRoles.ShopManager.toLowerCase()
+      EUserRoles.ShopManager.toLowerCase() ||
+    authStore.loggedInUser?.rolePermissions.roleName !==
+      EUserRoles.ShopOfficer.toLowerCase()
   ) {
     selectedShop.value = [];
     reportList.value = [];
@@ -357,6 +359,14 @@ async function downloadPdfData() {
   isLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
+      heading: '',
+      content: '',
+    },
+    {
+      heading: '',
+      content: '',
+    },
+    {
       heading: 'Shop Name',
       content: selectedShop.value?.map((shop) => shop.name).join(','),
     },
@@ -381,7 +391,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'Daily-Sale-Report',
   });
   isLoader.value = false;
 }

@@ -50,6 +50,19 @@ export interface IOutStandingReportData {
   balance: number | null;
   phone: string | number | null;
 }
+export interface IProfitLossReportData {
+  netSale: number;
+  totalWholeSalePrice: number;
+  profitByWholeSalePrice: number;
+  totalCostPrice: number;
+  profitByCostPrice: number;
+  totalExpense: number;
+  expnseDetails: IProfitLossExpnseDetails[];
+}
+export interface IProfitLossExpnseDetails {
+  expense: string;
+  amount: number;
+}
 
 export interface IShopSaleStockReportData {
   variant2_Id: number;

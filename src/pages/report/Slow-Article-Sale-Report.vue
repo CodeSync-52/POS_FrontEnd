@@ -123,6 +123,7 @@
       :rows-per-page-options="[0]"
       @request="searchSlowArticleSaleReport()"
       :pagination="{ rowsPerPage: 0 }"
+      :hide-bottom="reportList.length > 0"
     >
       <template v-slot:body-cell-image="props">
         <q-td :props="props">
@@ -143,6 +144,17 @@
           <q-icon name="warning" size="xs" />
           <span class="text-md font-medium"> No data available. </span>
         </div>
+      </template>
+      <template v-if="reportList.length" v-slot:bottom-row>
+        <q-tr class="sticky bottom-0 bg-white">
+          <q-td colspan="2" class="text-bold"> Total </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('retailPrice') }}
+          </q-td>
+          <q-td colspan="3" class="text-bold">
+            {{ calculateTotal('totalStock') }}
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
   </div>
@@ -298,7 +310,9 @@ const handleResetFilter = () => {
   reportList.value = [];
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
-    EUserRoles.ShopManager.toLowerCase()
+      EUserRoles.ShopManager.toLowerCase() ||
+    authStore.loggedInUser?.rolePermissions.roleName !==
+      EUserRoles.ShopManager.toLowerCase()
   ) {
     selectedShop.value = [];
   }
@@ -344,6 +358,26 @@ async function convertArrayToPdfData(array: ISlowArticleSaleReportData[]) {
     'Sale %',
   ];
   tableStuff.push(headerRow);
+  const footerRow = [
+    {
+      text: 'Total',
+      margin: [0, 5],
+      bold: true,
+    },
+    '',
+    {
+      text: calculateTotal('retailPrice').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    {
+      text: calculateTotal('totalStock').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    '',
+    '',
+  ];
   array.forEach((item: ISlowArticleSaleReportData) => {
     const row = [
       { text: item.article },
@@ -359,11 +393,20 @@ async function convertArrayToPdfData(array: ISlowArticleSaleReportData[]) {
     ];
     tableStuff.push(row);
   });
+  tableStuff.push(footerRow);
   return tableStuff;
 }
 async function downloadPdfData() {
   isLoader.value = true;
   const headers: IPdfHeaders[] = [
+    {
+      heading: '',
+      content: '',
+    },
+    {
+      heading: '',
+      content: '',
+    },
     {
       heading: 'From Date',
       content: moment(filterSearch?.value?.fromDate).format('DD/MM/YYYY'),
@@ -401,7 +444,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'Slow Article Sale Report',
   });
   isLoader.value = false;
 }
@@ -443,5 +486,11 @@ const downloadCSVData = () => {
       icon: 'warning',
     });
   }
+};
+const calculateTotal = (columnName: keyof (typeof reportList.value)[0]) => {
+  return reportList.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>

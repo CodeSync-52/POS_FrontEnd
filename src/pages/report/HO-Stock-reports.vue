@@ -393,6 +393,14 @@ async function downloadPdfData() {
   isLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
+      heading: '',
+      content: '',
+    },
+    {
+      heading: '',
+      content: '',
+    },
+    {
       heading: 'User',
       content: filterSearch.value.userData?.fullName,
     },
@@ -416,7 +424,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'HO-Stock-Report',
   });
   isLoader.value = false;
 }

@@ -76,6 +76,7 @@
       :rows-per-page-options="[0]"
       @request="searchVendorSaleStockReport()"
       :pagination="{ rowsPerPage: 0 }"
+      :hide-bottom="reportList.length > 0"
     >
       <template v-slot:body-cell-image="props">
         <q-td :props="props">
@@ -96,6 +97,23 @@
           <q-icon name="warning" size="xs" />
           <span class="text-md font-medium"> No data available. </span>
         </div>
+      </template>
+      <template v-if="reportList.length" v-slot:bottom-row>
+        <q-tr class="sticky bottom-0 bg-white">
+          <q-td colspan="3" class="text-bold"> Total </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('hoStock') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('shopStock') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('shopSaleQty') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('hoSaleQty') }}
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
   </div>
@@ -266,7 +284,31 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
     'Total WholeSale',
   ];
   tableStuff.push(headerRow);
-
+  const footerRow = [
+    {
+      text: 'Total',
+      margin: [0, 5],
+      bold: true,
+    },
+    '',
+    '',
+    { text: calculateTotal('hoStock').toString(), bold: true, margin: [0, 5] },
+    {
+      text: calculateTotal('shopStock').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    {
+      text: calculateTotal('shopSaleQty').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    {
+      text: calculateTotal('hoSaleQty').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+  ];
   array.forEach((item: IVendorSaleStockReportData) => {
     const row = [
       { text: item.article },
@@ -283,14 +325,19 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
     ];
     tableStuff.push(row);
   });
+  tableStuff.push(footerRow);
   return tableStuff;
 }
 async function downloadPdfData() {
   isLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
-      heading: 'User',
-      content: filterSearch.value.user?.fullName,
+      heading: '',
+      content: '',
+    },
+    {
+      heading: '',
+      content: '',
     },
     {
       heading: 'From Date',
@@ -299,6 +346,10 @@ async function downloadPdfData() {
     {
       heading: 'To Date',
       content: moment(filterSearch?.value?.toDate).format('DD/MM/YYYY'),
+    },
+    {
+      heading: 'User',
+      content: filterSearch.value.user?.fullName,
     },
   ];
   const myFileName = `Vendor-Sale-Stock-Report-${moment(
@@ -313,7 +364,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'Vendor-Sale-Stock-Report',
   });
   isLoader.value = false;
 }
@@ -355,5 +406,11 @@ const downloadCSVData = () => {
       icon: 'warning',
     });
   }
+};
+const calculateTotal = (columnName: keyof (typeof reportList.value)[0]) => {
+  return reportList.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>

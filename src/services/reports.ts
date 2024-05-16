@@ -136,6 +136,26 @@ export const GetSlowArticleSaleReport = async ({
   });
   return res;
 };
+export const GetProfitLossReport = async ({
+  fromDate,
+  toDate,
+  shopId,
+}: {
+  fromDate: string;
+  toDate: string;
+  shopId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/profitloss',
+    data: {
+      fromDate,
+      toDate,
+      shopId,
+    },
+  });
+  return res;
+};
 export const GetUserOutstandingReport = async (
   {
     customerGroupId,

@@ -275,6 +275,14 @@ async function convertArrayToPdfData(array: IAccountReportData[]) {
 async function downloadPdfData() {
   const headers: IPdfHeaders[] = [
     {
+      heading: '',
+      content: '',
+    },
+    {
+      heading: '',
+      content: '',
+    },
+    {
       heading: 'User',
       content: filterSearch.value.user?.fullName,
     },
@@ -299,7 +307,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'Account-Report',
   });
 }
 

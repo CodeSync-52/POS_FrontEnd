@@ -11,6 +11,7 @@ import {
   IShowOnlyDiscount,
   IDailySaleReportData,
   ISlowArticleSaleReportData,
+  IProfitLossExpnseDetails,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -43,18 +44,18 @@ export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
     field: (row) => row.credit ?? '-',
   },
   {
-    name: 'comment',
-    required: true,
-    label: 'Comments',
-    align: 'left',
-    field: (row) => row.comments ?? '-',
-  },
-  {
     name: 'balance',
     required: true,
     label: 'Balance',
     align: 'left',
     field: (row) => row.balance ?? '-',
+  },
+  {
+    name: 'comment',
+    required: true,
+    label: 'Comments',
+    align: 'left',
+    field: (row) => row.comments ?? '-',
   },
 ];
 
@@ -260,6 +261,25 @@ export const slowArticleSaleReportColumn: QTableColumn<ISlowArticleSaleReportDat
       label: 'Sale %',
       align: 'left',
       field: (row) => row.salePercentage ?? '-',
+      sortable: true,
+    },
+  ];
+export const profitLossExpenseColumn: QTableColumn<IProfitLossExpnseDetails>[] =
+  [
+    {
+      name: 'expense',
+      required: true,
+      label: 'Expense Name',
+      align: 'left',
+      field: (row) => row.expense ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'amount',
+      required: true,
+      label: 'Amount',
+      align: 'left',
+      field: (row) => row.amount ?? '-',
       sortable: true,
     },
   ];

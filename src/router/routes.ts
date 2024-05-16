@@ -337,6 +337,13 @@ export const routeList = [
     },
   },
   {
+    path: '/profit-loss-report',
+    component: () => import('src/pages/report/Profit-Loss-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {

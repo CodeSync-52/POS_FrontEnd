@@ -272,14 +272,20 @@ const handleResetFilter = () => {
   if (Object.values(filterSearch.value).every((value) => value === null)) {
     return;
   }
-  filterSearch.value = {
-    categoryName: '',
-    shopIds: [],
-    categoryId: null,
-    excludeZeroStock: true,
-    sortByArticle: 'true',
-    ProductId: [],
-  };
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName !==
+      EUserRoles.ShopManager.toLowerCase() ||
+    authStore.loggedInUser?.rolePermissions.roleName !==
+      EUserRoles.ShopOfficer.toLowerCase()
+  ) {
+    filterSearch.value.shopIds = [];
+  }
+  filterSearch.value.categoryName = '';
+  filterSearch.value.shopIds = [];
+  filterSearch.value.categoryId = null;
+  filterSearch.value.excludeZeroStock = true;
+  filterSearch.value.sortByArticle = 'true';
+  filterSearch.value.ProductId = [];
   stockResponse.value = [];
   grandTotal.value = 0;
 };
