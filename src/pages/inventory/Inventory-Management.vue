@@ -343,7 +343,9 @@ const getInventoryList = async (data?: {
   isLoading.value = true;
   if (
     authStore.loggedInUser?.rolePermissions.roleName ===
-    EUserRoles.ShopManager.toLowerCase()
+      EUserRoles.ShopManager.toLowerCase() ||
+    authStore.loggedInUser?.rolePermissions.roleName ===
+      EUserRoles.ShopOfficer.toLowerCase()
   ) {
     if (
       filterSearch.value.ShopId?.length !== undefined &&
