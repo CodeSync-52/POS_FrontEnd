@@ -37,7 +37,9 @@
         :options="shopListRecords"
         :disable="
           authStore.loggedInUser?.rolePermissions.roleName ===
-          EUserRoles.ShopManager.toLowerCase()
+            EUserRoles.ShopManager.toLowerCase() ||
+          authStore.loggedInUser?.rolePermissions.roleName ===
+            EUserRoles.ShopOfficer.toLowerCase()
         "
         map-options
         option-value="shopId"
@@ -251,13 +253,8 @@ const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 let grandTotal = ref<number>(0);
 onMounted(async () => {
   await getShopList();
-  if (
-    authStore.loggedInUser?.rolePermissions.roleName ===
-    EUserRoles.ShopManager.toLowerCase()
-  ) {
-    filterSearch.value.shopId =
-      authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
-  }
+  filterSearch.value.shopId =
+    authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
 });
 const addCategory = () => {
   isCategoryModalVisible.value = true;

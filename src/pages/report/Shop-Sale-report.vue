@@ -19,7 +19,9 @@
       :options="shopData"
       :disable="
         authStore.loggedInUser?.rolePermissions.roleName ===
-        EUserRoles.ShopManager.toLowerCase()
+          EUserRoles.ShopManager.toLowerCase() ||
+        authStore.loggedInUser?.rolePermissions.roleName ===
+          EUserRoles.ShopOfficer.toLowerCase()
       "
       v-model="selectedShop"
       popup-content-class="!max-h-[200px]"
