@@ -456,7 +456,7 @@ const downloadPdf = async (
     );
 
     let isFirstRow = true;
-    item.variant2List.forEach((variant, index) => {
+    item.variant2List.forEach((variant) => {
       const row = [
         {
           text: isFirstRow ? item.article + ' (' + item.grandTotal + ')' : '',

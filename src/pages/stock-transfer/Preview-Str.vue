@@ -195,12 +195,7 @@
         Total Whole Sale Price:
         <span>{{ selectedGrnData.totalWholeSalePrice }}</span>
       </div>
-      <div
-        v-if="
-          authStore.loggedInUser?.rolePermissions.roleName ===
-          EUserRoles.SuperAdmin.toLowerCase()
-        "
-      >
+      <div>
         Total Retail Price: <span>{{ selectedGrnData.totalRetailPrice }}</span>
       </div>
       <div>
