@@ -260,6 +260,10 @@ async function convertArrayToPdfData(array: IHOSaleDetailReportData[]) {
 async function downloadPdfData() {
   const headers: IPdfHeaders[] = [
     {
+      heading: '',
+      content: '',
+    },
+    {
       heading: 'Article',
       content: filterSearch?.value.articleData?.name,
     },
@@ -284,7 +288,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'HO Article Purchase Detail Report',
   });
 }
 

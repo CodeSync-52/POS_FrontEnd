@@ -221,6 +221,14 @@ async function convertArrayToPdfData(array: IOutStandingReportData[]) {
 async function downloadPdfData() {
   const headers: IPdfHeaders[] = [
     {
+      heading: '',
+      content: '',
+    },
+    {
+      heading: '',
+      content: '',
+    },
+    {
       heading: 'User Category',
       content: filterSearch.value.customerGroup?.name,
     },
@@ -233,7 +241,7 @@ async function downloadPdfData() {
     filename: myFileName,
     tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
     pdfHeaders: headers,
-    title: '',
+    title: 'User-Outstanding-report',
   });
 }
 
