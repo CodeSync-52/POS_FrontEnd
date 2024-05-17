@@ -63,7 +63,19 @@ export interface IProfitLossExpnseDetails {
   expense: string;
   amount: number;
 }
-
+export interface ISubmitToHODetails {
+  userId: number;
+  user: string;
+  amount: number;
+}
+export interface ICashClosinReport {
+  shop: string;
+  netSale: number;
+  totalExpense: number;
+  remainingBalance: number;
+  date: string;
+  submitToHODetails: ISubmitToHODetails[];
+}
 export interface IShopSaleStockReportData {
   variant2_Id: number;
   variant2_Name: string;

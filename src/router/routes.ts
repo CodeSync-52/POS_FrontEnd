@@ -344,6 +344,13 @@ export const routeList = [
     },
   },
   {
+    path: '/cash-closing-report',
+    component: () => import('src/pages/report/Cash-Closing-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {
