@@ -156,6 +156,26 @@ export const GetProfitLossReport = async ({
   });
   return res;
 };
+export const GetCashClosingReport = async ({
+  shopIds,
+  fromDate,
+  toDate,
+}: {
+  shopIds: string | number[] | null;
+  fromDate: string;
+  toDate: string;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/cashclosing',
+    data: {
+      shopIds,
+      fromDate,
+      toDate,
+    },
+  });
+  return res;
+};
 export const GetUserOutstandingReport = async (
   {
     customerGroupId,

@@ -451,6 +451,23 @@
             :icon="button.icon"
             class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
           />
+
+          <q-btn
+            v-if="
+              authStore.loggedInUser?.rolePermissions.roleName.toLowerCase() ===
+                EUserRoles.ShopManager.toLowerCase() ||
+              authStore.loggedInUser?.rolePermissions.roleName.toLowerCase() ===
+                EUserRoles.ShopOfficer.toLowerCase() ||
+              authStore.loggedInUser?.rolePermissions.roleName.toLowerCase() ===
+                EUserRoles.SuperAdmin.toLowerCase()
+            "
+            unelevated
+            icon="payments"
+            color=""
+            class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
+            label="Cash Closing Report"
+            to="/cash-closing-report"
+          />
         </div>
       </div>
     </div>

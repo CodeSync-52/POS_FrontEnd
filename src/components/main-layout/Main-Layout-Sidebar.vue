@@ -82,6 +82,8 @@
                         ? 'Slow Article Sale Report'
                         : subLinks.path === '/profit-loss-report'
                         ? 'Profit Loss Report'
+                        : subLinks.path === '/cash-closing-report'
+                        ? 'Cash Closing Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -274,6 +276,10 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/profit-loss-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/cash-closing-report',
       },
     ],
   },

@@ -12,6 +12,7 @@ import {
   IDailySaleReportData,
   ISlowArticleSaleReportData,
   IProfitLossExpnseDetails,
+  ISubmitToHODetails,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -272,6 +273,25 @@ export const profitLossExpenseColumn: QTableColumn<IProfitLossExpnseDetails>[] =
       label: 'Expense Name',
       align: 'left',
       field: (row) => row.expense ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'amount',
+      required: true,
+      label: 'Amount',
+      align: 'left',
+      field: (row) => row.amount ?? '-',
+      sortable: true,
+    },
+  ];
+export const cashClosingUserExpenseColumn: QTableColumn<ISubmitToHODetails>[] =
+  [
+    {
+      name: 'user',
+      required: true,
+      label: 'User',
+      align: 'left',
+      field: (row) => row.user ?? '-',
       sortable: true,
     },
     {

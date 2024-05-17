@@ -105,20 +105,6 @@
           :pagination="{ rowsPerPage: 0 }"
           :hide-bottom="reportData.expnseDetails.length > 0"
         >
-          <template v-slot:body-cell-image="props">
-            <q-td :props="props">
-              <div
-                class="h-[100px] w-[100px] min-w-[2rem] overflow-hidden"
-                :class="props.row.image"
-              >
-                <img
-                  class="w-full h-full object-cover"
-                  :src="props.row.image || 'assets/default-image.png'"
-                  alt="img"
-                />
-              </div>
-            </q-td>
-          </template>
           <template v-slot:no-data>
             <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
               <q-icon name="warning" size="xs" />
