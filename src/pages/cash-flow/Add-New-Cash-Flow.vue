@@ -182,6 +182,16 @@ const handleAddNewFlow = async () => {
   if (isAdding.value) return;
   isAdding.value = true;
   const { cashIn, cashOut, amount, comment } = addNewFlow.value;
+  if (!comment.trim()) {
+    $q.notify({
+      message: 'Please add a comment.',
+      color: 'red',
+      icon: 'error',
+    });
+    isAdding.value = false;
+    return;
+  }
+
   try {
     const res = await CreateTransaction({
       sourceUserId: cashIn?.userId ?? -1,
