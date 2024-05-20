@@ -19,6 +19,7 @@
       @filter="filterFn"
       :loading="isLoading"
       :options="userList"
+      use-input
       v-model="filterSearch.user"
       popup-content-class="!max-h-[200px]"
       label="Select User"
@@ -141,8 +142,8 @@ const timeStamp = Date.now();
 const reportList = ref<IVendorSaleStockReportData[]>([]);
 const tableItems = ref<ITableItems[][]>([]);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past2Months = date.subtractFromDate(timeStamp, { month: 2 });
-const formattedFromDate = date.formatDate(past2Months, 'YYYY-MM-DD');
+const past1Year = date.subtractFromDate(timeStamp, { year: 1 });
+const formattedFromDate = date.formatDate(past1Year, 'YYYY-MM-DD');
 const userList = ref<IUserResponse[]>([]);
 const filterSearch = ref<{
   user: IUserResponse | null;

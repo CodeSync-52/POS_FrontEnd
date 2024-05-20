@@ -344,6 +344,19 @@
                 />
               </div>
               <div>
+                <span class="font-medium text-base">Quantity</span>
+                <q-input
+                  v-model="shopSalesTotalQuantity"
+                  type="number"
+                  maxlength="250"
+                  readonly
+                  :input-style="{ fontSize: '16px', fontWeight: '500' }"
+                  borderless
+                  dense
+                  color="btn-primary"
+                />
+              </div>
+              <div>
                 <span class="font-medium text-base text-btn-primary"
                   >Net Total</span
                 >
@@ -462,11 +475,11 @@
                 EUserRoles.SuperAdmin.toLowerCase()
             "
             unelevated
-            icon="payments"
+            icon="summarize"
             color=""
             class="rounded-[8px] icon_left min-h-fit bg-btn-primary hover:bg-btn-primary-hover w-full py-3 xl:py-4.5 md:text-[12px] lg:text-[10px] xl:text-[13px]"
-            label="Cash Closing Report"
-            to="/cash-closing-report"
+            label="Daily Sale Report"
+            to="/daily-sale-report"
           />
         </div>
       </div>
@@ -671,6 +684,8 @@ const handleActionKeys = (e: KeyboardEvent) => {
       router.push('/shop-sale/today-sale-summary');
     } else if (e.key === 'F8') {
       router.push('/shop-account');
+    } else if (e.key === 'F9') {
+      router.push('/daily-sale-report');
     } else if (
       e.key === 'Enter' &&
       selectedInventoryData.value.length &&
@@ -716,6 +731,11 @@ const shopSalesTotalAmount = computed(() => {
 const shopSalesTotalDiscount = computed(() => {
   return selectedInventoryData.value.reduce((amount: number, row) => {
     return amount + row.discount * row.dispatchQuantity;
+  }, 0);
+});
+const shopSalesTotalQuantity = computed(() => {
+  return selectedInventoryData.value.reduce((amount: number, row) => {
+    return amount + row.dispatchQuantity;
   }, 0);
 });
 const shopSalesReturnItems = computed(() => {

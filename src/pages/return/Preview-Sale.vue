@@ -247,6 +247,10 @@
           <span class="md:text-lg"> {{ SaleSummary.totalSalesAmount }} </span>
         </div>
         <div class="md:flex gap-3 items-center">
+          <span class="font-medium md:text-lg">Total Quantity :</span>
+          <span class="md:text-lg"> {{ SaleSummary.totalQuantity }} </span>
+        </div>
+        <div class="md:flex gap-3 items-center">
           <span class="font-medium md:text-lg">Total Discount :</span>
           <span class="md:text-lg"> {{ SaleSummary.totalDiscount }} </span>
         </div>
