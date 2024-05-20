@@ -21,6 +21,7 @@
                     <p>Hold Bills (Ctrl + F6)</p>
                     <p>Shop Closing (Ctrl + F7)</p>
                     <p>Closed Record (Ctrl + F8)</p>
+                    <p>Daily Sale Report (Ctrl + F9)</p>
                   </div>
                 </q-tooltip></q-btn
               >
@@ -301,9 +302,9 @@
               </template>
             </q-table>
           </div>
-          <div class="w-full mb-3">
-            <div class="min-w-[200px] flex flex-wrap gap-3">
-              <div>
+          <div class="w-full">
+            <div class="flex flex-wrap gap-3">
+              <div class="max-w-[150px]">
                 <span class="font-medium text-base">Total</span>
                 <q-input
                   v-model="shopSalesTotalAmount"
@@ -316,7 +317,7 @@
                   color="btn-primary"
                 />
               </div>
-              <div>
+              <div class="max-w-[150px]">
                 <span class="font-medium text-base">Discount</span>
                 <q-input
                   v-model="shopSalesTotalDiscount"
@@ -330,7 +331,7 @@
                   color="btn-primary"
                 />
               </div>
-              <div>
+              <div class="max-w-[150px]">
                 <span class="font-medium text-base">Return</span>
                 <q-input
                   v-model="shopSalesReturnItems"
@@ -343,7 +344,7 @@
                   color="btn-primary"
                 />
               </div>
-              <div>
+              <div class="max-w-[150px]">
                 <span class="font-medium text-base">Quantity</span>
                 <q-input
                   v-model="shopSalesTotalQuantity"
@@ -356,7 +357,7 @@
                   color="btn-primary"
                 />
               </div>
-              <div>
+              <div class="max-w-[150px]">
                 <span class="font-medium text-base text-btn-primary"
                   >Net Total</span
                 >
@@ -375,7 +376,7 @@
                   color=" btn-primary"
                 />
               </div>
-              <div>
+              <div class="max-w-[150px]">
                 <span class="font-medium text-base">Cash Received</span>
                 <q-input
                   v-model="cashReceived"
@@ -386,7 +387,7 @@
                   color="btn-primary"
                 />
               </div>
-              <div>
+              <div class="max-w-[150px]">
                 <span class="font-medium text-base">Change</span>
                 <q-input
                   v-model="cashReturn"
@@ -399,7 +400,7 @@
                 />
               </div>
             </div>
-            <div class="max-w-[300px] mt-3 min-w-[200px] md:w-1/3">
+            <div class="max-w-[300px] mt-5 min-w-[200px] md:w-1/3">
               <q-input
                 v-model="shopSale.comment"
                 maxlength="250"
