@@ -84,6 +84,8 @@
                         ? 'Profit Loss Report'
                         : subLinks.path === '/cash-closing-report'
                         ? 'Cash Closing Report'
+                        : subLinks.path === '/article-history-report'
+                        ? 'Article History Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -280,6 +282,10 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/cash-closing-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/article-history-report',
       },
     ],
   },

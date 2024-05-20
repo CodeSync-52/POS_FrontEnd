@@ -13,6 +13,10 @@ import {
   ISlowArticleSaleReportData,
   IProfitLossExpnseDetails,
   ISubmitToHODetails,
+  IPurchaseInfo,
+  IWholeSaleInfo,
+  IGrnInfo,
+  IStrInfo,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -303,6 +307,86 @@ export const cashClosingUserExpenseColumn: QTableColumn<ISubmitToHODetails>[] =
       sortable: true,
     },
   ];
+export const purchaseInfoColumn: QTableColumn<IPurchaseInfo>[] = [
+  {
+    name: 'user',
+    required: true,
+    label: 'User',
+    align: 'left',
+    field: (row) => row.user ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'quantity',
+    required: true,
+    label: 'Quantity',
+    align: 'left',
+    field: (row) => row.quantity ?? '-',
+    sortable: true,
+  },
+];
+export const wholSaleInfoColumn: QTableColumn<IWholeSaleInfo>[] = [
+  {
+    name: 'user',
+    required: true,
+    label: 'User',
+    align: 'left',
+    field: (row) => row.user ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'quantity',
+    required: true,
+    label: 'Quantity',
+    align: 'left',
+    field: (row) => row.quantity ?? '-',
+    sortable: true,
+  },
+];
+export const hoGrnMeaningfulDetailColumn: QTableColumn<IGrnInfo>[] = [
+  {
+    name: 'date',
+    required: true,
+    label: 'Date',
+    align: 'left',
+    field: (row) => moment(row.date).format('DD-MM-YYYY') ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'quantity',
+    required: true,
+    label: 'Quantity',
+    align: 'left',
+    field: (row) => row.quantity ?? '-',
+    sortable: true,
+  },
+];
+export const strDetailColumn: QTableColumn<IStrInfo>[] = [
+  {
+    name: 'fromShop',
+    required: true,
+    label: 'From Shop',
+    align: 'left',
+    field: (row) => row.fromShop ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'To Shop',
+    required: true,
+    label: 'To Shop',
+    align: 'left',
+    field: (row) => row.toShop ?? '-',
+    sortable: true,
+  },
+  {
+    name: 'quantity',
+    required: true,
+    label: 'Quantity',
+    align: 'left',
+    field: (row) => row.quantity ?? '-',
+    sortable: true,
+  },
+];
 export const outStandingReportColumn: QTableColumn<IOutStandingReportData>[] = [
   {
     name: 'user',
