@@ -1,12 +1,12 @@
 <template>
   <div>
     <div
-      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6"
+      class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6 px-4"
     >
       <span class="text-lg font-medium">Article History Report</span>
     </div>
     <div
-      class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
+      class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4 px-4"
     >
       <q-select
         popup-content-class="!max-h-[200px]"
@@ -77,7 +77,13 @@
       >
         <div class="md:flex md:justify-between md:w-full items-center">
           <span class="font-medium md:text-lg"
-            >Total Stock of Article Before ({{ filterSearch.fromDate }}) :</span
+            >Total Stock of Article Before
+            {{
+              filterSearch.fromDate
+                ? filterSearch.fromDate
+                : moment(timeStamp).format('YYYY-MM-DD')
+            }}
+            :</span
           >
           <span class="md:text-lg"> {{ articleHistoryReportData.stock }}</span>
         </div>
@@ -92,6 +98,7 @@
     <div class="q-pa-md">
       <q-table
         bordered
+        :loading="isLoading"
         :rows="articleHistoryReportData.purchaseInfo"
         :columns="purchaseInfoColumn"
         :rows-per-page-options="[0]"
@@ -121,6 +128,7 @@
     <div class="q-pa-md">
       <q-table
         bordered
+        :loading="isLoading"
         :rows="articleHistoryReportData.wholeSaleInfo"
         :columns="wholSaleInfoColumn"
         :rows-per-page-options="[0]"
@@ -150,6 +158,7 @@
     <div class="q-pa-md">
       <q-table
         bordered
+        :loading="isLoading"
         :rows="articleHistoryReportData.grnInfo"
         :columns="hoGrnMeaningfulDetailColumn"
         :rows-per-page-options="[0]"
@@ -179,6 +188,7 @@
     <div class="q-pa-md">
       <q-table
         bordered
+        :loading="isLoading"
         :rows="articleHistoryReportData.strInfo"
         :columns="strDetailColumn"
         :rows-per-page-options="[0]"
@@ -220,6 +230,7 @@ import {
 import { GetArticleHistoryReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref } from 'vue';
+import moment from 'moment';
 const isLoading = ref(false);
 const $q = useQuasar();
 const isFetchingArticleList = ref(false);
@@ -289,9 +300,7 @@ const getArticleList = async (productName?: string) => {
   isFetchingArticleList.value = false;
 };
 const searchArticleHistoryReport = async () => {
-  isLoading.value = true;
   if (!filterSearch.value.productId) {
-    isLoading.value = false;
     $q.notify({
       message: 'Please Select Product',
       icon: 'error',
@@ -299,7 +308,6 @@ const searchArticleHistoryReport = async () => {
     });
     return;
   } else if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
-    isLoading.value = false;
     $q.notify({
       message: 'Please Select From and To Date',
       icon: 'error',
@@ -307,6 +315,7 @@ const searchArticleHistoryReport = async () => {
     });
     return;
   }
+  isLoading.value = true;
   try {
     const res = await GetArticleHistoryReport({
       productId: filterSearch.value.productId.productId,
