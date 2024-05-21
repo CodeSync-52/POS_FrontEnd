@@ -354,8 +354,8 @@ const isCancellingReceipt = ref(false);
 const apiController = ref<AbortController | null>(null);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
-const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
+const past30Date = date.subtractFromDate(timeStamp, { date: 30 });
+const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 const filterSearch = ref<{
   userId: null | number;
   userName: null | string;
