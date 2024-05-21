@@ -500,5 +500,5 @@ export const HOArticleSaleDetailReportColumn: QTableColumn<IHOSaleDetailReportDa
 export const IShowOnlyDiscountOptionList: IShowOnlyDiscount[] = [
   { name: 'All', statusId: -1 },
   { name: 'True', statusId: 1 },
-  { name: 'false', statusId: 0 },
+  { name: 'False', statusId: 0 },
 ];
