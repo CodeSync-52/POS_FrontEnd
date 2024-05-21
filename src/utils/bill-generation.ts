@@ -9,9 +9,15 @@ import {
 export const billGenerationColumn: QTableColumn<IBillGenerationData>[] = [
   {
     name: 'date',
-    label: 'Date',
+    label: 'Bill Date',
     align: 'left',
     field: (row) => moment(row.createdDate).format('DD-MM-YYYY'),
+  },
+  {
+    name: 'stockreceivedate',
+    label: 'Stock Receive Date',
+    align: 'left',
+    field: (row) => moment(row.stockReceiveDate).format('DD-MM-YYYY'),
   },
   {
     name: 'user',
