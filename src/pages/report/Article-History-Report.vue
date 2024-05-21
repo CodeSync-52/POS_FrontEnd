@@ -3,7 +3,7 @@
     <div
       class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-6 px-4"
     >
-      <span class="text-lg font-medium">Article History Report</span>
+      <span class="text-xl font-medium">Article History Report</span>
     </div>
     <div
       class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4 px-4"
