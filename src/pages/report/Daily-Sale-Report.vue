@@ -147,6 +147,7 @@ import {
   IDailySaleReportData,
   IShopResponse,
   EUserRoles,
+  IShowOnlyDiscount,
 } from 'src/interfaces';
 import { GetShopList } from 'src/services';
 import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
@@ -178,7 +179,7 @@ const formattedFromDate = date.formatDate(past1Day, 'YYYY-MM-DD');
 const filterSearch = ref<{
   fromDate: string;
   toDate: string;
-  showOnlyDiscount: number;
+  showOnlyDiscount: IShowOnlyDiscount | number;
 }>({
   fromDate: formattedFromDate,
   toDate: formattedToDate,
@@ -216,8 +217,13 @@ const getShopList = async () => {
     isFetchingShopList.value = false;
   }
 };
+
 const searchDailySaleReport = async () => {
   isLoading.value = true;
+  const showOnlyDiscountValue =
+    typeof filterSearch.value.showOnlyDiscount === 'object'
+      ? (filterSearch.value.showOnlyDiscount as IShowOnlyDiscount).statusId
+      : (filterSearch.value.showOnlyDiscount as number);
   if (!selectedShop.value?.map((shop) => shop.shopId).join(',')) {
     isLoading.value = false;
     $q.notify({
@@ -239,7 +245,7 @@ const searchDailySaleReport = async () => {
     const res = await GetDailySaleReport({
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
-      showOnlyDiscount: filterSearch.value.showOnlyDiscount,
+      showOnlyDiscount: showOnlyDiscountValue,
       shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
     });
     if (res?.data) {
@@ -259,6 +265,7 @@ const searchDailySaleReport = async () => {
   }
   isLoading.value = false;
 };
+
 const handleResetFilter = () => {
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
