@@ -88,6 +88,12 @@
                         ? 'Article History Report'
                         : subLinks.path === '/stock-report-by-color'
                         ? 'Article Sale By Color Report'
+                        : subLinks.path === '/shopwise-stock-transfer-report'
+                        ? 'Shop Wise Stock Transfer Report'
+                        : subLinks.path === '/shelf-article-sale-report'
+                        ? 'Shelf Article Sale Report'
+                        : subLinks.path === '/article-commission-report'
+                        ? 'Article Commission Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -292,6 +298,18 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/stock-report-by-color',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/shopwise-stock-transfer-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/shelf-article-sale-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/article-commission-report',
       },
     ],
   },
