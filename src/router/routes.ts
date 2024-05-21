@@ -365,6 +365,28 @@ export const routeList = [
     },
   },
   {
+    path: '/shopwise-stock-transfer-report',
+    component: () =>
+      import('src/pages/report/Shopwise-Stock-Transfer-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
+    path: '/shelf-article-sale-report',
+    component: () => import('src/pages/report/Shelf-Article-Sale-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
+    path: '/article-commission-report',
+    component: () => import('src/pages/report/Article-Comission-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {
