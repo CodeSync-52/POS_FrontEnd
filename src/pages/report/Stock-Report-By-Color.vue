@@ -66,50 +66,46 @@
           Grand Total: {{ grandTotal }}
         </div>
         <div>
-          <div v-for="item in shopSaleStockReportData" :key="item.variant2_Id">
+          <div v-for="item in articleSaleDistributionByColorReportData" :key="item.article">
             <div
               class="text-lg font-bold my-4 flex justify-between flex-col md:flex-row"
             >
-              <span> {{ item.variant2_Name }} - COLOR </span>
-              <span>Stock Qty ({{ item.totalStockQuantity }})</span>
-              <span>Sale Quantity ({{ item.totalSaleQuantity }})</span>
+              <span> {{ item.article }} </span>
+              <span>Retail Price ({{ item.retailPrice }})</span>
+              <span>Sale Quantity ({{ item.grandSaleQuantity }})</span>
             </div>
             <table class="w-full border-collapse border border-gray-300">
               <thead>
                 <tr>
                   <th class="border border-gray-300 bg-gray-100 px-4 py-2"></th>
                   <th
-                    v-for="variant in item.shopQty[0].list"
-                    :key="variant.variant1_Id"
+                    v-for="variant in item.articleSaleByShop[0].articleByColor"
+                    :key="variant.variant2_Id"
                     class="border border-gray-300 bg-gray-100 px-4 py-2"
                   >
-                    {{ variant.variant1_Name }}
+                    {{ variant.variant2_Name }}
                   </th>
-                  <th class="border border-gray-300 bg-gray-100 px-4 py-2">
-                    Total Stock Qty.
-                  </th>
+
                   <th class="border border-gray-300 bg-gray-100 px-4 py-2">
                     Total Sale Qty.
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="shopQty in item.shopQty" :key="shopQty.shop">
+                <tr v-for="shopDetail in item.articleSaleByShop" :key="shopDetail.shop">
                   <td class="border border-gray-300 px-4 py-2">
-                    {{ shopQty.shop }}
+                    {{ shopDetail.shop }}
                   </td>
                   <td
-                    v-for="variant in shopQty.list"
-                    :key="variant.variant1_Id"
+                    v-for="variant in shopDetail.articleByColor"
+                    :key="variant.variant2_Id"
                     class="border border-gray-300 px-4 py-2 text-center"
                   >
-                    {{ variant.stockQuantity }}
+                    {{ variant.quantity }}
                   </td>
+
                   <td class="border border-gray-300 px-4 py-2 text-center">
-                    {{ shopQty.totalStockQuantity }}
-                  </td>
-                  <td class="border border-gray-300 px-4 py-2 text-center">
-                    {{ shopQty.totalSaleQuantity }}
+                    {{ shopDetail.totalSaleQuantity }}
                   </td>
                 </tr>
               </tbody>
@@ -123,22 +119,15 @@
 <script setup lang="ts">
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import {
-  IArticleData,
   IArticleSaleDistributionByColorDetail,
-  IVariant2Info,
-  EUserRoles,
+  IArticleSaleByShop,
 } from 'src/interfaces';
-import { GetArticleList, GetShopList } from 'src/services';
 import { date, useQuasar } from 'quasar';
-import { useAuthStore } from 'src/stores';
 import { GetArticleSaleByColorDetailReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
 import { ref } from 'vue';
 const isLoading = ref(false);
 const $q = useQuasar();
-const authStore = useAuthStore();
-const isFetchingArticleList = ref(false);
-const articleList = ref<IArticleData[]>([]);
 const isCategoryModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const timeStamp = Date.now();
@@ -236,9 +225,9 @@ const getArticleSaleReportByColor = async () => {
     grandTotal.value = 0;
     articleSaleDistributionByColorReportData.value.forEach((item: IArticleSaleDistributionByColorDetail) => {
       if (item && item.grandSaleQuantity) {
-        item.shopQty.forEach((shpqty: IShopQuantity) => {
-          if (shpqty && shpqty.totalSaleQuantity) {
-            grandTotal.value += shpqty.totalSaleQuantity;
+        item.articleSaleByShop.forEach((articleSaleByShop: IArticleSaleByShop) => {
+          if (articleSaleByShop && articleSaleByShop.totalSaleQuantity) {
+            grandTotal.value += articleSaleByShop.totalSaleQuantity;
           }
         });
       }
