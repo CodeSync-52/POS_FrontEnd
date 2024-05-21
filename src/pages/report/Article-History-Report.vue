@@ -69,151 +69,155 @@
         />
       </div>
     </div>
-    <div
-      class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-between q-pa-md"
-    >
+    <div v-if="shouldShowReport">
       <div
-        class="flex flex-col gap-2 md:min-w-[400px] md:gap-4 items-center md:items-start"
+        class="flex flex-col lg:flex-row items-center lg:items-baseline gap-2 md:gap-4 justify-center md:justify-between q-pa-md"
       >
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg"
-            >Total Stock of Article Before
-            {{
-              filterSearch.fromDate
-                ? filterSearch.fromDate
-                : moment(timeStamp).format('YYYY-MM-DD')
-            }}
-            :</span
-          >
-          <span class="md:text-lg"> {{ articleHistoryReportData.stock }}</span>
-        </div>
-        <div class="md:flex md:justify-between md:w-full items-center">
-          <span class="font-medium md:text-lg">Article Retail :</span>
-          <span class="md:text-lg">
-            {{ articleHistoryReportData.retailPrice }}
-          </span>
+        <div
+          class="flex flex-col gap-2 md:min-w-[400px] md:gap-4 items-center md:items-start"
+        >
+          <div class="md:flex md:justify-between md:w-full items-center">
+            <span class="font-medium md:text-lg"
+              >Total Stock of Article Before
+              {{
+                filterSearch.fromDate
+                  ? filterSearch.fromDate
+                  : moment(timeStamp).format('YYYY-MM-DD')
+              }}
+              :</span
+            >
+            <span class="md:text-lg">
+              {{ articleHistoryReportData.stock }}</span
+            >
+          </div>
+          <div class="md:flex md:justify-between md:w-full items-center">
+            <span class="font-medium md:text-lg">Article Retail :</span>
+            <span class="md:text-lg">
+              {{ articleHistoryReportData.retailPrice }}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="q-pa-md">
-      <q-table
-        bordered
-        :loading="isLoading"
-        :rows="articleHistoryReportData.purchaseInfo"
-        :columns="purchaseInfoColumn"
-        :rows-per-page-options="[0]"
-        title="Article Purchase Info"
-        row-key="id"
-        :hide-bottom="articleHistoryReportData.purchaseInfo.length > 0"
-      >
-        <template
-          v-if="articleHistoryReportData.purchaseInfo.length"
-          v-slot:bottom-row
+      <div class="q-pa-md">
+        <q-table
+          bordered
+          :loading="isLoading"
+          :rows="articleHistoryReportData.purchaseInfo"
+          :columns="purchaseInfoColumn"
+          :rows-per-page-options="[0]"
+          title="Article Purchase Info"
+          row-key="id"
+          :hide-bottom="articleHistoryReportData.purchaseInfo.length > 0"
         >
-          <q-tr class="sticky bottom-0 bg-white">
-            <q-td colspan="1" class="text-bold"> Total </q-td>
-            <q-td colspan="1" class="text-bold">
-              {{ calculateArticlePurchaseQuantity('quantity') }}
-            </q-td>
-          </q-tr>
-        </template>
-        <template v-slot:no-data>
-          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-            <q-icon name="warning" size="xs" />
-            <span class="text-md font-medium"> No data available. </span>
-          </div>
-        </template>
-      </q-table>
-    </div>
-    <div class="q-pa-md">
-      <q-table
-        bordered
-        :loading="isLoading"
-        :rows="articleHistoryReportData.wholeSaleInfo"
-        :columns="wholSaleInfoColumn"
-        :rows-per-page-options="[0]"
-        title="WholeSale Info"
-        row-key="id"
-        :hide-bottom="articleHistoryReportData.wholeSaleInfo.length > 0"
-      >
-        <template
-          v-if="articleHistoryReportData.wholeSaleInfo.length"
-          v-slot:bottom-row
+          <template
+            v-if="articleHistoryReportData.purchaseInfo.length"
+            v-slot:bottom-row
+          >
+            <q-tr class="sticky bottom-0 bg-white">
+              <q-td colspan="1" class="text-bold"> Total </q-td>
+              <q-td colspan="1" class="text-bold">
+                {{ calculateArticlePurchaseQuantity('quantity') }}
+              </q-td>
+            </q-tr>
+          </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
+          </template>
+        </q-table>
+      </div>
+      <div class="q-pa-md">
+        <q-table
+          bordered
+          :loading="isLoading"
+          :rows="articleHistoryReportData.wholeSaleInfo"
+          :columns="wholSaleInfoColumn"
+          :rows-per-page-options="[0]"
+          title="WholeSale Info"
+          row-key="id"
+          :hide-bottom="articleHistoryReportData.wholeSaleInfo.length > 0"
         >
-          <q-tr class="sticky bottom-0 bg-white">
-            <q-td colspan="1" class="text-bold"> Total </q-td>
-            <q-td colspan="1" class="text-bold">
-              {{ calculateWholeSaleQuantity('quantity') }}
-            </q-td>
-          </q-tr>
-        </template>
-        <template v-slot:no-data>
-          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-            <q-icon name="warning" size="xs" />
-            <span class="text-md font-medium"> No data available. </span>
-          </div>
-        </template>
-      </q-table>
-    </div>
-    <div class="q-pa-md">
-      <q-table
-        bordered
-        :loading="isLoading"
-        :rows="articleHistoryReportData.grnInfo"
-        :columns="hoGrnMeaningfulDetailColumn"
-        :rows-per-page-options="[0]"
-        title="Ho To Ho GRN Meaningful Detail"
-        row-key="id"
-        :hide-bottom="articleHistoryReportData.grnInfo.length > 0"
-      >
-        <template
-          v-if="articleHistoryReportData.grnInfo.length"
-          v-slot:bottom-row
+          <template
+            v-if="articleHistoryReportData.wholeSaleInfo.length"
+            v-slot:bottom-row
+          >
+            <q-tr class="sticky bottom-0 bg-white">
+              <q-td colspan="1" class="text-bold"> Total </q-td>
+              <q-td colspan="1" class="text-bold">
+                {{ calculateWholeSaleQuantity('quantity') }}
+              </q-td>
+            </q-tr>
+          </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
+          </template>
+        </q-table>
+      </div>
+      <div class="q-pa-md">
+        <q-table
+          bordered
+          :loading="isLoading"
+          :rows="articleHistoryReportData.grnInfo"
+          :columns="hoGrnMeaningfulDetailColumn"
+          :rows-per-page-options="[0]"
+          title="Ho To Ho GRN Meaningful Detail"
+          row-key="id"
+          :hide-bottom="articleHistoryReportData.grnInfo.length > 0"
         >
-          <q-tr class="sticky bottom-0 bg-white">
-            <q-td colspan="1" class="text-bold"> Total </q-td>
-            <q-td colspan="1" class="text-bold">
-              {{ calculategrnInfoQuantity('quantity') }}
-            </q-td>
-          </q-tr>
-        </template>
-        <template v-slot:no-data>
-          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-            <q-icon name="warning" size="xs" />
-            <span class="text-md font-medium"> No data available. </span>
-          </div>
-        </template>
-      </q-table>
-    </div>
-    <div class="q-pa-md">
-      <q-table
-        bordered
-        :loading="isLoading"
-        :rows="articleHistoryReportData.strInfo"
-        :columns="strDetailColumn"
-        :rows-per-page-options="[0]"
-        title="Str Detail"
-        row-key="id"
-        :hide-bottom="articleHistoryReportData.strInfo.length > 0"
-      >
-        <template
-          v-if="articleHistoryReportData.strInfo.length"
-          v-slot:bottom-row
+          <template
+            v-if="articleHistoryReportData.grnInfo.length"
+            v-slot:bottom-row
+          >
+            <q-tr class="sticky bottom-0 bg-white">
+              <q-td colspan="1" class="text-bold"> Total </q-td>
+              <q-td colspan="1" class="text-bold">
+                {{ calculategrnInfoQuantity('quantity') }}
+              </q-td>
+            </q-tr>
+          </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
+          </template>
+        </q-table>
+      </div>
+      <div class="q-pa-md">
+        <q-table
+          bordered
+          :loading="isLoading"
+          :rows="articleHistoryReportData.strInfo"
+          :columns="strDetailColumn"
+          :rows-per-page-options="[0]"
+          title="Str Detail"
+          row-key="id"
+          :hide-bottom="articleHistoryReportData.strInfo.length > 0"
         >
-          <q-tr class="sticky bottom-0 bg-white">
-            <q-td colspan="2" class="text-bold"> Total </q-td>
-            <q-td colspan="1" class="text-bold">
-              {{ calculateStrInfoQuantity('quantity') }}
-            </q-td>
-          </q-tr>
-        </template>
-        <template v-slot:no-data>
-          <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
-            <q-icon name="warning" size="xs" />
-            <span class="text-md font-medium"> No data available. </span>
-          </div>
-        </template>
-      </q-table>
+          <template
+            v-if="articleHistoryReportData.strInfo.length"
+            v-slot:bottom-row
+          >
+            <q-tr class="sticky bottom-0 bg-white">
+              <q-td colspan="2" class="text-bold"> Total </q-td>
+              <q-td colspan="1" class="text-bold">
+                {{ calculateStrInfoQuantity('quantity') }}
+              </q-td>
+            </q-tr>
+          </template>
+          <template v-slot:no-data>
+            <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+              <q-icon name="warning" size="xs" />
+              <span class="text-md font-medium"> No data available. </span>
+            </div>
+          </template>
+        </q-table>
+      </div>
     </div>
   </div>
 </template>
@@ -229,7 +233,7 @@ import {
 } from 'src/utils/reports';
 import { GetArticleHistoryReport } from 'src/services/reports';
 import { isPosError } from 'src/utils';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import moment from 'moment';
 const isLoading = ref(false);
 const $q = useQuasar();
@@ -249,8 +253,8 @@ const filterSearch = ref<{
   productId: null,
 });
 const articleHistoryReportData = ref<IArticleHistoryReport>({
-  stock: 0,
-  retailPrice: 0,
+  stock: null,
+  retailPrice: null,
   purchaseInfo: [],
   wholeSaleInfo: [],
   grnInfo: [],
@@ -268,6 +272,14 @@ const handleResetFilter = () => {
   filterSearch.value.fromDate = '';
   filterSearch.value.toDate = '';
   filterSearch.value.productId = null;
+  articleHistoryReportData.value = {
+    stock: null,
+    retailPrice: null,
+    purchaseInfo: [],
+    wholeSaleInfo: [],
+    grnInfo: [],
+    strInfo: [],
+  };
 };
 
 const getArticleList = async (productName?: string) => {
@@ -370,4 +382,15 @@ const calculateStrInfoQuantity = (
     0
   );
 };
+const shouldShowReport = computed(() => {
+  const data = articleHistoryReportData.value;
+  return (
+    data.stock !== null ||
+    data.retailPrice !== null ||
+    data.purchaseInfo.length > 0 ||
+    data.wholeSaleInfo.length > 0 ||
+    data.grnInfo.length > 0 ||
+    data.strInfo.length > 0
+  );
+});
 </script>

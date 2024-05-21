@@ -79,7 +79,7 @@
       />
     </div>
   </div>
-  <div class="flex justify-center mt-10">
+  <div class="flex justify-center mt-10" v-if="shouldShowReport">
     <div class="w-[40%]">
       <div
         class="flex flex-col gap-2 md:gap-4 items-center md:items-start md:pr-2"
@@ -144,7 +144,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import {
   IShopResponse,
   EUserRoles,
@@ -177,12 +177,12 @@ const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
 const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
 const reportData = ref<IProfitLossReportData>({
-  netSale: 0,
-  totalWholeSalePrice: 0,
-  profitByWholeSalePrice: 0,
-  totalCostPrice: 0,
-  profitByCostPrice: 0,
-  totalExpense: 0,
+  netSale: null,
+  totalWholeSalePrice: null,
+  profitByWholeSalePrice: null,
+  totalCostPrice: null,
+  profitByCostPrice: null,
+  totalExpense: null,
   expnseDetails: [],
 });
 const filterSearch = ref<{
@@ -285,12 +285,12 @@ const handleResetFilter = () => {
     filterSearch.value.shopId = null;
   }
   reportData.value = {
-    netSale: 0,
-    totalWholeSalePrice: 0,
-    profitByWholeSalePrice: 0,
-    totalCostPrice: 0,
-    profitByCostPrice: 0,
-    totalExpense: 0,
+    netSale: null,
+    totalWholeSalePrice: null,
+    profitByWholeSalePrice: null,
+    totalCostPrice: null,
+    profitByCostPrice: null,
+    totalExpense: null,
     expnseDetails: [],
   };
   filterSearch.value.fromDate = '';
@@ -367,4 +367,15 @@ async function downloadPdfData() {
     title: 'Profit Loss Report',
   });
 }
+const shouldShowReport = computed(() => {
+  const data = reportData.value;
+  return (
+    data.totalWholeSalePrice !== null ||
+    data.profitByWholeSalePrice !== null ||
+    data.totalCostPrice !== null ||
+    data.profitByCostPrice !== null ||
+    data.totalExpense !== null ||
+    data.expnseDetails.length > 0
+  );
+});
 </script>
