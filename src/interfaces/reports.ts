@@ -51,12 +51,12 @@ export interface IOutStandingReportData {
   phone: string | number | null;
 }
 export interface IProfitLossReportData {
-  netSale: number;
-  totalWholeSalePrice: number;
-  profitByWholeSalePrice: number;
-  totalCostPrice: number;
-  profitByCostPrice: number;
-  totalExpense: number;
+  netSale: number | null;
+  totalWholeSalePrice: number | null;
+  profitByWholeSalePrice: number | null;
+  totalCostPrice: number | null;
+  profitByCostPrice: number | null;
+  totalExpense: number | null;
   expnseDetails: IProfitLossExpnseDetails[];
 }
 export interface IProfitLossExpnseDetails {
@@ -77,8 +77,8 @@ export interface ICashClosinReport {
   submitToHODetails: ISubmitToHODetails[];
 }
 export interface IArticleHistoryReport {
-  stock: number;
-  retailPrice: number;
+  stock: number | null;
+  retailPrice: number | null;
   purchaseInfo: IPurchaseInfo[];
   wholeSaleInfo: IWholeSaleInfo[];
   grnInfo: IGrnInfo[];

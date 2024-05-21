@@ -325,13 +325,8 @@ const getUserDetails = (
   const userDetailsMap = new Map<string, number>();
   reports.forEach((sdet) => {
     sdet.submitToHODetails.forEach((detail) => {
-      if (!userDetailsMap.has(detail.user)) {
-        userDetailsMap.set(detail.user, 0);
-      }
-      userDetailsMap.set(
-        detail.user,
-        userDetailsMap.get(detail.user)! + detail.amount
-      );
+      const currentAmount = userDetailsMap.get(detail.user) ?? 0;
+      userDetailsMap.set(detail.user, currentAmount + detail.amount);
     });
   });
 
