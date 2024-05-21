@@ -17,8 +17,6 @@
         outlined
         @click="addCategory"
         color="btn-primary"
-        option-label="name"
-        option-value="categoryId"
       />
       <q-dialog v-model="isCategoryModalVisible">
         <article-category-modal @category-selected="handleSelectedCategory" />
@@ -66,18 +64,22 @@
           Grand Total: {{ grandTotal }}
         </div>
         <div>
-          <div v-for="item in articleSaleDistributionByColorReportData" :key="item.article">
+          <div
+            v-for="item in articleSaleDistributionByColorReportData"
+            :key="item.article"
+          >
             <div
-              class="text-lg font-bold my-4 flex justify-between flex-col md:flex-row"
+              class="text-lg font-bold my-4 flex justify-between flex-col md:flex-row px-1"
             >
-              <span> {{ item.article }} </span>
+              <span>{{ item.article }}</span>
               <span>Retail Price ({{ item.retailPrice }})</span>
-              <span>Sale Quantity ({{ item.grandSaleQuantity }})</span>
             </div>
             <table class="w-full border-collapse border border-gray-300">
               <thead>
                 <tr>
-                  <th class="border border-gray-300 bg-gray-100 px-4 py-2"></th>
+                  <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                    Shop Name
+                  </th>
                   <th
                     v-for="variant in item.articleSaleByShop[0].articleByColor"
                     :key="variant.variant2_Id"
@@ -85,14 +87,16 @@
                   >
                     {{ variant.variant2_Name }}
                   </th>
-
                   <th class="border border-gray-300 bg-gray-100 px-4 py-2">
                     Total Sale Qty.
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="shopDetail in item.articleSaleByShop" :key="shopDetail.shop">
+                <tr
+                  v-for="shopDetail in item.articleSaleByShop"
+                  :key="shopDetail.shop"
+                >
                   <td class="border border-gray-300 px-4 py-2">
                     {{ shopDetail.shop }}
                   </td>
@@ -103,9 +107,27 @@
                   >
                     {{ variant.quantity }}
                   </td>
-
                   <td class="border border-gray-300 px-4 py-2 text-center">
                     {{ shopDetail.totalSaleQuantity }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-bold">
+                    Total
+                  </td>
+                  <td
+                    v-for="variantTotal in calculateVariantTotals(
+                      item.articleSaleByShop
+                    )"
+                    :key="variantTotal.variant2_Id"
+                    class="border border-gray-300 px-4 py-2 text-center font-bold"
+                  >
+                    {{ variantTotal.totalQuantity }}
+                  </td>
+                  <td
+                    class="border border-gray-300 px-4 py-2 text-center font-bold"
+                  >
+                    {{ calculateTotalSaleQuantity(item.articleSaleByShop) }}
                   </td>
                 </tr>
               </tbody>
@@ -135,7 +157,9 @@ const selectedCategoryName = ref('');
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { days: 30 });
 const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
-const articleSaleDistributionByColorReportData = ref<IArticleSaleDistributionByColorDetail[]>([]);
+const articleSaleDistributionByColorReportData = ref<
+  IArticleSaleDistributionByColorDetail[]
+>([]);
 let grandTotal = ref<number>(0);
 const addCategory = () => {
   isCategoryModalVisible.value = true;
@@ -157,38 +181,19 @@ const filterSearch = ref<{
   fromDate: formattedFromDate,
   toDate: formattedToDate,
 });
-// const handleResetFilter = () => {
-//   if (Object.values(filterSearch.value).every((value) => value === null)) {
-//     return;
-//   }
-//   if (
-//     authStore.loggedInUser?.rolePermissions.roleName !==
-//       EUserRoles.ShopManager.toLowerCase() ||
-//     authStore.loggedInUser?.rolePermissions.roleName !==
-//       EUserRoles.ShopOfficer.toLowerCase()
-//   ) {
-//     filterSearch.value.shopId = null;
-//   }
-//   (filterSearch.value.categoryName = ''),
-//     (filterSearch.value.categoryId = null),
-//     (filterSearch.value.fromDate = ''),
-//     (filterSearch.value.toDate = ''),
-//     (filterSearch.value.sortByArticle = 'true'),
-//     (filterSearch.value.ProductId = []),
-//     (articlquantitySaleResponse.value = []);
-//   grandTotal.value = 0;
-// };
-// const getUniqueSizes = (variant2List: any) => {
-//   let uniqueSizes: any = [];
-//   variant2List.forEach((variant: any) => {
-//     variant.variant1List.forEach((v1: any) => {
-//       if (!uniqueSizes.includes(v1.variant1_Name)) {
-//         uniqueSizes.push(v1.variant1_Name);
-//       }
-//     });
-//   });
-//   return uniqueSizes;
-// };
+const handleResetFilter = () => {
+  if (Object.values(filterSearch.value).every((value) => value === null)) {
+    return;
+  }
+  filterSearch.value = {
+    categoryId: null,
+    fromDate: '',
+    toDate: '',
+  };
+  selectedCategoryName.value = '';
+  grandTotal.value = 0;
+  articleSaleDistributionByColorReportData.value = [];
+};
 const getArticleSaleReportByColor = async () => {
   if (isLoading.value) return;
   if (
@@ -223,15 +228,19 @@ const getArticleSaleReportByColor = async () => {
     articleSaleDistributionByColorReportData.value = res.data;
 
     grandTotal.value = 0;
-    articleSaleDistributionByColorReportData.value.forEach((item: IArticleSaleDistributionByColorDetail) => {
-      if (item && item.grandSaleQuantity) {
-        item.articleSaleByShop.forEach((articleSaleByShop: IArticleSaleByShop) => {
-          if (articleSaleByShop && articleSaleByShop.totalSaleQuantity) {
-            grandTotal.value += articleSaleByShop.totalSaleQuantity;
-          }
-        });
+    articleSaleDistributionByColorReportData.value.forEach(
+      (item: IArticleSaleDistributionByColorDetail) => {
+        if (item && item.grandSaleQuantity) {
+          item.articleSaleByShop.forEach(
+            (articleSaleByShop: IArticleSaleByShop) => {
+              if (articleSaleByShop && articleSaleByShop.totalSaleQuantity) {
+                grandTotal.value += articleSaleByShop.totalSaleQuantity;
+              }
+            }
+          );
+        }
       }
-    });
+    );
   } catch (e) {
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
@@ -244,5 +253,25 @@ const getArticleSaleReportByColor = async () => {
     });
   }
   isLoading.value = false;
+};
+const calculateVariantTotals = (articleSaleByShop: IArticleSaleByShop[]) => {
+  const variantTotals = articleSaleByShop[0].articleByColor.map((variant) => ({
+    variant2_Id: variant.variant2_Id,
+    totalQuantity: 0,
+  }));
+  articleSaleByShop.forEach((shopDetail) => {
+    shopDetail.articleByColor.forEach((variant, index) => {
+      variantTotals[index].totalQuantity += variant.quantity;
+    });
+  });
+  return variantTotals;
+};
+const calculateTotalSaleQuantity = (
+  articleSaleByShop: IArticleSaleByShop[]
+) => {
+  return articleSaleByShop.reduce(
+    (total, shopDetail) => total + shopDetail.totalSaleQuantity,
+    0
+  );
 };
 </script>

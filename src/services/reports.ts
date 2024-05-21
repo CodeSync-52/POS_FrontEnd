@@ -432,7 +432,9 @@ export const GetArticleSaleByColorDetailReport = async (
   },
   controller?: AbortController
 ) => {
-  const res = await makeApiCall<IGenericResponse<IArticleSaleDistributionByColorDetail[]>>({
+  const res = await makeApiCall<
+    IGenericResponse<IArticleSaleDistributionByColorDetail[]>
+  >({
     method: 'POST',
     url: 'api/report/articlesaledistributionbycolor',
     data: {
