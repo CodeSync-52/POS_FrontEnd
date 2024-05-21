@@ -11,6 +11,7 @@ import {
   IDailySaleReportData,
   ISlowArticleSaleReportData,
   IArticleHistoryReport,
+  IArticleSaleDistributionByColorDetail,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -419,6 +420,32 @@ export const GetShopArticleQuantitySaleReport = async (
   return res;
 };
 
+export const GetArticleSaleByColorDetailReport = async (
+  {
+    toDate,
+    fromDate,
+    categoryId,
+  }: {
+    toDate: string | null;
+    fromDate: string | null;
+    categoryId: number | null;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<IArticleSaleDistributionByColorDetail[]>
+  >({
+    method: 'POST',
+    url: 'api/report/articlesaledistributionbycolor',
+    data: {
+      categoryId: categoryId,
+      toDate: toDate,
+      fromDate: fromDate,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
 export const GetShopSaleStockReport = async (
   {
     toDate,

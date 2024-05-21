@@ -232,6 +232,7 @@ const handleResetFilter = () => {
     toDate: '',
   };
   grandTotal.value = 0;
+  shopSaleStockReportData.value = [];
 };
 
 const getSaleStockReport = async () => {

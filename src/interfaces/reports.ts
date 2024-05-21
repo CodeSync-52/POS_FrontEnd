@@ -121,7 +121,24 @@ export interface IStockSaleByShopDetail {
   variant1_Name: string;
   stockQuantity: number;
 }
+export interface IArticleSaleDistributionByColorDetail {
+  article: string;
+  retailPrice: number;
+  grandSaleQuantity: number;
+  articleSaleByShop: IArticleSaleByShop[];
+}
 
+export interface IArticleSaleByShop {
+  shop: string;
+  totalSaleQuantity: number;
+  articleByColor: IArticleByColor[];
+}
+
+export interface IArticleByColor {
+  variant2_Id: number;
+  variant2_Name: string;
+  quantity: number;
+}
 export interface IHOStockReportData {
   productName: string;
   productImage: string | null;
