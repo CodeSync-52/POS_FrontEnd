@@ -33,7 +33,7 @@
               readonly
               v-model="formattedPurchaseDate"
               dense
-              label="Date"
+              label="Purchase Date"
               outlined
             />
           </div>
@@ -176,6 +176,18 @@
             </template>
           </q-table>
         </div>
+        <br />
+        <div class="col-8">
+          <q-input
+            readonly
+            v-model="billGenerationData.comments"
+            dense
+            :disable="true"
+            type="textarea"
+            label="Comments"
+            outlined
+          />
+        </div>
       </q-card-section>
       <q-card-actions class="row justify-end">
         <q-btn
@@ -236,7 +248,19 @@
               readonly
               dense
               type="date"
-              label="Created Date"
+              label="Bill Date"
+              class="btn-primary"
+              outlined
+            />
+          </div>
+
+          <div class="col-6">
+            <q-input
+              v-model="billGenerationDetailsInfoData.stockReceivingDate"
+              readonly
+              dense
+              type="date"
+              label="Stock Receiving Date"
               class="btn-primary"
               outlined
             />
@@ -402,6 +426,19 @@
               </div>
             </template>
           </q-table>
+          <br />
+          <div class="col-8">
+            <q-input
+              v-model="billGenerationDetailsInfoData.comments"
+              readonly
+              :disable="true"
+              type="textarea"
+              dense
+              label="Comments"
+              class="btn-primary"
+              outlined
+            />
+          </div>
         </div>
       </q-card-section>
       <q-card-actions class="row justify-end">
@@ -492,6 +529,7 @@ const billGenerationDetailsInfoData = ref<IBillData>({
   claim: 0,
   freight: 0,
   comments: '',
+  stockReceivingDate: '',
 });
 const billGenerationData = ref<IBillDetail>({
   userId: 0,
@@ -501,6 +539,7 @@ const billGenerationData = ref<IBillDetail>({
   purchaseDate: '',
   totalPurchaseQuantity: 0,
   quantity: 0,
+  comments: '',
 });
 const selectedId = router.currentRoute.value.params.id;
 const path = router.currentRoute.value.fullPath;
@@ -652,6 +691,9 @@ const getBillDetailInfo = async (BillId: number) => {
         billGenerationDetailsInfoData.value = res.data;
         billGenerationDetailsInfoData.value.createdDate = moment(
           res.data.createdDate
+        ).format('YYYY-MM-DD');
+        billGenerationDetailsInfoData.value.stockReceivingDate = moment(
+          res.data.stockReceivingDate
         ).format('YYYY-MM-DD');
 
         tableItems.value = await convertArray(res.data.productList);
@@ -891,8 +933,12 @@ async function downloadPdfData() {
       content: billGenerationDetailsInfoData.value.fullName,
     },
     {
-      heading: 'Date',
+      heading: 'Bill Date',
       content: billGenerationDetailsInfoData.value.createdDate,
+    },
+    {
+      heading: 'Purchase Date',
+      content: billGenerationDetailsInfoData.value.stockReceivingDate,
     },
   ];
   const tableDataWithImage: ITableItems[][] = await processTableItems(
@@ -903,6 +949,10 @@ async function downloadPdfData() {
     {
       heading: 'Outstanding Balance',
       content: billGenerationDetailsInfoData.value.outStandingBalance,
+    },
+    {
+      heading: 'Comments',
+      content: billGenerationDetailsInfoData.value.comments,
     },
   ];
   const myFileName = 'Bill.pdf';

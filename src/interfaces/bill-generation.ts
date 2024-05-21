@@ -6,6 +6,7 @@ export interface IBillGenerationData {
   totalAmount: number;
   billStatus: string;
   createdDate: string;
+  stockReceiveDate: string;
   createdBy: null | number | string;
 }
 
@@ -13,6 +14,7 @@ export interface IBillData {
   billId: number;
   billStatus: string;
   createdDate: string;
+  stockReceivingDate: string;
   outStandingBalance: number;
   fullName: string;
   productList: IBillProductList[];
@@ -37,6 +39,7 @@ export interface IBillDetail {
   purchaseDate: string;
   totalPurchaseQuantity: number;
   quantity: number;
+  comments: string | null;
 }
 export interface IProductInfoDetailList {
   amount: number;
