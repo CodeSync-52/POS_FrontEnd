@@ -76,6 +76,31 @@ export interface ICashClosinReport {
   date: string;
   submitToHODetails: ISubmitToHODetails[];
 }
+export interface IArticleHistoryReport {
+  stock: number;
+  retailPrice: number;
+  purchaseInfo: IPurchaseInfo[];
+  wholeSaleInfo: IWholeSaleInfo[];
+  grnInfo: IGrnInfo[];
+  strInfo: IStrInfo[];
+}
+export interface IPurchaseInfo {
+  user: string;
+  quantity: number;
+}
+export interface IWholeSaleInfo {
+  user: string;
+  quantity: number;
+}
+export interface IGrnInfo {
+  date: string;
+  quantity: number;
+}
+export interface IStrInfo {
+  fromShop: string;
+  toShop: string;
+  quantity: number;
+}
 export interface IShopSaleStockReportData {
   variant2_Id: number;
   variant2_Name: string;

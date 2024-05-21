@@ -10,6 +10,7 @@ import {
   IVendorSaleStockReportData,
   IDailySaleReportData,
   ISlowArticleSaleReportData,
+  IArticleHistoryReport,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -433,6 +434,30 @@ export const GetShopSaleStockReport = async (
   const res = await makeApiCall<IGenericResponse<IShopSaleStockReportData[]>>({
     method: 'POST',
     url: 'api/report/saleandstockbyshop',
+    data: {
+      productId: productId,
+      toDate: toDate,
+      fromDate: fromDate,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
+export const GetArticleHistoryReport = async (
+  {
+    toDate,
+    fromDate,
+    productId,
+  }: {
+    toDate: string;
+    fromDate: string;
+    productId: number;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<IGenericResponse<IArticleHistoryReport>>({
+    method: 'POST',
+    url: 'api/report/articlehistory',
     data: {
       productId: productId,
       toDate: toDate,
