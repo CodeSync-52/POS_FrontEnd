@@ -94,6 +94,9 @@
                         ? 'Shelf Article Sale Report'
                         : subLinks.path === '/article-commission-report'
                         ? 'Article Commission Report'
+                        : subLinks.path ===
+                          '/offline-shop-article-inventory-report'
+                        ? 'Offline Shop Article Inventory Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -310,6 +313,10 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/article-commission-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/offline-shop-article-inventory-report',
       },
     ],
   },
