@@ -313,7 +313,7 @@
 import { useQuasar } from 'quasar';
 import { date } from 'quasar';
 import { useRouter } from 'vue-router';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { CanceledError } from 'axios';
 import {
   EActionPermissions,
@@ -349,10 +349,12 @@ const defaultPagination = {
   rowsPerPage: 2000,
   rowsNumber: 0,
 };
+
 const pagination = ref<IPagination>(defaultPagination);
 const isCancellingReceipt = ref(false);
 const apiController = ref<AbortController | null>(null);
 const timeStamp = Date.now();
+
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { date: 30 });
 const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
@@ -371,7 +373,81 @@ const filterSearch = ref<{
   purchaseStatus: 'Open',
   customerGroupId: null,
 });
+watch(
+  () => ({
+    userName:
+      filterSearch.value.userName != null ? filterSearch.value.userName : '',
+    userId:
+      filterSearch.value.userId !== null
+        ? filterSearch.value.userId.toString()
+        : '',
+    customerGroupId:
+      filterSearch.value.customerGroupId !== null
+        ? filterSearch.value.customerGroupId.toString()
+        : '',
+    purchaseStatus:
+      filterSearch.value.purchaseStatus != null
+        ? filterSearch.value.purchaseStatus
+        : '',
+    startDate:
+      filterSearch.value.startDate !== null
+        ? filterSearch.value.startDate.toString()
+        : '',
+    endDate:
+      filterSearch.value.endDate !== null
+        ? filterSearch.value.endDate.toString()
+        : '',
+  }),
+  ({
+    userName,
+    customerGroupId,
+    purchaseStatus,
+    startDate,
+    endDate,
+    userId,
+  }) => {
+    localStorage.setItem('receiptSearchName', userName);
+    localStorage.setItem('receiptSearchCustomerGroupId', customerGroupId);
+    localStorage.setItem('receiptSearchPurchaseStatus', purchaseStatus);
+    localStorage.setItem('receiptStartDate', startDate);
+    localStorage.setItem('receiptEndDate', endDate);
+    localStorage.setItem(
+      'receiptSearchUserId',
+      userId !== null ? userId.toString() : ''
+    );
+  }
+);
 
+onMounted(() => {
+  const savedName = localStorage.getItem('receiptSearchName');
+  const savedCustomerGroupId = localStorage.getItem(
+    'receiptSearchCustomerGroupId'
+  );
+  const savedPurchaseStatus = localStorage.getItem(
+    'receiptSearchPurchaseStatus'
+  );
+  const savedStartDate = localStorage.getItem('receiptStartDate');
+  const savedEndDate = localStorage.getItem('receiptEndDate');
+  const savedUserId = localStorage.getItem('receiptSearchUserId');
+  if (savedName) {
+    filterSearch.value.userName = savedName;
+  }
+  if (savedCustomerGroupId) {
+    filterSearch.value.customerGroupId = parseInt(savedCustomerGroupId);
+  }
+  if (savedPurchaseStatus) {
+    filterSearch.value.purchaseStatus = savedPurchaseStatus;
+  }
+  if (savedStartDate) {
+    filterSearch.value.startDate = savedStartDate;
+  }
+  if (savedEndDate) {
+    filterSearch.value.endDate = savedEndDate;
+  }
+  if (savedUserId) {
+    filterSearch.value.userId = parseInt(savedUserId, 10);
+  }
+});
 onMounted(() => {
   getReceiptList();
   getUserList();
@@ -424,6 +500,7 @@ const handleResetFilter = () => {
     purchaseStatus: null,
     customerGroupId: null,
   };
+  localStorage.removeItem('receiptSearchName');
   getReceiptList();
 };
 const handleAddNewReceipt = () => {
