@@ -211,7 +211,6 @@ export interface IComissionDataReport {
   date: Date;
   totalValue: number;
   totalPairs: number;
-
   comissionDetails: IComissionDetail[];
 }
 export interface IComissionDetail {
@@ -219,4 +218,12 @@ export interface IComissionDetail {
   pairSale: number;
   comission: number;
   total:number
+}
+export interface IShelfArticleSaleReportData {
+  article: string;
+  image: string | null;
+  productId: number;
+  retailPrice: number;
+  totalStock: number;
+  totalSale: number;
 }

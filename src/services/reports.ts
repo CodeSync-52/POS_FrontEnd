@@ -12,6 +12,7 @@ import {
   ISlowArticleSaleReportData,
   IArticleHistoryReport,
   IArticleSaleDistributionByColorDetail,
+  IShelfArticleSaleReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -534,6 +535,31 @@ export const GetArticleHistoryReport = async (
       fromDate: fromDate,
     },
     signal: controller?.signal,
+  });
+  return res;
+};
+export const GetShelfArticleSaleReport = async ({
+  fromDate,
+  toDate,
+  shopIds,
+  saleQuantity,
+}: {
+  fromDate: string;
+  toDate: string;
+  shopIds: string | number[] | null;
+  saleQuantity: number;
+}) => {
+  const res = await makeApiCall<
+    IGenericResponse<IShelfArticleSaleReportData[]>
+  >({
+    method: 'POST',
+    url: 'api/report/shelfarticlesale',
+    data: {
+      fromDate,
+      toDate,
+      shopIds,
+      saleQuantity,
+    },
   });
   return res;
 };
