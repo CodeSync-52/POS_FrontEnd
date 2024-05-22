@@ -387,6 +387,14 @@ export const routeList = [
     },
   },
   {
+    path: '/offline-shop-article-inventory-report',
+    component: () =>
+      import('src/pages/report/Offline-Article-Inventory-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {

@@ -18,9 +18,6 @@
         @click="addCategory"
         color="btn-primary"
       />
-      <q-dialog v-model="isCategoryModalVisible">
-        <article-category-modal @category-selected="handleSelectedCategory" />
-      </q-dialog>
       <q-input
         v-model="filterSearch.fromDate"
         label="From"
@@ -137,6 +134,9 @@
       </div>
     </div>
   </div>
+  <q-dialog v-model="isCategoryModalVisible">
+    <article-category-modal @category-selected="handleSelectedCategory" />
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
