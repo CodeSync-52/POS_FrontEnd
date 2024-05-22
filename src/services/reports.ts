@@ -178,6 +178,29 @@ export const GetCashClosingReport = async ({
   });
   return res;
 };
+export const GetShopwiseStockTransferReport = async ({
+  shopIds,
+  fromDate,
+  toDate,
+  sortBySale,
+}: {
+  shopIds: string | number[] | null;
+  fromDate: string;
+  toDate: string;
+  sortBySale: boolean;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/shopwisestocktransfer',
+    data: {
+      shopIds,
+      fromDate,
+      toDate,
+      sortBySale,
+    },
+  });
+  return res;
+};
 export const GetUserOutstandingReport = async (
   {
     customerGroupId,

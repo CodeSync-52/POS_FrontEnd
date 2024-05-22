@@ -181,3 +181,18 @@ export interface IHOSaleDetailReportData {
   quantity: number | null;
   amount: number | null;
 }
+export interface IShopwiseStockTransferReportData {
+  article: string;
+  image: string | null;
+  productId: number;
+  retailPrice: number;
+  totalStock: number;
+  totalSale: number;
+  shopDetail: IShopDetail[];
+}
+
+export interface IShopDetail {
+  shop: string;
+  stock: number;
+  saleQuantity: number;
+}
