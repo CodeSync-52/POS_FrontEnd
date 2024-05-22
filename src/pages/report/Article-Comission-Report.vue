@@ -68,55 +68,62 @@
     </div>
 
     <div id="article_comission_report" class="container mx-auto mt-2">
-      <div>
-        <div
-          v-for="item in comissionReportData"
-          :key="item.productId"
-          class="mb-8 border p-2"
-        >
-          <div class="my-4 flex flex-row items-center gap-2 px-1">
-          </div>
-          <table class="w-full border-collapse border border-gray-300">
-            <thead>
-             
-                
-              <tr>
-                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
-                  Date
-                </th>
-                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
-                  PairSale
-                </th>
-                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
-                  Comission
-                </th>
-                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
-                  Total
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="comissionDetails in item.comissionDetails" :key="comissionDetails.pairSale">
-                <td class="border border-gray-300 px-4 py-2">
-                  {{ comissionDetails.date }}
-                </td>
-                <td class="border border-gray-300 px-4 py-2 text-center">
-                  {{ comissionDetails.pairSale }}
-                </td>
-                <td class="border border-gray-300 px-4 py-2 text-center">
-                  {{ comissionDetails.comission }}
-                </td>
-                <td class="border border-gray-300 px-4 py-2 text-center">
-                  {{ comissionDetails.total }}
-                </td>
-              </tr>
-  
-            </tbody>
-          </table>
+      <div
+        v-for="item in comissionReportData"
+        :key="item.date"
+        class="mb-8 border p-2"
+      >
+        <div class="my-4 flex flex-row items-center gap-2 px-1">
+          <span class="text-lg font-bold">Date: {{ item.date }}</span>
         </div>
+        <table class="w-full border-collapse border border-gray-300">
+          <thead>
+            <tr>
+              <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                PairSale
+              </th>
+              <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                Comission
+              </th>
+              <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                Total
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="comissionDetail in item.comissionDetails"
+              :key="comissionDetail.pairSale"
+            >
+              <td class="border border-gray-300 px-4 py-2 text-center">
+                {{ comissionDetail.pairSale }}
+              </td>
+              <td class="border border-gray-300 px-4 py-2 text-center">
+                {{ comissionDetail.comission }}
+              </td>
+              <td class="border border-gray-300 px-4 py-2 text-center">
+                {{ comissionDetail.total }}
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="border border-gray-300 px-4 py-2 text-center font-bold"
+              >
+                Total Pairs :{{ item.totalPairs }}
+              </td>
+              <td
+                class="border border-gray-300 px-4 py-2 text-center font-bold"
+              ></td>
+              <td
+                class="border border-gray-300 px-4 py-2 text-center font-bold"
+              >
+                G.Total :{{ item.totalValue }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-
   </div>
 </template>
 <script setup lang="ts">

@@ -82,9 +82,8 @@ export interface IComissionReport {
   comission: number;
   total: number;
   date: string;
-  productId:number;
-  comissionDetails : IComissionDetail[];
-
+  productId: number;
+  comissionDetails: IComissionDetail[];
 }
 export interface IArticleHistoryReport {
   stock: number | null;
@@ -201,23 +200,22 @@ export interface IShopwiseStockTransferReportData {
   shopDetail: IShopDetail[];
 }
 
-
 export interface IShopDetail {
   shop: string;
   stock: number;
   saleQuantity: number;
 }
-export interface IComissionDataReport {
-  date: Date;
-  totalValue: number;
+
+export interface IComissionReport {
+  date: string;
   totalPairs: number;
+  totalValue: number;
   comissionDetails: IComissionDetail[];
 }
 export interface IComissionDetail {
-  date:Date;
   pairSale: number;
   comission: number;
-  total:number
+  total: number;
 }
 export interface IShelfArticleSaleReportData {
   article: string;
