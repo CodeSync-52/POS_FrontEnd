@@ -17,6 +17,7 @@ import {
   IWholeSaleInfo,
   IGrnInfo,
   IStrInfo,
+  IShelfArticleSaleReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -502,3 +503,46 @@ export const IShowOnlyDiscountOptionList: IShowOnlyDiscount[] = [
   { name: 'True', statusId: 1 },
   { name: 'False', statusId: 0 },
 ];
+export const shelfArticleSaleReportColumn: QTableColumn<IShelfArticleSaleReportData>[] =
+  [
+    {
+      name: 'article',
+      required: true,
+      label: 'Article',
+      align: 'left',
+      field: (row) => row.article ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'image',
+      required: true,
+      label: 'Image',
+      align: 'left',
+      field: (row) => row.image ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'retailPrice',
+      required: true,
+      label: 'Retail Price',
+      align: 'left',
+      field: (row) => row.retailPrice ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'totalSale',
+      required: true,
+      label: 'Total Sale Qty',
+      align: 'left',
+      field: (row) => row.totalSale ?? '-',
+      sortable: true,
+    },
+    {
+      name: 'totalStock',
+      required: true,
+      label: 'Total Stock',
+      align: 'left',
+      field: (row) => row.totalStock ?? '-',
+      sortable: true,
+    },
+  ];

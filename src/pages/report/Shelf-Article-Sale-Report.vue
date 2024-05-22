@@ -69,7 +69,7 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="searchCashClosingReport()"
+          @click="searchShelfArticleSaleReport()"
         />
         <q-btn
           unelevated
@@ -81,22 +81,77 @@
       </div>
     </div>
   </div>
+  <div class="py-4">
+    <q-table
+      :loading="isLoading"
+      tabindex="0"
+      :rows="reportData"
+      align="left"
+      :columns="shelfArticleSaleReportColumn"
+      row-key="id"
+      :rows-per-page-options="[0]"
+      @request="searchShelfArticleSaleReport()"
+      :pagination="{ rowsPerPage: 0 }"
+      :hide-bottom="reportData.length > 0"
+    >
+      <template v-slot:body-cell-image="props">
+        <q-td :props="props">
+          <div
+            class="h-[100px] w-[100px] min-w-[2rem] overflow-hidden"
+            :class="props.row.image"
+          >
+            <img
+              class="w-full h-full object-cover"
+              :src="props.row.image || 'assets/default-image.png'"
+              alt="img"
+            />
+          </div>
+        </q-td>
+      </template>
+      <template v-slot:no-data>
+        <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+          <q-icon name="warning" size="xs" />
+          <span class="text-md font-medium"> No data available. </span>
+        </div>
+      </template>
+      <template v-if="reportData.length" v-slot:bottom-row>
+        <q-tr class="sticky bottom-0 bg-white">
+          <q-td colspan="2" class="text-bold"> Total </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('retailPrice') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('totalSale') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('totalStock') }}
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
+  </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { IShopResponse, EUserRoles, ICashClosinReport } from 'src/interfaces';
+import {
+  IShopResponse,
+  EUserRoles,
+  IShelfArticleSaleReportData,
+} from 'src/interfaces';
 import { GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
 import { date } from 'quasar';
-import { GetCashClosingReport } from 'src/services/reports';
+import { shelfArticleSaleReportColumn } from 'src/utils/reports';
+import { GetShelfArticleSaleReport } from 'src/services/reports';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
 const timeStamp = Date.now();
 const isFetchingShopList = ref(false);
 const shopData = ref<IShopResponse[]>([]);
+const reportData = ref<IShelfArticleSaleReportData[]>([]);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
 const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
@@ -112,7 +167,6 @@ const filterSearch = ref<{
   shopIds: [],
   SaleQuantity: 5,
 });
-const reportData = ref<ICashClosinReport[]>([]);
 onMounted(async () => {
   await getShopList();
   const defaultShop = shopData.value.find(
@@ -144,7 +198,7 @@ const getShopList = async () => {
     isFetchingShopList.value = false;
   }
 };
-const searchCashClosingReport = async () => {
+const searchShelfArticleSaleReport = async () => {
   isLoading.value = true;
   if (!filterSearch.value.shopIds) {
     isLoading.value = false;
@@ -164,20 +218,14 @@ const searchCashClosingReport = async () => {
     return;
   }
   try {
-    const res = await GetCashClosingReport({
+    const res = await GetShelfArticleSaleReport({
       shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
+      saleQuantity: filterSearch.value.SaleQuantity,
     });
     if (res.data) {
-      reportData.value = (res.data as ICashClosinReport[]).map((item) => ({
-        shop: item.shop,
-        netSale: item.netSale,
-        totalExpense: item.totalExpense,
-        remainingBalance: item.remainingBalance,
-        date: item.date,
-        submitToHODetails: item.submitToHODetails,
-      }));
+      reportData.value = res.data;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -189,8 +237,9 @@ const searchCashClosingReport = async () => {
       color: 'red',
       icon: 'error',
     });
+  } finally {
+    isLoading.value = false;
   }
-  isLoading.value = false;
 };
 const handleResetFilter = () => {
   if (
@@ -204,5 +253,12 @@ const handleResetFilter = () => {
   reportData.value = [];
   filterSearch.value.fromDate = '';
   filterSearch.value.toDate = '';
+  filterSearch.value.SaleQuantity = 5;
+};
+const calculateTotal = (columnName: keyof (typeof reportData.value)[0]) => {
+  return reportData.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>
