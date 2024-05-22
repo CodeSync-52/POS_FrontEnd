@@ -56,7 +56,7 @@
         class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
         icon="search"
         label="Search"
-        @click="searchCashClosingReport()"
+        @click="articleComissionReport()"
       />
       <q-btn
         unelevated
@@ -66,17 +66,68 @@
         @click="handleResetFilter()"
       />
     </div>
+
+    <div id="article_comission_report" class="container mx-auto mt-2">
+      <div>
+        <div
+          v-for="item in comissionReportData"
+          :key="item.productId"
+          class="mb-8 border p-2"
+        >
+          <div class="my-4 flex flex-row items-center gap-2 px-1">
+          </div>
+          <table class="w-full border-collapse border border-gray-300">
+            <thead>
+             
+                
+              <tr>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                  Date
+                </th>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                  PairSale
+                </th>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                  Comission
+                </th>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
+                  Total
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="comissionDetails in item.comissionDetails" :key="comissionDetails.pairSale">
+                <td class="border border-gray-300 px-4 py-2">
+                  {{ comissionDetails.date }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                  {{ comissionDetails.pairSale }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                  {{ comissionDetails.comission }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                  {{ comissionDetails.total }}
+                </td>
+              </tr>
+  
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { IShopResponse, EUserRoles, ICashClosinReport } from 'src/interfaces';
+import { IShopResponse, EUserRoles, IComissionReport } from 'src/interfaces';
 import { GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
 import { date } from 'quasar';
-import { GetCashClosingReport } from 'src/services/reports';
+import { GetComissionReport } from 'src/services/reports';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
@@ -85,8 +136,7 @@ const shopListRecords = ref<IShopResponse[]>([]);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
 const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
-const selectedShop = ref<IShopResponse[]>([]);
-const reportData = ref<ICashClosinReport[]>([]);
+const comissionReportData = ref<IComissionReport[]>([]);
 const filterSearch = ref<{
   fromDate: string;
   toDate: string;
@@ -132,7 +182,7 @@ const filterFn = (val: string, update: CallableFunction) => {
     );
   });
 };
-const searchCashClosingReport = async () => {
+const articleComissionReport = async () => {
   isLoading.value = true;
   if (!filterSearch.value.shopId) {
     isLoading.value = false;
@@ -152,20 +202,13 @@ const searchCashClosingReport = async () => {
     return;
   }
   try {
-    const res = await GetCashClosingReport({
-      shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
+    const res = await GetComissionReport({
+      shopId: filterSearch.value.shopId,
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
     });
     if (res.data) {
-      reportData.value = (res.data as ICashClosinReport[]).map((item) => ({
-        shop: item.shop,
-        netSale: item.netSale,
-        totalExpense: item.totalExpense,
-        remainingBalance: item.remainingBalance,
-        date: item.date,
-        submitToHODetails: item.submitToHODetails,
-      }));
+      comissionReportData.value = res.data;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -189,7 +232,7 @@ const handleResetFilter = () => {
   ) {
     filterSearch.value.shopId = null;
   }
-  reportData.value = [];
+  comissionReportData.value = [];
   filterSearch.value.fromDate = '';
   filterSearch.value.toDate = '';
 };

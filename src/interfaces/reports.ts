@@ -76,6 +76,16 @@ export interface ICashClosinReport {
   date: string;
   submitToHODetails: ISubmitToHODetails[];
 }
+export interface IComissionReport {
+  shop: string;
+  pairSale: number;
+  comission: number;
+  total: number;
+  date: string;
+  productId:number;
+  comissionDetails : IComissionDetail[];
+
+}
 export interface IArticleHistoryReport {
   stock: number | null;
   retailPrice: number | null;
@@ -191,8 +201,22 @@ export interface IShopwiseStockTransferReportData {
   shopDetail: IShopDetail[];
 }
 
+
 export interface IShopDetail {
   shop: string;
   stock: number;
   saleQuantity: number;
+}
+export interface IComissionDataReport {
+  date: Date;
+  totalValue: number;
+  totalPairs: number;
+
+  comissionDetails: IComissionDetail[];
+}
+export interface IComissionDetail {
+  date:Date;
+  pairSale: number;
+  comission: number;
+  total:number
 }
