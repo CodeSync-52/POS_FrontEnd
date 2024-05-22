@@ -196,3 +196,11 @@ export interface IShopDetail {
   stock: number;
   saleQuantity: number;
 }
+export interface IShelfArticleSaleReportData {
+  article: string;
+  image: string | null;
+  productId: number;
+  retailPrice: number;
+  totalStock: number;
+  totalSale: number;
+}
