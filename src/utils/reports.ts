@@ -613,3 +613,47 @@ export const offlinesShopArticleInventoryReport: QTableColumn<IOfflineShopArticl
       sortable: true,
     },
   ];
+export const CurrentClosingReport: QTableColumn<IOfflineShopArticleReportData>[] =
+  [
+    {
+      name: 'shop',
+      required: true,
+      label: 'Shop',
+      align: 'left',
+      field: (row) => row.article,
+      sortable: true,
+    },
+
+    {
+      name: 'discount',
+      required: true,
+      label: 'Discount',
+      align: 'left',
+      field: (row) => row.image,
+      sortable: false,
+    },
+    {
+      name: 'netSale',
+      required: true,
+      label: 'Net Sale',
+      align: 'left',
+      field: (row) => row.retailPrice,
+      sortable: true,
+    },
+    {
+      name: 'pairSale',
+      required: true,
+      label: 'Pair Sale',
+      align: 'left',
+      field: (row) => row.totalStock,
+      sortable: true,
+    },
+    {
+      name: 'closingBalance',
+      required: true,
+      label: 'Closing Balance',
+      align: 'left',
+      field: (row) => row.comission,
+      sortable: true,
+    },
+  ];
