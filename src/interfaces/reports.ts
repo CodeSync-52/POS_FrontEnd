@@ -45,6 +45,10 @@ export interface IShowOnlyDiscount {
   name: string;
   statusId: number;
 }
+export interface IBestSellingArticle {
+  name: string;
+  monthId: number;
+}
 export interface IOutStandingReportData {
   user: string;
   balance: number | null;
@@ -231,4 +235,15 @@ export interface IShelfArticleSaleReportData {
   retailPrice: number;
   totalStock: number;
   totalSale: number;
+}
+export interface IBestSellingArticleReportData {
+  year: number;
+  details: IProductDetails[];
+}
+
+export interface IProductDetails {
+  productId: number;
+  article: string;
+  image: string;
+  saleQty: number;
 }
