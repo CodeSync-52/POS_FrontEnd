@@ -97,6 +97,8 @@
                         : subLinks.path ===
                           '/offline-shop-article-inventory-report'
                         ? 'Offline Shop Article Inventory Report'
+                        : subLinks.path === '/best-selling-article-report'
+                        ? 'Best Selling Article Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -317,6 +319,10 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/offline-shop-article-inventory-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/best-selling-article-report',
       },
     ],
   },

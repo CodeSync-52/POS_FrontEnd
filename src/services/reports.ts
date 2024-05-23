@@ -563,3 +563,26 @@ export const GetShelfArticleSaleReport = async ({
   });
   return res;
 };
+export const GetBestSellingArticleReport = async ({
+  shopIds,
+  topProductCount,
+  months,
+  userId,
+}: {
+  shopIds: string | number[] | null;
+  months: string | number[] | null;
+  topProductCount: number;
+  userId: number;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/bestsellingarticle',
+    data: {
+      shopIds,
+      topProductCount,
+      months,
+      userId,
+    },
+  });
+  return res;
+};
