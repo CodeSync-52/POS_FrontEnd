@@ -13,6 +13,7 @@ import {
   IArticleHistoryReport,
   IArticleSaleDistributionByColorDetail,
   IShelfArticleSaleReportData,
+  IOfflineShopArticleReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -199,6 +200,34 @@ export const GetComissionReport = async ({
   });
   return res;
 };
+
+export const GetOfflineShopArticleInventoryReport = async (
+  {
+    shopId,
+    categoryId,
+    sortBy,
+  }: {
+    shopId: number;
+    categoryId: number;
+    sortBy: number;
+  },
+  controller?: AbortController
+) => {
+  const res = await makeApiCall<
+    IGenericResponse<IOfflineShopArticleReportData[]>
+  >({
+    method: 'POST',
+    url: 'api/report/offlineshoparticleinventory',
+    data: {
+      shopId: shopId,
+      categoryId: categoryId,
+      sortBy: sortBy,
+    },
+    signal: controller?.signal,
+  });
+  return res;
+};
+
 export const GetShopwiseStockTransferReport = async ({
   shopIds,
   fromDate,

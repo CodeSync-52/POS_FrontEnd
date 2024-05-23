@@ -167,6 +167,13 @@ export interface IShopStockReportData {
   grandTotal: number;
   variant2List: IVariant2Info[];
 }
+export interface IOfflineShopArticleReportData {
+  article: string;
+  image: string;
+  retailPrice: number;
+  totalStock: number;
+  comission: number;
+}
 
 export interface IVariant2Info {
   variant2_Id: number;
