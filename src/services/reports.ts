@@ -179,6 +179,26 @@ export const GetCashClosingReport = async ({
   });
   return res;
 };
+export const GetComissionReport = async ({
+  shopId,
+  fromDate,
+  toDate,
+}: {
+  shopId: number;
+  fromDate: string;
+  toDate: string;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/articlecomission',
+    data: {
+      shopId,
+      fromDate,
+      toDate,
+    },
+  });
+  return res;
+};
 export const GetShopwiseStockTransferReport = async ({
   shopIds,
   fromDate,
