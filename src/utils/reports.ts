@@ -18,6 +18,7 @@ import {
   IGrnInfo,
   IStrInfo,
   IShelfArticleSaleReportData,
+  IOfflineShopArticleReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -543,6 +544,57 @@ export const shelfArticleSaleReportColumn: QTableColumn<IShelfArticleSaleReportD
       label: 'Total Stock',
       align: 'left',
       field: (row) => row.totalStock ?? '-',
+      sortable: true,
+    },
+  ];
+
+export const offlinesShopArticleInventoryReport: QTableColumn<IOfflineShopArticleReportData>[] =
+  [
+    {
+      name: 'article',
+      required: true,
+      label: 'Article',
+      align: 'left',
+      field: (row) => row.article,
+      format: (val) => `${val}`,
+      sortable: true,
+    },
+
+    {
+      name: 'image',
+      required: true,
+      label: 'Image',
+      align: 'left',
+      field: (row) => row.image,
+      format: (val) =>
+        `<img src="${val}" alt="Product Image" width="50" height="50">`,
+      sortable: false,
+    },
+    {
+      name: 'retailPrice',
+      required: true,
+      label: 'Retail Price',
+      align: 'left',
+      field: (row) => row.retailPrice,
+      format: (val) => `${val}`,
+      sortable: true,
+    },
+    {
+      name: 'totalStock',
+      required: true,
+      label: 'Total Stock',
+      align: 'left',
+      field: (row) => row.totalStock,
+      format: (val) => `${val}`,
+      sortable: true,
+    },
+    {
+      name: 'comission',
+      required: true,
+      label: 'Commission',
+      align: 'left',
+      field: (row) => row.comission,
+      format: (val) => `${val}`,
       sortable: true,
     },
   ];
