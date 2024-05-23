@@ -74,7 +74,7 @@
         class="mb-8 border p-2"
       >
         <div class="my-4 flex flex-row items-center gap-2 px-1">
-          <span class="text-lg font-bold">Date: {{ item.date }}</span>
+          <span class="text-lg font-bold"> {{ item.date }}</span>
         </div>
         <table class="w-full border-collapse border border-gray-300">
           <thead>
@@ -109,7 +109,7 @@
               <td
                 class="border border-gray-300 px-4 py-2 text-center font-bold"
               >
-                Total Pairs :{{ item.totalPairs }}
+                P.Total :{{ item.totalPairs }}
               </td>
               <td
                 class="border border-gray-300 px-4 py-2 text-center font-bold"
