@@ -99,6 +99,10 @@
                         ? 'Offline Shop Article Inventory Report'
                         : subLinks.path === '/best-selling-article-report'
                         ? 'Best Selling Article Report'
+                        : subLinks.path === '/new-article-sale-and-stock-report'
+                        ? 'New Article Sale And Stock Report'
+                        : subLinks.path === '/current-closing-report'
+                        ? 'Current + Closing Report'
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -323,6 +327,14 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/best-selling-article-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/new-article-sale-and-stock-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/current-closing-report',
       },
     ],
   },
