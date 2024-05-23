@@ -11,7 +11,7 @@
       class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover text-white"
     >
       <q-list>
-        <q-item clickable v-close-popup>
+        <q-item clickable v-close-popup @click="downloadPdfData">
           <q-item-section>
             <q-item-label>Download in PDF</q-item-label>
           </q-item-section>
@@ -54,26 +54,7 @@
       @click="addCategory"
       color="btn-primary"
     />
-    <q-input
-      v-model="filterSearch.fromDate"
-      :max="filterSearch.toDate"
-      label="From"
-      type="date"
-      style="min-width: 200px"
-      outlined
-      dense
-      color="btn-primary"
-    />
-    <q-input
-      v-model="filterSearch.toDate"
-      :min="filterSearch.fromDate"
-      label="To"
-      type="date"
-      style="min-width: 200px"
-      outlined
-      color="btn-primary"
-      dense
-    />
+
     <div class="flex gap-6">
       <div class="flex justify-between items-center">
         <span class="text-lg">Sort By :</span>
@@ -111,7 +92,7 @@
           class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover"
           icon="search"
           label="Search"
-          @click="searchCashClosingReport()"
+          @click="offlineShopArticelInventoryReport()"
         />
         <q-btn
           unelevated
@@ -123,46 +104,88 @@
       </div>
     </div>
   </div>
+
+  <div class="py-4">
+    <q-table
+      :loading="isLoading"
+      tabindex="0"
+      :rows="reportData"
+      align="left"
+      :columns="offlinesShopArticleInventoryReport"
+      row-key="id"
+      :rows-per-page-options="[0]"
+      @request="offlineShopArticelInventoryReport()"
+      :pagination="{ rowsPerPage: 0 }"
+      :hide-bottom="reportData.length > 0"
+    >
+      <template v-slot:body-cell-image="props">
+        <q-td :props="props">
+          <div
+            class="h-[100px] w-[100px] min-w-[2rem] overflow-hidden"
+            :class="props.row.image"
+          >
+            <img
+              class="w-full h-full object-cover"
+              :src="props.row.image || 'assets/default-image.png'"
+              alt="img"
+            />
+          </div>
+        </q-td>
+      </template>
+      <template v-slot:no-data>
+        <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
+          <q-icon name="warning" size="xs" />
+          <span class="text-md font-medium"> No data available. </span>
+        </div>
+      </template>
+    </q-table>
+  </div>
+
   <q-dialog v-model="isCategoryModalVisible">
     <article-category-modal @category-selected="handleSelectedCategory" />
+  </q-dialog>
+
+  <q-dialog v-model="isPdfLoading" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
   </q-dialog>
 </template>
 <script setup lang="ts">
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
 import { ref, onMounted } from 'vue';
-import { IShopResponse, EUserRoles, ICashClosinReport } from 'src/interfaces';
+import {
+  IShopResponse,
+  EUserRoles,
+  IOfflineShopArticleReportData,
+} from 'src/interfaces';
 import { GetShopList } from 'src/services';
-import { isPosError } from 'src/utils';
+import { ITableItems, downloadPdf, isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
+import { offlinesShopArticleInventoryReport } from 'src/utils/reports';
 import { useQuasar } from 'quasar';
-import { date } from 'quasar';
-import { GetCashClosingReport } from 'src/services/reports';
+import { GetOfflineShopArticleInventoryReport } from 'src/services/reports';
+import { processTableItems } from 'src/utils/process-table-items';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
 const isCategoryModalVisible = ref(false);
 const selectedCategoryName = ref('');
-const timeStamp = Date.now();
+const isPdfLoading = ref(false);
+const defaultImage = ref<string | null>(null);
 const isFetchingShopList = ref(false);
+const tableItems = ref<ITableItems[][]>([]);
 const shopListRecords = ref<IShopResponse[]>([]);
-const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
-const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
-const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
 const selectedShop = ref<IShopResponse[]>([]);
 const filterSearch = ref<{
-  fromDate: string;
-  toDate: string;
   shopId: number | null;
   sortBy: number;
-  categoryId: number | null;
+  categoryId: any;
 }>({
-  fromDate: formattedFromDate,
-  toDate: formattedToDate,
   shopId: null,
   sortBy: 1,
   categoryId: null,
 });
-const reportData = ref<ICashClosinReport[]>([]);
+const reportData = ref<IOfflineShopArticleReportData[]>([]);
 onMounted(async () => {
   await getShopList();
   filterSearch.value.shopId =
@@ -210,7 +233,7 @@ const handleSelectedCategory = (selectedCategory: {
   filterSearch.value.categoryId = selectedCategory.categoryId;
   isCategoryModalVisible.value = false;
 };
-const searchCashClosingReport = async () => {
+const offlineShopArticelInventoryReport = async () => {
   isLoading.value = true;
   if (!filterSearch.value.shopId) {
     isLoading.value = false;
@@ -220,30 +243,16 @@ const searchCashClosingReport = async () => {
       color: 'red',
     });
     return;
-  } else if (!filterSearch.value.fromDate || !filterSearch.value.toDate) {
-    isLoading.value = false;
-    $q.notify({
-      message: 'Please Select From and To Date',
-      icon: 'error',
-      color: 'red',
-    });
-    return;
   }
   try {
-    const res = await GetCashClosingReport({
-      shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
-      fromDate: filterSearch.value.fromDate,
-      toDate: filterSearch.value.toDate,
+    const res = await GetOfflineShopArticleInventoryReport({
+      shopId: filterSearch.value.shopId,
+      categoryId: filterSearch.value.categoryId ?? 0,
+      sortBy: filterSearch.value.sortBy,
     });
-    if (res.data) {
-      reportData.value = (res.data as ICashClosinReport[]).map((item) => ({
-        shop: item.shop,
-        netSale: item.netSale,
-        totalExpense: item.totalExpense,
-        remainingBalance: item.remainingBalance,
-        date: item.date,
-        submitToHODetails: item.submitToHODetails,
-      }));
+    if (res?.data) {
+      reportData.value = res.data;
+      tableItems.value = await convertArrayToPdfData(res?.data);
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -268,9 +277,73 @@ const handleResetFilter = () => {
     selectedShop.value = [];
   }
   reportData.value = [];
-  filterSearch.value.fromDate = '';
-  filterSearch.value.toDate = '';
   filterSearch.value.categoryId = null;
   selectedCategoryName.value = '';
 };
+
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+async function convertArrayToPdfData(array: IOfflineShopArticleReportData[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+  const tableStuff = [];
+  const headerRow = ['Article', 'Image', 'Price', 'Stock', 'Comission'];
+  tableStuff.push(headerRow);
+
+  array.forEach((item: IOfflineShopArticleReportData) => {
+    const row = [
+      { text: item.article },
+      {
+        image: item.image || defaultImage.value,
+        width: 50,
+        height: 50,
+      },
+      { text: item.retailPrice },
+      { text: item.totalStock },
+      { text: item.comission },
+    ];
+    tableStuff.push(row);
+  });
+  return tableStuff;
+}
+
+async function downloadPdfData() {
+  isPdfLoading.value = true;
+
+  const myFileName = 'Offline-Article-Inventory-Report.pdf';
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    title: 'Offline-Article-Inventory-Report',
+  });
+  isPdfLoading.value = false;
+}
 </script>
