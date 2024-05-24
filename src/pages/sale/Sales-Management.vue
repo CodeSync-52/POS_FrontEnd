@@ -221,7 +221,7 @@
                 @click="handleGenerateSalePopup(props.row)"
               >
                 <q-tooltip class="bg-green" :offset="[10, 10]">
-                  Generate Sale
+                  Complete Sale
                 </q-tooltip>
               </q-btn>
               <q-btn
