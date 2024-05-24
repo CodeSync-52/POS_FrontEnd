@@ -6,9 +6,9 @@
       >Offline Shop Article Inventory Report</span
     >
     <download-pdf-excel
-        @downloadPdfData="downloadPdfData"
-        @downloadCSVData="downloadCSVData"
-      />
+      @downloadPdfData="downloadPdfData"
+      @downloadCSVData="downloadCSVData"
+    />
   </div>
   <div
     class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
@@ -166,7 +166,10 @@ import { useAuthStore } from 'src/stores';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { offlinesShopArticleInventoryReport } from 'src/utils/reports';
 import { exportFile, useQuasar } from 'quasar';
-import { GetOfflineShopArticleInventoryReport, wrapCsvValue } from 'src/services/reports';
+import {
+  GetOfflineShopArticleInventoryReport,
+  wrapCsvValue,
+} from 'src/services/reports';
 import { processTableItems } from 'src/utils/process-table-items';
 const $q = useQuasar();
 const authStore = useAuthStore();
@@ -255,7 +258,6 @@ const offlineShopArticelInventoryReport = async () => {
       categoryId: filterSearch.value.categoryId ?? 0,
       sortBy: filterSearch.value.sortBy,
       showZeroStock: filterSearch.value.showZeroStock === 'true',
-      
     });
     if (res?.data) {
       reportData.value = res.data;
@@ -378,7 +380,11 @@ const downloadCSVData = () => {
     )
     .join('\r\n');
 
-  const status = exportFile('Offline-Articel-Inventory-Report.csv', content, 'text/csv');
+  const status = exportFile(
+    'Offline-Articel-Inventory-Report.csv',
+    content,
+    'text/csv'
+  );
 
   if (status !== true) {
     $q.notify({
