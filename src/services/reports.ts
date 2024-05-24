@@ -14,6 +14,7 @@ import {
   IArticleSaleDistributionByColorDetail,
   IShelfArticleSaleReportData,
   IOfflineShopArticleReportData,
+  IAccumulativeSalePurchaseReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -80,6 +81,33 @@ export const GetVendorSaleStockReport = async ({
       fromDate,
       toDate,
       userId,
+    },
+  });
+  return res;
+};
+
+export const GetAccumulativeSalePurchaseReport = async ({
+  fromDate,
+  toDate,
+  userId,
+  typeReciept,
+  sortByArticle,
+}: {
+  fromDate: string;
+  toDate: string;
+  userId: number;
+  typeReciept: boolean;
+  sortByArticle: boolean;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/accumulativesalepurchase',
+    data: {
+      fromDate,
+      toDate,
+      userId,
+      typeReciept,
+      sortByArticle,
     },
   });
   return res;

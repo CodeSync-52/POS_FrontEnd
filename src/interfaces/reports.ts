@@ -24,6 +24,14 @@ export interface IVendorSaleStockReportData {
   hoSaleQty: number;
   shopSaleQty: number;
 }
+export interface IAccumulativeSalePurchaseReportData {
+  productId: number;
+  article: string;
+  image: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
 export interface IDailySaleReportData {
   article: string;
   image: string;
