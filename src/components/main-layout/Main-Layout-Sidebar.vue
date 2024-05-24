@@ -105,7 +105,6 @@
                         ? 'Accumulative Sale Purchase Report'
                         : subLinks.path === '/current-closing-report'
                         ? 'Current + Closing Report'
-                        
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>

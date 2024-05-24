@@ -172,7 +172,7 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       sortable: true,
     },
   ];
-  export const accumulativesalepurchaseReportColumn: QTableColumn<IAccumulativeSalePurchaseReportData>[] =
+export const accumulativesalepurchaseReportColumn: QTableColumn<IAccumulativeSalePurchaseReportData>[] =
   [
     {
       name: 'article',
@@ -180,7 +180,7 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       label: 'Article',
       align: 'left',
       field: (row) => row.article ?? '-',
-      sortable: true,
+      sortable: false,
     },
     {
       name: 'image',
@@ -191,31 +191,29 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       sortable: false,
     },
     {
-      name: 'unitPrice',
-      required: true,
-      label: ' unitPrice',
-      align: 'left',
-      field: (row) => row.UnitPrice ?? '-',
-      sortable: true,
-    },
-    {
-      name: 'Price',
-      required: true,
-      label: ' Price',
-      align: 'left',
-      field: (row) => row.TotalPrice ?? '-',
-      sortable: true,
-    },
-    {
-      name: 'Quantity',
+      name: 'quantity',
       required: true,
       label: 'Quantity',
       align: 'left',
-      field: (row) => row.Quantity ?? '-',
-      sortable: true,
+      field: (row) => row.quantity ?? '-',
+      sortable: false,
     },
-
-
+    {
+      name: 'unitPrice',
+      required: true,
+      label: 'Unit Price',
+      align: 'left',
+      field: (row) => row.unitPrice ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'totalPrice',
+      required: true,
+      label: 'Total Price',
+      align: 'left',
+      field: (row) => row.totalPrice ?? '-',
+      sortable: false,
+    },
   ];
 export const dailySaleReportColumn: QTableColumn<IDailySaleReportData>[] = [
   {
