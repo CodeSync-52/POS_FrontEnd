@@ -84,6 +84,32 @@ export const GetVendorSaleStockReport = async ({
   });
   return res;
 };
+
+export const GetAccumalativeSalePurchaseReport = async ({
+  fromDate,
+  toDate,
+  userId,
+  typeReciept,
+}: {
+  fromDate: string;
+  toDate: string;
+  userId: number;
+  typeReciept:boolean,
+}) => {
+  const res = await makeApiCall<
+    IGenericResponse<{ list: IAccumulativeSalePurchaseReportData[] }>
+  >({
+    method: 'POST',
+    url: 'api/report/vendorstocksale',
+    data: {
+      fromDate,
+      toDate,
+      userId,
+      typeReciept,
+    },
+  });
+  return res;
+};
 export const GetDailySaleReport = async ({
   fromDate,
   toDate,

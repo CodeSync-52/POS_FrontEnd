@@ -410,6 +410,13 @@ export const routeList = [
     },
   },
   {
+    path: '/accumulative-sale-purchase-report',
+    component: () => import('src/pages/report/Accumulative-Sale-Purchase-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/current-closing-report',
     component: () => import('src/pages/report/Current-Closing-Report.vue'),
     meta: {

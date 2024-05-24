@@ -101,8 +101,11 @@
                         ? 'Best Selling Article Report'
                         : subLinks.path === '/new-article-sale-and-stock-report'
                         ? 'New Article Sale And Stock Report'
+                        : subLinks.path === '/accumulative-sale-purchase-report'
+                        ? 'Accumulative Sale Purchase Report'
                         : subLinks.path === '/current-closing-report'
                         ? 'Current + Closing Report'
+                        
                         : getRoleModuleDisplayName(subLinks.title)
                     }}
                   </div>
@@ -331,6 +334,10 @@ const essentialLinks = [
       {
         title: EUserModules.Report,
         path: '/new-article-sale-and-stock-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/accumulative-sale-purchase-report',
       },
       {
         title: EUserModules.Report,
