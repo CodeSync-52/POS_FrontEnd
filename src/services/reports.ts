@@ -211,7 +211,7 @@ export const GetOfflineShopArticleInventoryReport = async (
     shopId: number;
     categoryId: number;
     sortBy: number;
-    showZeroStock:boolean;
+    showZeroStock: boolean;
   },
   controller?: AbortController
 ) => {
@@ -581,7 +581,7 @@ export const GetShelfArticleSaleReport = async ({
   toDate: string;
   shopIds: string | number[] | null;
   saleQuantity: number;
-  showZeroStock:boolean;
+  showZeroStock: boolean;
 }) => {
   const res = await makeApiCall<
     IGenericResponse<IShelfArticleSaleReportData[]>

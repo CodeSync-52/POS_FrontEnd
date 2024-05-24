@@ -240,7 +240,6 @@ const searchShelfArticleSaleReport = async () => {
       toDate: filterSearch.value.toDate,
       saleQuantity: filterSearch.value.SaleQuantity,
       showZeroStock: filterSearch.value.showZeroStock === 'true',
-
     });
     if (res.data) {
       reportData.value = res.data;
