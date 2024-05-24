@@ -395,6 +395,28 @@ export const routeList = [
     },
   },
   {
+    path: '/best-selling-article-report',
+    component: () => import('src/pages/report/Best-Selling-Article Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
+    path: '/new-article-sale-and-stock-report',
+    component: () =>
+      import('src/pages/report/New-Article-Sale-And-Stock-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
+    path: '/current-closing-report',
+    component: () => import('src/pages/report/Current-Closing-Report.vue'),
+    meta: {
+      module: EUserModules.Report,
+    },
+  },
+  {
     path: '/cash-flow',
     component: () => import('src/pages/cash-flow/Cash-Flow.vue'),
     meta: {

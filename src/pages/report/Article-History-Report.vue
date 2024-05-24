@@ -165,7 +165,7 @@
           :rows="articleHistoryReportData.grnInfo"
           :columns="hoGrnMeaningfulDetailColumn"
           :rows-per-page-options="[0]"
-          title="Ho To Ho GRN Meaningful Detail"
+          title="HO To HO GRN Detail"
           row-key="id"
           :hide-bottom="articleHistoryReportData.grnInfo.length > 0"
         >
@@ -195,7 +195,7 @@
           :rows="articleHistoryReportData.strInfo"
           :columns="strDetailColumn"
           :rows-per-page-options="[0]"
-          title="Str Detail"
+          title="STR Detail"
           row-key="id"
           :hide-bottom="articleHistoryReportData.strInfo.length > 0"
         >

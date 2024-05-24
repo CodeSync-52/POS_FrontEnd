@@ -18,6 +18,7 @@ import {
   IGrnInfo,
   IStrInfo,
   IShelfArticleSaleReportData,
+  IBestSellingArticle,
   IOfflineShopArticleReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
@@ -504,6 +505,20 @@ export const IShowOnlyDiscountOptionList: IShowOnlyDiscount[] = [
   { name: 'True', statusId: 1 },
   { name: 'False', statusId: 0 },
 ];
+export const monthOptions: IBestSellingArticle[] = [
+  { name: 'January', monthId: 1 },
+  { name: 'February', monthId: 2 },
+  { name: 'March', monthId: 3 },
+  { name: 'April', monthId: 4 },
+  { name: 'May', monthId: 5 },
+  { name: 'June', monthId: 6 },
+  { name: 'July', monthId: 7 },
+  { name: 'August', monthId: 8 },
+  { name: 'September', monthId: 9 },
+  { name: 'October', monthId: 10 },
+  { name: 'November', monthId: 11 },
+  { name: 'December', monthId: 12 },
+];
 export const shelfArticleSaleReportColumn: QTableColumn<IShelfArticleSaleReportData>[] =
   [
     {
@@ -595,6 +610,50 @@ export const offlinesShopArticleInventoryReport: QTableColumn<IOfflineShopArticl
       align: 'left',
       field: (row) => row.comission,
       format: (val) => `${val}`,
+      sortable: true,
+    },
+  ];
+export const CurrentClosingReport: QTableColumn<IOfflineShopArticleReportData>[] =
+  [
+    {
+      name: 'shop',
+      required: true,
+      label: 'Shop',
+      align: 'left',
+      field: (row) => row.article,
+      sortable: true,
+    },
+
+    {
+      name: 'discount',
+      required: true,
+      label: 'Discount',
+      align: 'left',
+      field: (row) => row.image,
+      sortable: false,
+    },
+    {
+      name: 'netSale',
+      required: true,
+      label: 'Net Sale',
+      align: 'left',
+      field: (row) => row.retailPrice,
+      sortable: true,
+    },
+    {
+      name: 'pairSale',
+      required: true,
+      label: 'Pair Sale',
+      align: 'left',
+      field: (row) => row.totalStock,
+      sortable: true,
+    },
+    {
+      name: 'closingBalance',
+      required: true,
+      label: 'Closing Balance',
+      align: 'left',
+      field: (row) => row.comission,
       sortable: true,
     },
   ];
