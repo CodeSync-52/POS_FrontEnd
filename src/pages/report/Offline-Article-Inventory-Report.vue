@@ -5,19 +5,10 @@
     <span class="text-xl font-medium"
       >Offline Shop Article Inventory Report</span
     >
-    <q-btn-dropdown
-      dropdown-icon="arrow_downward"
-      label="Download Report"
-      class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover text-white"
-    >
-      <q-list>
-        <q-item clickable v-close-popup @click="downloadPdfData">
-          <q-item-section>
-            <q-item-label>Download in PDF</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-btn-dropdown>
+    <download-pdf-excel
+        @downloadPdfData="downloadPdfData"
+        @downloadCSVData="downloadCSVData"
+      />
   </div>
   <div
     class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
@@ -54,7 +45,18 @@
       @click="addCategory"
       color="btn-primary"
     />
-
+    <q-select
+      dense
+      style="min-width: 200px"
+      outlined
+      v-model="filterSearch.showZeroStock"
+      :options="showOnlyDiscountOptions"
+      map-options
+      popup-content-class="!max-h-[200px]"
+      label="Show Zero"
+      color="btn-primary"
+    >
+    </q-select>
     <div class="flex gap-6">
       <div class="flex justify-between items-center">
         <span class="text-lg">Sort By :</span>
@@ -161,9 +163,10 @@ import {
 import { GetShopList } from 'src/services';
 import { ITableItems, downloadPdf, isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
+import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { offlinesShopArticleInventoryReport } from 'src/utils/reports';
-import { useQuasar } from 'quasar';
-import { GetOfflineShopArticleInventoryReport } from 'src/services/reports';
+import { exportFile, useQuasar } from 'quasar';
+import { GetOfflineShopArticleInventoryReport, wrapCsvValue } from 'src/services/reports';
 import { processTableItems } from 'src/utils/process-table-items';
 const $q = useQuasar();
 const authStore = useAuthStore();
@@ -180,10 +183,12 @@ const filterSearch = ref<{
   shopId: number | null;
   sortBy: number;
   categoryId: any;
+  showZeroStock: string;
 }>({
   shopId: null,
   sortBy: 1,
   categoryId: null,
+  showZeroStock: 'true',
 });
 const reportData = ref<IOfflineShopArticleReportData[]>([]);
 onMounted(async () => {
@@ -249,6 +254,8 @@ const offlineShopArticelInventoryReport = async () => {
       shopId: filterSearch.value.shopId,
       categoryId: filterSearch.value.categoryId ?? 0,
       sortBy: filterSearch.value.sortBy,
+      showZeroStock: filterSearch.value.showZeroStock === 'true',
+      
     });
     if (res?.data) {
       reportData.value = res.data;
@@ -267,6 +274,8 @@ const offlineShopArticelInventoryReport = async () => {
   }
   isLoading.value = false;
 };
+const showOnlyDiscountOptions = ['true', 'false'];
+
 const handleResetFilter = () => {
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
@@ -346,4 +355,37 @@ async function downloadPdfData() {
   });
   isPdfLoading.value = false;
 }
+
+const downloadCSVData = () => {
+  const selectedColumnsData = offlinesShopArticleInventoryReport.filter(
+    (col) => col.name !== 'image'
+  );
+  const content = [selectedColumnsData.map((col) => wrapCsvValue(col.label))]
+    .concat(
+      reportData.value.map((row: any) =>
+        selectedColumnsData
+          .map((col) =>
+            wrapCsvValue(
+              typeof col.field === 'function'
+                ? col.field(row)
+                : row[col.field === void 0 ? col.name : col.field],
+              col.format,
+              row
+            )
+          )
+          .join(',')
+      )
+    )
+    .join('\r\n');
+
+  const status = exportFile('Offline-Articel-Inventory-Report.csv', content, 'text/csv');
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning',
+    });
+  }
+};
 </script>

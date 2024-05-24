@@ -48,6 +48,20 @@
       color="btn-primary"
       dense
     />
+
+    <q-select
+      dense
+      style="min-width: 200px"
+      outlined
+      v-model="filterSearch.showZeroStock"
+      :options="showOnlyDiscountOptions"
+      map-options
+      popup-content-class="!max-h-[200px]"
+      label="Show Zero"
+      color="btn-primary"
+    >
+    </q-select>
+
     <div class="flex gap-6">
       <div class="q-gutter-sm">
         <div class="flex items-center gap-2 font-[500] text-base">
@@ -161,11 +175,13 @@ const filterSearch = ref<{
   toDate: string;
   shopIds: [];
   SaleQuantity: number;
+  showZeroStock: string;
 }>({
   fromDate: formattedFromDate,
   toDate: formattedToDate,
   shopIds: [],
   SaleQuantity: 5,
+  showZeroStock: 'true',
 });
 onMounted(async () => {
   await getShopList();
@@ -223,6 +239,8 @@ const searchShelfArticleSaleReport = async () => {
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
       saleQuantity: filterSearch.value.SaleQuantity,
+      showZeroStock: filterSearch.value.showZeroStock === 'true',
+
     });
     if (res.data) {
       reportData.value = res.data;
@@ -241,6 +259,8 @@ const searchShelfArticleSaleReport = async () => {
     isLoading.value = false;
   }
 };
+const showOnlyDiscountOptions = ['true', 'false'];
+
 const handleResetFilter = () => {
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
