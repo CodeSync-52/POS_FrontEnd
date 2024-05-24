@@ -261,3 +261,10 @@ export interface IColorDetail {
   saleQuantity: number;
   stockQuantity: number;
 }
+export interface ICurrentClosingReportData {
+  shop: string;
+  discount: number;
+  netSale: number;
+  remainingBalance: number;
+  totalItemsSale: number;
+}
