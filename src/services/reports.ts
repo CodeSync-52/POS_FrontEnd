@@ -232,10 +232,12 @@ export const GetOfflineShopArticleInventoryReport = async (
     shopId,
     categoryId,
     sortBy,
+    showZeroStock,
   }: {
     shopId: number;
     categoryId: number;
     sortBy: number;
+    showZeroStock: boolean;
   },
   controller?: AbortController
 ) => {
@@ -248,6 +250,7 @@ export const GetOfflineShopArticleInventoryReport = async (
       shopId: shopId,
       categoryId: categoryId,
       sortBy: sortBy,
+      showZeroStock,
     },
     signal: controller?.signal,
   });
@@ -598,11 +601,13 @@ export const GetShelfArticleSaleReport = async ({
   toDate,
   shopIds,
   saleQuantity,
+  showZeroStock,
 }: {
   fromDate: string;
   toDate: string;
   shopIds: string | number[] | null;
   saleQuantity: number;
+  showZeroStock: boolean;
 }) => {
   const res = await makeApiCall<
     IGenericResponse<IShelfArticleSaleReportData[]>
@@ -614,6 +619,7 @@ export const GetShelfArticleSaleReport = async ({
       toDate,
       shopIds,
       saleQuantity,
+      showZeroStock,
     },
   });
   return res;
