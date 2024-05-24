@@ -21,6 +21,7 @@ import {
   IBestSellingArticle,
   IOfflineShopArticleReportData,
   ICurrentClosingReportData,
+  IAccumulativeSalePurchaseReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
 export const accountReportColumn: QTableColumn<IAccountReportData>[] = [
@@ -170,6 +171,49 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       align: 'left',
       field: (row) => row.hoSaleQty ?? '-',
       sortable: true,
+    },
+  ];
+export const accumulativesalepurchaseReportColumn: QTableColumn<IAccumulativeSalePurchaseReportData>[] =
+  [
+    {
+      name: 'article',
+      required: true,
+      label: 'Article',
+      align: 'left',
+      field: (row) => row.article ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'image',
+      required: true,
+      label: 'Image',
+      align: 'left',
+      field: (row) => row.image ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'quantity',
+      required: true,
+      label: 'Quantity',
+      align: 'left',
+      field: (row) => row.quantity ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'unitPrice',
+      required: true,
+      label: 'Unit Price',
+      align: 'left',
+      field: (row) => row.unitPrice ?? '-',
+      sortable: false,
+    },
+    {
+      name: 'totalPrice',
+      required: true,
+      label: 'Total Price',
+      align: 'left',
+      field: (row) => row.totalPrice ?? '-',
+      sortable: false,
     },
   ];
 export const dailySaleReportColumn: QTableColumn<IDailySaleReportData>[] = [

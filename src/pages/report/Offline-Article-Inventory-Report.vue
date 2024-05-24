@@ -50,7 +50,7 @@
       style="min-width: 200px"
       outlined
       v-model="filterSearch.showZeroStock"
-      :options="showOnlyDiscountOptions"
+      :options="showOnlyZeros"
       map-options
       popup-content-class="!max-h-[200px]"
       label="Show Zero"
@@ -191,7 +191,7 @@ const filterSearch = ref<{
   shopId: null,
   sortBy: 1,
   categoryId: null,
-  showZeroStock: 'true',
+  showZeroStock: 'false',
 });
 const reportData = ref<IOfflineShopArticleReportData[]>([]);
 onMounted(async () => {
@@ -276,7 +276,7 @@ const offlineShopArticelInventoryReport = async () => {
   }
   isLoading.value = false;
 };
-const showOnlyDiscountOptions = ['true', 'false'];
+const showOnlyZeros = ['false', 'true'];
 
 const handleResetFilter = () => {
   if (

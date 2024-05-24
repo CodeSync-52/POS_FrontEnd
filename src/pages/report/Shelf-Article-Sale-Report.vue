@@ -54,7 +54,7 @@
       style="min-width: 200px"
       outlined
       v-model="filterSearch.showZeroStock"
-      :options="showOnlyDiscountOptions"
+      :options="showOnlyZeros"
       map-options
       popup-content-class="!max-h-[200px]"
       label="Show Zero"
@@ -181,7 +181,7 @@ const filterSearch = ref<{
   toDate: formattedToDate,
   shopIds: [],
   SaleQuantity: 5,
-  showZeroStock: 'true',
+  showZeroStock: 'false',
 });
 onMounted(async () => {
   await getShopList();
@@ -258,7 +258,7 @@ const searchShelfArticleSaleReport = async () => {
     isLoading.value = false;
   }
 };
-const showOnlyDiscountOptions = ['true', 'false'];
+const showOnlyZeros = ['false', 'true'];
 
 const handleResetFilter = () => {
   if (
