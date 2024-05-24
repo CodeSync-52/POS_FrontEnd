@@ -282,6 +282,29 @@ export const GetShopwiseStockTransferReport = async ({
   });
   return res;
 };
+export const GetNewArticleSaleAndStockReport = async ({
+  shopIds,
+  fromDate,
+  toDate,
+  sortBySale,
+}: {
+  shopIds: string | number[] | null;
+  fromDate: string;
+  toDate: string;
+  sortBySale: boolean;
+}) => {
+  const res = await makeApiCall<IGenericResponse<null>>({
+    method: 'POST',
+    url: 'api/report/newarticlesalestock',
+    data: {
+      shopIds,
+      fromDate,
+      toDate,
+      sortBySale,
+    },
+  });
+  return res;
+};
 export const GetUserOutstandingReport = async (
   {
     customerGroupId,

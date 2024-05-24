@@ -47,7 +47,7 @@ import { IOfflineShopArticleReportData } from 'src/interfaces';
 import { isPosError } from 'src/utils';
 import { CurrentClosingReport } from 'src/utils/reports';
 import { useQuasar } from 'quasar';
-import { GetOfflineShopArticleInventoryReport } from 'src/services/reports';
+// import { GetOfflineShopArticleInventoryReport } from 'src/services/reports';
 const $q = useQuasar();
 const isLoading = ref(false);
 const filterSearch = ref<{
@@ -75,14 +75,14 @@ const offlineShopArticelInventoryReport = async () => {
     return;
   }
   try {
-    const res = await GetOfflineShopArticleInventoryReport({
-      shopId: filterSearch.value.shopId,
-      categoryId: filterSearch.value.categoryId ?? 0,
-      sortBy: filterSearch.value.sortBy,
-    });
-    if (res?.data) {
-      reportData.value = res.data;
-    }
+    // const res = await GetOfflineShopArticleInventoryReport({
+    //   shopId: filterSearch.value.shopId,
+    //   categoryId: filterSearch.value.categoryId ?? 0,
+    //   sortBy: filterSearch.value.sortBy,
+    // });
+    // if (res?.data) {
+    //   reportData.value = res.data;
+    // }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
