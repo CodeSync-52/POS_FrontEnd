@@ -29,7 +29,8 @@ export interface IAccumulativeSalePurchaseReportData {
   article: string;
   image: string;
   Quantity:number;
- Price: number;
+  UnitPrice:number;
+ TotalPrice: number;
   
 }
 export interface IDailySaleReportData {

@@ -14,6 +14,7 @@ import {
   IArticleSaleDistributionByColorDetail,
   IShelfArticleSaleReportData,
   IOfflineShopArticleReportData,
+  IAccumulativeSalePurchaseReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (

@@ -191,11 +191,19 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       sortable: false,
     },
     {
+      name: 'unitPrice',
+      required: true,
+      label: ' unitPrice',
+      align: 'left',
+      field: (row) => row.UnitPrice ?? '-',
+      sortable: true,
+    },
+    {
       name: 'Price',
       required: true,
       label: ' Price',
       align: 'left',
-      field: (row) => row.Price ?? '-',
+      field: (row) => row.TotalPrice ?? '-',
       sortable: true,
     },
     {
