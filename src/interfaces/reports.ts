@@ -247,3 +247,17 @@ export interface IProductDetails {
   image: string;
   saleQty: number;
 }
+export interface INewArticleSaleAndStockReportData {
+  article: string;
+  retailPrice: number;
+  totalStock: number;
+  totalSale: number;
+  colorDetails: IColorDetail[];
+}
+
+export interface IColorDetail {
+  variant2_Name: string;
+  variantId_2: number;
+  saleQuantity: number;
+  stockQuantity: number;
+}

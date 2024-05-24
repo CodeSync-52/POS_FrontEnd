@@ -10,7 +10,11 @@
         class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover text-white"
       >
         <q-list>
-          <q-item clickable v-close-popup>
+          <q-item
+            clickable
+            v-close-popup
+            @click="downloadPdf(newArticleSaleAndStockrResponse)"
+          >
             <q-item-section>
               <q-item-label>Download in PDF</q-item-label>
             </q-item-section>
@@ -98,64 +102,53 @@
       </div>
     </div>
     <div id="shop-article-quantity-sale" class="container mx-auto mt-2">
+      <div class="text-[24px] font-bold text-btn-primary mb-1 mx-1">
+        Grand Total Sale : {{ overallTotalSale }}
+      </div>
+      <div class="text-[24px] font-bold text-btn-primary mb-3 mx-1">
+        Grand Total Stock : {{ overallTotalStock }}
+      </div>
       <div>
         <div
-          v-for="item in shopwiseStockTransferResponse"
-          :key="item.productId"
+          v-for="item in newArticleSaleAndStockrResponse"
+          :key="item.article"
           class="mb-8 border p-2"
         >
-          <div class="my-4 flex flex-row items-center gap-2 px-1">
-            <div>
-              <img
-                :src="item.image ?? ''"
-                alt="Product Image"
-                class="w-16 h-16 my-2"
-              />
-            </div>
+          <div
+            class="my-4 flex flex-row items-center justify-between gap-2 px-1"
+          >
             <div class="text-lg font-bold">
               <div>{{ item.article }}</div>
               <div>Retail Price: {{ item.retailPrice }}</div>
+            </div>
+            <div class="text-lg font-bold">
+              <div>Total Sale : {{ item.totalSale }}</div>
+              <div>Total Stock : {{ item.totalStock }}</div>
             </div>
           </div>
           <table class="w-full border-collapse border border-gray-300">
             <thead>
               <tr>
                 <th class="border border-gray-300 bg-gray-100 px-4 py-2">
-                  Shop Name
+                  Color (Sale)
                 </th>
                 <th class="border border-gray-300 bg-gray-100 px-4 py-2">
                   Stock
                 </th>
-                <th class="border border-gray-300 bg-gray-100 px-4 py-2">
-                  Sale Quantity
-                </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="shopDetail in item.shopDetail" :key="shopDetail.shop">
-                <td class="border border-gray-300 px-4 py-2">
-                  {{ shopDetail.shop }}
+              <tr
+                v-for="colorDetails in item.colorDetails"
+                :key="colorDetails.variantId_2"
+              >
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                  {{ colorDetails.variant2_Name }} ({{
+                    colorDetails.saleQuantity
+                  }})
                 </td>
                 <td class="border border-gray-300 px-4 py-2 text-center">
-                  {{ shopDetail.stock }}
-                </td>
-                <td class="border border-gray-300 px-4 py-2 text-center">
-                  {{ shopDetail.saleQuantity }}
-                </td>
-              </tr>
-              <tr>
-                <td class="border border-gray-300 px-4 py-2 font-bold">
-                  Total
-                </td>
-                <td
-                  class="border border-gray-300 px-4 py-2 text-center font-bold"
-                >
-                  {{ item.totalStock }}
-                </td>
-                <td
-                  class="border border-gray-300 px-4 py-2 text-center font-bold"
-                >
-                  {{ item.totalSale }}
+                  {{ colorDetails.stockQuantity }}
                 </td>
               </tr>
             </tbody>
@@ -166,18 +159,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import {
   IShopResponse,
   EUserRoles,
-  IShopwiseStockTransferReportData,
+  INewArticleSaleAndStockReportData,
 } from 'src/interfaces';
 import { GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
 import { date } from 'quasar';
-import { GetShopwiseStockTransferReport } from 'src/services/reports';
+import { GetNewArticleSaleAndStockReport } from 'src/services/reports';
+import pdfMake from 'pdfmake/build/pdfmake';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
@@ -188,9 +182,9 @@ const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
 const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
 const selectedShop = ref<IShopResponse[]>([]);
-const shopwiseStockTransferResponse = ref<IShopwiseStockTransferReportData[]>(
-  []
-);
+const newArticleSaleAndStockrResponse = ref<
+  INewArticleSaleAndStockReportData[]
+>([]);
 const filterSearch = ref<{
   fromDate: string;
   toDate: string;
@@ -253,14 +247,14 @@ const searchShopwiseStockTransferReport = async () => {
     return;
   }
   try {
-    const res = await GetShopwiseStockTransferReport({
+    const res = await GetNewArticleSaleAndStockReport({
       shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
       sortBySale: filterSearch.value.sortBySale === 'true' ? true : false,
     });
     if (res.data) {
-      shopwiseStockTransferResponse.value = res.data;
+      newArticleSaleAndStockrResponse.value = res.data;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -285,8 +279,103 @@ const handleResetFilter = () => {
   ) {
     selectedShop.value = [];
   }
-  shopwiseStockTransferResponse.value = [];
+  newArticleSaleAndStockrResponse.value = [];
   filterSearch.value.fromDate = '';
   filterSearch.value.toDate = '';
+};
+const overallTotalSale = computed(() => {
+  return newArticleSaleAndStockrResponse.value.reduce(
+    (total, item) => total + item.totalSale,
+    0
+  );
+});
+const overallTotalStock = computed(() => {
+  return newArticleSaleAndStockrResponse.value.reduce(
+    (total, item) => total + item.totalStock,
+    0
+  );
+});
+const downloadPdf = (data: INewArticleSaleAndStockReportData[]) => {
+  const content: any[] = [
+    {
+      text: `Grand Total Sale: ${overallTotalSale.value}`,
+      style: 'subHeading',
+    },
+    {
+      text: `Grand Total Stock: ${overallTotalStock.value}`,
+      style: 'subHeading',
+    },
+    { text: '\n' },
+  ];
+  data.forEach((item) => {
+    content.push({
+      columns: [
+        { text: `Article: ${item.article}`, style: 'sectionHeading' },
+        { text: `Retail Price: ${item.retailPrice}`, style: 'sectionHeading' },
+        { text: `Total Sale: ${item.totalSale}`, style: 'sectionHeading' },
+        { text: `Total Stock: ${item.totalStock}`, style: 'sectionHeading' },
+      ],
+    });
+    const tableBody = [
+      [
+        { text: 'Color (Sale)', style: 'tableHeader' },
+        { text: 'Stock', style: 'tableHeader' },
+      ],
+    ];
+    item.colorDetails.forEach((color) => {
+      tableBody.push([
+        {
+          text: `${color.variant2_Name} (${color.saleQuantity})`,
+          style: 'tableCell',
+        },
+        { text: color.stockQuantity.toString(), style: 'tableCell' },
+      ]);
+    });
+    content.push(
+      {
+        table: {
+          headerRows: 1,
+          widths: ['*', '*'],
+          body: tableBody,
+        },
+        layout: 'lightHorizontalLines',
+      },
+      { text: '\n' }
+    );
+  });
+  const documentDefinition = {
+    content,
+    styles: {
+      mainHeading: {
+        fontSize: 20,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 10],
+      },
+      subHeading: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 0, 0, 10],
+      },
+      sectionHeading: {
+        fontSize: 12,
+        bold: true,
+        margin: [0, 10, 0, 5],
+      },
+      tableHeader: {
+        fontSize: 10,
+        bold: true,
+        fillColor: '#F4F5F4',
+        alignment: 'center',
+      },
+      tableCell: {
+        fontSize: 10,
+        alignment: 'center',
+      },
+    },
+  };
+  pdfMake
+    .createPdf(documentDefinition)
+    .download('new_article_sale_and_report.pdf');
 };
 </script>
