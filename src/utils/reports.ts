@@ -20,6 +20,7 @@ import {
   IShelfArticleSaleReportData,
   IBestSellingArticle,
   IOfflineShopArticleReportData,
+  ICurrentClosingReportData,
   IAccumulativeSalePurchaseReportData,
 } from 'src/interfaces';
 export const purchaseStatusOptions = ['Open', 'Cancelled', 'Billed'];
@@ -657,14 +658,14 @@ export const offlinesShopArticleInventoryReport: QTableColumn<IOfflineShopArticl
       sortable: true,
     },
   ];
-export const CurrentClosingReport: QTableColumn<IOfflineShopArticleReportData>[] =
+export const CurrentClosingReportColumn: QTableColumn<ICurrentClosingReportData>[] =
   [
     {
       name: 'shop',
       required: true,
       label: 'Shop',
       align: 'left',
-      field: (row) => row.article,
+      field: (row) => row.shop,
       sortable: true,
     },
 
@@ -673,7 +674,7 @@ export const CurrentClosingReport: QTableColumn<IOfflineShopArticleReportData>[]
       required: true,
       label: 'Discount',
       align: 'left',
-      field: (row) => row.image,
+      field: (row) => row.discount,
       sortable: false,
     },
     {
@@ -681,23 +682,23 @@ export const CurrentClosingReport: QTableColumn<IOfflineShopArticleReportData>[]
       required: true,
       label: 'Net Sale',
       align: 'left',
-      field: (row) => row.retailPrice,
+      field: (row) => row.netSale,
       sortable: true,
     },
     {
-      name: 'pairSale',
+      name: 'totalItemsSale',
       required: true,
-      label: 'Pair Sale',
+      label: 'Items Sold',
       align: 'left',
-      field: (row) => row.totalStock,
+      field: (row) => row.totalItemsSale,
       sortable: true,
     },
     {
-      name: 'closingBalance',
+      name: 'remainingBalance',
       required: true,
       label: 'Closing Balance',
       align: 'left',
-      field: (row) => row.comission,
+      field: (row) => row.remainingBalance,
       sortable: true,
     },
   ];

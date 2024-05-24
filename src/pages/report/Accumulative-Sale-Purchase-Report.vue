@@ -379,7 +379,7 @@ async function downloadPdfData() {
         filterSearch.value.sortByArticle === 'true' ? 'Article' : 'T.Price',
     },
   ];
-  const myFileName = `Accumulative-Sale-Purchase-Stock-Reportpdf`;
+  const myFileName = 'Accumulative-Sale-Purchase-Stock-Reportpdf';
   const tableDataWithImage: ITableItems[][] = await processTableItems(
     tableItems.value
   );

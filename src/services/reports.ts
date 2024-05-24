@@ -14,7 +14,7 @@ import {
   IArticleSaleDistributionByColorDetail,
   IShelfArticleSaleReportData,
   IOfflineShopArticleReportData,
-  IAccumulativeSalePurchaseReportData,
+  ICurrentClosingReportData,
 } from 'src/interfaces';
 import { makeApiCall } from 'src/utils';
 export const GetAccountReport = async (
@@ -669,6 +669,14 @@ export const GetBestSellingArticleReport = async ({
       months,
       userId,
     },
+  });
+  return res;
+};
+export const GetCurrentClosingReport = async (controller?: AbortController) => {
+  const res = await makeApiCall<IGenericResponse<ICurrentClosingReportData[]>>({
+    method: 'POST',
+    url: 'api/report/currentclosing',
+    signal: controller?.signal,
   });
   return res;
 };

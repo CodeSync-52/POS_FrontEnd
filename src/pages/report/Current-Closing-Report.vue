@@ -4,85 +4,65 @@
   >
     <span class="text-xl font-medium">Current + Closing Report</span>
   </div>
-
   <div class="py-4">
     <q-table
       :loading="isLoading"
       tabindex="0"
       :rows="reportData"
       align="left"
-      :columns="CurrentClosingReport"
+      :columns="CurrentClosingReportColumn"
       row-key="id"
       :rows-per-page-options="[0]"
-      @request="offlineShopArticelInventoryReport()"
+      @request="currentClosingReport()"
       :pagination="{ rowsPerPage: 0 }"
       :hide-bottom="reportData.length > 0"
     >
-      <template v-slot:body-cell-image="props">
-        <q-td :props="props">
-          <div
-            class="h-[100px] w-[100px] min-w-[2rem] overflow-hidden"
-            :class="props.row.image"
-          >
-            <img
-              class="w-full h-full object-cover"
-              :src="props.row.image || 'assets/default-image.png'"
-              alt="img"
-            />
-          </div>
-        </q-td>
-      </template>
       <template v-slot:no-data>
         <div class="mx-auto q-pa-sm text-center row q-gutter-x-sm">
           <q-icon name="warning" size="xs" />
           <span class="text-md font-medium"> No data available. </span>
         </div>
       </template>
+      <template v-if="reportData.length" v-slot:bottom-row>
+        <q-tr class="sticky bottom-0 bg-white">
+          <q-td colspan="1" class="text-bold"> Total </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('discount') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('netSale') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('totalItemsSale') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('remainingBalance') }}
+          </q-td>
+        </q-tr>
+      </template>
     </q-table>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { IOfflineShopArticleReportData } from 'src/interfaces';
+import { ICurrentClosingReportData } from 'src/interfaces';
 import { isPosError } from 'src/utils';
-import { CurrentClosingReport } from 'src/utils/reports';
+import { CurrentClosingReportColumn } from 'src/utils/reports';
 import { useQuasar } from 'quasar';
-// import { GetOfflineShopArticleInventoryReport } from 'src/services/reports';
+import { GetCurrentClosingReport } from 'src/services/reports';
 const $q = useQuasar();
 const isLoading = ref(false);
-const filterSearch = ref<{
-  shopId: number | null;
-  sortBy: number;
-  categoryId: any;
-}>({
-  shopId: null,
-  sortBy: 1,
-  categoryId: null,
-});
-const reportData = ref<IOfflineShopArticleReportData[]>([]);
+const reportData = ref<ICurrentClosingReportData[]>([]);
 onMounted(async () => {
-  offlineShopArticelInventoryReport();
+  await currentClosingReport();
 });
-const offlineShopArticelInventoryReport = async () => {
+const currentClosingReport = async () => {
   isLoading.value = true;
-  if (!filterSearch.value.shopId) {
-    isLoading.value = false;
-    $q.notify({
-      message: 'Please Select Shop',
-      icon: 'error',
-      color: 'red',
-    });
-    return;
-  }
   try {
-    // const res = await GetOfflineShopArticleInventoryReport({
-    //   shopId: filterSearch.value.shopId,
-    //   categoryId: filterSearch.value.categoryId ?? 0,
-    //   sortBy: filterSearch.value.sortBy,
-    // });
-    // if (res?.data) {
-    //   reportData.value = res.data;
-    // }
+    const res = await GetCurrentClosingReport();
+    if (res?.data) {
+      reportData.value = res.data;
+    }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
     if (isPosError(e)) {
@@ -95,5 +75,11 @@ const offlineShopArticelInventoryReport = async () => {
     });
   }
   isLoading.value = false;
+};
+const calculateTotal = (columnName: keyof (typeof reportData.value)[0]) => {
+  return reportData.value.reduce(
+    (total, row) => total + Number(row[columnName]),
+    0
+  );
 };
 </script>
