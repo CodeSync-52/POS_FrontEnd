@@ -2,7 +2,7 @@
   <div
     class="flex md:flex-row md:gap-0 md:justify-between sm:justify-start sm:flex-col sm:gap-4 md:items-center sm:items-center mb-4"
   >
-    <span class="text-xl font-medium">Date Wise Shop Sale Report</span>
+    <span class="text-xl font-medium">Day Wise Shop Sale Report</span>
     <download-pdf-excel
       @downloadPdfData="downloadPdfData"
       @downloadCSVData="downloadCSVData"
