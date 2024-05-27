@@ -262,6 +262,7 @@ export interface IProductDetails {
   saleQty: number;
 }
 export interface INewArticleSaleAndStockReportData {
+  image: string;
   article: string;
   retailPrice: number;
   totalStock: number;
