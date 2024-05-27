@@ -86,7 +86,7 @@ export interface ICashClosinReport {
   totalExpense: number;
   remainingBalance: number;
   date: string;
-  submitToHODetails: ISubmitToHODetails[];
+  outgoingToHO: number;
 }
 export interface IComissionReport {
   shop: string;
@@ -219,6 +219,16 @@ export interface IShopwiseStockTransferReportData {
   shopDetail: IShopDetail[];
 }
 
+export interface ICashClosingData {
+  date: Date;
+  productId: number;
+  shop: string;
+  netSale: number;
+  outgoingToHO: number;
+  remainingBalance: number;
+  totalExpense: number;
+  // shopDetail: IShopDetail[];
+}
 export interface IShopDetail {
   shop: string;
   stock: number;
