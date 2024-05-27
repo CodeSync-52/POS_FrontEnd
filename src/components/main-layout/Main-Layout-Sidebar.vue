@@ -73,7 +73,7 @@
                         : subLinks.path === '/shop-article-quantity-sale-report'
                         ? 'Article Sale Report'
                         : subLinks.path === '/shop-sale-report'
-                        ? 'Shop Sale Report'
+                        ? 'Day Wise Shop Sale Report'
                         : subLinks.path === '/vendor-sale-stock-report'
                         ? 'Vendor Sale Stock Report'
                         : subLinks.path === '/daily-sale-report'
@@ -87,7 +87,7 @@
                         : subLinks.path === '/article-history-report'
                         ? 'Article History Report'
                         : subLinks.path === '/stock-report-by-color'
-                        ? 'Article Sale By Color Report'
+                        ? 'Article Sale Distribution Report'
                         : subLinks.path === '/shopwise-stock-transfer-report'
                         ? 'Shop Wise Stock Transfer Report'
                         : subLinks.path === '/shelf-article-sale-report'
@@ -364,19 +364,98 @@ const handleChange = (newVal: boolean) => {
 };
 const isOpen = computed(() => props.modelValue);
 const props = withDefaults(defineProps<IProps>(), { modelValue: true });
+const isSuperAdmin =
+  authStore.loggedInUser?.rolePermissions.roleName ===
+  EUserRoles.SuperAdmin.toLowerCase();
+const isAdmin =
+  authStore.loggedInUser?.rolePermissions.roleName ===
+  EUserRoles.Admin.toLowerCase();
+const isShopManager =
+  authStore.loggedInUser?.rolePermissions.roleName ===
+  EUserRoles.ShopManager.toLowerCase();
+const isShopOfficer =
+  authStore.loggedInUser?.rolePermissions.roleName ===
+  EUserRoles.ShopOfficer.toLowerCase();
+const isHoOfficer =
+  authStore.loggedInUser?.rolePermissions.roleName ===
+  EUserRoles.HOOfficer.toLowerCase();
 const filteredSubLinks = (
   subLinks: { title: EUserModules; path: string }[]
 ) => {
-  const isSuperAdmin =
-    authStore.loggedInUser?.rolePermissions.roleName ===
-    EUserRoles.SuperAdmin.toLowerCase();
   if (isSuperAdmin) {
     return subLinks;
-  } else {
-    return subLinks.filter(
-      (subLink) =>
-        subLink.path !== '/shop-account' && subLink.path !== 'expenses'
-    );
   }
+  return subLinks.filter((subLink) => {
+    switch (subLink.path) {
+      case '/shop-account':
+        return isSuperAdmin;
+      case '/expenses':
+        return isSuperAdmin;
+      case '/account-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/user-outstanding-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/ho-stock-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/ho-article-sale-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/ho-article-sale-detail-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/ho-article-purchase-detail-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/shop-stock-report':
+        return (
+          isSuperAdmin ||
+          isAdmin ||
+          isShopManager ||
+          isHoOfficer ||
+          isShopOfficer
+        );
+      case '/shop-sale-stock-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/shop-article-quantity-sale-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/shop-sale-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/vendor-sale-stock-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/daily-sale-report':
+        return isSuperAdmin || isShopManager || isShopOfficer || isHoOfficer;
+      case '/slow-article-sale-report':
+        return isSuperAdmin || isShopManager || isShopOfficer || isHoOfficer;
+      case '/profit-loss-report':
+        return isSuperAdmin;
+      case '/cash-closing-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/article-history-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/stock-report-by-color':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/shopwise-stock-transfer-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/shelf-article-sale-report':
+        return isSuperAdmin || isShopManager || isShopOfficer || isHoOfficer;
+      case '/article-commission-report':
+        return isSuperAdmin || isShopManager || isShopOfficer || isHoOfficer;
+      case '/offline-shop-article-inventory-report':
+        return (
+          isSuperAdmin ||
+          isAdmin ||
+          isShopManager ||
+          isHoOfficer ||
+          isShopOfficer
+        );
+      case '/accumulative-sale-purchase-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/best-selling-article-report':
+        return isSuperAdmin || isAdmin || isHoOfficer;
+      case '/new-article-sale-and-stock-report':
+        return isSuperAdmin || isHoOfficer;
+      case '/current-closing-report':
+        return isSuperAdmin || isHoOfficer;
+      default:
+        return true;
+    }
+  });
 };
 </script>
