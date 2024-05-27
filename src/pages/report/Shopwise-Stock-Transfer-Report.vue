@@ -102,6 +102,14 @@
             <div class="text-lg font-bold">
               <div>{{ item.article }}</div>
               <div>Retail Price: {{ item.retailPrice }}</div>
+              <div
+                v-if="
+                  authStore.loggedInUser?.rolePermissions.roleName ===
+                  EUserRoles.SuperAdmin.toLowerCase()
+                "
+              >
+                WholeSale Price: {{ item.wholeSalePrice }}
+              </div>
             </div>
           </div>
           <table class="w-full border-collapse border border-gray-300">
