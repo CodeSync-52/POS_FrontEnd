@@ -212,6 +212,7 @@ export interface IShopwiseStockTransferReportData {
   totalStock: number;
   totalSale: number;
   shopDetail: IShopDetail[];
+  wholeSalePrice: number;
 }
 
 export interface ICashClosingData {
