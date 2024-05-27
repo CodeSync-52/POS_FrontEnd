@@ -252,19 +252,31 @@ const essentialLinks = [
       },
       {
         title: EUserModules.Report,
+        path: '/vendor-sale-stock-report',
+      },
+      {
+        title: EUserModules.Report,
         path: '/ho-stock-report',
       },
       {
         title: EUserModules.Report,
-        path: '/ho-article-sale-report',
+        path: '/daily-sale-report',
       },
       {
         title: EUserModules.Report,
-        path: '/ho-article-sale-detail-report',
+        path: '/accumulative-sale-purchase-report',
       },
       {
         title: EUserModules.Report,
-        path: '/ho-article-purchase-detail-report',
+        path: '/offline-shop-article-inventory-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/article-commission-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/article-history-report',
       },
       {
         title: EUserModules.Report,
@@ -284,14 +296,6 @@ const essentialLinks = [
       },
       {
         title: EUserModules.Report,
-        path: '/vendor-sale-stock-report',
-      },
-      {
-        title: EUserModules.Report,
-        path: '/daily-sale-report',
-      },
-      {
-        title: EUserModules.Report,
         path: '/slow-article-sale-report',
       },
       {
@@ -302,10 +306,7 @@ const essentialLinks = [
         title: EUserModules.Report,
         path: '/cash-closing-report',
       },
-      {
-        title: EUserModules.Report,
-        path: '/article-history-report',
-      },
+
       {
         title: EUserModules.Report,
         path: '/stock-report-by-color',
@@ -320,27 +321,28 @@ const essentialLinks = [
       },
       {
         title: EUserModules.Report,
-        path: '/article-commission-report',
-      },
-      {
-        title: EUserModules.Report,
-        path: '/offline-shop-article-inventory-report',
-      },
-      {
-        title: EUserModules.Report,
         path: '/best-selling-article-report',
       },
       {
         title: EUserModules.Report,
         path: '/new-article-sale-and-stock-report',
       },
-      {
-        title: EUserModules.Report,
-        path: '/accumulative-sale-purchase-report',
-      },
+
       {
         title: EUserModules.Report,
         path: '/current-closing-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/ho-article-sale-detail-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/ho-article-purchase-detail-report',
+      },
+      {
+        title: EUserModules.Report,
+        path: '/ho-article-sale-report',
       },
     ],
   },
