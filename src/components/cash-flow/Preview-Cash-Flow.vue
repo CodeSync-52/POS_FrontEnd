@@ -124,6 +124,10 @@
       />
     </q-card-actions>
   </q-card>
+  <q-dialog v-model="isSenderPdfLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
@@ -161,6 +165,8 @@ const previewCashFlow = ref<ICashFlowRecords>({
   comments: '',
 });
 const userList = ref<IUserResponse[]>([]);
+const isSenderPdfLoader = ref(false);
+
 const tableItems = ref<ITableItems[][]>([]);
 onMounted(() => {
   if (props.selectedData) {
@@ -199,6 +205,7 @@ async function convertArrayToPdfData(array: ICashFlowRecords[]) {
   return tableStuff;
 }
 function downloadPdfData(pdfType: 'sender' | 'receiver') {
+  isSenderPdfLoader.value = true;
   const {
     amount,
     transactionDate,
@@ -267,6 +274,7 @@ function downloadPdfData(pdfType: 'sender' | 'receiver') {
     tableData: [],
     title: '',
   });
+  isSenderPdfLoader.value = false;
 }
 
 const getUserList = async () => {

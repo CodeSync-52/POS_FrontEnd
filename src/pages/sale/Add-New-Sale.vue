@@ -501,6 +501,10 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="isPdfLoader" persistent>
+      <q-spinner-ios size="78px" color="btn-primary" />
+      <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -568,6 +572,7 @@ const $q = useQuasar();
 const UserList = ref<IUserResponse[]>([]);
 const isFetchingArticleList = ref(false);
 const options = ref<IUserResponse[]>([]);
+const isPdfLoader = ref(false);
 const isFilterChanged = ref(false);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticleData = ref<ISelectedWholeSaleArticleData[]>([]);
@@ -1241,6 +1246,8 @@ async function convertArrayToPdfData(
   return tableStuff;
 }
 async function downloadPdfData() {
+  isPdfLoader.value = true;
+
   const headers: IPdfHeaders[] = [
     {
       heading: 'Sale Id',
@@ -1288,6 +1295,7 @@ async function downloadPdfData() {
     pdfFooters: footers,
     title: '',
   });
+  isPdfLoader.value = false;
 }
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {

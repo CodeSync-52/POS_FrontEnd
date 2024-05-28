@@ -151,6 +151,10 @@
     <q-spinner-ios size="78px" color="btn-primary" />
     <span class="ml-2 text-base font-[500]">Generating PDF...</span>
   </q-dialog>
+  <q-dialog v-model="isExcelLoading" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating Excel...</span>
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import ArticleCategoryModal from 'src/components/article-management/Article-Category-Modal.vue';
@@ -177,6 +181,7 @@ const isLoading = ref(false);
 const isCategoryModalVisible = ref(false);
 const selectedCategoryName = ref('');
 const isPdfLoading = ref(false);
+const isExcelLoading = ref(false);
 const defaultImage = ref<string | null>(null);
 const isFetchingShopList = ref(false);
 const tableItems = ref<ITableItems[][]>([]);
@@ -359,6 +364,7 @@ async function downloadPdfData() {
 }
 
 const downloadCSVData = () => {
+  isExcelLoading.value = true;
   const selectedColumnsData = offlinesShopArticleInventoryReport.filter(
     (col) => col.name !== 'image'
   );
@@ -385,7 +391,7 @@ const downloadCSVData = () => {
     content,
     'text/csv'
   );
-
+  isExcelLoading.value = false;
   if (status !== true) {
     $q.notify({
       message: 'Browser denied file download...',

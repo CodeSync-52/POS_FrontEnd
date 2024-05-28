@@ -218,6 +218,10 @@
   <q-dialog v-model="isCategoryModalVisible">
     <article-category-modal @category-selected="handleSelectedCategory" />
   </q-dialog>
+  <q-dialog v-model="isLoaderVisible" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -256,6 +260,7 @@ const articleList = ref<IArticleData[]>([]);
 const ShopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
 const selectedPreviewImage = ref('');
+const isLoaderVisible = ref(false);
 const isPreviewImageModalVisible = ref(false);
 const filterSearch = ref<IInventoryFilterSearchWithShopId>({
   ProductId: null,
@@ -504,6 +509,8 @@ watch(filteredData, async (newValue) => {
   }
 });
 const downloadCSVData = () => {
+  isLoaderVisible.value = true;
+
   const selectedColumnsData = InventoryBasicColumn.filter(
     (col) => col.name !== 'productImage'
   );
@@ -530,7 +537,7 @@ const downloadCSVData = () => {
     content,
     'text/csv'
   );
-
+  isLoaderVisible.value = false;
   if (status !== true) {
     $q.notify({
       message: 'Browser denied file download...',

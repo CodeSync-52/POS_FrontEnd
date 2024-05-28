@@ -140,6 +140,10 @@
     <q-spinner-ios size="78px" color="btn-primary" />
     <span class="ml-2 text-base font-[500]">Generating PDF...</span>
   </q-dialog>
+  <q-dialog v-model="isExcelLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating Excel...</span>
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
@@ -166,6 +170,7 @@ const authStore = useAuthStore();
 const $q = useQuasar();
 const isLoading = ref(false);
 const isLoader = ref(false);
+const isExcelLoader = ref(false);
 const isFetchingShopList = ref(false);
 const timeStamp = Date.now();
 const reportList = ref<IDailySaleReportData[]>([]);
@@ -404,6 +409,7 @@ async function downloadPdfData() {
 }
 
 const downloadCSVData = () => {
+  isExcelLoader.value = true;
   const selectedColumnsData = dailySaleReportColumn.filter(
     (col) => col.name !== 'image'
   );
@@ -432,7 +438,7 @@ const downloadCSVData = () => {
     content,
     'text/csv'
   );
-
+  isExcelLoader.value = false;
   if (status !== true) {
     $q.notify({
       message: 'Browser denied file download...',
