@@ -142,6 +142,10 @@
       </div>
     </div>
   </div>
+  <q-dialog v-model="isPdfLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
@@ -169,6 +173,7 @@ import { GetProfitLossReport } from 'src/services/reports';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const isPdfLoader = ref(false);
 const timeStamp = Date.now();
 const isFetchingShopList = ref(false);
 const shopData = ref<IShopResponse[]>([]);
@@ -307,6 +312,7 @@ async function convertArrayToPdfData(array: IProfitLossExpnseDetails[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
+  isPdfLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: '',
@@ -366,6 +372,7 @@ async function downloadPdfData() {
     pdfFooters: footers,
     title: 'Profit Loss Report',
   });
+  isPdfLoader.value = false;
 }
 const shouldShowReport = computed(() => {
   const data = reportData.value;

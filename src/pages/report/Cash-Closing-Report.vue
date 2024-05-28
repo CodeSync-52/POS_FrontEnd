@@ -150,7 +150,7 @@
       </table>
     </div>
 
-    <q-dialog v-model="isLoader" persistent>
+    <q-dialog v-model="isPdfLoader" persistent>
       <q-spinner-ios size="78px" color="btn-primary" />
       <span class="ml-2 text-base font-[500]">Generating PDF...</span>
     </q-dialog>
@@ -164,13 +164,13 @@ import { GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
-const isLoader = ref(false);
 import { date } from 'quasar';
 import { GetCashClosingReport } from 'src/services/reports';
 import moment from 'moment';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const isPdfLoader = ref(false);
 const timeStamp = Date.now();
 const isFetchingShopList = ref(false);
 const shopData = ref<IShopResponse[]>([]);
@@ -317,6 +317,7 @@ const getOutGoingToHO = (reports: ICashClosinReport[]): number => {
 const downloadPdf = (
   data: { shop: string; reports: ICashClosinReport[] }[]
 ) => {
+  isPdfLoader.value = true;
   const content: any[] = [];
 
   data.forEach((shopReport) => {
@@ -401,5 +402,6 @@ const downloadPdf = (
   };
 
   pdfMake.createPdf(documentDefinition).download('cash_closing_report.pdf');
+  isPdfLoader.value = false;
 };
 </script>

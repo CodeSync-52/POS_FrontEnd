@@ -477,6 +477,10 @@
       </q-card>
     </q-dialog>
   </div>
+  <q-dialog v-model="isPdfLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
@@ -513,6 +517,7 @@ import { processTableItems } from 'src/utils/process-table-items';
 const billAction = ref('');
 const router = useRouter();
 const isLoading = ref(false);
+const isPdfLoader = ref(false);
 const $q = useQuasar();
 const isPreviewImageModalVisible = ref(false);
 const selectedPreviewImage = ref('');
@@ -920,6 +925,7 @@ function generateRandomAlphaNumeric(length: number) {
 }
 
 async function downloadPdfData() {
+  isPdfLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: 'Bill Id',
@@ -963,5 +969,6 @@ async function downloadPdfData() {
     pdfFooters: footers,
     title: '',
   });
+  isPdfLoader.value = false;
 }
 </script>

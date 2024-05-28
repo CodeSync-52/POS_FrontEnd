@@ -166,6 +166,10 @@
       </div>
     </div>
   </div>
+  <q-dialog v-model="isPdfLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
@@ -184,6 +188,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const isPdfLoader = ref(false);
 const timeStamp = Date.now();
 const isFetchingShopList = ref(false);
 const shopData = ref<IShopResponse[]>([]);
@@ -305,6 +310,7 @@ const overallTotalStock = computed(() => {
   );
 });
 const downloadPdf = (data: INewArticleSaleAndStockReportData[]) => {
+  isPdfLoader.value = true;
   const content: any[] = [
     {
       text: `Grand Total Sale: ${overallTotalSale.value}`,
@@ -386,5 +392,6 @@ const downloadPdf = (data: INewArticleSaleAndStockReportData[]) => {
   pdfMake
     .createPdf(documentDefinition)
     .download('new_article_sale_and_report.pdf');
+  isPdfLoader.value = false;
 };
 </script>

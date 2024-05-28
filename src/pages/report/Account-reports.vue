@@ -95,6 +95,10 @@
       </q-table>
     </div>
   </div>
+  <q-dialog v-model="isLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -110,6 +114,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import moment from 'moment';
 import { processTableItems } from 'src/utils/process-table-items';
 const isLoading = ref(false);
+const isLoader = ref(false);
 const apiController = ref<AbortController | null>(null);
 const UserList = ref<IUserResponse[]>([]);
 const $q = useQuasar();
@@ -273,6 +278,7 @@ async function convertArrayToPdfData(array: IAccountReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
+  isLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: '',
@@ -309,6 +315,7 @@ async function downloadPdfData() {
     pdfHeaders: headers,
     title: 'Account-Report',
   });
+  isLoader.value = false;
 }
 
 const downloadCSVData = () => {

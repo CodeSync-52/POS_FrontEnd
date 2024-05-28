@@ -172,6 +172,10 @@
       />
     </div>
   </div>
+  <q-dialog v-model="isPdfloader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
@@ -192,6 +196,7 @@ import moment from 'moment';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 const router = useRouter();
+const isPdfloader = ref(false);
 const selectedId: string | string[] = router.currentRoute.value.params.id;
 const $q = useQuasar();
 const expenseItems = ref<ITableItems[][]>([]);
@@ -294,6 +299,7 @@ const convertIncomingOutgoingArray = (
 };
 
 function downloadPdfData() {
+  isPdfloader.value = true;
   const headers = [
     {
       heading: 'Status',
@@ -360,6 +366,7 @@ function downloadPdfData() {
       shopAccountSummary.value.createdDate
     ).format('dddd, D MMMM, YYYY')}`,
   });
+  isPdfloader.value = false;
 }
 onMounted(async () => {
   await updateAccountSummary();

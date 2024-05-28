@@ -114,6 +114,14 @@
       </template>
     </q-table>
   </div>
+  <q-dialog v-model="isPdfLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
+  <q-dialog v-model="isExcelLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating Excel...</span>
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
@@ -135,6 +143,8 @@ import { GetDateWiseShopSaleReport, wrapCsvValue } from 'src/services/reports';
 const $q = useQuasar();
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const isPdfLoader = ref(false);
+const isExcelLoader = ref(false);
 const timeStamp = Date.now();
 const reportList = ref<IDateWiseShopReportData[]>([]);
 const isFetchingShopList = ref(false);
@@ -303,6 +313,7 @@ async function convertArrayToPdfData(array: IDateWiseShopReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
+  isPdfLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: '',
@@ -343,8 +354,10 @@ async function downloadPdfData() {
     pdfHeaders: headers,
     title: 'Date Wise Shop Sale Report',
   });
+  isPdfLoader.value = false;
 }
 const downloadCSVData = () => {
+  isExcelLoader.value = true;
   const content = [shopsaleReportColumn.map((col) => wrapCsvValue(col.label))]
     .concat(
       reportList.value.map((row: any) =>
@@ -369,6 +382,7 @@ const downloadCSVData = () => {
     content,
     'text/csv'
   );
+  isExcelLoader.value = false;
   if (status !== true) {
     $q.notify({
       message: 'Browser denied file download...',
