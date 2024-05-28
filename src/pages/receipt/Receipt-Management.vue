@@ -257,6 +257,18 @@
                   Cancel Receipt
                 </q-tooltip></q-btn
               >
+              <q-btn
+                size="md"
+                flat
+                dense
+                unelevated
+                icon="download"
+                color="btn-primary"
+                @click="getReceiptDataFromApi(props.row.purchaseId)"
+                ><q-tooltip class="bg-btn-primary" :offset="[10, 10]">
+                  Download Pdf
+                </q-tooltip></q-btn
+              >
             </div>
           </q-td>
           <q-td v-else />
@@ -306,6 +318,10 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="isLoader" persistent>
+      <q-spinner-ios size="78px" color="btn-primary" />
+      <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+    </q-dialog>
   </div>
 </template>
 
@@ -324,6 +340,7 @@ import {
   IUserResponse,
   EUserRoles,
   ICustomerListResponse,
+  ISelectedArticleData,
 } from 'src/interfaces';
 import { useAuthStore } from 'src/stores';
 import {
@@ -331,8 +348,18 @@ import {
   CancelPurchase,
   GetUsers,
   GetCustomerGroupList,
+  GetPurchaseDetail,
 } from 'src/services';
-import { isPosError, receiptColumn, purchaseStatusOptions } from 'src/utils';
+import {
+  isPosError,
+  receiptColumn,
+  purchaseStatusOptions,
+  IPdfFooters,
+  IPdfHeaders,
+  ITableItems,
+  downloadPdf,
+} from 'src/utils';
+import { processTableItems } from 'src/utils/process-table-items';
 import moment from 'moment';
 const authStore = useAuthStore();
 const $q = useQuasar();
@@ -340,7 +367,24 @@ const pageTitle = getRoleModuleDisplayName(EUserModules.ReceiptManagement);
 const isLoading = ref(false);
 const router = useRouter();
 const receiptData = ref<IReceiptData[]>([]);
+const sTRPdf = ref<IReceiptData>({
+  purchaseId: 0,
+  userId: 0,
+  fullName: '',
+  totalQuantity: 0,
+  purchaseStatus: '',
+  createdDate: '',
+  createdBy: '',
+  outStandingBalance: 0,
+  updatedDate: '',
+  createdById: 0,
+  comments: '',
+  updatedBy: null,
+  purchaseDetails: [],
+});
+const tableItems = ref<ITableItems[][]>([]);
 const isCancelReceiptModalVisible = ref(false);
+const isLoader = ref(false);
 const selectedRowData = ref<IReceiptData | null>(null);
 const defaultPagination = {
   sortBy: 'desc',
@@ -615,5 +659,121 @@ async function getCustomerListOption() {
     });
     isCustomerGroupListLoading.value = false;
   }
+}
+const getReceiptDataFromApi = async (selectedItemId: string | number) => {
+  await GetPurchaseDetail(selectedItemId).then(async (res) => {
+    sTRPdf.value = res.data;
+    tableItems.value = await convertArrayToPdfData(res.data.purchaseDetails);
+  });
+  downloadPdfData(selectedItemId);
+};
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      if (fileReader.result && typeof fileReader.result === 'string') {
+        const resultParts = fileReader.result.split(',');
+        if (resultParts.length === 2) {
+          resolve(resultParts[1]);
+        } else {
+          reject(new Error('Invalid data URL format'));
+        }
+      }
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsDataURL(file);
+  });
+};
+const defaultImage = ref<string | null>(null);
+async function convertArrayToPdfData(array: ISelectedArticleData[]) {
+  if (!defaultImage.value) {
+    defaultImage.value = await fetch('/assets/default-image.png')
+      .then((res) => res.blob())
+      .then((fileBlob) => {
+        const imageFile = new File([fileBlob], 'default-image.png');
+        return convertToBase64(imageFile);
+      });
+  }
+  const tableStuff = [];
+  const headerRow = ['Row#', 'Image', 'Article', 'Quantity'];
+  tableStuff.push(headerRow);
+  const netQuantity = array.reduce(
+    (total: number, row: ISelectedArticleData) => {
+      if (row.quantity) {
+        return total + row.quantity;
+      }
+      return total;
+    },
+    0
+  );
+  const footerRow = [
+    '',
+    '',
+    '',
+    { text: `Total Quantity: ${netQuantity}`, margin: 5 },
+  ];
+  array.forEach((item: ISelectedArticleData, index: number) => {
+    const row = [
+      {
+        text: index + 1,
+      },
+      {
+        image: item.productImage || defaultImage.value,
+        width: 50,
+        height: 50,
+      },
+      { text: item.productName, margin: [0, 20] },
+      { text: item.quantity, bold: true, margin: [0, 20] },
+    ];
+    tableStuff.push(row);
+  });
+  tableStuff.push(footerRow);
+
+  return tableStuff;
+}
+async function downloadPdfData(selectedItemId: string | number) {
+  isLoader.value = true;
+  const headers: IPdfHeaders[] = [
+    {
+      heading: 'Receipt Id',
+      content: selectedItemId,
+    },
+    {
+      heading: 'Status',
+      content: sTRPdf.value.purchaseStatus,
+    },
+    {
+      content: sTRPdf.value.fullName,
+    },
+    {
+      heading: 'Date',
+      content: moment(sTRPdf.value.createdDate).format('DD-MM-YYYY'),
+    },
+  ];
+
+  const tableDataWithImage: ITableItems[][] = await processTableItems(
+    tableItems.value
+  );
+
+  const footers: IPdfFooters[] = [
+    {
+      heading: 'Comments',
+      content: sTRPdf.value.comments,
+    },
+  ];
+
+  const myFileName = 'Receipt.pdf';
+  downloadPdf({
+    filename: myFileName,
+    tableData: JSON.parse(JSON.stringify(tableDataWithImage)),
+    pdfHeaders: headers,
+    pdfFooters: footers,
+    title: '',
+  });
+  isLoader.value = false;
 }
 </script>

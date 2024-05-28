@@ -271,6 +271,10 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="isLoader" persistent>
+      <q-spinner-ios size="78px" color="btn-primary" />
+      <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+    </q-dialog>
   </div>
 </template>
 
@@ -325,6 +329,7 @@ const isReceiptPreview = ref(false);
 const selectedArticleData = ref<ISelectedArticleData[]>([]);
 const isArticleListModalVisible = ref(false);
 const isFilterChanged = ref(false);
+const isLoader = ref(false);
 const selectedPreviewImage = ref('');
 const isPreviewImageModalVisible = ref(false);
 const handleUpdateQuantity = (data: number, row: ISelectedArticleData) => {
@@ -777,6 +782,7 @@ async function convertArrayToPdfData(array: ISelectedArticleData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
+  isLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: 'Receipt Id',
@@ -814,6 +820,7 @@ async function downloadPdfData() {
     pdfFooters: footers,
     title: '',
   });
+  isLoader.value = false;
 }
 
 const filterFn = (val: string, update: CallableFunction) => {
