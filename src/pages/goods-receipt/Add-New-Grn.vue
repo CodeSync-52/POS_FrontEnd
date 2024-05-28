@@ -331,6 +331,7 @@ const handleKeyPress = async (e: KeyboardEvent) => {
   } else if (e.key === 'Enter' && !isInventoryListModalVisible.value) {
     const target = e.target as HTMLInputElement;
     if (scannedLabel.value.length > 0) {
+      filterSearch.value.ProductId = null;
       filterSearch.value.ProductCode = target.value;
       if (scannedLabelLoading.value) return;
       scannedLabelLoading.value = true;
