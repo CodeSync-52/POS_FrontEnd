@@ -117,9 +117,18 @@
           <div
             class="my-4 flex flex-row items-center justify-between gap-2 px-1"
           >
-            <div class="text-lg font-bold">
-              <div>{{ item.article }}</div>
-              <div>Retail Price: {{ item.retailPrice }}</div>
+            <div class="flex flex-row items-center gap-2">
+              <div>
+                <img
+                  :src="item.image ?? ''"
+                  alt="Product Image"
+                  class="w-16 h-16 my-1"
+                />
+              </div>
+              <div class="text-lg font-bold">
+                <div>{{ item.article }}</div>
+                <div>Retail Price: {{ item.retailPrice }}</div>
+              </div>
             </div>
             <div class="text-lg font-bold">
               <div>Total Sale : {{ item.totalSale }}</div>
