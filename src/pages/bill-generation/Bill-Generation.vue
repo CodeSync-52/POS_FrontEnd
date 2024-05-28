@@ -259,7 +259,7 @@
         </template>
         <template v-slot:bottom-row>
           <q-tr class="sticky bottom-0 bg-white">
-            <q-td colspan="2" class="text-bold"> Total </q-td>
+            <q-td colspan="3" class="text-bold"> Total </q-td>
             <q-td colspan="3" class="text-bold">
               {{ calculateTotal('totalAmount') }}
             </q-td>
