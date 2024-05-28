@@ -146,6 +146,10 @@
       </div>
     </div>
   </div>
+  <q-dialog v-model="isLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -166,6 +170,7 @@ const $q = useQuasar();
 const articleList = ref<IArticleData[]>([]);
 const timeStamp = Date.now();
 const isFetchingArticleList = ref(false);
+const isLoader = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { year: 1 });
 const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
@@ -292,6 +297,7 @@ const getSaleStockReport = async () => {
   isLoading.value = false;
 };
 const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
+  isLoader.value = true;
   const content = [
     { text: 'Shop Sale Stock Report', style: 'mainHeading' },
     { text: `Grand Total Sale: ${grandTotal}`, style: 'subHeading' },
@@ -301,12 +307,12 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
         { text: `${item.variant2_Name} - COLOR\n`, style: 'subheader' },
         {
           table: {
-            widths: ['auto', ...item.shopQty[0].list.map(() => 'auto'), 'auto'],
-            style: 'tableStyle',
+            headerRows: 1,
+            widths: ['*', ...item.shopQty[0]?.list.map(() => 'auto'), '*', '*'],
             body: [
               [
                 { text: 'Shop', style: 'tableHeader' },
-                ...item.shopQty[0].list.map((variant) => ({
+                ...item.shopQty[0]?.list.map((variant) => ({
                   text: variant.variant1_Name,
                   style: 'tableHeader',
                 })),
@@ -347,10 +353,10 @@ const downloadPdf = (data: IShopSaleStockReportData[], grandTotal: number) => {
       },
       subHeading: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
       subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
-      tableStyle: { margin: [0, 5, 0, 15], alignment: 'center' },
       tableHeader: { bold: true, fillColor: '#CCCCCC', alignment: 'center' },
     },
   };
   pdfMake.createPdf(documentDefinition).download('shop_sale_stock_report.pdf');
+  isLoader.value = false;
 };
 </script>
