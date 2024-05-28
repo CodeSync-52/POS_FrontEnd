@@ -148,6 +148,10 @@
       <q-spinner-ios size="78px" color="btn-primary" />
       <span class="ml-2 text-base font-[500]">Generating PDF...</span>
     </q-dialog>
+    <q-dialog v-model="isLoadingExcel" persistent>
+      <q-spinner-ios size="78px" color="btn-primary" />
+      <span class="ml-2 text-base font-[500]">Generating Excel...</span>
+    </q-dialog>
   </div>
 </template>
 
@@ -169,6 +173,7 @@ import { HOStockReportColumn } from 'src/utils/reports';
 import { onMounted, onUnmounted, ref } from 'vue';
 const isLoader = ref(false);
 const isLoading = ref(false);
+const isLoadingExcel = ref(false);
 const apiController = ref<AbortController | null>(null);
 const tableItems = ref<ITableItems[][]>([]);
 const UserList = ref<IUserResponse[]>([]);
@@ -430,6 +435,7 @@ async function downloadPdfData() {
 }
 
 const downloadCSVData = () => {
+  isLoadingExcel.value = true;
   const selectedColumnsData = HOStockReportColumn.filter(
     (col) => col.name !== 'productImage'
   );
@@ -460,5 +466,6 @@ const downloadCSVData = () => {
       icon: 'warning',
     });
   }
+  isLoadingExcel.value = false;
 };
 </script>

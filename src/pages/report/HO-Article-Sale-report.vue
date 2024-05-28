@@ -203,6 +203,14 @@
       </q-table>
     </div>
   </div>
+  <q-dialog v-model="isPdfLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
+  <q-dialog v-model="isExcelLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating Excel...</span>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -223,6 +231,8 @@ import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Ex
 import { onMounted, onUnmounted, ref } from 'vue';
 import moment from 'moment';
 const isLoading = ref(false);
+const isPdfLoader = ref(false);
+const isExcelLoader = ref(false);
 const apiController = ref<AbortController | null>(null);
 const $q = useQuasar();
 const tableItems = ref<ITableItems[][]>([]);
@@ -490,6 +500,7 @@ async function convertArrayToPdfData(array: IHOArticleReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
+  isPdfLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: '',
@@ -545,9 +556,11 @@ async function downloadPdfData() {
     pdfHeaders: headers,
     title: 'HO Article Sale Report',
   });
+  isPdfLoader.value = false;
 }
 
 const downloadCSVData = () => {
+  isExcelLoader.value = true;
   const selectedColumnsData = HOArticleReportColumn.filter(
     (col) => col.name !== 'image'
   );
@@ -576,7 +589,7 @@ const downloadCSVData = () => {
     content,
     'text/csv'
   );
-
+  isExcelLoader.value = false;
   if (status !== true) {
     $q.notify({
       message: 'Browser denied file download...',

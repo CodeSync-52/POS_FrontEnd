@@ -100,6 +100,14 @@
       </q-table>
     </div>
   </div>
+  <q-dialog v-model="isPdfLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating PDF...</span>
+  </q-dialog>
+  <q-dialog v-model="isExcelLoader" persistent>
+    <q-spinner-ios size="78px" color="btn-primary" />
+    <span class="ml-2 text-base font-[500]">Generating Excel...</span>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -119,6 +127,8 @@ const $q = useQuasar();
 const articleList = ref<IArticleData[]>([]);
 const reportData = ref<IHOSaleDetailReportData[]>([]);
 const timeStamp = Date.now();
+const isPdfLoader = ref(false);
+const isExcelLoader = ref(false);
 const isFetchingArticleList = ref(false);
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { date: 30 });
@@ -228,6 +238,7 @@ async function convertArrayToPdfData(array: IHOSaleDetailReportData[]) {
   return tableStuff;
 }
 async function downloadPdfData() {
+  isPdfLoader.value = true;
   const headers: IPdfHeaders[] = [
     {
       heading: '',
@@ -264,6 +275,7 @@ async function downloadPdfData() {
     pdfHeaders: headers,
     title: 'HO Article Sale Detail Report',
   });
+  isPdfLoader.value = false;
 }
 
 const handleResetFilter = () => {
@@ -328,6 +340,7 @@ const getReceiptList = async () => {
 };
 
 const downloadCSVData = () => {
+  isExcelLoader.value = true;
   const content = [
     HOArticleSaleDetailReportColumn.map((col) => wrapCsvValue(col.label)),
   ]
@@ -355,7 +368,7 @@ const downloadCSVData = () => {
     content,
     'text/csv'
   );
-
+  isExcelLoader.value = false;
   if (status !== true) {
     $q.notify({
       message: 'Browser denied file download...',
