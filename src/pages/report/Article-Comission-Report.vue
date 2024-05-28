@@ -4,6 +4,7 @@
   >
     <span class="text-xl font-medium">Article Commission Report</span>
   </div>
+
   <div
     class="row flex lg:justify-end sm:justify-center items-center min-h-[3.5rem] gap-4"
   >
@@ -67,7 +68,27 @@
       />
     </div>
 
-    <div id="article_comission_report" class="container mx-auto mt-2">
+    <div id="article_comission_report" class="container mx-auto">
+      <div
+        v-for="(pairs, comission) in uniqueComissionPairs"
+        :key="comission"
+        class="mb-1"
+      >
+        <span class="text-lg font-normal"
+          >Total Pair Sales for Commission
+          <span class="font-bold">{{ comission }}: </span>
+          <span class="font-bold">
+            {{ pairs.reduce((acc, cur) => acc + parseFloat(cur), 0) }}</span
+          >
+          and total =
+          <span class="font-bold">
+            {{
+              parseFloat(comission.toString()) *
+              pairs.reduce((acc, cur) => acc + parseFloat(cur), 0)
+            }}
+          </span>
+        </span>
+      </div>
       <div
         v-for="item in comissionReportData"
         :key="item.date"
@@ -127,7 +148,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { IShopResponse, EUserRoles, IComissionReport } from 'src/interfaces';
 import { GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
@@ -158,6 +179,7 @@ onMounted(async () => {
   filterSearch.value.shopId =
     authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1;
 });
+
 const getShopList = async () => {
   isLoading.value = true;
   try {
@@ -181,6 +203,21 @@ const getShopList = async () => {
     isLoading.value = false;
   }
 };
+const uniqueComissionPairs = computed(() => {
+  const uniquePairs: { [key: string]: string[] } = {};
+  comissionReportData.value.forEach((item) => {
+    item.comissionDetails.forEach((detail) => {
+      if (uniquePairs.hasOwnProperty(detail.comission)) {
+        uniquePairs[detail.comission].push(detail.pairSale.toString());
+      } else {
+        uniquePairs[detail.comission] = [detail.pairSale.toString()];
+      }
+    });
+  });
+
+  return uniquePairs;
+});
+
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
@@ -189,6 +226,7 @@ const filterFn = (val: string, update: CallableFunction) => {
     );
   });
 };
+
 const articleComissionReport = async () => {
   isLoading.value = true;
   if (!filterSearch.value.shopId) {
@@ -230,6 +268,7 @@ const articleComissionReport = async () => {
   }
   isLoading.value = false;
 };
+
 const handleResetFilter = () => {
   if (
     authStore.loggedInUser?.rolePermissions.roleName !==
