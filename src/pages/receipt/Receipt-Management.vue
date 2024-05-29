@@ -437,24 +437,19 @@ watch(
       filterSearch.value.startDate !== null
         ? filterSearch.value.startDate.toString()
         : '',
-    endDate:
-      filterSearch.value.endDate !== null
-        ? filterSearch.value.endDate.toString()
-        : '',
   }),
   ({
     userName,
     customerGroupId,
     purchaseStatus,
     startDate,
-    endDate,
+
     userId,
   }) => {
     localStorage.setItem('receiptSearchName', userName);
     localStorage.setItem('receiptSearchCustomerGroupId', customerGroupId);
     localStorage.setItem('receiptSearchPurchaseStatus', purchaseStatus);
     localStorage.setItem('receiptStartDate', startDate);
-    localStorage.setItem('receiptEndDate', endDate);
     localStorage.setItem(
       'receiptSearchUserId',
       userId !== null ? userId.toString() : ''
@@ -471,7 +466,6 @@ onMounted(() => {
     'receiptSearchPurchaseStatus'
   );
   const savedStartDate = localStorage.getItem('receiptStartDate');
-  const savedEndDate = localStorage.getItem('receiptEndDate');
   const savedUserId = localStorage.getItem('receiptSearchUserId');
   if (savedName) {
     filterSearch.value.userName = savedName;
@@ -485,9 +479,7 @@ onMounted(() => {
   if (savedStartDate) {
     filterSearch.value.startDate = savedStartDate;
   }
-  if (savedEndDate) {
-    filterSearch.value.endDate = savedEndDate;
-  }
+
   if (savedUserId) {
     filterSearch.value.userId = parseInt(savedUserId, 10);
   }
