@@ -247,7 +247,8 @@ const shopListRecords = ref<IShopResponse[]>([]);
 const isLoader = ref(false);
 const articlquantitySaleResponse = ref<IShopStockReportData[]>([]);
 const timeStamp = Date.now();
-const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const next1Day = date.subtractFromDate(timeStamp, { day: -1 });
+const formattedToDate = date.formatDate(next1Day, 'YYYY-MM-DD');
 const past30Date = date.subtractFromDate(timeStamp, { days: 30 });
 const formattedFromDate = date.formatDate(past30Date, 'YYYY-MM-DD');
 let grandTotal = ref<number>(0);
@@ -469,8 +470,6 @@ const download = async (data: IShopStockReportData[], grandTotal: number) => {
 };
 const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
   const content = [];
-
-  // Table header
   const header = [
     { text: 'Article', style: 'tableHeader' },
     { text: 'Image', style: 'tableHeader', alignment: 'center' },
@@ -478,32 +477,27 @@ const downloadPdf = (data: IShopStockReportData[], grandTotal: number) => {
     { text: 'Total', style: 'tableHeader', alignment: 'right' },
   ];
   content.push(header);
-
-  // Add data rows
   data.forEach((item) => {
     const rowData = [
       { text: item.article, fontSize: 10 },
-      // Check if imageDataUrl exists
       item.imageDataUrl
         ? {
             image: item.imageDataUrl,
             fit: [70, 70],
             alignment: 'center',
           }
-        : { text: '', fontSize: 10 }, // Add empty cell if imageDataUrl is null
+        : { text: '', fontSize: 10 },
       { text: item.retailPrice.toString(), fontSize: 10 },
       { text: item.grandTotal.toString(), alignment: 'right', fontSize: 10 },
     ];
     content.push(rowData);
   });
-
-  // Document definition
   const documentDefinition = {
     content: [
       { text: 'Article Sale Report', style: 'mainHeading' },
       { text: '\n' },
       { text: 'Grand Total: ' + grandTotal, style: 'subHeading' },
-      { text: '\n\n' }, // Add space between header and table
+      { text: '\n\n' },
       {
         table: {
           headerRows: 1,

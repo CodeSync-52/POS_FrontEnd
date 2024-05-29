@@ -688,7 +688,8 @@ const handleActionKeys = (e: KeyboardEvent) => {
     } else if (e.key === 'F9') {
       router.push('/daily-sale-report');
     } else if (
-      e.shiftKey && e.key === 'S' &&
+      e.shiftKey &&
+      e.key === 'S' &&
       selectedInventoryData.value.length &&
       selectedInventoryData.value.every(
         (record) => record.dispatchQuantity !== 0

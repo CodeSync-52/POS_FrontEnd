@@ -196,7 +196,8 @@ const selectedShop = ref<IShopResponse[]>([]);
 const shopData = ref<IShopResponse[]>([]);
 const tableItems = ref<ITableItems[][]>([]);
 const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
-const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
+const next1Day = date.subtractFromDate(timeStamp, { day: -1 });
+const formattedToDate = date.formatDate(next1Day, 'YYYY-MM-DD');
 const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
 const filterSearch = ref<{
   fromDate: string;

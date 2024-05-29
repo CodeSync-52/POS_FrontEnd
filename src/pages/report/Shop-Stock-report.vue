@@ -478,7 +478,7 @@ const downloadPdf = async (
         style: 'tableCell',
       });
       tableBody.push(row);
-      isFirstRow = false; // Set the flag to false after processing the first row of the group
+      isFirstRow = false;
     });
 
     const table = {
