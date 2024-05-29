@@ -15,7 +15,7 @@
                 ><q-tooltip class="bg-btn-primary text-sm" :offset="[10, 10]">
                   <div>
                     <p><strong>Shortcut Keys For Buttons</strong></p>
-                    <p>Save (Ctrl + Shift + Enter)</p>
+                    <p>Save (Ctrl + Shift + S)</p>
                     <p>Hold Sale (Ctrl + F3)</p>
                     <p>All Bills (Ctrl + F5)</p>
                     <p>Hold Bills (Ctrl + F6)</p>
@@ -688,8 +688,7 @@ const handleActionKeys = (e: KeyboardEvent) => {
     } else if (e.key === 'F9') {
       router.push('/daily-sale-report');
     } else if (
-      e.key === 'Enter' &&
-      e.shiftKey &&
+      e.shiftKey && e.key === 'S' &&
       selectedInventoryData.value.length &&
       selectedInventoryData.value.every(
         (record) => record.dispatchQuantity !== 0
