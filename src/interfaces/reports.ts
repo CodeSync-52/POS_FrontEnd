@@ -39,6 +39,7 @@ export interface IDailySaleReportData {
   quantity: number;
   discount: number;
   netAmount: number;
+  commission: number;
 }
 export interface ISlowArticleSaleReportData {
   article: string;
@@ -140,8 +141,10 @@ export interface IStockSaleByShopDetail {
 export interface IArticleSaleDistributionByColorDetail {
   article: string;
   retailPrice: number;
+  masterStock: number;
   grandSaleQuantity: number;
   articleSaleByShop: IArticleSaleByShop[];
+  image: string;
 }
 
 export interface IArticleSaleByShop {

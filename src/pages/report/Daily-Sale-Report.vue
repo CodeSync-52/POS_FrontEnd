@@ -123,6 +123,7 @@
           <q-td colspan="1" class="text-bold">
             {{ calculateTotal('quantity') }}
           </q-td>
+          <q-td colspan="1" class="text-bold"> </q-td>
           <q-td colspan="1" class="text-bold">
             {{ calculateTotal('retailPrice') }}
           </q-td>

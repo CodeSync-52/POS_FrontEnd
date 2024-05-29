@@ -241,6 +241,14 @@ export const dailySaleReportColumn: QTableColumn<IDailySaleReportData>[] = [
     sortable: true,
   },
   {
+    name: 'comission',
+    required: true,
+    label: 'Comission',
+    align: 'left',
+    field: (row) => row.commission ?? '-',
+    sortable: true,
+  },
+  {
     name: 'retailPrice',
     required: true,
     label: 'Retail Price',

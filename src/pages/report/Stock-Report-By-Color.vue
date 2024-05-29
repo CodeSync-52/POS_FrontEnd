@@ -68,8 +68,18 @@
             <div
               class="text-lg font-bold my-4 flex justify-between flex-col md:flex-row px-1"
             >
-              <span>{{ item.article }}</span>
-              <span>Retail Price ({{ item.retailPrice }})</span>
+              <div class="flex gap-2 items-center">
+                <img
+                  :src="item.image ?? ''"
+                  alt="ProductImage"
+                  class="w-16 h-16 my-2"
+                />
+                <span>{{ item.article }}</span>
+              </div>
+              <div class="flex flex-col">
+                <span>Retail Price ({{ item.retailPrice }})</span>
+                <span>Master Stock ({{ item.masterStock }})</span>
+              </div>
             </div>
             <table class="w-full border-collapse border border-gray-300">
               <thead>
