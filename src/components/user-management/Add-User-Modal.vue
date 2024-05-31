@@ -108,7 +108,9 @@
             userData.roleName.toLocaleLowerCase() ===
               EUserRoles.Customer.toLowerCase() ||
             userData.roleName.toLocaleLowerCase() ===
-              EUserRoles.ShopManager.toLowerCase()
+              EUserRoles.ShopManager.toLowerCase() ||
+            userData.roleName.toLocaleLowerCase() ===
+              EUserRoles.ShopOfficer.toLowerCase()
           "
           class="row px-2 q-col-gutter-sm"
         >
