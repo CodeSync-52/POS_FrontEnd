@@ -168,6 +168,7 @@
                 icon="undo"
                 dense
                 flat
+                hidden
                 unelevated
                 color="blue"
                 size="sm"
