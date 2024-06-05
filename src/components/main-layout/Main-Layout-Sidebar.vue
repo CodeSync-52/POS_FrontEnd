@@ -396,7 +396,7 @@ const filteredSubLinks = (
       case '/user-outstanding-report':
         return isSuperAdmin || isAdmin || isHoOfficer;
       case '/ho-stock-report':
-        return isSuperAdmin || isHoOfficer;
+        return isSuperAdmin || isAdmin || isHoOfficer;
       case '/ho-article-sale-report':
         return isSuperAdmin || isHoOfficer;
       case '/ho-article-sale-detail-report':
