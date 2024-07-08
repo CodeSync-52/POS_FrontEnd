@@ -142,8 +142,10 @@
                   class="w-16 h-16 mt-2 mb-4"
                 />
               </div>
-
-              <div class="text-bold">{{ item.article }}</div>
+              <div class="flex flex-col">
+                <div class="text-bold">{{ item.article }}</div>
+                <div class="text-bold">{{ item.retailPrice }}</div>
+              </div>
             </div>
             <div>
               <div class="text-bold text-[24px] flex justify-end">
@@ -447,6 +449,7 @@ const downloadPdf = async (
     const tableBody = [];
     const headerRow = [
       'Article (Total)',
+      'R.Price',
       'Color',
       ...getUniqueSizes(item.variant2List),
       'Total',
@@ -462,6 +465,10 @@ const downloadPdf = async (
           text: isFirstRow ? item.article + ' (' + item.grandTotal + ')' : '',
           rowSpan: isFirstRow ? item.variant2List.length : undefined,
           style: isFirstRow ? 'tableCellCentered' : 'tableCell',
+        },
+        {
+          text: isFirstRow ? item.retailPrice.toString() : '',
+          style: 'tableCell',
         },
         { text: variant.variant2_Name, style: 'tableCell' },
       ];

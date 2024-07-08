@@ -13,14 +13,14 @@
   >
     <q-select
       dense
-      style="min-width: 200px"
       outlined
+      style="min-width: 200px"
+      use-input
       map-options
       @filter="filterFn"
-      :loading="isLoading"
-      :options="userList"
-      use-input
       v-model="filterSearch.user"
+      :loading="isLoading"
+      :options="options"
       popup-content-class="!max-h-[200px]"
       label="Select User"
       color="btn-primary"
@@ -114,6 +114,9 @@
           <q-td colspan="1" class="text-bold">
             {{ calculateTotal('hoSaleQty') }}
           </q-td>
+          <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('retailPrice') }}
+          </q-td>
         </q-tr>
       </template>
     </q-table>
@@ -125,7 +128,11 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { IUserResponse, IVendorSaleStockReportData } from 'src/interfaces';
+import {
+  IUserData,
+  IUserResponse,
+  IVendorSaleStockReportData,
+} from 'src/interfaces';
 import { GetUsers } from 'src/services';
 import { isPosError, IPdfHeaders, ITableItems, downloadPdf } from 'src/utils';
 import { vendorsalestockReportColumn } from 'src/utils/reports';
@@ -135,8 +142,11 @@ import moment from 'moment';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { GetVendorSaleStockReport, wrapCsvValue } from 'src/services/reports';
-const $q = useQuasar();
+
 const isLoading = ref(false);
+const UserList = ref<IUserResponse[]>([]);
+const $q = useQuasar();
+const options = ref<IUserResponse[]>([]);
 const isLoader = ref(false);
 const timeStamp = Date.now();
 const reportList = ref<IVendorSaleStockReportData[]>([]);
@@ -145,9 +155,9 @@ const next1Day = date.subtractFromDate(timeStamp, { day: -1 });
 const formattedToDate = date.formatDate(next1Day, 'YYYY-MM-DD');
 const past1Year = date.subtractFromDate(timeStamp, { year: 1 });
 const formattedFromDate = date.formatDate(past1Year, 'YYYY-MM-DD');
-const userList = ref<IUserResponse[]>([]);
+
 const filterSearch = ref<{
-  user: IUserResponse | null;
+  user: IUserData | null;
   fromDate: string;
   toDate: string;
 }>({
@@ -166,13 +176,14 @@ const getUserList = async () => {
       pageNumber: 1,
       pageSize: 5000,
     });
-    if (res.data) {
-      userList.value = res.data.items.filter(
+    if (res?.data) {
+      UserList.value = res.data.items.filter(
         (user) =>
           user.status === 'Active' &&
           user.roleName === 'Customer' &&
           user.customerGroup === 'Shoe Makers'
       );
+      options.value = UserList.value;
     }
   } catch (error) {
     let message = 'Unexpected Error Occurred';
@@ -189,7 +200,7 @@ const getUserList = async () => {
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
-    userList.value = userList.value.filter((v) =>
+    options.value = UserList.value.filter((v) =>
       v.fullName?.toLowerCase().includes(needle)
     );
   });
@@ -284,6 +295,7 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
     'Shop Total Stock',
     'Total Shop Sale',
     'Total WholeSale',
+    'Retail Price',
   ];
   tableStuff.push(headerRow);
   const footerRow = [
@@ -310,6 +322,11 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
       bold: true,
       margin: [0, 5],
     },
+    {
+      text: calculateTotal('retailPrice').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
   ];
   array.forEach((item: IVendorSaleStockReportData) => {
     const row = [
@@ -324,6 +341,7 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
       { text: item.shopStock },
       { text: item.shopSaleQty },
       { text: item.hoSaleQty },
+      { text: item.retailPrice },
     ];
     tableStuff.push(row);
   });
