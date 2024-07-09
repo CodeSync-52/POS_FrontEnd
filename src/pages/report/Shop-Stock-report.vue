@@ -19,11 +19,7 @@
               <q-item-label>Download in PDF</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item
-            clickable
-            @click="downloadExcel(stockResponse, grandTotal)"
-            v-close-popup
-          >
+          <q-item clickable @click="downloadExcel(stockResponse)" v-close-popup>
             <q-item-section>
               <q-item-label>Download in Excel</q-item-label>
             </q-item-section>
@@ -534,7 +530,7 @@ const downloadPdf = async (
   pdfDoc.download('shop_stock_report.pdf');
 };
 
-const generateCSV = (data: IShopStockReportData[], grandTotal: number) => {
+const generateCSV = (data: IShopStockReportData[]) => {
   const uniqueSizes = new Set<string>();
   data.forEach((item) => {
     item.variant2List.forEach((variant) => {
@@ -548,15 +544,8 @@ const generateCSV = (data: IShopStockReportData[], grandTotal: number) => {
     (a, b) => Number(a) - Number(b)
   );
 
-  const headers = [
-    'Article',
-    'Retail Price',
-    'Color',
-    ...sortedSizes,
-    'Total',
-    'Article Total',
-  ];
-  let csvContent = `Grand Total: ,${grandTotal}\n\n` + headers.join(',') + '\n';
+  const headers = ['Article', 'Retail Price', 'Color', ...sortedSizes, 'Total'];
+  let csvContent = headers.join(',') + '\n';
 
   data.forEach((item) => {
     item.variant2List.forEach((variant, index) => {
@@ -569,7 +558,6 @@ const generateCSV = (data: IShopStockReportData[], grandTotal: number) => {
           return v1 ? v1.quantity.toString() : '0';
         }),
         variant.totalQuantity.toString(),
-        index === 0 ? item.grandTotal.toString() : '',
       ].join(',');
       csvContent += row + '\n';
     });
@@ -578,8 +566,8 @@ const generateCSV = (data: IShopStockReportData[], grandTotal: number) => {
   return csvContent;
 };
 
-const downloadExcel = (data: IShopStockReportData[], grandTotal: number) => {
-  const csvContent = generateCSV(data, grandTotal);
+const downloadExcel = (data: IShopStockReportData[]) => {
+  const csvContent = generateCSV(data);
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   if (link.download !== undefined) {
