@@ -23,6 +23,7 @@ export interface IVendorSaleStockReportData {
   shopStock: number;
   hoSaleQty: number;
   shopSaleQty: number;
+  retailPrice: number;
 }
 export interface IAccumulativeSalePurchaseReportData {
   productId: number;
@@ -162,6 +163,7 @@ export interface IHOStockReportData {
   productName: string;
   productImage: string | null;
   masterStock: number | null;
+  retailPrice: number;
 }
 
 export interface IShopStockReportData {

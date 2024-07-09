@@ -377,7 +377,7 @@ async function convertArrayToPdfData(array: IHOStockReportData[]) {
       });
   }
   const tableStuff = [];
-  const headerRow = ['Article', 'Image', 'Master Stock'];
+  const headerRow = ['Article', 'Image', 'Master Stock', 'Retail Price'];
   tableStuff.push(headerRow);
 
   array.forEach((item: IHOStockReportData) => {
@@ -389,6 +389,7 @@ async function convertArrayToPdfData(array: IHOStockReportData[]) {
         height: 50,
       },
       { text: item.masterStock },
+      { text: item.retailPrice },
     ];
     tableStuff.push(row);
   });

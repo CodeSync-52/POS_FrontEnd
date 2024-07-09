@@ -171,6 +171,14 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       field: (row) => row.hoSaleQty ?? '-',
       sortable: true,
     },
+    {
+      name: 'retailPrice',
+      required: true,
+      label: 'Retail Price',
+      align: 'left',
+      field: (row) => row.retailPrice ?? '-',
+      sortable: true,
+    },
   ];
 export const accumulativesalepurchaseReportColumn: QTableColumn<IAccumulativeSalePurchaseReportData>[] =
   [
@@ -468,6 +476,13 @@ export const HOStockReportColumn: QTableColumn<IHOStockReportData>[] = [
     label: 'Master Stock',
     align: 'left',
     field: (row) => row.masterStock ?? '-',
+  },
+  {
+    name: 'retailPrice',
+    required: true,
+    label: 'Retail Price',
+    align: 'left',
+    field: (row) => row.retailPrice ?? '-',
   },
 ];
 
