@@ -264,11 +264,13 @@ export const GetShopwiseStockTransferReport = async ({
   fromDate,
   toDate,
   sortBySale,
+  productIds,
 }: {
   shopIds: string | number[] | null;
   fromDate: string;
   toDate: string;
   sortBySale: boolean;
+  productIds: string | number[] | null;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
@@ -278,6 +280,7 @@ export const GetShopwiseStockTransferReport = async ({
       fromDate,
       toDate,
       sortBySale,
+      productIds,
     },
   });
   return res;
