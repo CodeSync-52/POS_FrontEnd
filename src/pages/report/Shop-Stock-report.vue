@@ -19,6 +19,15 @@
               <q-item-label>Download in PDF</q-item-label>
             </q-item-section>
           </q-item>
+          <q-item
+            clickable
+            @click="downloadExcel(stockResponse, grandTotal)"
+            v-close-popup
+          >
+            <q-item-section>
+              <q-item-label>Download in Excel</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-btn-dropdown>
     </div>
@@ -523,5 +532,67 @@ const downloadPdf = async (
 
   const pdfDoc = pdfMake.createPdf(documentDefinition);
   pdfDoc.download('shop_stock_report.pdf');
+};
+
+const generateCSV = (data: IShopStockReportData[], grandTotal: number) => {
+  const uniqueSizes = new Set<string>();
+  data.forEach((item) => {
+    item.variant2List.forEach((variant) => {
+      variant.variant1List.forEach((v1) => {
+        uniqueSizes.add(v1.variant1_Name);
+      });
+    });
+  });
+
+  const sortedSizes = Array.from(uniqueSizes).sort(
+    (a, b) => Number(a) - Number(b)
+  );
+
+  const headers = [
+    'Article',
+    'Retail Price',
+    'Color',
+    ...sortedSizes,
+    'Total',
+    'Article Total',
+  ];
+  let csvContent = `Grand Total: ,${grandTotal}\n\n` + headers.join(',') + '\n';
+
+  data.forEach((item) => {
+    item.variant2List.forEach((variant, index) => {
+      const row = [
+        index === 0 ? item.article : '',
+        index === 0 ? item.retailPrice.toString() : '',
+        variant.variant2_Name,
+        ...sortedSizes.map((size) => {
+          const v1 = variant.variant1List.find((v) => v.variant1_Name === size);
+          return v1 ? v1.quantity.toString() : '0';
+        }),
+        variant.totalQuantity.toString(),
+        index === 0 ? item.grandTotal.toString() : '',
+      ].join(',');
+      csvContent += row + '\n';
+    });
+  });
+
+  return csvContent;
+};
+
+const downloadExcel = (data: IShopStockReportData[], grandTotal: number) => {
+  const csvContent = generateCSV(data, grandTotal);
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'shop_stock_report.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert(
+      'Your browser does not support downloading files. Please try again in a modern browser.'
+    );
+  }
 };
 </script>

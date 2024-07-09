@@ -9,6 +9,30 @@
       class="row flex lg:justify-end sm:justify-center items-center w-full min-h-[3.5rem] gap-4"
     >
       <q-select
+        popup-content-class="!max-h-[200px]"
+        class="min-w-[220px]"
+        use-input
+        dense
+        map-options
+        clearable
+        multiple
+        outlined
+        :options="articleList"
+        v-model="filterSearch.ProductId"
+        @filter="handleFilterArticles"
+        :loading="isFetchingArticleList"
+        label="Select Product"
+        color="btn-primary"
+        option-label="name"
+        option-value="productId"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <q-select
         dense
         style="min-width: 200px"
         outlined
@@ -166,8 +190,9 @@ import {
   IShopResponse,
   EUserRoles,
   IShopwiseStockTransferReportData,
+  IArticleData,
 } from 'src/interfaces';
-import { GetShopList } from 'src/services';
+import { GetArticleList, GetShopList } from 'src/services';
 import { isPosError } from 'src/utils';
 import { useAuthStore } from 'src/stores';
 import { useQuasar } from 'quasar';
@@ -183,7 +208,9 @@ const next1Day = date.subtractFromDate(timeStamp, { day: -1 });
 const formattedToDate = date.formatDate(next1Day, 'YYYY-MM-DD');
 const past1Month = date.subtractFromDate(timeStamp, { month: 1 });
 const formattedFromDate = date.formatDate(past1Month, 'YYYY-MM-DD');
+const isFetchingArticleList = ref(false);
 const selectedShop = ref<IShopResponse[]>([]);
+const articleList = ref<IArticleData[]>([]);
 const shopwiseStockTransferResponse = ref<IShopwiseStockTransferReportData[]>(
   []
 );
@@ -192,21 +219,34 @@ const filterSearch = ref<{
   toDate: string;
   shopIds: [];
   sortBySale: string;
+  ProductId: IArticleData[];
 }>({
   fromDate: formattedFromDate,
   toDate: formattedToDate,
   shopIds: [],
   sortBySale: 'true',
+  ProductId: [],
 });
 onMounted(async () => {
   await getShopList();
-  const defaultShop = shopData.value.find(
-    (shop) =>
-      shop.shopId === (authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1)
-  );
-  selectedShop.value = defaultShop ? [defaultShop] : [];
+  if (
+    authStore.loggedInUser?.rolePermissions.roleName ===
+      EUserRoles.ShopManager.toLowerCase() ||
+    authStore.loggedInUser?.rolePermissions.roleName ===
+      EUserRoles.ShopOfficer.toLowerCase()
+  ) {
+    const defaultShop = shopData.value.find(
+      (shop) =>
+        shop.shopId === (authStore.loggedInUser?.userShopInfoDTO.shopId ?? -1)
+    );
+    selectedShop.value = defaultShop ? [defaultShop] : [];
+  } else {
+    selectedShop.value = shopData.value.length > 0 ? shopData.value : [];
+  }
 });
+
 const getShopList = async () => {
+  if (isFetchingShopList.value) return;
   isFetchingShopList.value = true;
   try {
     const response = await GetShopList({
@@ -229,6 +269,40 @@ const getShopList = async () => {
     isFetchingShopList.value = false;
   }
 };
+const handleFilterArticles = (value: any, update: CallableFunction) => {
+  update(() => {
+    getArticleList(value);
+  });
+};
+const getArticleList = async (productName?: string) => {
+  if (isFetchingArticleList.value) return;
+  isFetchingArticleList.value = true;
+  try {
+    const res = await GetArticleList({
+      PageNumber: 1,
+      PageSize: 1000000,
+      Status: 'Active',
+      Name: productName,
+      CategoryId: null,
+    });
+    if (res.type === 'Success') {
+      if (res.data) {
+        articleList.value = res.data.items;
+      }
+    }
+  } catch (e) {
+    let message = 'Unexpected Error Occurred';
+    if (isPosError(e)) {
+      message = e.message;
+    }
+    $q.notify({
+      message,
+      icon: 'error',
+      color: 'red',
+    });
+  }
+  isFetchingArticleList.value = false;
+};
 const searchShopwiseStockTransferReport = async () => {
   isLoading.value = true;
   if (!filterSearch.value.shopIds) {
@@ -250,6 +324,9 @@ const searchShopwiseStockTransferReport = async () => {
   }
   try {
     const res = await GetShopwiseStockTransferReport({
+      productIds: filterSearch.value.ProductId.map(
+        (product) => product.productId
+      ).join(','),
       shopIds: selectedShop.value?.map((shop) => shop.shopId).join(','),
       fromDate: filterSearch.value.fromDate,
       toDate: filterSearch.value.toDate,
