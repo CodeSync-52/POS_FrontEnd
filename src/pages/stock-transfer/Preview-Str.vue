@@ -1,4 +1,19 @@
 <template>
+  <div class="flex justify-end mb-4">
+    <q-btn-dropdown
+      dropdown-icon="arrow_downward"
+      label="Download Report"
+      class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover text-white"
+    >
+      <q-list>
+        <q-item clickable @click="handleDownloadGRNReport" v-close-popup>
+          <q-item-section>
+            <q-item-label>Download in Excel</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+  </div>
   <q-card>
     <q-card-section>
       <div class="row justify-between items-center mb-2">
@@ -437,6 +452,82 @@ const updateSelectedProductVariant = async (
       message,
       type: 'negative',
     });
+  }
+};
+const handleDownloadGRNReport = () => {
+  if (grnGroupByProductId.value) {
+    const csvContent = generateCSV(grnGroupByProductId.value);
+    downloadExcel(csvContent);
+  } else {
+    console.error('No data available to download.');
+  }
+};
+const generateCSV = (data: any) => {
+  if (!data || !Object.keys(data).length) {
+    console.error('Invalid data format or data is null/undefined.');
+    return '';
+  }
+
+  const allVariantNames1 = new Set<string>();
+  Object.values(data).forEach((product: any) => {
+    product.data.forEach((variant: any) => {
+      allVariantNames1.add(variant.variantName1);
+    });
+  });
+
+  const headers = [
+    'Product',
+    'Retail Price',
+    'Color',
+    ...Array.from(allVariantNames1),
+    'Total',
+  ];
+  let csvContent = headers.join(',') + '\n';
+
+  Object.values(data).forEach((product: any) => {
+    const colorVariantsMap: any = {};
+
+    product.data.forEach((variant: any) => {
+      if (!colorVariantsMap[variant.variantName2]) {
+        colorVariantsMap[variant.variantName2] = {};
+      }
+      colorVariantsMap[variant.variantName2][variant.variantName1] =
+        variant.quantity;
+    });
+
+    Object.keys(colorVariantsMap).forEach((color) => {
+      const row = [
+        product.productName,
+        product.retailPrice.toString(),
+        color,
+        ...Array.from(
+          allVariantNames1,
+          (vName) => colorVariantsMap[color][vName]?.toString() || '0'
+        ),
+        Object.values(colorVariantsMap[color])
+          .reduce((total: number, quantity: any) => total + quantity, 0)
+          .toString(),
+      ].join(',');
+      csvContent += row + '\n';
+    });
+  });
+
+  return csvContent;
+};
+
+const downloadExcel = (csvContent: string) => {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+  const link = document.createElement('a');
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'grn_report.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('Your browser does not support downloading files.');
   }
 };
 </script>
