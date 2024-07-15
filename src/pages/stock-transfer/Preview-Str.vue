@@ -1,4 +1,19 @@
 <template>
+  <div class="flex justify-end mb-4">
+    <q-btn-dropdown
+      dropdown-icon="arrow_downward"
+      label="Download Report"
+      class="rounded-[4px] h-2 border bg-btn-primary hover:bg-btn-primary-hover text-white"
+    >
+      <q-list>
+        <q-item clickable @click="handleDownloadGRNReport" v-close-popup>
+          <q-item-section>
+            <q-item-label>Download in Excel</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+  </div>
   <q-card>
     <q-card-section>
       <div class="row justify-between items-center mb-2">
@@ -56,132 +71,113 @@
           />
         </div>
       </div>
-      <div v-if="grnGroupByProductId" class="q-gutter-y-md mt-2">
-        <div v-for="(product, i) in grnGroupByProductId" :key="i">
-          <q-markup-table>
+      <!-- Article and Image -->
+      <div
+        v-for="(item, itemIndex) in selectedGrnData.grnProductInfos"
+        :key="itemIndex"
+        class="mb-8 border p-2"
+      >
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <div class="flex flex-col">
+              <img
+                :src="item.productImage ?? ''"
+                alt="Product Image"
+                class="w-16 h-16 mt-2 mb-4"
+              />
+            </div>
+            <div class="flex flex-col">
+              <div class="text-bold">{{ item.productName }}</div>
+              <div class="text-bold">{{ item.retailPrice }}</div>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <!-- Table -->
+        <div class="flex flex-col mt-4">
+          <table class="w-full border-collapse border border-gray-300">
             <thead>
               <tr>
-                <th class="text-left">
-                  <div class="row items-center gap-3">
-                    <div
-                      class="w-8 h-8 rounded-full overflow-hidden"
-                      :class="product.productImage && 'cursor-pointer'"
-                      @click="handlePreviewImage(product.productImage)"
-                    >
-                      <img
-                        class="w-full h-full object-cover"
-                        :src="
-                          product.productImage || 'assets/default-image.png'
-                        "
-                        alt="img"
-                      />
-                    </div>
-                    <div class="flex flex-col gap-1">
-                      <span
-                        >Product:
-                        <span class="font-semibold">{{
-                          product.productName
-                        }}</span></span
-                      >
-                      <span
-                        >Retail Price:
-                        <span class="font-semibold">{{
-                          product.retailPrice
-                        }}</span></span
-                      >
-                    </div>
-                  </div>
-                </th>
-
+                <th class="border border-gray-300 bg-gray-200 p-2"></th>
                 <th
-                  v-for="(firstVariant, i) in uniqueVariantNames(product.data)"
-                  :key="i"
-                  class="text-left"
+                  v-for="(size, sizeIndex) in getUniqueSizes(
+                    item.variant2Infos
+                  )"
+                  :key="sizeIndex"
+                  class="border border-gray-300 bg-gray-200 p-2"
                 >
-                  {{ firstVariant }}
+                  {{ size }}
                 </th>
-                <th class="text-left">Total</th>
+                <th class="border border-gray-300 bg-gray-200 p-2">Total</th>
               </tr>
             </thead>
             <tbody>
-              <template
-                v-for="(secondVariant, i) in uniqueVariantNames2(product.data)"
-                :key="i"
+              <tr
+                v-for="(variant, variantIndex) in item.variant2Infos"
+                :key="variantIndex"
+                class="border border-gray-300"
               >
-                <tr>
-                  <td class="text-left font-semibold">
-                    {{ secondVariant }}
-                  </td>
-                  <td
-                    v-for="(secondItem, secondItemIndex) in limitedRecord(
-                      product.data,
-                      secondVariant
-                    )"
-                    :key="secondItemIndex"
-                  >
-                    <q-input
-                      type="number"
-                      dense
-                      class="quantity_input min-w-[92px]"
-                      color="btn-primary"
-                      outlined
-                      :disable="!isEdit"
-                      :min="0"
-                      @update:model-value="
-                        handleUpdateStrStockQuantity(
-                          Number($event) ?? 0,
-                          secondItem
-                        )
-                      "
-                      v-model="secondItem.quantity"
-                    >
-                      <template v-if="isEdit" v-slot:append>
-                        <q-icon
-                          class="cursor-pointer"
-                          name="check"
-                          color="green"
-                          dense
-                          size="xs"
-                          @click="
-                            updateSelectedProductVariant(
-                              secondItem.selectedGrnId,
-                              secondItem.quantity
-                            )
-                          "
-                        />
-                        <q-icon
-                          class="cursor-pointer"
-                          name="delete"
-                          @click="
-                            updateSelectedProductVariant(
-                              secondItem.selectedGrnId,
-                              0
-                            )
-                          "
-                          color="red"
-                          dense
-                          size="xs"
-                        />
-                      </template>
-                    </q-input>
-                  </td>
-                  <td>
-                    {{
-                      !Number.isNaN(
-                        getInvetoryTotalStockQuantity(
-                          limitedRecord(product.data, secondVariant)
-                        )
+                <td class="border border-gray-300 p-2 font-semibold">
+                  {{ variant.variant2_Name }}
+                </td>
+                <td
+                  v-for="(secondItem, secondItemIndex) in variant.variant1Infos"
+                  :key="secondItemIndex"
+                  class="border border-gray-300 p-2 text-center"
+                >
+                  <!-- {{ secondItem.quantity }} -->
+                  <q-input
+                    type="number"
+                    dense
+                    class="quantity_input min-w-[92px]"
+                    color="btn-primary"
+                    outlined
+                    :disable="!isEdit"
+                    :min="0"
+                    @update:model-value="
+                      handleUpdateStrStockQuantity(
+                        Number($event) ?? 0,
+                        secondItem
                       )
-                        ? getInvetoryTotalStockQuantity(
-                            limitedRecord(product.data, secondVariant)
+                    "
+                    v-model="secondItem.quantity"
+                  >
+                    <template v-if="isEdit" v-slot:append>
+                      <q-icon
+                        class="cursor-pointer"
+                        name="check"
+                        color="green"
+                        dense
+                        size="xs"
+                        @click="
+                          updateSelectedProductVariant(
+                            secondItem.selectedGrnId,
+                            secondItem.quantity
                           )
-                        : 0
-                    }}
-                  </td>
-                </tr>
-              </template>
+                        "
+                      />
+                      <q-icon
+                        class="cursor-pointer"
+                        name="delete"
+                        @click="
+                          updateSelectedProductVariant(
+                            secondItem.selectedGrnId,
+                            0
+                          )
+                        "
+                        color="red"
+                        dense
+                        size="xs"
+                      />
+                    </template>
+                  </q-input>
+                </td>
+                <td class="border border-gray-300 p-2 text-center">
+                  {{ variant.totalQuantity }}
+                </td>
+              </tr>
             </tbody>
-          </q-markup-table>
+          </table>
         </div>
       </div>
     </q-card-section>
@@ -262,9 +258,9 @@ import {
   EUserRoles,
   IGrnPreviewResponse,
   IProductGRN,
-  ProductVariant,
+  IVariant1Data,
 } from 'src/interfaces';
-import { UpdateGRN, GetGRNDetail } from 'src/services';
+import { GetGRNDetail, UpdateGRN } from 'src/services';
 import { useAuthStore } from 'src/stores';
 import CopyStrModal from 'src/components/str/Copy-Str-Modal.vue';
 import { isPosError } from 'src/utils';
@@ -287,51 +283,23 @@ const selectedGrnData = ref<IGrnPreviewResponse>({
   grnStatus: '',
   addedDate: '',
   grnDetails: [],
+  grnProductInfos: [],
 });
 const handleOpenCopyModal = () => {
   isCopyDialogVisible.value = true;
 };
-const uniqueVariantNames = (data: ProductVariant[]) => {
-  const uniqueNames = new Set();
-  if (data) {
-    for (const product of data) {
-      uniqueNames.add(product.variantName1);
-    }
-  }
 
-  return Array.from(uniqueNames);
-};
 const handleCloseCopyDialog = () => {
   isCopyDialogVisible.value = false;
   router.go(-1);
-};
-const limitedRecord = (data: ProductVariant[], variantName2: any) => {
-  let rec = data.filter((item) => item.variantName2 === variantName2);
-  return rec;
-};
-const uniqueVariantNames2 = (data: ProductVariant[]) => {
-  const uniqueNames = new Set();
-  if (data) {
-    for (const product of data) {
-      uniqueNames.add(product.variantName2);
-    }
-  }
-
-  return Array.from(uniqueNames);
 };
 
 const selectedPreviewImage = ref('');
 const selectedGrnId = ref(-1);
 const isPreviewImageModalVisible = ref(false);
 const isEdit = ref(false);
-const grnGroupByProductId = ref<IProductGRN[] | null>(null);
+const grnGroupByProductId = ref<IProductGRN[]>([]);
 
-const handlePreviewImage = (selectedImage: string | null) => {
-  if (selectedImage) {
-    selectedPreviewImage.value = selectedImage;
-    isPreviewImageModalVisible.value = true;
-  }
-};
 onMounted(() => {
   selectedGrnId.value = Number(router.currentRoute.value.params.id);
   previewGrn(selectedGrnId.value);
@@ -342,20 +310,7 @@ onMounted(() => {
     isEdit.value = false;
   }
 });
-const getInvetoryTotalStockQuantity = (variant: ProductVariant[]) => {
-  return variant.reduce((acc: number, row: ProductVariant) => {
-    return acc + (parseInt(row.quantity.toString()) ?? 0);
-  }, 0);
-};
-const handleUpdateStrStockQuantity = (value: number, row: ProductVariant) => {
-  if (!value || value <= 0) {
-    setTimeout(() => {
-      row.quantity = 0;
-    }, 0);
-  } else {
-    row.quantity = value;
-  }
-};
+
 const previewGrn = async (selectedId: number) => {
   isLoading.value = true;
   try {
@@ -365,7 +320,8 @@ const previewGrn = async (selectedId: number) => {
       selectedGrnData.value.addedDate = moment(res.data.addedDate).format(
         'YYYY-MM-DD'
       );
-      grnGroupByProductId.value = selectedGrnData.value.grnDetails.reduce(
+
+      const groupedProducts = selectedGrnData.value.grnDetails.reduce(
         (accumulator: any, currentDetail) => {
           const productId = currentDetail.productId;
 
@@ -398,6 +354,8 @@ const previewGrn = async (selectedId: number) => {
         },
         {}
       );
+
+      grnGroupByProductId.value = groupedProducts;
     }
   } catch (e) {
     let message = 'Unexpected error occurred while Preview Grn';
@@ -410,6 +368,16 @@ const previewGrn = async (selectedId: number) => {
     });
   }
   isLoading.value = false;
+};
+
+const handleUpdateStrStockQuantity = (value: number, row: IVariant1Data) => {
+  if (!value || value <= 0) {
+    setTimeout(() => {
+      row.quantity = 0;
+    }, 0);
+  } else {
+    row.quantity = value;
+  }
 };
 const updateSelectedProductVariant = async (
   grnDetailId: number,
@@ -438,6 +406,100 @@ const updateSelectedProductVariant = async (
       type: 'negative',
     });
   }
+};
+const handleDownloadGRNReport = () => {
+  if (grnGroupByProductId.value) {
+    const csvContent = generateCSV(grnGroupByProductId.value);
+    downloadExcel(csvContent);
+  } else {
+    console.error('No data available to download.');
+  }
+};
+const generateCSV = (data: any) => {
+  if (!data || !Object.keys(data).length) {
+    console.error('Invalid data format or data is null/undefined.');
+    return '';
+  }
+
+  // Extract all variant names and sort them numerically
+  const allVariantNames1 = new Set<string>();
+  Object.values(data).forEach((product: any) => {
+    product.data.forEach((variant: any) => {
+      allVariantNames1.add(variant.variantName1);
+    });
+  });
+
+  // Convert set to array and sort numerically
+  const sortedVariantNames = Array.from(allVariantNames1).sort((a, b) => {
+    return parseInt(a) - parseInt(b);
+  });
+
+  // Construct headers with sorted variant names
+  const headers = [
+    'Product',
+    'Retail Price',
+    'Color',
+    ...sortedVariantNames,
+    'Total',
+  ];
+  let csvContent = headers.join(',') + '\n';
+
+  Object.values(data).forEach((product: any) => {
+    const colorVariantsMap: any = {};
+
+    product.data.forEach((variant: any) => {
+      if (!colorVariantsMap[variant.variantName2]) {
+        colorVariantsMap[variant.variantName2] = {};
+      }
+      colorVariantsMap[variant.variantName2][variant.variantName1] =
+        variant.quantity;
+    });
+
+    Object.keys(colorVariantsMap).forEach((color) => {
+      const row = [
+        product.productName,
+        product.retailPrice.toString(),
+        color,
+        ...sortedVariantNames.map(
+          (vName) => colorVariantsMap[color][vName]?.toString() || '0'
+        ),
+        Object.values(colorVariantsMap[color])
+          .reduce((total: number, quantity: any) => total + quantity, 0)
+          .toString(),
+      ].join(',');
+      csvContent += row + '\n';
+    });
+  });
+
+  return csvContent;
+};
+
+const downloadExcel = (csvContent: string) => {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+  const link = document.createElement('a');
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'preview_str_report.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('Your browser does not support downloading files.');
+  }
+};
+
+const getUniqueSizes = (variant2List: any) => {
+  let uniqueSizes: any = [];
+  variant2List.forEach((variant: any) => {
+    variant.variant1Infos.forEach((v1: any) => {
+      if (!uniqueSizes.includes(v1.variant1_Name)) {
+        uniqueSizes.push(v1.variant1_Name);
+      }
+    });
+  });
+  return uniqueSizes;
 };
 </script>
 <style scoped lang="scss">

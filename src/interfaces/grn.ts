@@ -9,6 +9,12 @@ export interface IGrnDetails {
   variantId_2: number;
   quantity: number;
 }
+export interface IProductData {
+  productId: number;
+  variantId_1: number;
+  variantId_2: number;
+  quantity: number;
+}
 export interface IGrnDetailsWithId extends IGrnDetails {
   retailPrice: number;
   inventoryId?: number;
@@ -39,6 +45,29 @@ export interface IGrnRecord {
 }
 export interface IGrnPreviewResponse extends IGrnRecord {
   grnDetails: IPreviewGrnDetail[];
+  grnProductInfos: IPreviewProductDetail[];
+}
+export interface IPreviewProductDetail extends IProductData {
+  productName: string;
+  productImage: string;
+  productCode: string;
+  variant_1_Name: string;
+  grnDetailId: number;
+  variant_2_Name: string;
+  retailPrice: number;
+  variant2Infos: IVariant2Data[];
+}
+export interface IVariant2Data {
+  variant2_Id: number;
+  variant2_Name: string;
+  totalQuantity: number;
+  variant1Infos: IVariant1Data[];
+}
+export interface IVariant1Data {
+  variant1_Id: number;
+  variant1_Name: string;
+  quantity: number;
+  selectedGrnId: number;
 }
 export interface IPreviewGrnDetail extends IGrnDetails {
   productName: string;
@@ -54,8 +83,10 @@ export interface IProductGRN {
   productName: string;
   productImage: string | null;
   retailPrice: number;
+  variant2Infos: IVariant2Data[];
   data: ProductVariant[];
 }
+
 export interface ProductVariant {
   variantId1: number;
   variantName1: string;
