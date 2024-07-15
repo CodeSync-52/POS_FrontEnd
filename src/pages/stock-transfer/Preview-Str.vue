@@ -490,63 +490,6 @@ const downloadExcel = (csvContent: string) => {
   }
 };
 
-// const generateCSV = (data: Record<string, IProductGRN>) => {
-//   const uniqueSizes = new Set<string>();
-
-//   // Loop through the data object
-//   Object.values(data).forEach((item) => {
-//     item.data.forEach((variant) => {
-//       uniqueSizes.add(variant.variantName1);
-//     });
-//   });
-
-//   const sortedSizes = Array.from(uniqueSizes).sort((a, b) => Number(a) - Number(b));
-
-//   const headers = ['Product', 'Retail Price', 'Color', ...sortedSizes, 'Total'];
-//   let csvContent = headers.join(',') + '\n';
-
-//   Object.values(data).forEach((item) => {
-//     const colorVariantsMap: Record<string, Record<string, number>> = {};
-
-//     item.data.forEach((variant) => {
-//       if (!colorVariantsMap[variant.variantName2]) {
-//         colorVariantsMap[variant.variantName2] = {};
-//       }
-//       colorVariantsMap[variant.variantName2][variant.variantName1] = variant.quantity;
-//     });
-
-//     Object.keys(colorVariantsMap).forEach((color) => {
-//       const row = [
-//         item.productName,
-//         item.retailPrice.toString(),
-//         color,
-//         ...sortedSizes.map((size) => colorVariantsMap[color][size]?.toString() || '0'),
-//         Object.values(colorVariantsMap[color]).reduce((total, quantity) => total + quantity, 0).toString(),
-//       ].join(',');
-
-//       csvContent += row + '\n';
-//     });
-//   });
-
-//   return csvContent;
-// };
-
-// const downloadExcel = (data: Record<string, IProductGRN>) => {
-//   const csvContent = generateCSV(data);
-//   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-//   const link = document.createElement('a');
-//   if (link.download !== undefined) {
-//     const url = URL.createObjectURL(blob);
-//     link.setAttribute('href', url);
-//     link.setAttribute('download', 'preview_str_report.csv');
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//   } else {
-//     alert('Your browser does not support downloading files. Please try again in a modern browser.');
-//   }
-// };
-
 const getUniqueSizes = (variant2List: any) => {
   let uniqueSizes: any = [];
   variant2List.forEach((variant: any) => {
