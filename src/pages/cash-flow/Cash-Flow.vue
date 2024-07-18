@@ -161,14 +161,13 @@
               >
               <q-btn
                 v-if="
-                  props.row.transactionDate > formattedUndoDate &&
+                  props.row.isRevertTransactionAllowed === true &&
                   authStore.loggedInUser?.rolePermissions.roleName ===
                     EUserRoles.SuperAdmin.toLowerCase()
                 "
                 icon="undo"
                 dense
                 flat
-                hidden
                 unelevated
                 color="blue"
                 size="sm"
@@ -251,8 +250,6 @@ const showUndoCashFlowModal = ref(false);
 const timeStamp = Date.now();
 const formattedToDate = date.formatDate(timeStamp, 'YYYY-MM-DD');
 const past5Date = date.subtractFromDate(timeStamp, { date: 5 });
-const past2Date = date.subtractFromDate(timeStamp, { date: 2 });
-const formattedUndoDate = date.formatDate(past2Date, 'YYYY-MM-DD');
 const formattedFromDate = date.formatDate(past5Date, 'YYYY-MM-DD');
 const filter = ref({
   sender: '',
@@ -323,6 +320,7 @@ const handleAddNewFlow = async (selectedRow: ICashFlowRecords) => {
     const res = await CreateTransaction({
       sourceUserId: selectedRow.targetUserId ?? -1,
       amount: selectedRow.amount,
+      cashFlowId: selectedRow.cashFlowId,
       targetUserId: selectedRow.sourceUserId ?? -1,
       comments: 'Amount Reverted',
     });

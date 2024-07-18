@@ -61,6 +61,54 @@ export const ArticleColumn: QTableColumn<IArticleData>[] = [
     field: () => '',
   },
 ];
+export const ArticleAdminColumn: QTableColumn<IArticleData>[] = [
+  {
+    name: 'name',
+    required: true,
+    label: 'Name',
+    align: 'left',
+    field: (row) => row.name,
+  },
+  {
+    name: 'image',
+    required: true,
+    label: 'Image',
+    align: 'left',
+    field: (row) => row.productImage,
+  },
+  {
+    name: 'mstock',
+    label: 'Stock',
+    align: 'left',
+    field: (row) => row.masterStock,
+  },
+  {
+    name: 'wholeSalePrice',
+    required: true,
+    label: 'W.P',
+    align: 'left',
+    field: (row) => row.wholeSalePrice,
+  },
+  {
+    name: 'retailrate',
+    required: true,
+    label: 'R.P',
+    align: 'left',
+    field: (row) => row.retailPrice,
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    align: 'left',
+    field: (row) => row.status,
+  },
+  {
+    name: 'action',
+    label: 'Action',
+    align: 'left',
+    field: () => '',
+  },
+];
 export const billingHistoryColumn: QTableColumn<IBillingHistoryResponse>[] = [
   {
     name: 'name',

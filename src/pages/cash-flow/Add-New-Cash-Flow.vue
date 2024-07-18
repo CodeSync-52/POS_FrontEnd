@@ -198,6 +198,7 @@ const handleAddNewFlow = async () => {
       amount: amount,
       targetUserId: cashOut?.userId ?? -1,
       comments: comment,
+      cashFlowId: null,
     });
     if (res.type === 'Success') {
       if (res.data) {

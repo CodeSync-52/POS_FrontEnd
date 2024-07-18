@@ -37,11 +37,13 @@ export const CreateTransaction = async ({
   amount,
   targetUserId,
   comments,
+  cashFlowId,
 }: {
   sourceUserId: number;
   amount: number;
   targetUserId: number;
   comments?: string;
+  cashFlowId: number | null;
 }) => {
   const res = await makeApiCall<IGenericResponse<null>>({
     method: 'POST',
@@ -51,6 +53,7 @@ export const CreateTransaction = async ({
       amount,
       targetUserId,
       comments,
+      cashFlowId,
     },
   });
   return res;
