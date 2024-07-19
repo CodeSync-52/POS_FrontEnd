@@ -331,7 +331,55 @@ const isImageSizeGreater = () => {
   }
   return false;
 };
-const handleImageUpload = (file: File | null) => {
+const resizeImage = (
+  file: File,
+  width: number,
+  height: number
+): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    img.onload = () => {
+      canvas.width = width;
+      canvas.height = height;
+
+      const aspectRatio = img.width / img.height;
+      let newWidth, newHeight;
+
+      if (aspectRatio > 1) {
+        newWidth = width;
+        newHeight = width / aspectRatio;
+      } else {
+        newHeight = height;
+        newWidth = height * aspectRatio;
+      }
+
+      const offsetX = (width - newWidth) / 2;
+      const offsetY = (height - newHeight) / 2;
+
+      ctx?.clearRect(0, 0, width, height);
+      ctx?.drawImage(img, offsetX, offsetY, newWidth, newHeight);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(new File([blob], file.name, { type: file.type }));
+        } else {
+          reject(new Error('Canvas is empty'));
+        }
+      }, file.type);
+    };
+
+    img.onerror = (error) => {
+      reject(error);
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+const handleImageUpload = async (file: File | null) => {
   if (imagePreview.value !== '') {
     URL.revokeObjectURL(imagePreview.value);
     if (isUpdate.value && imageData.value) {
@@ -341,10 +389,21 @@ const handleImageUpload = (file: File | null) => {
     }
   }
   if (file) {
-    const url = URL.createObjectURL(file);
-    imagePreview.value = url;
+    try {
+      const resizedFile = await resizeImage(file, 300, 300);
+      const url = URL.createObjectURL(resizedFile);
+      imagePreview.value = url;
+      newArticle.value.productImage = resizedFile;
+    } catch (error) {
+      $q.notify({
+        message: 'Error resizing image',
+        color: 'red',
+        icon: 'error',
+      });
+    }
   }
 };
+
 async function addNewArticle() {
   if (isLoading.value) return;
 
