@@ -82,7 +82,14 @@
                 @update:model-value="handleUpdateAmount($event, 'retailPrice')"
               />
             </div>
-            <div v-if="isUpdate" class="col-12 col-md-6">
+            <div
+              class="col-12 col-md-6"
+              v-if="
+                isUpdate &&
+                authStore.loggedInUser?.rolePermissions.roleName ===
+                  EUserRoles.SuperAdmin.toLowerCase()
+              "
+            >
               <span class="text-base">Cost Price</span>
               <q-input
                 v-model="newArticle.costPrice"
@@ -94,6 +101,7 @@
                 @update:model-value="handleUpdateAmount($event, 'costPrice')"
               />
             </div>
+
             <div v-if="isUpdate" class="col-12 col-md-6">
               <span class="text-base">Commission</span>
               <q-input
@@ -183,7 +191,13 @@
           />
         </q-card-actions>
       </q-card>
-      <q-card v-if="isUpdate">
+      <q-card
+        v-if="
+          isUpdate &&
+          authStore.loggedInUser?.rolePermissions.roleName ===
+            EUserRoles.SuperAdmin.toLowerCase()
+        "
+      >
         <q-card-section>
           <q-table
             class="max-h-[400px] h-full"
@@ -224,8 +238,9 @@ import ArticleCategoryModal from 'src/components/article-management/Article-Cate
 import { INewArticleData } from 'src/interfaces/article-management';
 import { isPosError, billingHistoryColumn } from 'src/utils';
 import { useQuasar } from 'quasar';
-import { IBillingHistoryResponse } from 'src/interfaces';
+import { IBillingHistoryResponse, EUserRoles } from 'src/interfaces';
 import { UpdateArticle, GetArticlebillingHistory } from 'src/services';
+import { useAuthStore } from 'src/stores';
 const router = useRouter();
 const isCategoryModalVisible = ref(false);
 const isLoading = ref(false);
@@ -265,6 +280,7 @@ const isFetching = ref(false);
 const route = router.currentRoute.value;
 const newArticle = ref(defaultArticleValue);
 const billingHistoryRecord = ref<IBillingHistoryResponse[]>([]);
+const authStore = useAuthStore();
 onMounted(() => {
   if (route.fullPath.includes('update')) {
     isUpdate.value = true;

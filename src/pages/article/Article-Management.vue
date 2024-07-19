@@ -90,7 +90,12 @@
         tabindex="0"
         :loading="isLoading"
         :rows="ArticleData"
-        :columns="ArticleColumn"
+        :columns="
+          authStore.loggedInUser?.rolePermissions.roleName ===
+          EUserRoles.SuperAdmin.toLowerCase()
+            ? ArticleColumn
+            : ArticleAdminColumn
+        "
         row-key="name"
         v-model:pagination="pagination"
         @request="getArticleList"
@@ -258,7 +263,13 @@ import ArticleCategoryModal from 'src/components/article-management/Article-Cate
 import ArticleStatusModal from 'src/components/article-management/Article-Status-Modal.vue';
 import { useAuthStore } from 'src/stores';
 import { IArticleData } from 'src/interfaces';
-import { ArticleColumn, isPosError, WholeSalePriceOptionList } from 'src/utils';
+import { EUserRoles } from 'src/interfaces';
+import {
+  ArticleColumn,
+  isPosError,
+  WholeSalePriceOptionList,
+  ArticleAdminColumn,
+} from 'src/utils';
 import { GetArticleList, ChangeArticleStatus } from 'src/services';
 import { statusOptions } from 'src/constants';
 import { CanceledError } from 'axios';
