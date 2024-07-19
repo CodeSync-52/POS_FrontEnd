@@ -221,7 +221,7 @@
           </div>
         </q-card-section>
       </q-card>
-      <q-card v-else>
+      <q-card v-else-if="isUpdate">
         <q-card-section class="text-base text-red-500">
           <span>Only Super Admin can view the previous billing history.</span>
         </q-card-section>
