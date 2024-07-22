@@ -117,6 +117,7 @@
             <div class="col-12 col-md-6">
               <span v-if="isUpdate" class="text-base">Change Image</span>
               <span v-else class="text-base">Select Image</span>
+
               <q-file
                 @update:model-value="handleImageUpload"
                 type="file"
@@ -131,6 +132,18 @@
                 clearable
                 color="btn-primary"
               />
+              <div>
+                <q-btn
+                  icon="info"
+                  color="btn-primary"
+                  flat
+                  unelevated
+                  dense
+                ></q-btn>
+                <span class="text-[10px]"
+                  >Image should be equal or less than 25KB</span
+                >
+              </div>
               <div
                 v-if="imagePreview"
                 class="min-w-[120px] max-w-[120px] h-[120px] overflow-hidden relative rounded-full"
