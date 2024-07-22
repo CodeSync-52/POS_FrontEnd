@@ -256,9 +256,9 @@ const checkFile = (value: File) => {
     if (!isValidFormat) {
       return 'Invalid file format. Only jpeg, jpg, and png allowed.';
     }
-    const isValidSize = value.size <= 0.5 * 1024 * 1024;
+    const isValidSize = value.size <= 25 * 1024;
     if (!isValidSize) {
-      return 'Selected file must be less than or equal to 0.5MB';
+      return 'Selected file must be less than or equal to 25 KB';
     }
   }
   return true;
@@ -325,7 +325,7 @@ const handleSelectedCategory = (selectedCategory: {
 };
 const isImageSizeGreater = () => {
   if (newArticle.value.productImage) {
-    if (newArticle.value.productImage.size > 0.5 * 1024 * 1024) {
+    if (newArticle.value.productImage.size > 25 * 1024) {
       return true;
     }
   }
@@ -383,24 +383,11 @@ const handleImageUpload = async (file: File | null) => {
   if (imagePreview.value !== '') {
     URL.revokeObjectURL(imagePreview.value);
     if (isUpdate.value && imageData.value) {
-      imagePreview.value = imageData.value || '';
-    } else {
-      imagePreview.value = '';
     }
   }
   if (file) {
-    try {
-      const resizedFile = await resizeImage(file, 300, 300);
-      const url = URL.createObjectURL(resizedFile);
-      imagePreview.value = url;
-      newArticle.value.productImage = resizedFile;
-    } catch (error) {
-      $q.notify({
-        message: 'Error resizing image',
-        color: 'red',
-        icon: 'error',
-      });
-    }
+    const url = URL.createObjectURL(file);
+    imagePreview.value = url;
   }
 };
 
