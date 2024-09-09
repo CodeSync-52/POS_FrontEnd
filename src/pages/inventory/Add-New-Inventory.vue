@@ -206,7 +206,7 @@
           :loading="isPrintingBarcode"
           label="Save"
           unelevated
-          :disable="isButtonDisable"
+          :disable="isButtonDisable || isSavingInventory"
           color="btn-primary"
         />
       </div>
@@ -437,6 +437,7 @@ const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
 const selectedId = ref<number>(-1);
 const isPrintingBarcode = ref(false);
+const isSavingInventory = ref(false);
 const shopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
@@ -785,6 +786,9 @@ function setProductKeys() {
 }
 const showBarcodeScreen = ref(false);
 const handleSaveInventory = () => {
+  if (isSavingInventory.value) return;
+
+  isSavingInventory.value = true;
   const selectedInventorylist: IProductWithVariantDTOs[] = [];
   Object.keys(selectedInventoryPayload.value).forEach((key) => {
     const productId = Number(key.split('-')[0]);
@@ -803,6 +807,7 @@ const handleSaveInventory = () => {
     }
   });
   handleAddInventory(selectedInventorylist);
+  isSavingInventory.value = false;
 };
 
 const handleAddInventory = async (

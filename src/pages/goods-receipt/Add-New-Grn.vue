@@ -174,7 +174,7 @@
               :loading="isSavingNewGrn"
               unelevated
               color="signature"
-              :disable="isButtonDisable"
+              :disable="isButtonDisable || isSavingSTR"
               class="bg-btn-primary hover:bg-btn-primary-hover"
               @click="handleSaveGrn"
             />
@@ -265,6 +265,7 @@ const shopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
 const isSelectedShopDetailTableVisible = ref(false);
 const selectedPreviewImage = ref('');
+const isSavingSTR = ref(false);
 const isPreviewImageModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const isFetchingRecords = ref(false);
@@ -479,6 +480,8 @@ const handleRemoveSelectedInventoryRecord = (
   selectedInventoryData.value.splice(selectedRecordIndex, 1);
 };
 const handleSaveGrn = async () => {
+  if (isSavingSTR.value) return;
+  isSavingSTR.value = true;
   const selectedInventoryDataPayload = {
     fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
     toShopId: selectedShop.value.toShop?.shopId ?? -1,
@@ -508,6 +511,7 @@ const handleSaveGrn = async () => {
       type: 'negative',
     });
   }
+  isSavingSTR.value = false;
   isSavingNewGrn.value = false;
   router.push('/goods-receipt');
 };
