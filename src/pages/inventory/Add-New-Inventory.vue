@@ -206,7 +206,7 @@
           :loading="isPrintingBarcode"
           label="Save"
           unelevated
-          :disable="isButtonDisable || isSavingInventory"
+          :disable="isButtonDisable || isClickingSaveButton"
           color="btn-primary"
         />
       </div>
@@ -398,6 +398,7 @@ const router = useRouter();
 const isSelectionSingle = ref(true);
 const isFilterChanged = ref(false);
 const authStore = useAuthStore();
+const isClickingSaveButton = ref(false);
 const isFetchingArticleList = ref(false);
 const isPrintingBarcodeScreenVisible = ref(false);
 const isInventoryManagementStepTwoVisible = ref(false);
@@ -437,7 +438,6 @@ const isArticleListModalVisible = ref(false);
 const isCustomLabelModalVisible = ref(false);
 const selectedId = ref<number>(-1);
 const isPrintingBarcode = ref(false);
-const isSavingInventory = ref(false);
 const shopData = ref<IShopResponse[]>([]);
 const ShopOptionData = ref<IShopResponse[]>([]);
 const $q = useQuasar();
@@ -786,9 +786,7 @@ function setProductKeys() {
 }
 const showBarcodeScreen = ref(false);
 const handleSaveInventory = () => {
-  if (isSavingInventory.value) return;
-
-  isSavingInventory.value = true;
+  isClickingSaveButton.value = true;
   const selectedInventorylist: IProductWithVariantDTOs[] = [];
   Object.keys(selectedInventoryPayload.value).forEach((key) => {
     const productId = Number(key.split('-')[0]);
@@ -807,7 +805,6 @@ const handleSaveInventory = () => {
     }
   });
   handleAddInventory(selectedInventorylist);
-  isSavingInventory.value = false;
 };
 
 const handleAddInventory = async (
@@ -828,6 +825,7 @@ const handleAddInventory = async (
       handlePreviewGrn();
 
       rowColumnData.value = [];
+      isClickingSaveButton.value = false;
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred Add Inventory';
@@ -838,6 +836,7 @@ const handleAddInventory = async (
       message,
       type: 'positive',
     });
+    isClickingSaveButton.value = false;
   }
 };
 const progressbar = ref<number[]>([]);
