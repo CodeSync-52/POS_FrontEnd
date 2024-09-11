@@ -1,5 +1,5 @@
 <template>
-  <q-card class="min-w-[310px] md:min-w-[400px]">
+  <q-card ref="modalCard" class="min-w-[310px] md:min-w-[400px]">
     <q-card-section>
       <div class="text-lg font-medium row justify-between mb-2">
         <span>Preview Cash Flow</span>
@@ -130,7 +130,7 @@
   </q-dialog>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { ICashFlowRecords, IUserResponse } from '../../interfaces';
 import moment from 'moment';
 import {
@@ -166,7 +166,7 @@ const previewCashFlow = ref<ICashFlowRecords>({
 });
 const userList = ref<IUserResponse[]>([]);
 const isSenderPdfLoader = ref(false);
-
+const modalCard = ref<HTMLElement | null>(null);
 const tableItems = ref<ITableItems[][]>([]);
 onMounted(() => {
   if (props.selectedData) {
@@ -310,4 +310,13 @@ const getUserList = async () => {
 const ClosePreviewCashFlow = () => {
   router.push('/cash-flow');
 };
+
+onMounted(async () => {
+  await nextTick();
+  document.addEventListener('click', ClosePreviewCashFlow, true);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', ClosePreviewCashFlow, true);
+});
 </script>
