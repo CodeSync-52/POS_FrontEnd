@@ -480,7 +480,6 @@ const handleRemoveSelectedInventoryRecord = (
   selectedInventoryData.value.splice(selectedRecordIndex, 1);
 };
 const handleSaveGrn = async () => {
-  if (isSavingSTR.value) return;
   isSavingSTR.value = true;
   const selectedInventoryDataPayload = {
     fromShopId: selectedShop.value.fromShop?.shopId ?? -1,
@@ -500,6 +499,7 @@ const handleSaveGrn = async () => {
         message: res.message,
         type: 'positive',
       });
+      isSavingSTR.value = false;
     }
   } catch (e) {
     let message = 'Unexpected error occurred adding Grn';
@@ -510,6 +510,7 @@ const handleSaveGrn = async () => {
       message,
       type: 'negative',
     });
+    isSavingSTR.value = false;
   }
   isSavingSTR.value = false;
   isSavingNewGrn.value = false;
