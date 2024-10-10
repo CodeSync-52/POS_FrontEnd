@@ -420,9 +420,9 @@ const setBarcodeProps = (callback?: () => void) => {
       const barcode = modifiedArray[index];
       showfirstBarcodePreview.value
         ? JsBarcode(`#barcode-image-${index}`, barcode.code.split(',')[0], {
-            format: 'CODE128',
-            width: 1.25,
-            height: 55,
+            format: 'CODE128A',
+            width: 1.5,
+            height: 60,
             displayValue: true,
             textPosition: 'top',
             text: 'KIT Shoes',
@@ -430,9 +430,9 @@ const setBarcodeProps = (callback?: () => void) => {
             fontOptions: 'bold',
           })
         : JsBarcode(`#barcode-image-${index}`, barcode.code.split(',')[0], {
-            format: 'CODE128',
-            width: 1.25,
-            height: 55,
+            format: 'CODE128A',
+            width: 1.5,
+            height: 60,
             displayValue: true,
             textPosition: 'top',
             text: barcode.code.split(',')[0],
