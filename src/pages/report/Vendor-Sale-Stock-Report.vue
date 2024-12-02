@@ -142,7 +142,6 @@ import moment from 'moment';
 import DownloadPdfExcel from 'src/components/download-pdf-button/Download-Pdf-Excel.vue';
 import { processTableItems } from 'src/utils/process-table-items';
 import { GetVendorSaleStockReport, wrapCsvValue } from 'src/services/reports';
-
 const isLoading = ref(false);
 const UserList = ref<IUserResponse[]>([]);
 const $q = useQuasar();
