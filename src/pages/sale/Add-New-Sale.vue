@@ -604,6 +604,7 @@ watch(addNewSale.value, (newVal: IAddNewWholeSale) => {
   const selectedUser = UserList.value.find(
     (row) => newVal.userId === row.userId
   );
+
   if (selectedUser) {
     addNewSale.value.userOutstandingBalance =
       selectedUser.outStandingBalance ?? 0;
@@ -867,6 +868,7 @@ const onDeleteButtonClick = async (row: ISelectedWholeSaleArticleData) => {
           type: 'positive',
           message: 'Row deleted successfully',
         });
+        saveUpdatedData(row);
       } catch (e) {
         $q.notify({
           message: 'There was an error deleting row',
