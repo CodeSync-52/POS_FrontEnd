@@ -605,7 +605,6 @@ watch(addNewSale.value, (newVal: IAddNewWholeSale) => {
     (row) => newVal.userId === row.userId
   );
 
-
   if (selectedUser) {
     addNewSale.value.userOutstandingBalance =
       selectedUser.outStandingBalance ?? 0;
