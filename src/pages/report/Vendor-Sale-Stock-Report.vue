@@ -125,7 +125,6 @@
     <q-spinner-ios size="78px" color="btn-primary" />
     <span class="ml-2 text-base font-[500]">Generating PDF...</span>
   </q-dialog>
-  
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
