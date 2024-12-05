@@ -22,6 +22,7 @@ export interface IVendorSaleStockReportData {
   hoStock: number;
   shopStock: number;
   hoSaleQty: number;
+  wholeSalePrice: number;
   shopSaleQty: number;
   retailPrice: number;
 }

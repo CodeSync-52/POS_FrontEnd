@@ -115,6 +115,9 @@
             {{ calculateTotal('hoSaleQty') }}
           </q-td>
           <q-td colspan="1" class="text-bold">
+            {{ calculateTotal('wholeSalePrice') }}
+          </q-td>
+          <q-td colspan="1" class="text-bold">
             {{ calculateTotal('retailPrice') }}
           </q-td>
         </q-tr>
@@ -288,13 +291,14 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
   const tableStuff = [];
   const headerRow = [
     'Article',
-    'Image',
-    'Last Purchase Price',
-    'Ho Master Stock',
-    'Shop Total Stock',
-    'Total Shop Sale',
-    'Total WholeSale',
-    'Retail Price',
+    'Img',
+    'Last P Price',
+    'Ho M Stock',
+    'Shop T Stock',
+    'T Shop Sale',
+    'T WholeSale',
+    'Whole S Price',
+    'R Price',
   ];
   tableStuff.push(headerRow);
   const footerRow = [
@@ -322,6 +326,11 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
       margin: [0, 5],
     },
     {
+      text: calculateTotal('wholeSalePrice').toString(),
+      bold: true,
+      margin: [0, 5],
+    },
+    {
       text: calculateTotal('retailPrice').toString(),
       bold: true,
       margin: [0, 5],
@@ -340,6 +349,7 @@ async function convertArrayToPdfData(array: IVendorSaleStockReportData[]) {
       { text: item.shopStock },
       { text: item.shopSaleQty },
       { text: item.hoSaleQty },
+      { text: item.wholeSalePrice },
       { text: item.retailPrice },
     ];
     tableStuff.push(row);

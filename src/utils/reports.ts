@@ -172,6 +172,14 @@ export const vendorsalestockReportColumn: QTableColumn<IVendorSaleStockReportDat
       sortable: true,
     },
     {
+      name: 'wholeSalePrice',
+      required: true,
+      label: 'WholeSale price',
+      align: 'left',
+      field: (row) => row.wholeSalePrice ?? '-',
+      sortable: true,
+    },
+    {
       name: 'retailPrice',
       required: true,
       label: 'Retail Price',
