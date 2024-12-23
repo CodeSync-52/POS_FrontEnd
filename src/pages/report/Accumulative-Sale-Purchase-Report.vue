@@ -314,8 +314,8 @@ const convertToBase64 = (file: File): Promise<string> => {
   });
 };
 const clearUserSelection = () => {
-  filterSearch.value.user = null; 
-  getUserList(); 
+  filterSearch.value.user = null;
+  getUserList();
 };
 
 const defaultImage = ref<string | null>(null);
