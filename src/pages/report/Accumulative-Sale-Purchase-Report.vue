@@ -27,7 +27,9 @@
       clearable
       option-label="fullName"
       option-value="userId"
+      @clear="clearUserSelection"
     />
+
     <q-input
       v-model="filterSearch.fromDate"
       :max="filterSearch.toDate"
@@ -235,6 +237,7 @@ const filterFn = (val: string, update: CallableFunction) => {
     );
   });
 };
+
 const accumulativeSalePurchaseReport = async () => {
   isLoading.value = true;
   if (!filterSearch.value.user) {
@@ -310,6 +313,11 @@ const convertToBase64 = (file: File): Promise<string> => {
     fileReader.readAsDataURL(file);
   });
 };
+const clearUserSelection = () => {
+  filterSearch.value.user = null;
+  getUserList();
+};
+
 const defaultImage = ref<string | null>(null);
 async function convertArrayToPdfData(
   array: IAccumulativeSalePurchaseReportData[]
