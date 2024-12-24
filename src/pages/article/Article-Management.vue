@@ -236,7 +236,7 @@
       @updated-status="updatingStatus"
     />
   </q-dialog>
-  <q-dialog v-model="isPreviewImageModalVisible">
+  <q-dialog v-model="isPreviewImageModalVisible" @hide="restoreScrollPosition">
     <q-card class="min-w-[400px]">
       <q-card-section>
         <div class="w-full max-h-[350px] overflow-hidden">
@@ -288,10 +288,23 @@ const isPreviewImageModalVisible = ref(false);
 const apiController = ref<AbortController | null>(null);
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
+    savedScrollPosition = window.scrollY;
     selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
 };
+let savedScrollPosition = 0;
+
+const restoreScrollPosition = () => {
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  window.scrollTo({
+    top: savedScrollPosition,
+    behavior: 'instant',
+  });
+};
+
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
