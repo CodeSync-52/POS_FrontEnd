@@ -61,8 +61,7 @@ const getSettings = async () => {
       color: 'red',
     });
   } finally {
-    isLoading.value = false;
-  }
+    isLoading.value = false;}
 };
 
 const handleSaveSettings = async () => {
