@@ -191,8 +191,12 @@
               <q-td :props="props">
                 <div
                   @click="handlePreviewImage(props.row.productImage)"
-                  class="w-[100px] h-[100px] min-w-[2rem] overflow-hidden rounded-full"
-                  :class="props.row.productImage ? 'cursor-pointer' : ''"
+                  class="w-[100px] h-[100px] min-w-[2rem] overflow-hidden rounded-full transition-all"
+                  :class="{
+                    'cursor-pointer': props.row.productImage,
+                    'border-4 border-[#a93c40]':
+                      selectedPreviewImage === props.row.productImage, // Highlight selected image
+                  }"
                 >
                   <img
                     class="w-full h-full object-cover"
@@ -574,6 +578,7 @@ const isFetchingArticleList = ref(false);
 const options = ref<IUserResponse[]>([]);
 const isPdfLoader = ref(false);
 const isFilterChanged = ref(false);
+const scrollPosition = ref(0);
 const articleList = ref<IArticleData[]>([]);
 const selectedArticleData = ref<ISelectedWholeSaleArticleData[]>([]);
 const selectedId = ref<number>(-1);
@@ -611,6 +616,13 @@ watch(addNewSale.value, (newVal: IAddNewWholeSale) => {
     addNewSale.value.userDiscount = selectedUser.discount ?? 0;
     selectedUserDiscount.value = selectedUser.discount ?? 0;
     selectedSaleRecord.value.discount = selectedUser.discount ?? 0;
+  }
+});
+watch(isPreviewImageModalVisible, (newValue) => {
+  if (!newValue) {
+    nextTick(() => {
+      window.scrollTo(0, scrollPosition.value);
+    });
   }
 });
 
@@ -720,8 +732,16 @@ const handleFilterRows = (filterChanged: boolean) => {
     }, 200);
   }
 };
+// const handlePreviewImage = (selectedImage: string) => {
+//   if (selectedImage) {
+//     selectedPreviewImage.value = selectedImage;
+//     isPreviewImageModalVisible.value = true;
+//   }
+// };
+
 const handlePreviewImage = (selectedImage: string) => {
   if (selectedImage) {
+    scrollPosition.value = window.scrollY;
     selectedPreviewImage.value = selectedImage;
     isPreviewImageModalVisible.value = true;
   }
