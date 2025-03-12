@@ -190,20 +190,20 @@
             <template v-slot:body-cell-productImage="props">
               <q-td :props="props">
                 <div
-  @click="handlePreviewImage(props.row.productImage)"
-  class="w-[100px] h-[100px] min-w-[2rem] overflow-hidden rounded-full transition-all"
-  :class="{
-    'cursor-pointer': props.row.productImage,
-    'border-4 border-[#a93c40]': selectedPreviewImage === props.row.productImage, // Highlight selected image
-  }"
->
-  <img
-    class="w-full h-full object-cover"
-    :src="props.row.productImage || 'assets/default-image.png'"
-    alt="img"
-  />
-</div>
-
+                  @click="handlePreviewImage(props.row.productImage)"
+                  class="w-[100px] h-[100px] min-w-[2rem] overflow-hidden rounded-full transition-all"
+                  :class="{
+                    'cursor-pointer': props.row.productImage,
+                    'border-4 border-[#a93c40]':
+                      selectedPreviewImage === props.row.productImage, // Highlight selected image
+                  }"
+                >
+                  <img
+                    class="w-full h-full object-cover"
+                    :src="props.row.productImage || 'assets/default-image.png'"
+                    alt="img"
+                  />
+                </div>
               </q-td>
             </template>
             <template v-slot:body-cell-unitWholeSalePrice="props">
