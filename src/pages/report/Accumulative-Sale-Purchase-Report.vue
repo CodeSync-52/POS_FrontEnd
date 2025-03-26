@@ -18,7 +18,7 @@
       map-options
       @filter="filterFn"
       :loading="isLoading"
-      :options="userList"
+      :options="options"
       use-input
       v-model="filterSearch.user"
       popup-content-class="!max-h-[200px]"
@@ -187,7 +187,9 @@ const next1Day = date.subtractFromDate(timeStamp, { day: -1 });
 const formattedToDate = date.formatDate(next1Day, 'YYYY-MM-DD');
 const past1MOnth = date.subtractFromDate(timeStamp, { month: 1 });
 const formattedFromDate = date.formatDate(past1MOnth, 'YYYY-MM-DD');
-const userList = ref<IUserResponse[]>([]);
+const UserList = ref<IUserResponse[]>([]);
+const options = ref<IUserResponse[]>([]);
+
 const filterSearch = ref<{
   user: IUserResponse | null;
   fromDate: string;
@@ -213,9 +215,10 @@ const getUserList = async () => {
       pageSize: 5000,
     });
     if (res.data) {
-      userList.value = res.data.items.filter(
+      UserList.value = res.data.items.filter(
         (user) => user.status === 'Active' && user.roleName === 'Customer'
       );
+      options.value = res.data.items.filter((x) => x.roleName === 'Customer');
     }
   } catch (error) {
     let message = ' Error Occurred';
@@ -232,7 +235,7 @@ const getUserList = async () => {
 const filterFn = (val: string, update: CallableFunction) => {
   update(() => {
     const needle = val.toLowerCase();
-    userList.value = userList.value.filter((v) =>
+    options.value = UserList.value.filter((v) =>
       v.fullName?.toLowerCase().includes(needle)
     );
   });
