@@ -46,7 +46,9 @@ const getSettings = async () => {
     isLoading.value = true;
     const res = await GetSetting();
     if (res.type === 'Success') {
-      receiptDescription.value = res.data.receiptDescription ?? 'N/A';
+      receiptDescription.value = res.data?.receiptDescription ?? 'N/A';
+    } else {
+      throw new Error('Invalid response type');
     }
   } catch (e) {
     let message = 'Unexpected Error Occurred';
@@ -58,9 +60,11 @@ const getSettings = async () => {
       icon: 'error',
       color: 'red',
     });
+  } finally {
+    isLoading.value = false;
   }
-  isLoading.value = false;
 };
+
 const handleSaveSettings = async () => {
   try {
     isLoading.value = true;
